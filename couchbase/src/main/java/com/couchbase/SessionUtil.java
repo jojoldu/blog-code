@@ -24,8 +24,8 @@ public class SessionUtil {
     }
 
     public static String getUid(HttpServletRequest request, HttpServletResponse response){
-        String uid = Arrays.asList(request.getCookies())
-                .stream()
+        String uid = Arrays
+                .stream(request.getCookies())
                 .filter(cookie -> "UID".equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
