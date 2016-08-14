@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * Created by jojoldu@zuminternet.com on 2016-08-12.
  */
-public class SessionUtil {
+public class CouchBaseSession {
 
     public static String generateUid(HttpServletResponse response){
         String uid = UUID.randomUUID().toString();
@@ -24,18 +24,13 @@ public class SessionUtil {
     }
 
     public static String getUid(HttpServletRequest request, HttpServletResponse response){
-        String uid = Arrays
+
+        return Arrays
                 .stream(request.getCookies())
                 .filter(cookie -> "UID".equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
-                .orElse("");
-
-        if(StringUtils.isEmpty(uid)){
-            uid = generateUid(response);
-        }
-
-        return uid;
+                .orElse(generateUid(response));
     }
 
 }

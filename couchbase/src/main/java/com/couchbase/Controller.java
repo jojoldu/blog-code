@@ -1,8 +1,6 @@
 package com.couchbase;
 
 import com.couchbase.client.java.Bucket;
-import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * Created by jojoldu@gmail.com on 2016-08-10.
@@ -27,14 +24,14 @@ public class Controller {
     @RequestMapping(value="/")
     public String home (Model model, HttpServletRequest request, HttpServletResponse response){
         model.addAttribute("hello", "Hello Couchbase + Spring boot");
-        model.addAttribute("uid", SessionUtil.getUid(request, response));
+        model.addAttribute("uid", CouchBaseSession.getUid(request, response));
         return "home";
     }
 
     @RequestMapping(value = "/user")
     @ResponseBody
     public Object get(HttpServletRequest request, HttpServletResponse response){
-        return bucket.get(SessionUtil.getUid(request, response)).content();
+        return bucket.get(CouchBaseSession.getUid(request, response)).content();
     }
 
     @RequestMapping(value="/user", method = RequestMethod.POST)
@@ -50,7 +47,7 @@ public class Controller {
         json.put("homepage", user.getHomepage());
 
         //저장
-        bucket.upsert(JsonDocument.create(SessionUtil.getUid(request, response), json));
+        bucket.upsert(JsonDocument.create(CouchBaseSession.getUid(request, response), json));
 
         return true;
     }
