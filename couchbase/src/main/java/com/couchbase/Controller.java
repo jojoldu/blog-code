@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Created by jojoldu@gmail.com on 2016-08-10.
@@ -34,6 +35,12 @@ public class Controller {
         return bucket.get(CouchBaseSession.getUid(request, response)).content();
     }
 
+    @RequestMapping(value="/user/all")
+    @ResponseBody
+    public List<User> getAll(HttpServletRequest request, HttpServletResponse response) {
+
+    }
+
     @RequestMapping(value="/user", method = RequestMethod.POST)
     @ResponseBody
     public boolean add (HttpServletRequest request, HttpServletResponse response, User user){
@@ -42,6 +49,7 @@ public class Controller {
             Map이라고 봐도 무방하다
          */
         JsonObject json = JsonObject.create();
+        json.put("type", "user_info");
         json.put("name", user.getName());
         json.put("email", user.getEmail());
         json.put("homepage", user.getHomepage());

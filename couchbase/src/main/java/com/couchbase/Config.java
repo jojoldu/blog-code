@@ -15,8 +15,6 @@ public class Config {
     public Bucket bucket() {
         //Couchbase에 connection
         Cluster cluster = CouchbaseCluster.create("127.0.0.1");
-        Bucket bucket = cluster.openBucket("default");
-
-        return bucket;
+        return cluster.openBucket("default");
     }
 }
