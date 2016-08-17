@@ -29,6 +29,7 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-freemarker')
 	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.springframework.boot:spring-boot-starter-actuator')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
