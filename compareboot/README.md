@@ -26,6 +26,9 @@
  * 간편한 설정외에도 부트의 최고장점으로 꼽는것이 단독 어플리케이션만으로 배포가 되도록 하는것이다.
    - 이전까지만 하더라도 서버가 새로 구축되면 해당 서버에 기존 프로젝트와 동일한 버전의 Tomcat을 설치하고, Tomcat의 여러 설정 xml값을 수정하고, maven/gradle같은 build 툴을 설치하는 등 서버 하나 확장하는것이 일이였다.
    - 하지만 Boot의 경우 JDK 설치하고, java -jar ~~~.jar로 실행시키면 웹서버 구축 끝이다. 이 얼마나 간단한가!
+ * Make jar, Not War
+   - Getting Started SpringBoot에서 나오는 대사로 war를 더이상 쓰지말고 jar를 사용하자는 주제가 나온다.
+   - 관련 영상은 [여기](https://www.youtube.com/watch?v=sbPSjI4tt10)를 참고 (영어라서 해석이 조금 틀릴수도 있음..)
 
 ### ConvenientDependency (편리한 의존성 관리)
  * 사용하고 싶은 의존성에 대해 호환성을 고려하지 않아도 된다.
