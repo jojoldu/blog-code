@@ -6,7 +6,7 @@
 	- [간편한 설정](#간편한-설정)
 	- [간단한 배포서버 구축](#간단한-배포서버-구축)
 	- [편리한 의존성 관리](#편리한-의존성-관리)
-	- [오해](#misunderstanding)
+	- [오해](#오해)
 - [Banner](#banner)
 - [ViewResolver](#viewresolver)
 - [Actuator](#actuator)
@@ -36,7 +36,7 @@
    - SpringBoot의 의존성 시리즈인 starter의 경우엔 사용하고 싶은 의존성이 freemarker라면 spring-boot-starter-freemarker만 추가하면 그외에 어떤 의존성도 필요없다.
    - starter 시리즈의 의존성이 버전, 추가의존성에 대한 호환성을 모두 보장하기 때문이다.
 
-### Misunderstanding (오해) 
+### 오해
  * 구 Spring프로젝트(2.x나 3.0)를 하다가 바로 Spring Boot로 넘어올 경우 오해하는것 중 하나가 Java 코드로 설정하는 것이다.
    - Java 코드로 설정하는 것은 **Boot에서만 되는것이 아니다.** SpringFramework 에서도 된다.
    - 다만 Boot는 Java code로 설정하는것조차 더욱 간단하게 application.properties/application.yml로 관리할수 있게 해준다.
