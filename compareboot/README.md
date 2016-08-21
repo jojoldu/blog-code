@@ -3,7 +3,7 @@
 <!-- TOC -->
 
 - [Intro (소개)](#intro)
-	- [간편한 설정](#simpleconfig)
+	- [간편한 설정](#간편한-설정)
 	- [간단한 배포서버 구축](#simpledeployserverbuild)
 	- [편리한 의존성 관리](#convenientdependency)
 	- [오해](#misunderstanding)
@@ -16,7 +16,7 @@
 ## Intro (소개)
 ![SpringFramework VS SpringBoot](./images/springframework-vs-springboot.png)
 
-### SimpleConfig (간편한 설정)
+### 간편한 설정
  * 기존에 SpringFramework가 기본적으로 해야할 셋팅이 너무 많고 어려웠던 점을 해소하기 위해 나옴
    - RoR (Ruby On Rails)나 Express (Nodejs 웹프레임워크)를 사용해보니 그 차이가 더 심하게 느껴짐 (SpringFramework 으로 하루가 걸릴 CRUD 게시판이 express로 1~2시간만에 작성되니 멘붕)
    - 이런 이유로 이전까지 직접 하던 설정들 중 변경요소가 크지 않는 **많은 설정들을 기본적으로 지원**하도록 나온것이 Spring Boot이다. (흔히 이런 변경요소 없이 계속 사용되는 코드를 **보일러플레이트**라고 한다. 스크립트 언어쪽은 이런쪽이 엄청 잘되어 있다.)
@@ -78,6 +78,7 @@
  * **JSP는 이제 하지 말자**는 Spring 진영의 강력한 의지도 덤으로 볼 수 있다.
   
 ## Actuator
+### Intro (소개)
  * SpringBoot의 가장 강력한 기능 중 하나
  * SpringBoot 어플리케이션의 상태를 실시간으로 확인할 수 있다. 
    - 현재 Context에 등록된 Bean 확인, 사용중인 Heap 사이즈, 최근 요청한 HTTP 상태 등등 관련한 모든 정보를 볼 수 있다.
@@ -88,3 +89,5 @@
  * spring-boot-starter-actuator 의존성을 pom.xml이나 build.gradle에 추가 후, 어플리케이션을 재시작하면 아래와 같은 로그를 확인할 수 있다.
  ![Actuator 실행로그](./images/actuator-log.png)
  * 사용법 및 예제 작성중...
+
+### Use (사용법)
