@@ -88,7 +88,6 @@
  * 특히나 [헤로쿠](http://jojoldu.tistory.com/18)와 같은 PaaS 환경에서는 정말 유용하게 사용됨
  * spring-boot-starter-actuator 의존성을 pom.xml이나 build.gradle에 추가 후, 어플리케이션을 재시작하면 아래와 같은 로그를 확인할 수 있다.
  ![Actuator 실행로그](./images/actuator-log.png)
- * 사용법 및 예제 작성중...
 
 ### 사용법
  * 아래 화면과 같이 브라우저에서 json 포멧팅이 된 화면을 보고싶다면 [크롬 플러그인](https://chrome.google.com/webstore/detail/json-viewer/gbmdgpbipfallnflgajpaliibnhdgobh?hl=ko) 설치를 권장한다
