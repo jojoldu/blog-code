@@ -6,6 +6,7 @@
 	- [간단한 배포서버 구축](#간단한-배포서버-구축)
 	- [편리한 의존성 관리](#편리한-의존성-관리)
 	- [오해](#오해)
+- [Security](#security)
 - [Banner](#banner)
 - [ViewResolver](#viewresolver)
 - [Actuator](#actuator)
@@ -44,22 +45,22 @@
 
 ## Security
  * Spring boot가 대부분의 설정을 자동화하여 준다고 해도 보안(security) 관련 부분은 대부분 개발자가 직접 구현해야 한다
+ * spring-starter-security 적용후 추가 설정이 없을 경우 기본 제공되는 자동설정이 적용된다.
  * Spring Security가 적용된 간단한 Login 기능 [코드보기](https://github.com/jojoldu/blog-code/commit/d5312d67c6d597cc43d1701653b014f784fdeb4e)
  * 자동설정 vs 사용자설정 코드
 
 ![Security 자동설정 어노테이션](./images/security-autoconfig.png) <br/>
-(Spring-starter-security의 자동 설정 어노테이션)
+(Spring-starter-security의 자동 설정 어노테이션) <br/>
+
+ * @Conditional~~ 어노테이션들의 조건을 모두 만족할 경우 SpringBootWebSecurityConfiguration이 자동 설정된다. 만족하지 않을 경우 생성되지 않는다
+ * @ConditionalOnClass({ EnableWebSecurity.class, AuthenticationEntryPoint.class })
+   - EnableWebSecurity.class, AuthenticationEntryPoint.class가 classpath에 포함되어있어야 한다 (즉, 프로젝트에 포함되어 있어야 함)
+ * @ConditionalOnMissingBean(WebSecurityConfiguration.class)
+   - WebSecurityConfiguration 타입의 Bean이 없어야만 한다.
+   - 즉, extends WebSecurityConfigurerAdapter 할 경우 자동설정을 사용하지 않게 된다.
 
 ![Security 사용자설정](./images/security-customconfig.png) <br/>
 (Spring-starter-security의 자동 설정을 사용하지 않고 직접 설정할 경우) <br/>
-```
- @Conditional~~ 어노테이션들의 조건을 모두 만족할 경우 SpringBootWebSecurityConfiguration이 자동 설정된다. 만족하지 않을 경우 생성되지 않는다
- @ConditionalOnClass({ EnableWebSecurity.class, AuthenticationEntryPoint.class })
-   - EnableWebSecurity.class, AuthenticationEntryPoint.class가 classpath에 포함되어있어야 한다 (즉, 프로젝트에 포함되어 있어야 함)
- @ConditionalOnMissingBean(WebSecurityConfiguration.class)
-   - WebSecurityConfiguration 타입의 Bean이 없어야만 한다.
-   - 즉, extends WebSecurityConfigurerAdapter 할 경우 자동설정을 사용하지 않게 된다.
-```
 
 ## Banner
 ![SpringBoot의 Banner](./images/banner.png)
@@ -119,10 +120,10 @@
    - dependencies : 해당 bean에 주입된 bean들의 id목록
 
  * /autoconfig
+    - bean을 왜 포함시켰는지, 포함시키지 않았는지를 표기
  ![액추에이터 autoconfig bean 생성 성공](./images/actu-autoconfig-success.png)
  ![액추에이터 autoconfig bean 생성 실패](./images/actu-autoconfig-fail.png)
 
-   - bean을 왜 포함시켰는지, 포함시키지 않았는지를 표기
    - condition
    
    ```
@@ -142,7 +143,7 @@
  ![액추에이터 env 환경변수1](./images/actu-env-1.png)
  ![액추에이터 env 환경변수2](./images/actu-env-2.png)
  
-   - 사용유무와 관계없이, 해당 어플리케이션이 사용할 수 있는 모든 환경 프로퍼티의 목록을 보여준다.
+   - 사용유무와 관계없이, 해당 어플리케이션이 사용할 수 있는 모든 환경 프로퍼티의 목록을 보여준다. <br/>
    - 현재 구동중인 노트북의 환경변수를 포함해서 현재 프로젝트가 applicaton.properties에서 설정한 banner.location까지 포함되어서 노출되는것을 확인할 수 있다.
 
 
