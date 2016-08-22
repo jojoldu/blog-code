@@ -6,10 +6,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @SpringBootApplication
 @Controller
 public class CompareBootApplication {
+
+	@Autowired
+	private ReadingListRepository readingListRepository;
 
 	@Autowired
 	private Service service;
@@ -19,8 +23,14 @@ public class CompareBootApplication {
 	}
 
 	@RequestMapping(value = "/")
-	public String index(Model model){
+	public String index(Reader reader, Model model){
 		model.addAttribute("dice", service.getDiceNumber());
+		model.addAttribute("username", reader.getUsername());
 		return "index";
+	}
+
+	@RequestMapping(value="/", method = RequestMethod.POST)
+	public String login(Reader reader, Book book){
+		return "redirect:/";
 	}
 }

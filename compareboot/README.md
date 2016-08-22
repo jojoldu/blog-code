@@ -43,7 +43,24 @@
    - [링크](http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html)를 가보면 application.properties/application.yml로 어떤것들을 설정할수있는지 나오는데, 보면 Tomcat port부터 시작해서 웹 어플리케이션에 관련된 설정 전부를 다루고 있음을 확인할수 있다. 
 
 ## Security
- 
+ * Spring boot가 대부분의 설정을 자동화하여 준다고 해도 보안(security) 관련 부분은 대부분 개발자가 직접 구현해야 한다
+ * Spring Security가 적용된 간단한 Login 기능 [코드보기](https://github.com/jojoldu/blog-code/commit/d5312d67c6d597cc43d1701653b014f784fdeb4e)
+ * 자동설정 vs 사용자설정 코드
+
+![Security 자동설정 어노테이션](./images/security-autoconfig.png) <br/>
+(Spring-starter-security의 자동 설정 어노테이션)
+
+![Security 사용자설정](./images/security-customconfig.png) <br/>
+(Spring-starter-security의 자동 설정을 사용하지 않고 직접 설정할 경우) <br/>
+```
+ @Conditional~~ 어노테이션들의 조건을 모두 만족할 경우 SpringBootWebSecurityConfiguration이 자동 설정된다. 만족하지 않을 경우 생성되지 않는다
+ @ConditionalOnClass({ EnableWebSecurity.class, AuthenticationEntryPoint.class })
+   - EnableWebSecurity.class, AuthenticationEntryPoint.class가 classpath에 포함되어있어야 한다 (즉, 프로젝트에 포함되어 있어야 함)
+ @ConditionalOnMissingBean(WebSecurityConfiguration.class)
+   - WebSecurityConfiguration 타입의 Bean이 없어야만 한다.
+   - 즉, extends WebSecurityConfigurerAdapter 할 경우 자동설정을 사용하지 않게 된다.
+```
+
 ## Banner
 ![SpringBoot의 Banner](./images/banner.png)
 
