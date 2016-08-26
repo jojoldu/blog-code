@@ -24,15 +24,16 @@
 ### 간단한 배포서버 구축
  * 간편한 설정외에도 부트의 최고장점으로 꼽는것이 단독 어플리케이션만으로 배포가 되도록 하는것이다.
    - 이전까지만 하더라도 서버가 새로 구축되면 해당 서버에 기존 프로젝트와 동일한 버전의 Tomcat을 설치하고, Tomcat의 여러 설정 xml값을 수정하고, maven/gradle같은 build 툴을 설치하는 등 서버 하나 확장하는것이 일이였다.
-   - 하지만 Boot의 경우 JDK 설치하고, java -jar ~~~.jar로 실행시키면 웹서버 구축 끝이다. 이 얼마나 간단한가!
+   - 하지만 Boot의 경우 JDK 설치하고, java -jar ~~~.jar로 실행시키면 웹서버 구축 끝이다. Tomcat에 대한 설정도 application.properties/yml로 하기 때문이다
  * Make jar, Not War
    - Getting Started SpringBoot에서 나오는 대사로 war를 더이상 쓰지말고 jar를 사용하자는 주제가 나온다.
+   - war도 단독으로 실행이 가능하기 때문에 진짜 war말고 jar를 쓰자는 얘기라기 보다는 **단독 파일로 실행이 가능**한 방향으로 배포를 진행하자는 얘기로 보면 된다.
    - 관련 영상은 [여기](https://www.youtube.com/watch?v=sbPSjI4tt10)를 참고 (영어라서 해석이 조금 틀릴수도 있음..)
 
 ### 편리한 의존성 관리
  * 사용하고 싶은 의존성에 대해 호환성을 고려하지 않아도 된다.
-   - SpringFramework 시절엔 Freemarker를 사용하기 위해선 freemarker의 몇 버전과 Spring의 몇 버전이 호환이 되는지, 추가로 어떤 의존성이 필요한지 확인하는 과정이 꼭 필요하였다.
-   - SpringBoot의 의존성 시리즈인 starter의 경우엔 사용하고 싶은 의존성이 freemarker라면 spring-boot-starter-freemarker만 추가하면 그외에 어떤 의존성도 필요없다.
+   - SpringFramework 시절엔 Freemarker를 사용하기 위해선 Freemarker의 몇 버전과 Spring의 몇 버전이 호환이 되는지, 추가로 어떤 의존성이 필요한지 확인하는 과정이 꼭 필요하였다.
+   - SpringBoot의 의존성 시리즈인 starter의 경우엔 사용하고 싶은 의존성이 Freemarker라면 spring-boot-starter-freemarker만 추가하면 그외에 어떤 의존성도 필요없다.
    - starter 시리즈의 의존성이 버전, 추가의존성에 대한 호환성을 모두 보장하기 때문이다.
  * 필요없는 의존성 혹은 교체하고 싶은 의존성이 있다면 제외(exclude)시킬수 있다.
  ![의존성 exclude](./images/gradle-exclude.png)
@@ -62,6 +63,21 @@
 ![Security 사용자설정](./images/security-customconfig.png) <br/>
 (Spring-starter-security의 자동 설정을 사용하지 않고 직접 설정할 경우) <br/>
 
+## Logger
+ * 기본적으로 SpringBoot는 logback(로그백)을 포함하고 있다. 자세한 가이드는 [공식문서](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-logging)를 참고하자.
+ * logback을 완전히 제어하려면 src/main/resources에 logback.xml이 존재하면 된다.
+ * logback.xml이 없을 경우 기본설정이 적용된다.
+   - level : info 
+   - appender : stdout
+
+![Spring boot의 logback 기본설정](./images/logback-xml.png)
+
+(logback.xml도 없고, application.properties/yml도 설정이 하나도 없을 경우 적용될 logback 기본설정)
+ 
+ * application.properties/yml로 logback 설정이 가능하다.
+ * 
+ * logback의 상세한 설명은 [링크](https://sonegy.wordpress.com/category/logback/)를 참고한다
+
 ## Banner
 ![SpringBoot의 Banner](./images/banner.png)
 
@@ -76,7 +92,7 @@
  (열심히 수강중^^)
  
 ## ViewResolver
- * JSP를 제외한 다른 템플릿 엔진의 경우 의존성만 추가하면 추가설정없이 바로 사용이 가능하다
+ * JSP를 제외한 다른 템플릿 엔진의 경우 의존성만 추가하면 다른 설정 없이 바로 사용이 가능하다
    - 사용되는 의존성들은 spring-boot-starter-xxxx 의 이름을 가진다
    - 예를들어 본인이 freemarker를 사용한다면 spring-boot-starter-freemarker, thymeleaf를 사용한다면 spring-boot-starter-tyhmeleaf를 추가하면 된다.
    - 디폴트 설정은 prefix는 src/main/resources/templates 이며, suffix는 해당하는 템플릿의 확장자명이 된다.
