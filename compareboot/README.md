@@ -6,6 +6,7 @@
 	- [간단한 배포서버 구축](#간단한-배포서버-구축)
 	- [편리한 의존성 관리](#편리한-의존성-관리)
 	- [오해](#오해)
+- [Security](#security)
 - [Banner](#banner)
 - [ViewResolver](#viewresolver)
 - [Actuator](#actuator)
@@ -23,15 +24,16 @@
 ### 간단한 배포서버 구축
  * 간편한 설정외에도 부트의 최고장점으로 꼽는것이 단독 어플리케이션만으로 배포가 되도록 하는것이다.
    - 이전까지만 하더라도 서버가 새로 구축되면 해당 서버에 기존 프로젝트와 동일한 버전의 Tomcat을 설치하고, Tomcat의 여러 설정 xml값을 수정하고, maven/gradle같은 build 툴을 설치하는 등 서버 하나 확장하는것이 일이였다.
-   - 하지만 Boot의 경우 JDK 설치하고, java -jar ~~~.jar로 실행시키면 웹서버 구축 끝이다. 이 얼마나 간단한가!
+   - 하지만 Boot의 경우 JDK 설치하고, java -jar ~~~.jar로 실행시키면 웹서버 구축 끝이다. Tomcat에 대한 설정도 application.properties/yml로 하기 때문이다
  * Make jar, Not War
    - Getting Started SpringBoot에서 나오는 대사로 war를 더이상 쓰지말고 jar를 사용하자는 주제가 나온다.
+   - war도 단독으로 실행이 가능하기 때문에 진짜 war말고 jar를 쓰자는 얘기라기 보다는 **단독 파일로 실행이 가능**한 방향으로 배포를 진행하자는 얘기로 보면 된다.
    - 관련 영상은 [여기](https://www.youtube.com/watch?v=sbPSjI4tt10)를 참고 (영어라서 해석이 조금 틀릴수도 있음..)
 
 ### 편리한 의존성 관리
  * 사용하고 싶은 의존성에 대해 호환성을 고려하지 않아도 된다.
-   - SpringFramework 시절엔 Freemarker를 사용하기 위해선 freemarker의 몇 버전과 Spring의 몇 버전이 호환이 되는지, 추가로 어떤 의존성이 필요한지 확인하는 과정이 꼭 필요하였다.
-   - SpringBoot의 의존성 시리즈인 starter의 경우엔 사용하고 싶은 의존성이 freemarker라면 spring-boot-starter-freemarker만 추가하면 그외에 어떤 의존성도 필요없다.
+   - SpringFramework 시절엔 Freemarker를 사용하기 위해선 Freemarker의 몇 버전과 Spring의 몇 버전이 호환이 되는지, 추가로 어떤 의존성이 필요한지 확인하는 과정이 꼭 필요하였다.
+   - SpringBoot의 의존성 시리즈인 starter의 경우엔 사용하고 싶은 의존성이 Freemarker라면 spring-boot-starter-freemarker만 추가하면 그외에 어떤 의존성도 필요없다.
    - starter 시리즈의 의존성이 버전, 추가의존성에 대한 호환성을 모두 보장하기 때문이다.
  * 필요없는 의존성 혹은 교체하고 싶은 의존성이 있다면 제외(exclude)시킬수 있다.
  ![의존성 exclude](./images/gradle-exclude.png)
@@ -44,22 +46,37 @@
 
 ## Security
  * Spring boot가 대부분의 설정을 자동화하여 준다고 해도 보안(security) 관련 부분은 대부분 개발자가 직접 구현해야 한다
+ * spring-starter-security 적용후 추가 설정이 없을 경우 기본 제공되는 자동설정이 적용된다.
  * Spring Security가 적용된 간단한 Login 기능 [코드보기](https://github.com/jojoldu/blog-code/commit/d5312d67c6d597cc43d1701653b014f784fdeb4e)
  * 자동설정 vs 사용자설정 코드
 
 ![Security 자동설정 어노테이션](./images/security-autoconfig.png) <br/>
-(Spring-starter-security의 자동 설정 어노테이션)
+(Spring-starter-security의 자동 설정 어노테이션) <br/>
+
+ * @Conditional~~ 어노테이션들의 조건을 모두 만족할 경우 SpringBootWebSecurityConfiguration이 자동 설정된다. 만족하지 않을 경우 생성되지 않는다
+ * @ConditionalOnClass({ EnableWebSecurity.class, AuthenticationEntryPoint.class })
+   - EnableWebSecurity.class, AuthenticationEntryPoint.class가 classpath에 포함되어있어야 한다 (즉, 프로젝트에 포함되어 있어야 함)
+ * @ConditionalOnMissingBean(WebSecurityConfiguration.class)
+   - WebSecurityConfiguration 타입의 Bean이 없어야만 한다.
+   - 즉, extends WebSecurityConfigurerAdapter 할 경우 자동설정을 사용하지 않게 된다.
 
 ![Security 사용자설정](./images/security-customconfig.png) <br/>
 (Spring-starter-security의 자동 설정을 사용하지 않고 직접 설정할 경우) <br/>
-```
- @Conditional~~ 어노테이션들의 조건을 모두 만족할 경우 SpringBootWebSecurityConfiguration이 자동 설정된다. 만족하지 않을 경우 생성되지 않는다
- @ConditionalOnClass({ EnableWebSecurity.class, AuthenticationEntryPoint.class })
-   - EnableWebSecurity.class, AuthenticationEntryPoint.class가 classpath에 포함되어있어야 한다 (즉, 프로젝트에 포함되어 있어야 함)
- @ConditionalOnMissingBean(WebSecurityConfiguration.class)
-   - WebSecurityConfiguration 타입의 Bean이 없어야만 한다.
-   - 즉, extends WebSecurityConfigurerAdapter 할 경우 자동설정을 사용하지 않게 된다.
-```
+
+## Logger
+ * 기본적으로 SpringBoot는 logback(로그백)을 포함하고 있다. 자세한 가이드는 [공식문서](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-logging)를 참고하자.
+ * logback을 완전히 제어하려면 src/main/resources에 logback.xml이 존재하면 된다.
+ * logback.xml이 없을 경우 기본설정이 적용된다.
+   - level : info 
+   - appender : stdout
+
+![Spring boot의 logback 기본설정](./images/logback-xml.png)
+
+(logback.xml도 없고, application.properties/yml도 설정이 하나도 없을 경우 적용될 logback 기본설정)
+ 
+ * application.properties/yml로 logback 설정이 가능하다.
+ * 
+ * logback의 상세한 설명은 [링크](https://sonegy.wordpress.com/category/logback/)를 참고한다
 
 ## Banner
 ![SpringBoot의 Banner](./images/banner.png)
@@ -75,7 +92,7 @@
  (열심히 수강중^^)
  
 ## ViewResolver
- * JSP를 제외한 다른 템플릿 엔진의 경우 의존성만 추가하면 추가설정없이 바로 사용이 가능하다
+ * JSP를 제외한 다른 템플릿 엔진의 경우 의존성만 추가하면 다른 설정 없이 바로 사용이 가능하다
    - 사용되는 의존성들은 spring-boot-starter-xxxx 의 이름을 가진다
    - 예를들어 본인이 freemarker를 사용한다면 spring-boot-starter-freemarker, thymeleaf를 사용한다면 spring-boot-starter-tyhmeleaf를 추가하면 된다.
    - 디폴트 설정은 prefix는 src/main/resources/templates 이며, suffix는 해당하는 템플릿의 확장자명이 된다.
@@ -119,10 +136,10 @@
    - dependencies : 해당 bean에 주입된 bean들의 id목록
 
  * /autoconfig
+    - bean을 왜 포함시켰는지, 포함시키지 않았는지를 표기
  ![액추에이터 autoconfig bean 생성 성공](./images/actu-autoconfig-success.png)
  ![액추에이터 autoconfig bean 생성 실패](./images/actu-autoconfig-fail.png)
 
-   - bean을 왜 포함시켰는지, 포함시키지 않았는지를 표기
    - condition
    
    ```
@@ -142,7 +159,7 @@
  ![액추에이터 env 환경변수1](./images/actu-env-1.png)
  ![액추에이터 env 환경변수2](./images/actu-env-2.png)
  
-   - 사용유무와 관계없이, 해당 어플리케이션이 사용할 수 있는 모든 환경 프로퍼티의 목록을 보여준다.
+   - 사용유무와 관계없이, 해당 어플리케이션이 사용할 수 있는 모든 환경 프로퍼티의 목록을 보여준다. <br/>
    - 현재 구동중인 노트북의 환경변수를 포함해서 현재 프로젝트가 applicaton.properties에서 설정한 banner.location까지 포함되어서 노출되는것을 확인할 수 있다.
 
 
