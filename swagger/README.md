@@ -46,6 +46,7 @@ public class SwaggerConfig {
 ```
 위 코드는 메소드명이 워낙 잘지어져있어 크게 이해하는데 어려움은 없을것 같다. <br/>
 여기서 ```RequestHandlerSelectors.any()``` 의 경우 any외에도 아래처럼 여러 조건을 사용 할 수가 있으니 상황에 따라 사용하자.
+
 ![RequestHandlerSelectors 메소드](./images/requesthandlerselectors.png)
 
 ```PathSelectors.ant("/api/**") ``` 의 경우 /api/ path를 가진 url들만 공개하겠다는 얘기인데, 모든 url들을 화면에 노출시키고 싶다면 /api를 지우면 된다. <br/>
