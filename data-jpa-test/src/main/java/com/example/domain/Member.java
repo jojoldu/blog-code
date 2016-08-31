@@ -2,7 +2,9 @@ package com.example.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by jojoldu@gmail.com on 2016-08-30.
@@ -25,13 +27,13 @@ public class Member {
             joinColumns=@JoinColumn(name="MEMBER_IDX"),
             inverseJoinColumns=@JoinColumn(name="POST_IDX"))
     @OrderBy("idx DESC")
-    private List<Post> favorites;
+    private Set<Post> favorites;
 
     public Member() {
-        this.favorites = new ArrayList<>();
+        this.favorites = new LinkedHashSet<>();
     }
 
-    public Member(String email, List<Post> favorites) {
+    public Member(String email, Set<Post> favorites) {
         this.email = email;
         this.favorites = favorites;
     }
@@ -56,11 +58,11 @@ public class Member {
         this.email = email;
     }
 
-    public List<Post> getFavorites() {
+    public Set<Post> getFavorites() {
         return favorites;
     }
 
-    public void setFavorites(List<Post> favorites) {
+    public void setFavorites(Set<Post> favorites) {
         this.favorites = favorites;
     }
 }

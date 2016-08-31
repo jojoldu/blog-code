@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -40,13 +41,13 @@ public class DataJpaTest {
         /*
             굳이 객체생성을 @Before 메소드에 포함시키는 이유는 여러 테스트들이 독립적으로 member와 post값을 가지게 하기 위해서이다.
          */
-        member = new Member("jojoldu@gmail.com", new ArrayList<>());
+        member = new Member("jojoldu@gmail.com", new LinkedHashSet<>());
         post = new Post("content", LocalDateTime.now());
     }
 
     @Test
     public void test_Post와Member관계정의() throws Exception {
-        Member member2 = new Member("test@gmail.com", new ArrayList<>());
+        Member member2 = new Member("test@gmail.com", new LinkedHashSet<>());
         Post savedPost = postRepository.save(post);
         member.addPost(savedPost);
         member2.addPost(savedPost);
@@ -54,8 +55,8 @@ public class DataJpaTest {
         Member savedMember = memberRepository.save(member);
         Member savedMember2 = memberRepository.save(member2);
 
-        assertThat(savedMember.getFavorites().get(0).getContent(), is("content")); // 1번 사용자의 1번 포스트가 post인지 확인
-        assertThat(savedMember2.getFavorites().get(0).getContent(), is("content")); // 2번 사용자의 1번 포스트가 post인지 확인
+        assertThat(savedMember.getFavorites().stream().findFirst().orElse(new Post()).getContent(), is("content")); // 1번 사용자의 1번 포스트가 post인지 확인
+        assertThat(savedMember2.getFavorites().stream().findFirst().orElse(new Post()).getContent(), is("content")); // 2번 사용자의 1번 포스트가 post인지 확인
     }
 
     @Test
@@ -66,7 +67,7 @@ public class DataJpaTest {
 
         Member savedMember = memberRepository.save(member);
 
-        assertThat(savedMember.getFavorites().size(), is(1)); // favorites가 List 타입이라 중복없이 받아 동일한 Post 2개가 들어가있는것을 확인할 수 있다.
+        assertThat(savedMember.getFavorites().size(), is(1)); // 2개의 Post를 넣었지만 결국 중복된게 제거되서 1개만 등록된것을 확인할수 있다.
     }
 
 }
