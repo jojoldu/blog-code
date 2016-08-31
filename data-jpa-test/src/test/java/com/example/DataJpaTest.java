@@ -58,4 +58,15 @@ public class DataJpaTest {
         assertThat(savedMember2.getFavorites().get(0).getContent(), is("content")); // 2번 사용자의 1번 포스트가 post인지 확인
     }
 
+    @Test
+    public void test_oneToMany에서Set과List차이() throws Exception {
+        Post savedPost = postRepository.save(post);
+        member.addPost(savedPost);
+        member.addPost(savedPost);
+
+        Member savedMember = memberRepository.save(member);
+
+        assertThat(savedMember.getFavorites().size(), is(1)); // favorites가 List 타입이라 중복없이 받아 동일한 Post 2개가 들어가있는것을 확인할 수 있다.
+    }
+
 }
