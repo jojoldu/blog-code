@@ -42,18 +42,20 @@ public class DataJpaTest {
          */
         member = new Member("jojoldu@gmail.com", new ArrayList<>());
         post = new Post("content", LocalDateTime.now());
-        member.addPost(post);
     }
 
     @Test
-    public void test_ManyToOne없이호출() throws Exception {
+    public void test_Post와Member관계정의() throws Exception {
         Member member2 = new Member("test@gmail.com", new ArrayList<>());
-        member2.addPost(post);
+        Post savedPost = postRepository.save(post);
+        member.addPost(savedPost);
+        member2.addPost(savedPost);
 
-        memberRepository.save(member);
-        memberRepository.save(member2);
+        Member savedMember = memberRepository.save(member);
+        Member savedMember2 = memberRepository.save(member2);
 
-        assertThat(member.getPosts().get(0).getContent(), is("content")); // 1번 사용자의 1번 포스트가 post인지 확인
-        assertThat(member2.getPosts().get(0).getContent(), is("content")); // 2번 사용자의 1번 포스트가 post인지 확인
+        assertThat(savedMember.getFavorites().get(0).getContent(), is("content")); // 1번 사용자의 1번 포스트가 post인지 확인
+        assertThat(savedMember2.getFavorites().get(0).getContent(), is("content")); // 2번 사용자의 1번 포스트가 post인지 확인
     }
+
 }

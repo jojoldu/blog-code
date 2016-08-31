@@ -1,6 +1,7 @@
 package com.example.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,20 +20,24 @@ public class Member {
     @Column
     private String email;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany()
+    @JoinTable(name="MEMBER_POST",
+            joinColumns=@JoinColumn(name="MEMBER_IDX"),
+            inverseJoinColumns=@JoinColumn(name="POST_IDX"))
     @OrderBy("idx DESC")
-    private List<Post> posts;
+    private List<Post> favorites;
 
     public Member() {
+        this.favorites = new ArrayList<>();
     }
 
-    public Member(String email, List<Post> posts) {
+    public Member(String email, List<Post> favorites) {
         this.email = email;
-        this.posts = posts;
+        this.favorites = favorites;
     }
 
     public void addPost(Post post){
-        this.posts.add(post);
+        this.favorites.add(post);
     }
 
     public long getIdx() {
@@ -51,11 +56,11 @@ public class Member {
         this.email = email;
     }
 
-    public List<Post> getPosts() {
-        return posts;
+    public List<Post> getFavorites() {
+        return favorites;
     }
 
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
+    public void setFavorites(List<Post> favorites) {
+        this.favorites = favorites;
     }
 }
