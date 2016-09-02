@@ -2,17 +2,15 @@ package com.example.domain;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Created by jojoldu@gmail.com on 2016-08-28.
+ * Created by jojoldu@gmail.com on 2016-08-30.
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
 
 @Entity
-public class Post {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,17 +22,16 @@ public class Post {
     @Column
     private LocalDateTime updateDate;
 
-    @OneToMany(mappedBy="post", cascade = CascadeType.ALL)
-    private List<Comment> comments;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_comment_post"))
+    private Post post;
 
-    public Post() {
-        this.comments = new ArrayList<>();
+    public Comment() {
     }
 
-    public Post(String content, LocalDateTime updateDate, List<Comment> comments) {
+    public Comment(String content, LocalDateTime updateDate) {
         this.content = content;
         this.updateDate = updateDate;
-        this.comments = comments;
     }
 
     public long getIdx() {
@@ -61,11 +58,11 @@ public class Post {
         this.updateDate = updateDate;
     }
 
-    public List<Comment> getComments() {
-        return comments;
+    public Post getPost() {
+        return post;
     }
 
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
+    public void setPost(Post post) {
+        this.post = post;
     }
 }

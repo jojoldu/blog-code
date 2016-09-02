@@ -1,5 +1,6 @@
 package com.example;
 
+import com.example.domain.Comment;
 import com.example.domain.Member;
 import com.example.domain.Post;
 import com.example.repository.MemberRepository;
@@ -12,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -35,6 +37,7 @@ public class DataJpaTest {
 
     private Member member;
     private Post post;
+    private Comment comment;
 
     @Before
     public void setup() throws Exception {
@@ -42,7 +45,13 @@ public class DataJpaTest {
             굳이 객체생성을 @Before 메소드에 포함시키는 이유는 여러 테스트들이 독립적으로 member와 post값을 가지게 하기 위해서이다.
          */
         member = new Member("jojoldu@gmail.com", new LinkedHashSet<>());
-        post = new Post("content", LocalDateTime.now());
+        post = new Post("content", LocalDateTime.now(), new ArrayList<>());
+        comment = new Comment();
+    }
+
+    @Test
+    public void test_Post와Comment관계정의() throws Exception {
+
     }
 
     @Test
