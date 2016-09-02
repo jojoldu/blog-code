@@ -37,6 +37,10 @@ public class Post {
         this.comments = comments;
     }
 
+    public void addComment(Comment comment){
+        this.comments.add(comment);
+    }
+
     public long getIdx() {
         return idx;
     }

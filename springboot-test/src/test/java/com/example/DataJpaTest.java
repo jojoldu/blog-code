@@ -46,11 +46,17 @@ public class DataJpaTest {
          */
         member = new Member("jojoldu@gmail.com", new LinkedHashSet<>());
         post = new Post("content", LocalDateTime.now(), new ArrayList<>());
-        comment = new Comment();
+        comment = new Comment("댓글", LocalDateTime.now());
     }
 
     @Test
     public void test_Post와Comment관계정의() throws Exception {
+        post.addComment(comment);
+        postRepository.save(post);
+
+        Post savedPost = postRepository.findOne(1L);
+        assertThat(savedPost.getContent(), is("content"));
+        assertThat(savedPost.getComments().get(0).getContent(), is("댓글"));
 
     }
 
