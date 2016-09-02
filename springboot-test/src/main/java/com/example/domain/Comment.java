@@ -26,12 +26,21 @@ public class Comment {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_comment_post"))
     private Post post;
 
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_comment_member"))
+    private Member member;
+
     public Comment() {
     }
 
     public Comment(String content, LocalDateTime updateDate) {
         this.content = content;
         this.updateDate = updateDate;
+    }
+
+    public void setPostAndMember(Post post, Member member) {
+        this.post = post;
+        this.member = member;
     }
 
     public long getIdx() {
@@ -64,5 +73,13 @@ public class Comment {
 
     public void setPost(Post post) {
         this.post = post;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
     }
 }

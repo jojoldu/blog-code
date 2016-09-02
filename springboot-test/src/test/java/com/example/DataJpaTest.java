@@ -3,6 +3,7 @@ package com.example;
 import com.example.domain.Comment;
 import com.example.domain.Member;
 import com.example.domain.Post;
+import com.example.repository.CommentRepository;
 import com.example.repository.MemberRepository;
 import com.example.repository.PostRepository;
 import org.junit.Before;
@@ -35,6 +36,9 @@ public class DataJpaTest {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private CommentRepository commentRepository;
+
     private Member member;
     private Post post;
     private Comment comment;
@@ -44,7 +48,7 @@ public class DataJpaTest {
         /*
             굳이 객체생성을 @Before 메소드에 포함시키는 이유는 여러 테스트들이 독립적으로 member와 post값을 가지게 하기 위해서이다.
          */
-        member = new Member("jojoldu@gmail.com", new LinkedHashSet<>());
+        member = new Member("jojoldu@gmail.com", new ArrayList<>(), new LinkedHashSet<>());
         post = new Post("content", LocalDateTime.now(), new ArrayList<>());
         comment = new Comment("댓글", LocalDateTime.now());
     }
@@ -61,8 +65,28 @@ public class DataJpaTest {
     }
 
     @Test
+    public void test_Member와Comment관계정의() throws Exception {
+        Post savedPost = postRepository.save(post);
+        Member savedMember = memberRepository.save(member);
+
+        savedPost.addComment(comment);
+        savedMember.addComment(comment);
+
+        comment.setPostAndMember(savedPost, savedMember);
+
+        commentRepository.save(comment);
+
+        Post afterPost = postRepository.findOne(1L);
+        Member afterMember = memberRepository.findOne(1L);
+
+        assertThat(afterPost.getComments().get(0).getContent(), is("댓글"));
+        assertThat(afterMember.getComments().get(0).getContent(), is("댓글"));
+        assertThat(commentRepository.findAll().size(), is(1)); // savedPost와 savedMember에 각각 addComment를 했지만 결국 comment는 1개가 들어간것을 확인
+    }
+
+    @Test
     public void test_Post와Member관계정의() throws Exception {
-        Member member2 = new Member("test@gmail.com", new LinkedHashSet<>());
+        Member member2 = new Member("test@gmail.com", new ArrayList<>(), new LinkedHashSet<>());
         Post savedPost = postRepository.save(post);
         member.addPost(savedPost);
         member2.addPost(savedPost);

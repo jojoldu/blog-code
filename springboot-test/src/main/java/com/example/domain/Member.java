@@ -22,6 +22,10 @@ public class Member {
     @Column
     private String email;
 
+    @OneToMany(mappedBy="member", cascade = CascadeType.ALL)
+    @OrderBy("idx DESC")
+    private List<Comment> comments;
+
     @OneToMany()
     @JoinTable(name="MEMBER_POST",
             joinColumns=@JoinColumn(name="MEMBER_IDX"),
@@ -30,12 +34,18 @@ public class Member {
     private Set<Post> favorites;
 
     public Member() {
+        this.comments = new ArrayList<>();
         this.favorites = new LinkedHashSet<>();
     }
 
-    public Member(String email, Set<Post> favorites) {
+    public Member(String email, List<Comment> comments, Set<Post> favorites) {
         this.email = email;
+        this.comments = comments;
         this.favorites = favorites;
+    }
+
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
     }
 
     public void addPost(Post post){
@@ -56,6 +66,14 @@ public class Member {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     public Set<Post> getFavorites() {
