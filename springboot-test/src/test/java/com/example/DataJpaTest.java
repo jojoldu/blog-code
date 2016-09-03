@@ -30,6 +30,7 @@ import static org.junit.Assert.assertThat;
 @org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 public class DataJpaTest {
 
+    //Repository == dao
     @Autowired
     private MemberRepository memberRepository;
 
@@ -55,12 +56,17 @@ public class DataJpaTest {
 
     @Test
     public void test_Post와Comment관계정의() throws Exception {
-        post.addComment(comment);
-        postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+        savedPost.addComment(comment); // 글에 댓글 추가
+        comment.setPost(savedPost); // 댓글에 글 추가
 
-        Post savedPost = postRepository.findOne(1L);
+
+
+        Post firstPost = postRepository.findOne(1L);
+        Comment firstComment = commentRepository.findOne(1L);
+
         assertThat(savedPost.getContent(), is("content"));
-        assertThat(savedPost.getComments().get(0).getContent(), is("댓글"));
+        assertThat(savedPost.getComments().get(0).getContent(), is(firstComment.getContent()));
 
     }
 
@@ -94,8 +100,8 @@ public class DataJpaTest {
         Member savedMember = memberRepository.save(member);
         Member savedMember2 = memberRepository.save(member2);
 
-        assertThat(savedMember.getFavorites().stream().findFirst().orElse(new Post()).getContent(), is("content")); // 1번 사용자의 1번 포스트가 post인지 확인
-        assertThat(savedMember2.getFavorites().stream().findFirst().orElse(new Post()).getContent(), is("content")); // 2번 사용자의 1번 포스트가 post인지 확인
+        assertThat(savedMember.getFavorites().stream().findFirst().orElse(new Post()).getContent(), is("content")); // 1번 사용자의 1번 글이 post인지 확인
+        assertThat(savedMember2.getFavorites().stream().findFirst().orElse(new Post()).getContent(), is("content")); // 2번 사용자의 1번 글이 post인지 확인
     }
 
     @Test
