@@ -234,3 +234,16 @@ public class WebMvcTest {
 }
 
 ```
+
+### 2.1 상황1
+* 호출한 URL의 View를 검증한다.
+* 시작페이지를 구성하기 위해 "/" 를 요청하면 home.ftl을 전달하는지 테스트한다.
+* code
+```
+    @Test
+    public void test_View검증() throws Exception {
+        this.mvc.perform(get("/")) // /로 url 호출
+                .andExpect(status().isOk()) // 위 요청에 따라 결과가 status는 200이며
+                .andExpect(view().name("home"));  // 호출한 view의 이름이 home인지 확인 (확장자는 생략)
+    }
+```

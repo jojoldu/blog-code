@@ -30,4 +30,11 @@ public class WebMvcTest {
                 .andExpect(content().string("Hello World"));  // response body에 "Hello World" 가 있는지 검증
     }
 
+    @Test
+    public void test_View검증() throws Exception {
+        this.mvc.perform(get("/")) // /로 url 호출
+                .andExpect(status().isOk()) // 위 요청에 따라 결과가 status는 200이며
+                .andExpect(view().name("home"));  // 호출한 view의 이름이 home인지 확인 (확장자는 생략)
+    }
+
 }
