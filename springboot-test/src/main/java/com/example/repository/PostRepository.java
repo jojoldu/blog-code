@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
-public interface PostRepository extends JpaRepository<Post, Long>{
+public interface PostRepository<T extends Post> extends JpaRepository<T, Long>{
 }

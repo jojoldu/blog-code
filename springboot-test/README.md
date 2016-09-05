@@ -171,13 +171,36 @@ public class Member {
 ### 1.5 상황5
 * 상속관계 매핑
 * Post가 Job, Tech, Essay 라는 3가지 타입으로 분류되도록 해야한다.
-* 3타입을 하나의 테이블에서 관리하면 데이터가 너무 많아 조회시 성능 저하가 우려되니 테이블을 분리해야 한다.
 * 3타입 모두 가지고 있는 컬럼은 같다. (idx, content, updateDate, comments)
-> JPA의 상속관계중 조인전략을 사용한다.
+* 객체지향적 코드 작성을 위해 각 클래스는 분리하길 원한다.
+> JPA의 상속관계중 단일테이블전략을 사용한다. <br/>
+조인전략의 경우 3타입이 서로 다른 컬럼을 1개이상 가지고 있으며, <br/>
+앞으로 각각 별도로 컬럼이 추가/삭제 될 가능성이 높은 경우에 고려해볼만 하다. <br/>
+하지만 일반적으로 동일한 속성들을 가지고 있는 경우엔 단일 테이블 전략이 더 좋다 <br/>
+조회 속도 역시 불필요한 조인이 없어 더 빠르다.
 
 * Code
 ```
+// Post 클래스
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // 상속관계(단일테이블) 선언
+@DiscriminatorColumn(name="DTYPE") // 하위 엔티티들을 구분하는 컬럼명 (default가 DTYPE라서 생략가능, 정보전달을 위해 명시함)
+public abstract class Post { }
 
+
+// Job 클래스 (Tech, Essay 역시 동일함)
+@Entity
+@DiscriminatorValue("JOB") // DTYPE에 저장될 값
+public class Job extends Post { }
+
+
+// PostRepository 인터페이스
+// 제네릭을 사용하여 하위 인터페이스 타입 보장
+public interface PostRepository<T extends Post> extends JpaRepository<T, Long>{}
+
+
+// JobRepository 인터페이스
+public interface JobRepository extends PostRepository<Job>{}
 ```
 
 

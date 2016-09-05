@@ -12,7 +12,9 @@ import java.util.List;
  */
 
 @Entity
-public class Post {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // 상속관계(단일테이블) 선언
+@DiscriminatorColumn(name="DTYPE") // 하위 엔티티들을 구분하는 컬럼명 (default가 DTYPE라서 생략가능, 정보전달을 위해 명시함)
+public abstract class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -39,6 +41,9 @@ public class Post {
 
     public void addComment(Comment comment){
         this.comments.add(comment);
+        if (comment.getPost() != this) {
+            comment.setPost(this);
+        }
     }
 
     public long getIdx() {
