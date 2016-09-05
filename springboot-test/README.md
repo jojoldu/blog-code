@@ -1,5 +1,5 @@
 # SpringBoot Test 사용하기
-[공식문서](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html) 를 참고하며 기록하는 SpringBoot Test 적용하기
+[공식문서](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html)를 참고하며 기록하는 SpringBoot Test 적용하기
 > TDD를 기반으로 프로젝트를 시작하는 예제 <br/>
 부족함이 많은 예제이다.<br/> 
 TDD로 실전 프로젝트를 해본적이 없어 개인적으로 만들 서비스의 예행연습으로 보고 진행함을 먼저 얘기한다.
@@ -203,6 +203,34 @@ public interface PostRepository<T extends Post> extends JpaRepository<T, Long>{}
 public interface JobRepository extends PostRepository<Job>{}
 ```
 
+1번 스탭을 통해 Repository (Dao) 의 기능테스트가 끝이났으니 Controller 구현 & 테스트를 진행해보자
 
 ## 2. @WebMvcTest
+* DataJpa 어노테이션이 Repository (Dao) 에 대한 테스트라면 WebMvcTest는 Controller을 위한 테스트 어노테이션이다.
+* Scan 대상은 아래와 같다.
+  - @Controller 
+  - @ControllerAdvice
+  - @JsonComponent 
+  - Filter 
+  - WebMvcConfigurer and HandlerMethodArgumentResolver
 
+* MockMvc를 자동으로 지원하고 있어 별도의 HTTP 서버 없이 Controller 테스트를 진행할 수 있다.
+* 사용법 역시 간단하다.
+```
+
+@RunWith(SpringRunner.class)
+@WebMvcTest(HomeController.class)
+public class WebMvcTest {
+
+    @Autowired
+    private MockMvc mvc;
+
+    @Test
+    public void test_샘플() throws Exception {
+        this.mvc.perform(get("/hello").accept(MediaType.TEXT_PLAIN)) // /hello 라는 url로 text/plain 타입을 요청
+                .andExpect(status().isOk()) // 위 요청에 따라 결과가 status는 200이며
+                .andExpect(content().string("Hello World"));  // response body에 "Hello World" 가 있는지 검증
+    }
+}
+
+```
