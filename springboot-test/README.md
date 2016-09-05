@@ -7,8 +7,8 @@ TDD로 실전 프로젝트를 해본적이 없어 개인적으로 만들 서비�
 
 ## 1. @DataJpaTest
 * SpringBoot에서 **JPA만 테스트**할 수 있도록 제공하는 어노테이션
-* 개발의 첫 단계인 Domain 설계 단계에서 불필요한 코드 작성 없이, Entity간의 관계 설정 및 기능 테스트가 가능해졌다.
-  - 예를 들자면 View를 만들거나, Controller를 작성하는 것 등등 **Domain 설계 확인을 위한 코드** 작성이 필요없어졌다.
+* 개발의 첫 단계인 Entity 설계 단계에서 불필요한 코드 작성 없이, Entity간의 관계 설정 및 기능 테스트가 가능해졌다.
+  - 예를 들자면 View를 만들거나, Controller를 작성하는 것 등등 **Entity 설계 확인을 위한 코드** 작성이 필요없어졌다.
 * 사용법은 간단하다.
 ```
 @RunWith(SpringRunner.class) 
@@ -46,27 +46,103 @@ public class DataJpaTest {
 * Post와 Comment간의 관계 설정
 * 하나의 글은 여러개의 댓글을 가질 수도 있고, 없을 수도 있다.
 * 하나의 글을 조회하면 해당하는 댓글이 같이 와야 한다.
-> OneToMany 단방향으로 해결 <br/>
-댓글(Many)은 글(One) 없이 존재할수 없으므로 단방향으로 처리 가능. <br/>
+> ManyToOne(다대일) 양방향으로 해결
 
+* Code (자세한 코드는 생략)
+```
+// Post 클래스
+@Entity
+public class Post {
+
+    @OneToMany(mappedBy="post", cascade = CascadeType.ALL)
+    private List<Comment> comments;
+ }  
+ 
+// Comment 클래스
+@Entity
+public class Comment {
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_comment_post"))
+    private Post post;
+
+```
+
+* OneToMany(일대다) 를 왜 쓰지 않은걸까? 예를 들어 Comment를 수정해야하는일이 생길 경우
+
+```
+
+// OneToMany(일대다) 단방향
+Post post = postRepository.findOne(1L);
+List<Comment> comments = post.getComments();
+Comment comment = comments.get(0); 
+comment.setXXX(); // update
+
+// ManyToOne(다대일) 양방향
+Comment comment = commentRepository.findOne(1L);
+comment.setXXX(); // update
+
+```
+
+* 즉, 일대다 단방향일 경우 '다'에 속해있는 객체 하나를 수정하기 위해선 '일'을 조회하고 '일' 내부에 있는 '다'에서 원하는 객체를 다시 뽑아내야하는 과정이 필요하다.
+* 반변에 다대일 양방향일 경우 수정을 원하는 하위 객체를 바로 수정할 수가 있기 때문에 **다대일 양방향으로 해결하는것을 권장**한다.
 
 ### 1.2 상황2
 * Member와 Comment간의 관계 설정
+* 사용자가 직접 댓글 작성 기능 구현
 * 글이 올라오면, 사용자는 해당 글에 댓글을 남길수 있다.
 * 한명의 사용자는 여러개의 글에 여러개의 댓글을 작성할 수 있다.
-* 사용자가 직접 글을 작성할 수는 없다.
 * 사용자 정보 조회시 해당 사용자가 작성한 댓글을 모두 조회할 수 있어야 한다.
-> OneToMany 양방향으로 해결 <br/>
+> ManyToOne(다대일) 양방향으로 해결 <br/>
 OneToMany의 경우 부모, 자식간에 전부 set을 해줘야하는 불편함이 있다. <br/>
 객체간 연간관계는 양방향이란게 없기 때문인데, 이를 해결하기 위해 단방향 2개(Comment -> Member와 Member -> Comment)를 사용한것이라고 보면 된다.
 
+* Code (자세한 코드는 생략)
+```
+// Member 클래스
+@Entity
+public class Member {
+
+    @OneToMany(mappedBy="member", cascade = CascadeType.ALL)
+    @OrderBy("idx DESC")
+    private List<Comment> comments;
+ }  
+ 
+// Comment 클래스
+@Entity
+public class Comment {
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_comment_member"))
+    private Member member;
+
+```
+
 ### 1.3 상황3
 * Member와 Post간의 관계 설정
+* 사용자별 즐겨찾기 기능 구현
 * 사용자는 0개 혹은 다수의 글를 가질수 있다. 
 * 글은 꼭 사용자가 있어야 하는것은 아니다.
 * 하나의 글은 여러 사용자에 참조 될 수도 있다.
 > JoinTable을 통해 해결 <br/>
-사용자와 글은 선택적(Optional) 참조이므로 joinColumn 으로는 해결할수가 없다.
+사용자와 글은 선택적(Optional) 참조이므로 joinColumn 으로는 해결할 수가 없다. 
+
+* Code (자세한 코드는 생략)
+```
+// Member 클래스
+@Entity
+public class Member {
+
+    @OneToMany()
+    @JoinTable(name="MEMBER_POST",
+            joinColumns=@JoinColumn(name="MEMBER_IDX"),
+            inverseJoinColumns=@JoinColumn(name="POST_IDX"))
+    @OrderBy("idx DESC")
+    private List<Post> favorites;
+ }  
+
+// Post 클래스는 변경 없음
+```
 
 ### 1.4 상황4
 * ORM에서 컬렉션 사용법
@@ -74,6 +150,35 @@ OneToMany의 경우 부모, 자식간에 전부 set을 해줘야하는 불편함
 * 이럴 경우 Member.favorites가 List타입일 경우 중복 제거를 위한 비지니스 로직이 추가되어야 한다.
 * 중복제거를 로직으로 해결하지말고 자료구조로 해결하자
 > Member.favorites를 List에서 Set으로 변경하여 해결  
+
+* Code (자세한 코드는 생략)
+```
+// Member 클래스
+@Entity
+public class Member {
+
+    @OneToMany()
+    @JoinTable(name="MEMBER_POST",
+            joinColumns=@JoinColumn(name="MEMBER_IDX"),
+            inverseJoinColumns=@JoinColumn(name="POST_IDX"))
+    @OrderBy("idx DESC")
+    private Set<Post> favorites;
+ }  
+
+// Post 클래스는 변경 없음
+```
+
+### 1.5 상황5
+* 상속관계 매핑
+* Post가 Job, Tech, Essay 라는 3가지 타입으로 분류되도록 해야한다.
+* 3타입을 하나의 테이블에서 관리하면 데이터가 너무 많아 조회시 성능 저하가 우려되니 테이블을 분리해야 한다.
+* 3타입 모두 가지고 있는 컬럼은 같다. (idx, content, updateDate, comments)
+> JPA의 상속관계중 조인전략을 사용한다.
+
+* Code
+```
+
+```
 
 
 ## 2. @WebMvcTest

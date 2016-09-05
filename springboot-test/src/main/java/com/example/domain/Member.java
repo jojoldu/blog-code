@@ -46,6 +46,9 @@ public class Member {
 
     public void addComment(Comment comment) {
         this.comments.add(comment);
+        if (comment.getMember() != this) {
+            comment.setMember(this);
+        }
     }
 
     public void addPost(Post post){
