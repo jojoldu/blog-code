@@ -137,7 +137,6 @@ public class DataJpaTest {
         assertThat(savedJob.getContent(), is("잡플래닛"));
         assertThat(savedTech.getContent(), is("OKKY"));
         assertThat(savedEssay.getContent(), is("임백준"));
-
     }
 
 }

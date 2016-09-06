@@ -1,4 +1,4 @@
-# SpringBoot Test 사용하기
+# SpringBoot 1.4 Test 사용하기
 [공식문서](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html)를 참고하며 기록하는 SpringBoot Test 적용하기
 > TDD를 기반으로 프로젝트를 시작하는 예제 <br/>
 부족함이 많은 예제이다.<br/> 
@@ -11,8 +11,8 @@ TDD로 실전 프로젝트를 해본적이 없어 개인적으로 만들 서비�
   - 예를 들자면 View를 만들거나, Controller를 작성하는 것 등등 **Entity 설계 확인을 위한 코드** 작성이 필요없어졌다.
 * 사용법은 간단하다.
 ```
-@RunWith(SpringRunner.class) 
-@DataJpaTest 
+@RunWith(SpringRunner.class)  //Junit 테스트 선언
+@DataJpaTest // DataJpaTest 선언
 public class DataJpaTest {
 
     /* 
@@ -65,18 +65,33 @@ public class Comment {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_comment_post"))
     private Post post;
+}
 
+ @Test
+ public void test_Post와Comment관계정의() throws Exception {
+    Post savedPost = postRepository.save(post);
+    savedPost.addComment(comment); // 글에 댓글 추가
+    
+    comment.setPost(savedPost);
+    commentRepository.save(comment); // 댓글에 글 추가
+
+    Post firstPost = postRepository.findOne(1L);
+    Comment firstComment = commentRepository.findOne(1L);
+
+    assertThat(savedPost.getContent(), is("content"));
+    assertThat(savedPost.getComments().get(0).getContent(), is(firstComment.getContent()));
+}
 ```
 
 * OneToMany(일대다) 를 왜 쓰지 않은걸까? 예를 들어 Comment를 수정해야하는일이 생길 경우
 
 ```
-
 // OneToMany(일대다) 단방향
 Post post = postRepository.findOne(1L);
 List<Comment> comments = post.getComments();
 Comment comment = comments.get(0); 
 comment.setXXX(); // update
+
 
 // ManyToOne(다대일) 양방향
 Comment comment = commentRepository.findOne(1L);
@@ -106,7 +121,7 @@ public class Member {
     @OneToMany(mappedBy="member", cascade = CascadeType.ALL)
     @OrderBy("idx DESC")
     private List<Comment> comments;
- }  
+}  
  
 // Comment 클래스
 @Entity
@@ -115,7 +130,28 @@ public class Comment {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_comment_member"))
     private Member member;
+}
 
+// Test 코드
+@Test
+public void test_Member와Comment관계정의() throws Exception {
+    Post savedPost = postRepository.save(post);
+    Member savedMember = memberRepository.save(member);
+
+    savedPost.addComment(comment);
+    savedMember.addComment(comment);
+
+    comment.setPostAndMember(savedPost, savedMember);
+
+    commentRepository.save(comment);
+
+    Post afterPost = postRepository.findOne(1L);
+    Member afterMember = memberRepository.findOne(1L);
+
+    assertThat(afterPost.getComments().get(0).getContent(), is("댓글"));
+    assertThat(afterMember.getComments().get(0).getContent(), is("댓글"));
+    assertThat(commentRepository.findAll().size(), is(1)); // savedPost와 savedMember에 각각 addComment를 했지만 결국 comment는 1개가 들어간것을 확인
+}
 ```
 
 ### 1.3 상황3
@@ -142,6 +178,21 @@ public class Member {
  }  
 
 // Post 클래스는 변경 없음
+
+// Test 코드
+@Test
+public void test_Post와Member관계정의() throws Exception {
+    Member member2 = new Member("test@gmail.com", new ArrayList<>(), new LinkedHashSet<>());
+    Post savedPost = postRepository.save(post);
+    member.addPost(savedPost);
+    member2.addPost(savedPost);
+
+    Member savedMember = memberRepository.save(member);
+    Member savedMember2 = memberRepository.save(member2);
+
+    assertThat(savedMember.getFavorites().stream().findFirst().orElse(new Post()).getContent(), is("content")); // 1번 사용자의 1번 글이 post인지 확인
+    assertThat(savedMember2.getFavorites().stream().findFirst().orElse(new Post()).getContent(), is("content")); // 2번 사용자의 1번 글이 post인지 확인
+}
 ```
 
 ### 1.4 상황4
@@ -166,6 +217,18 @@ public class Member {
  }  
 
 // Post 클래스는 변경 없음
+
+// Test 코드
+@Test
+public void test_oneToMany에서Set과List차이() throws Exception {
+    Post savedPost = postRepository.save(post);
+    member.addPost(savedPost);
+    member.addPost(savedPost);
+
+    Member savedMember = memberRepository.save(member);
+
+    assertThat(savedMember.getFavorites().size(), is(1)); // 2개의 Post를 넣었지만 결국 중복된게 제거되서 1개만 등록된것을 확인할수 있다.
+}
 ```
 
 ### 1.5 상황5
@@ -201,6 +264,23 @@ public interface PostRepository<T extends Post> extends JpaRepository<T, Long>{}
 
 // JobRepository 인터페이스
 public interface JobRepository extends PostRepository<Job>{}
+
+
+// Test 코드
+@Test
+public void test_상속관계() throws Exception {
+    jobRepository.save(new Job("잡플래닛", LocalDateTime.now(), new ArrayList<>()));
+    techRepository.save(new Tech("OKKY", LocalDateTime.now(), new ArrayList<>()));
+    essayRepository.save(new Essay("임백준", LocalDateTime.now(), new ArrayList<>()));
+
+    Job savedJob = jobRepository.findAll().get(0);
+    Tech savedTech = techRepository.findAll().get(0);
+    Essay savedEssay = essayRepository.findAll().get(0);
+
+    assertThat(savedJob.getContent(), is("잡플래닛"));
+    assertThat(savedTech.getContent(), is("OKKY"));
+    assertThat(savedEssay.getContent(), is("임백준"));
+}
 ```
 
 1번 스탭을 통해 Repository (Dao) 의 기능테스트가 끝이났으니 Controller 구현 & 테스트를 진행해보자
@@ -237,7 +317,7 @@ public class WebMvcTest {
 
 ### 2.1 상황1
 * 호출한 URL의 View를 검증한다.
-* 시작페이지를 구성하기 위해 "/" 를 요청하면 home.ftl을 전달하는지 테스트한다.
+* 시작페이지 구성을 위해 "/" 를 요청하면 home.ftl을 전달하는지 테스트한다.
 * code
 ```
     @Test
@@ -246,4 +326,21 @@ public class WebMvcTest {
                 .andExpect(status().isOk()) // 위 요청에 따라 결과가 status는 200이며
                 .andExpect(view().name("home"));  // 호출한 view의 이름이 home인지 확인 (확장자는 생략)
     }
+```
+
+### 2.2 상황2
+* 호출한 URL의 View와 Model 데이터를 검증한다.
+* 아직 Service Layer의 상세스펙은 나온 상태가 아니다.
+* 시작페이지 구성을 위해 "/" 를 요청하면 home.ftl과 Job, Tect, Essay List를 전달하는지 테스트한다.
+* code
+```
+// service의 상세스펙이 나오지 않았으니 인터페이스로 service를 먼저 선언한다.
+public interface PostService {
+
+    List<Job> getJobList();
+    List<Tech> getTechList();
+    List<Essay> getEssayList();
+}
+
+
 ```
