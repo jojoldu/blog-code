@@ -76,4 +76,20 @@ public class WebMvcTest {
                 .andExpect(model().attribute("techs", contains(techs[0]))) // techs model이 "OKKY" 라는 객체를 가지고 있는지 확인
                 .andExpect(model().attribute("essays", is(empty()))); // 빈 Collection인지 확인
     }
+
+    @Test
+    public void test_Job데이터입력하기() throws Exception {
+        mvc.perform(post("/job")
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("content", "많이 와주세요! http://jojoldu.tistory.com"));
+    }
+
+    @Test
+    public void test_Exception체크() throws Exception {
+        given(this.postService.getJob(1))
+                .willReturn(null); // exception 발생을 위해 null 리턴 지정
+
+        mvc.perform(get("/job/1"))
+        .andExpect(status().isNotFound());
+    }
 }

@@ -370,3 +370,19 @@ public interface PostService {
                 .andExpect(model().attribute("essays", is(empty()))); // 빈 Collection인지 확인
     }
 ```
+
+### 2.3 상황3
+* Job 데이터를 입력받는다.
+* 아직 Service Layer의 상세스펙은 나온 상태가 아니다.
+* Job 스펙에 맞춰 content 가 parameter에 포함된다. 
+* code
+```
+
+```
+
+### 2.4 상황4
+* Job 데이터 조회시 데이터가 없을 경우 NotFound Exception을 발생시킨다.
+* code
+```
+
+```
