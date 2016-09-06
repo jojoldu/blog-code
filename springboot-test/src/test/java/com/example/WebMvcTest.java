@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -72,7 +73,7 @@ public class WebMvcTest {
                 .andExpect(view().name("home"))
                 .andExpect(model().attributeExists("jobs")) // model에 "jobs" 라는 key가 존재하는지 확인
                 .andExpect(model().attribute("jobs", IsCollectionWithSize.hasSize(1))) // jobs model의 size가 1인지 확인
-                .andExpect(model().attribute("techs", contains(techs[0]))); // techs model이 "OKKY" 라는 객체를 가지고 있는지 확인
-
+                .andExpect(model().attribute("techs", contains(techs[0]))) // techs model이 "OKKY" 라는 객체를 가지고 있는지 확인
+                .andExpect(model().attribute("essays", is(empty()))); // 빈 Collection인지 확인
     }
 }

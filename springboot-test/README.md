@@ -342,5 +342,27 @@ public interface PostService {
     List<Essay> getEssayList();
 }
 
-
+// 테스트 코드
+    @Test
+    public void test_Model검증및ServiceMocking() throws Exception {
+        Job[] jobs = {new Job("잡플래닛", LocalDateTime.now(), new ArrayList<>())};
+        Tech[] techs = {new Tech("OKKY", LocalDateTime.now(), new ArrayList<>())};
+    
+        given(this.postService.getJobList()) // this.postService.getJobList 메소드를 실행하면
+                .willReturn(Arrays.asList(jobs)); // Arrays.asList(jobs) 를 리턴해줘라.
+    
+        given(this.postService.getTechList())
+                .willReturn(Arrays.asList(techs));
+    
+        given(this.postService.getEssayList())
+                .willReturn(new ArrayList<>());
+    
+        mvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("home"))
+                .andExpect(model().attributeExists("jobs")) // model에 "jobs" 라는 key가 존재하는지 확인
+                .andExpect(model().attribute("jobs", IsCollectionWithSize.hasSize(1))) // jobs model의 size가 1인지 확인
+                .andExpect(model().attribute("techs", contains(techs[0]))) // techs model이 "OKKY" 라는 객체를 가지고 있는지 확인
+                .andExpect(model().attribute("essays", is(empty()))); // 빈 Collection인지 확인
+    }
 ```
