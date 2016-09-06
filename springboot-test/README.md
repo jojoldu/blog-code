@@ -342,7 +342,11 @@ public interface PostService {
     List<Essay> getEssayList();
 }
 
-// 테스트 코드
+    // 테스트 코드
+    
+    @MockBean // postService에 가짜 Bean을 등록
+    private PostService postService;
+    
     @Test
     public void test_Model검증및ServiceMocking() throws Exception {
         Job[] jobs = {new Job("잡플래닛", LocalDateTime.now(), new ArrayList<>())};
