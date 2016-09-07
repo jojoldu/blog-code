@@ -4,6 +4,7 @@ import com.example.controller.HomeController;
 import com.example.domain.post.Essay;
 import com.example.domain.post.Job;
 import com.example.domain.post.Tech;
+import com.example.exception.PostNotFoundException;
 import com.example.service.PostService;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.Test;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
@@ -90,6 +92,13 @@ public class WebMvcTest {
                 .willReturn(null); // exception 발생을 위해 null 리턴 지정
 
         mvc.perform(get("/job/1"))
-        .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
+
+    @Test
+    public void test_ORELSE() throws Exception {
+        Optional<Job> job = null;
+        Optional.ofNullable(job).orElseThrow(()-> new PostNotFoundException(1));
+    }
+
 }

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 /**
  * Created by jojoldu@gmail.com on 2016-09-03.
  * Blog : http://jojoldu.tistory.com
@@ -40,8 +42,9 @@ public class HomeController {
 
     @RequestMapping(value="/job/{idx}")
     public Job getJob(@PathVariable long idx) {
-        return this.postService.getJob(idx)
-                .orElseThrow(() -> new PostNotFoundException(idx)); // null 발생시 Optional을 통해 exception 전달
+        return Optional.ofNullable(this.postService.getJob(idx))
+                .orElseThrow(() -> new PostNotFoundException(idx))
+                .get(); // null 발생시 Optional을 통해 exception 전달
     }
 
 }
