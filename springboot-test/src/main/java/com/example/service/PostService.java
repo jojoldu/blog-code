@@ -19,6 +19,6 @@ public interface PostService {
     List<Tech> getTechList();
     List<Essay> getEssayList();
 
-    Optional<Job> getJob(long idx);
+    Job getJob(long idx);
     boolean addJob(Job job);
 }

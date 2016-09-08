@@ -1,9 +1,10 @@
 # SpringBoot 1.4 Test 사용하기
 [공식문서](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html)를 참고하며 기록하는 SpringBoot Test 적용하기
 > TDD를 기반으로 프로젝트를 시작하는 예제 <br/>
-부족함이 많은 예제이다.<br/> 
+1. 테스트 코드를 통해 Entity와 Dao 구현 <br/>
+2. 테스트 코드를 통해 Controller 구현 <br/> 
+3. 테스트 코드를 통해 Oauth 인증 구현 <br/>
 TDD로 실전 프로젝트를 해본적이 없어 개인적으로 만들 서비스의 예행연습으로 보고 진행함을 먼저 얘기한다.
-
 
 ## 1. @DataJpaTest
 * SpringBoot에서 **JPA만 테스트**할 수 있도록 제공하는 어노테이션
@@ -108,9 +109,8 @@ comment.setXXX(); // update
 * 글이 올라오면, 사용자는 해당 글에 댓글을 남길수 있다.
 * 한명의 사용자는 여러개의 글에 여러개의 댓글을 작성할 수 있다.
 * 사용자 정보 조회시 해당 사용자가 작성한 댓글을 모두 조회할 수 있어야 한다.
-> ManyToOne(다대일) 양방향으로 해결 <br/>
-OneToMany의 경우 부모, 자식간에 전부 set을 해줘야하는 불편함이 있다. <br/>
-객체간 연간관계는 양방향이란게 없기 때문인데, 이를 해결하기 위해 단방향 2개(Comment -> Member와 Member -> Comment)를 사용한것이라고 보면 된다.
+> 상황 1.1과 동일한 ManyToOne(다대일) 양방향으로 해결 <br/>
+객체간 연간관계는 **양방향이란게 없기 때문**에, 이를 해결하기 위해 단방향 2개(Comment -> Member와 Member -> Comment)를 사용한것이라고 보면 된다.
 
 * Code (자세한 코드는 생략)
 ```
@@ -199,7 +199,7 @@ public void test_Post와Member관계정의() throws Exception {
 * ORM에서 컬렉션 사용법
 * 사용자는 중복된 글을 가질수 없다. 여러개의 글을 가질순 없지만 고유하게 하나씩 있어야만 한다.
 * 이럴 경우 Member.favorites가 List타입일 경우 중복 제거를 위한 비지니스 로직이 추가되어야 한다.
-* 중복제거를 로직으로 해결하지말고 자료구조로 해결하자
+* 중복제거를 로직으로 해결하지말고 **자료구조로 해결**하자
 > Member.favorites를 List에서 Set으로 변경하여 해결  
 
 * Code (자세한 코드는 생략)
@@ -237,10 +237,9 @@ public void test_oneToMany에서Set과List차이() throws Exception {
 * 3타입 모두 가지고 있는 컬럼은 같다. (idx, content, updateDate, comments)
 * 객체지향적 코드 작성을 위해 각 클래스는 분리하길 원한다.
 > JPA의 상속관계중 단일테이블전략을 사용한다. <br/>
-조인전략의 경우 3타입이 서로 다른 컬럼을 1개이상 가지고 있으며, <br/>
-앞으로 각각 별도로 컬럼이 추가/삭제 될 가능성이 높은 경우에 고려해볼만 하다. <br/>
+조인전략의 경우 3타입이 서로 다른 컬럼을 1개이상 가지고 있으며, 차후 별도로 컬럼이 추가/삭제 될 가능성이 높은 경우에 고려해볼만 하다. <br/>
 하지만 일반적으로 동일한 속성들을 가지고 있는 경우엔 단일 테이블 전략이 더 좋다 <br/>
-조회 속도 역시 불필요한 조인이 없어 더 빠르다.
+조회 속도 역시 불필요한 조인이 없어 일반적으로 더 빠르다.
 
 * Code
 ```
@@ -382,7 +381,33 @@ public interface PostService {
 
 ### 2.4 상황4
 * Job 데이터 조회시 데이터가 없을 경우 NotFound Exception을 발생시킨다.
+* NotFoundExcption은 Job/Tech/Essay 만을 나타낼수 있도록, PostNotFoundException 이라는 새로운 Exception으로 처리한다.
 * code
 ```
+// PostNotFound Exception
+@ResponseStatus(HttpStatus.NOT_FOUND) // 404 NOT_FOUND status
+public class PostNotFoundException extends RuntimeException{ // 직접 생성한 Exception
+
+    public PostNotFoundException(long idx) {
+        super("could not find post '" + idx + "'.");
+    }
+}
+
+    // Controller의 메소드
+    @RequestMapping(value="/job/{idx}")
+    public Job getJob(@PathVariable long idx) {
+        return Optional.ofNullable(this.postService.getJob(idx))
+                .orElseThrow(() -> new PostNotFoundException(idx)); // this.postService.getJob(idx)가 null일 경우 PostNotFoundException 발생
+    }
+    
+    //테스트 코드
+    @Test
+    public void test_Exception체크() throws Exception {
+        given(this.postService.getJob(1)) // getJob 메소드에 인자값 1이 입력될 경우
+                .willReturn(null); // exception 발생을 위해 null 리턴
+
+        mvc.perform(get("/job/1")) // /job/1 을 호출할 경우
+                .andExpect(status().isNotFound()); // not found exception이 나오는지 아닌지 테스트
+    }    
 
 ```

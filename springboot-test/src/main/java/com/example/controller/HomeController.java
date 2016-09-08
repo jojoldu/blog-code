@@ -43,8 +43,7 @@ public class HomeController {
     @RequestMapping(value="/job/{idx}")
     public Job getJob(@PathVariable long idx) {
         return Optional.ofNullable(this.postService.getJob(idx))
-                .orElseThrow(() -> new PostNotFoundException(idx))
-                .get(); // null 발생시 Optional을 통해 exception 전달
+                .orElseThrow(() -> new PostNotFoundException(idx)); // this.postService.getJob(idx)가 null일 경우 PostNotFoundException 발생
     }
 
 }

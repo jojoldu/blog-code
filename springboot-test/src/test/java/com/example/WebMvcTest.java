@@ -88,11 +88,11 @@ public class WebMvcTest {
 
     @Test
     public void test_Exception체크() throws Exception {
-        given(this.postService.getJob(1))
-                .willReturn(null); // exception 발생을 위해 null 리턴 지정
+        given(this.postService.getJob(1)) // getJob 메소드에 인자값 1이 입력될 경우
+                .willReturn(null); // exception 발생을 위해 null 리턴
 
-        mvc.perform(get("/job/1"))
-                .andExpect(status().isNotFound());
+        mvc.perform(get("/job/1")) // /job/1 을 호출할 경우
+                .andExpect(status().isNotFound()); // not found exception이 나오는지 아닌지 테스트
     }
 
     @Test
