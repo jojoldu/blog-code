@@ -1,12 +1,13 @@
 package com.example;
 
 import com.example.controller.HomeController;
-import com.example.domain.post.Essay;
 import com.example.domain.post.Job;
 import com.example.domain.post.Tech;
 import com.example.exception.PostNotFoundException;
 import com.example.service.PostService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.collection.IsCollectionWithSize;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,18 +15,19 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.mockito.BDDMockito.*;
 /**
  * Created by jojoldu@gmail.com on 2016-09-03.
  * Blog : http://jojoldu.tistory.com
@@ -37,7 +39,7 @@ import static org.mockito.BDDMockito.*;
 public class WebMvcTest {
 
     @Autowired
-    private MockMvc mvc;
+    private MockMvc mvc; // Test를 위한 SpringMVC 엔진을 탑제한 가짜(Mock) MVC객체
 
     @Test
     public void test_샘플() throws Exception {
@@ -82,8 +84,24 @@ public class WebMvcTest {
     @Test
     public void test_Job데이터입력하기() throws Exception {
         mvc.perform(post("/job")
-        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .param("content", "많이 와주세요! http://jojoldu.tistory.com"));
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("content", "많이 와주세요! http://jojoldu.tistory.com"))
+                .andExpect(status().is3xxRedirection()) // 302 redirection이 발생했는지 확인
+                .andExpect(header().string("Location", "/")) // location이 "/" 인지 확인
+                .andDo(MockMvcResultHandlers.print()); // test 응답 결과에 대한 모든 내용 출력
+    }
+
+    @Test
+    public void test_Json결과비교하기() throws Exception {
+        Job job = new Job("많이 와주세요! http://jojoldu.tistory.com", LocalDateTime.now(), new ArrayList<>());
+
+        given(this.postService.getJob(1))
+                .willReturn(job);
+
+        mvc.perform(get("/job/1").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value("많이 와주세요! http://jojoldu.tistory.com"))
+                .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
@@ -96,9 +114,8 @@ public class WebMvcTest {
     }
 
     @Test
-    public void test_ORELSE() throws Exception {
-        Optional<Job> job = null;
-        Optional.ofNullable(job).orElseThrow(()-> new PostNotFoundException(1));
+    public void test_orElseThrow() throws Exception {
+        Optional.ofNullable(null).orElseThrow(()-> new PostNotFoundException(1));
     }
 
 }

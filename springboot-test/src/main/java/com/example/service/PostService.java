@@ -5,7 +5,6 @@ import com.example.domain.post.Job;
 import com.example.domain.post.Tech;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by jojoldu@gmail.com on 2016-09-03.
@@ -20,5 +19,8 @@ public interface PostService {
     List<Essay> getEssayList();
 
     Job getJob(long idx);
-    boolean addJob(Job job);
+    void addJob(Job job);
+
+    Tech getTech(long idx);
+    void addTech(Tech tech);
 }

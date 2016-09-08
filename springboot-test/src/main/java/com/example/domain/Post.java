@@ -30,6 +30,7 @@ public abstract class Post {
     private List<Comment> comments;
 
     public Post() {
+        this.updateDate = LocalDateTime.now(); // Controller에 데이터 바인딩 될때 자동으로 현재시간이 저장된다.
         this.comments = new ArrayList<>();
     }
 

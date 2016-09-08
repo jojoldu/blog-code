@@ -296,7 +296,6 @@ public void test_상속관계() throws Exception {
 * MockMvc를 자동으로 지원하고 있어 별도의 HTTP 서버 없이 Controller 테스트를 진행할 수 있다.
 * 사용법 역시 간단하다.
 ```
-
 @RunWith(SpringRunner.class)
 @WebMvcTest(HomeController.class)
 public class WebMvcTest {
@@ -311,7 +310,6 @@ public class WebMvcTest {
                 .andExpect(content().string("Hello World"));  // response body에 "Hello World" 가 있는지 검증
     }
 }
-
 ```
 
 ### 2.1 상황1
@@ -371,15 +369,66 @@ public interface PostService {
 ```
 
 ### 2.3 상황3
-* Job 데이터를 입력받는다.
-* 아직 Service Layer의 상세스펙은 나온 상태가 아니다.
-* Job 스펙에 맞춰 content 가 parameter에 포함된다. 
+* Job 데이터를 입력받고 "/" 로 redirect 시킨다.
+* 아직 Service Layer의 상세스펙은 나온 상태가 아니므로 reqeust, response 결과가 정상적인지만 확인한다.
+* Job 스펙에 맞춰 content가 parameter에 포함된다. 
 * code
 ```
+    // controller 코드
+    @RequestMapping(value = "/job", method = RequestMethod.POST)
+    public String addJob(Job job) {
+        postService.addJob(job);
+        return "redirect:/";
+    }
+
+    // test 코드
+    @Test
+    public void test_Job데이터입력하기() throws Exception {
+        mvc.perform(post("/job")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("content", "많이 와주세요! http://jojoldu.tistory.com"))
+                .andExpect(status().is3xxRedirection()) // 302 redirection이 발생했는지 확인
+                .andExpect(header().string("Location", "/")) // location이 "/" 인지 확인
+                .andDo(MockMvcResultHandlers.print()); // test 응답 결과에 대한 모든 내용 출력
+    }    
 
 ```
 
+* .param() 외에도 **.header(), cookie(), sessionAttr()** 등의 메소드들이 지원되니 꼭 사용해보길 바란다!
+
 ### 2.4 상황4
+* @ResponseBody를 통해 Json 데이터를 리턴시킨다.
+* Ajax 요청에 대응하기 위해 getJob 메소드는 Job 객체의 Json 형태를 리턴시킨다.
+* 정상적으로 저장되었는지 확인할 수 있어야 한다.
+* code
+```
+    // Controller 코드
+    @RequestMapping(value="/job/{idx}")
+    @ResponseBody
+    public Job getJob(@PathVariable long idx) {
+        return this.postService.getJob(idx);
+    }
+        
+    // test 코드
+    @Test
+    public void test_Json결과비교하기() throws Exception {
+        Job job = new Job("많이 와주세요! http://jojoldu.tistory.com", LocalDateTime.now(), new ArrayList<>());
+
+        given(this.postService.getJob(1)) // getJob 메소드에 인자값 1이 입력될 경우
+                .willReturn(job); // job 객체를 리턴한다. 이럴경우 service 구현체가 없어도 테스트가 가능하다.
+
+        mvc.perform(get("/job/1").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value("많이 와주세요! http://jojoldu.tistory.com")) // json 데이터중 content 속성의 값을 비교한다.
+                .andDo(MockMvcResultHandlers.print());
+    }
+```
+
+* 일반적으로 Json 데이터를 테스트 코드상에서 비교하려면 Json 전체 데이터가 필요한데, update date같이 날짜가 있는 경우엔 전체 데이터 비교가 힘들다. 때문에 Json 데이터 중 일부의 데이터만 비교하는것이 좋다.
+* $.content 코드는 일반적으로 **jsonPath** 라는 문법으로 불린다. jsonPath를 사용하여 content 값만 비교하였다.
+* 자세한 사용법은 [링크](http://goessner.net/articles/JsonPath/)를 참고한다.
+
+### 2.5 상황5
 * Job 데이터 조회시 데이터가 없을 경우 NotFound Exception을 발생시킨다.
 * NotFoundExcption은 Job/Tech/Essay 만을 나타낼수 있도록, PostNotFoundException 이라는 새로운 Exception으로 처리한다.
 * code
