@@ -460,3 +460,8 @@ public class PostNotFoundException extends RuntimeException{ // 직접 생성한
     }    
 
 ```
+
+Controller와 Repository (Dao)의 테스트가 끝이 났다. 위 방삭을 이용하면 기본적인 테스트 코드는 작성가능하다고 생각한다. <br/>
+다음으로 기본적인 보안 테스트 코드를 작성해보겠다. 
+
+## SpringSecurity 테스트하기
