@@ -464,4 +464,7 @@ public class PostNotFoundException extends RuntimeException{ // 직접 생성한
 Controller와 Repository (Dao)의 테스트가 끝이 났다. 위 방삭을 이용하면 기본적인 테스트 코드는 작성가능하다고 생각한다. <br/>
 다음으로 기본적인 보안 테스트 코드를 작성해보겠다. 
 
-## SpringSecurity 테스트하기
+## 3. SpringSecurity 테스트하기
+저번 시간에 이어 이번엔 SpringSecurity의 인증 과정을 테스트하려고 한다.
+[참고](http://docs.spring.io/spring-security/site/docs/4.1.3.RELEASE/reference/htmlsingle/#test-method-setup)
+### 3.1 
