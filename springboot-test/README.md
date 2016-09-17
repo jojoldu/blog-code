@@ -467,4 +467,9 @@ Controller와 Repository (Dao)의 테스트가 끝이 났다. 위 방삭을 이�
 ## 3. SpringSecurity 테스트하기
 저번 시간에 이어 이번엔 SpringSecurity의 인증 과정을 테스트하려고 한다.
 [참고](http://docs.spring.io/spring-security/site/docs/4.1.3.RELEASE/reference/htmlsingle/#test-method-setup)
-### 3.1 
+
+### 3.1 Spring Security 소개
+보안에 대한 문제는 Application 코드에서 직접 구현을 해도 되지만, 그것보다는 분리해서 생각하는 것이 낫다. 
+<br/>
+즉, 보안이라는 관점(Aspect)으로 봐야한다. 
+### 3.2 
