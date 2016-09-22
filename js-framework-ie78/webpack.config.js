@@ -19,7 +19,7 @@ module.exports = {
             "./node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js",
             "./node_modules/requirejs/require.js",
             "./node_modules/handlebars/dist/handlebars.runtime.min.js",
-            "./node_modules/json2/lib/JSON2.js"
+            "./node_modules/json2/lib/JSON2/static/json2.js"
         ],
         service: glob.sync("./src/main/resources/static/js/**/*.js")
     },
