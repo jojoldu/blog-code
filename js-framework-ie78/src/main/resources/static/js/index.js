@@ -5,5 +5,6 @@
  */
 
 $(function() {
-   alert('hello');
+   var sum = util.add(1+2);
+   alert(sum);
 });
