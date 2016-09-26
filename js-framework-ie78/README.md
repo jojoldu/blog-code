@@ -6,26 +6,31 @@ Angular나 React + @ 조합같은 경우 정말 매력적인 JS 프레임워크�
 
 하지만 우리도 JS Framework를 쓰고싶다! 모던하게 개발해보고 싶다! jquery만 사용하고 싶지 않다! <br/>
 이런 분들이 꽤 계실것 같아 이런 환경에서 개발할 수 있는 방법을 소개하려 한다. <br/>
-솔직히 말하자면 본인의 회사가 IE9부터 지원한다면 뒤로가기 버튼을 살포시 누르면 된다 <br/>
-
-우리 회사 같은 경우 공식적으로 웹 서비스는 전부 IE7까지 지원하기로 되어있다. <br/>
-그래서 다음 신규 서비스가 혹시나 시작된다면 이렇게 프로젝트 구조를 잡아야지 라는 생각으로 기록하는 것이니 나와 비슷한 입장의 분들이라면 도움이 될 것 같다.
+본인의 회사가 IE9부터 지원한다면 뒤로가기 버튼을 살포시 누르면 된다 <br/>
 
 전체적인 방향은 이렇다. **서버단 작업을 최신**으로 하자는 것이다. <br/>
 
-## 사용할 JS 프레임워크
+### 사용할 JS 프레임워크
 * [backbone](http://backbonejs.org/)
+  - Javascript를 MV* 구조로 개발할 수 있게 지원하는 프레임워크
   - [backbone.js 사용시 주의사항](http://huns.me/development/1212)
 
 * jquery
-  - 1.x 버전을 사용할 예정
-  - webpack으로 의존성 교체 (backbone이 jquery 2,x버전을 의존하고 있어 이를 교체할 예정)
   
 * underscore
-  - javascript를 함수형으로 프로그래밍 할 수 있게 지원하는 라이브러리
-  - backbone이 기본적으로 의존하고 있음
-  - 업그레이드 버전인 lodash를 사용하려했으나 lodash가 ie7/8에 버그가 많아 포기
+  - Javascript를 함수형으로 사용할 수 있게 지원
+  - map, filter 등과 같은 기능들이 포함되어 있음
   
-* handlebars
+* require
 
-* webpack
+* handlebars
+  - client-side template engine
+  - 서버 통신 없이 화면을 다시 그려야할 경우 사용
+  
+* grunt
+
+개발 진행
+----------
+### Grunt 진행
+
+
