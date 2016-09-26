@@ -33,6 +33,10 @@
     "requirejs": "^2.3.2"
   },
   "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-uglify": "^2.0.0",
     "webpack": "^1.13.2"
   }
 }
