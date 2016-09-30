@@ -1,5 +1,6 @@
 
-# 스프링부트의 깨알같은 팁 시리즈
+스프링부트의 깨알같은 팁 시리즈
+-----------------------------------
 
 - [소개](#소개)
 	- [간편한 설정](#간편한-설정)
@@ -7,6 +8,7 @@
 	- [편리한 의존성 관리](#편리한-의존성-관리)
 	- [오해](#오해)
 - [Security](#security)
+- [Test](#test)
 - [Banner](#banner)
 - [ViewResolver](#viewresolver)
 - [Actuator](#actuator)
@@ -62,6 +64,10 @@
 
 ![Security 사용자설정](./images/security-customconfig.png) <br/>
 (Spring-starter-security의 자동 설정을 사용하지 않고 직접 설정할 경우) <br/>
+
+## Test
+ * SpringBoot에 들어서며 테스트 코드 작성이 대폭 심플해졌는데 1.4.0 들어서며 더더욱 간편해졌다.
+ * 내용 자체가 많아 이는 [별도의 포스트](http://jojoldu.tistory.com/33)에서 정리했다. 
 
 ## Logger
  * 기본적으로 SpringBoot는 logback(로그백)을 포함하고 있다. 자세한 가이드는 [공식문서](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-logging)를 참고하자.
