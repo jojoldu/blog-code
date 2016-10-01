@@ -15,37 +15,48 @@ module.exports = function(grunt) {
             'src/main/resources/static/build/*',
             'src/main/resources/static/js/templates.js'
         ],
-        //uglify 설정
-        uglify: {
-            options: {
-                banner: '/* <%= grunt.template.today("yyyy-mm-dd") %> / ' //파일의 맨처음 붙는 banner 설정
-            },
-            build: {
-                src: 'public/build/result.js', //uglify할 대상 설정
-                dest: 'public/build/result.min.js' //uglify 결과 파일 설정
-            }
-        },
         //concat 설정
         concat: {
+            // 외부 라이브러리 통합
             lib : {
                 src : [ //concat 타겟 설정(앞에서부터 순서대로 합쳐진다.)
+                    'node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js', // IE 하위버전 호환을 위해 jquery는 1.x 버전을 사용
                     'node_modules/backbone/backbone-min.js',
                     'node_modules/backbone/node_modules/underscore-min.js',
-                    'node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js', // IE 하위버전 호환을 위해 jquery는 1.x 버전을 사용
                     'node_modules/json2/lib/JSON2/static/json2.js',
                     'node_modules/handlebars/dist/handlebars.min.js',
                     'node_modules/requirejs/require.js'
                 ],
-                dest : 'src/main/resources/static/build/lib.js' //concat 결과 파일
+                dest : 'src/main/resources/static/build/js/lib.js' //concat 결과 파일
+            },
+            //직접 작성한 javascript 통합
+            service : {
+                src : 'src/main/resources/static/js/*',
+                dest : 'src/main/resources/static/build/js/service.js'
+            }
+        },
+        //uglify 설정
+        uglify: {
+            options: {
+                sourceMap: true
+            },
+            build: {
+                files: [{
+                    expand : true,
+                    cwd: 'src/main/resources/static/build/js', // parent 폴더 지정
+                    src: ['**/*.js', '!*.min.js'], // parent 폴더 아래에 있는 모든 js 확장자 파일들을 선택하되, .min.js는 제외
+                    dest: 'src/main/resources/static/build/js/', // uglify 결과를 저장할 폴더 지정
+                    ext: '.min.js' // uglify 결과로 나온 js파일들에 붙일 확장자명
+                }]
             }
         }
     });
 
-    // Load the plugin that provides the "uglify", "concat" tasks.
+    // 플러그인 load
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
-
-    // Default task(s).
-    grunt.registerTask('default', ['clean', 'concat', 'uglify']); //grunt 명령어로 실행할 작업
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    
+    // Default task(s) : 즉, grunt 명령어로 실행할 작업
+    grunt.registerTask('default', ['clean', 'concat', 'uglify']);
 };

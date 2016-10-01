@@ -10,11 +10,10 @@ React/Angular/ES2015 에 대해 **회사에서는 못쓰지만 이직을 위해*
 그래서 최대한 이런 환경에서 모던하게 개발할 수 있는 방법을 소개하려 한다. <br/>
 본인의 회사가 IE9부터 지원한다면 뒤로가기 버튼을 살포시 누르면 된다 <br/>
 
-전체적인 방향은 이렇다. **서버단 작업을 최신**으로 하자는 것이다. <br/>
-
-### 사용할 JS 프레임워크
+### 사용할 JS
 * nodejs
   - 4.5.0 LTS 버전 사용 예정 (2016.09.20 기준)
+  - grunt를 사용하기 위해 먼저 설치되어 있어야함
   - Javascript 패키지 관리를 bower가 아닌 npm 으로 관리하기 위해 사용
   - bower는 버그가 좀 있다. 웬만하면 npm으로 패키지 관리를 추천
   
@@ -38,7 +37,7 @@ React/Angular/ES2015 에 대해 **회사에서는 못쓰지만 이직을 위해*
 * handlebars
   - client-side template engine
   - 서버 통신 없이 화면을 다시 그려야할 경우 사용
-  - 부끄럽지만.. handlebars.js에 대한 예제는 [내 블로그](http://jojoldu.tistory.com/23) 내용이 꽤 반응이 좋아서.. 추천! 
+  - 부끄럽지만.. handlebars.js에 대한 예제는 [내 블로그](http://jojoldu.tistory.com/23) 내용이 반응이 꽤 좋아서.. 추천! 
 
 * grunt
   - Javascript build 및 task 관리
@@ -52,8 +51,8 @@ React/Angular/ES2015 에 대해 **회사에서는 못쓰지만 이직을 위해*
 ![gruntfile](./images/gruntFile.png)
 
 GruntFile 생성후에는 grunt 명령어를 실행시킬수 있도록 grunt를 Global로 설치하자 <br/>
-현재 프로젝트 폴더로 이동후 터미널 혹은 CMD를 열어 <br/>
 ```
+현재 프로젝트 폴더로 이동후 터미널 혹은 CMD를 열어
 npm install -g grunt
 ```
 
@@ -67,4 +66,5 @@ grunt
 
 ![grunt실행후](./images/gruntAfter.png)
 
-방금한것이 GruntFile.js를 기반으로하여 grunt를 실행시킨 것이다. <br/>
+방금한것이 GruntFile.js를 기반으로하여 grunt task를 실행시킨 것이다. <br/>
+(확실히 느낀건 webpack 쓰는게 좋다 build 개 오래 걸리네...)
