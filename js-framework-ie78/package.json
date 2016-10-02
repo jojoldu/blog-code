@@ -16,7 +16,8 @@
     "handlebar",
     "underscore",
     "require",
-    "ie78"
+    "ie78",
+    "spring boot"
   ],
   "author": "jojoldu@gmail.com",
   "license": "MIT",
