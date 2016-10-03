@@ -3,8 +3,10 @@
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
-
-$(function() {
-   var sum = util.add(1+2);
-   alert(sum);
+require(['/build/js/utils.js'],
+function(Utils){
+   $(function() {
+      var sum = Utils.add(1+2);
+      alert(sum);
+   });
 });
