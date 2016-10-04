@@ -25,18 +25,23 @@ module.exports = function(grunt) {
                 //concat 타겟 설정(앞에서부터 순서대로 합쳐진다.)
                 src : [ 
                     // IE 하위버전 호환을 위해 jquery는 1.x 버전을 사용
-                    'node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js', 
                     'node_modules/backbone/backbone-min.js',
                     'node_modules/backbone/node_modules/underscore-min.js',
                     'node_modules/json2/lib/JSON2/static/json2.js',
                     'node_modules/requirejs/require.js'
                 ],
-                dest : 'src/main/resources/static/build/js/lib.js' //concat 결과 파일
+                dest : 'src/main/resources/static/build/js/lib.min.js' //concat 결과 파일
             },
             //직접 작성한 javascript 통합
             service : {
                 src : 'src/main/resources/static/js/*',
                 dest : 'src/main/resources/static/build/js/service.js'
+            }
+        },
+        copy : {
+            jquery : {
+                src : 'node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js',
+                dest : 'src/main/resources/static/build/js/jquery.min.js'
             }
         },
         /*
@@ -55,7 +60,7 @@ module.exports = function(grunt) {
                     cwd: 'src/main/resources/static/build/js', 
 
                     // parent 폴더 아래에 있는 모든 js 확장자 파일들을 선택하되, lib.js는 제외
-                    src: ['**/*.js', '!lib.js'], 
+                    src: ['**/*.js', '!*.min.js'],
 
                     // uglify 결과를 저장할 폴더 지정
                     dest: 'src/main/resources/static/build/js/', 
@@ -70,8 +75,9 @@ module.exports = function(grunt) {
     // 플러그인 load
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     
     // Default task(s) : 즉, grunt 명령어로 실행할 작업
-    grunt.registerTask('default', ['clean', 'concat', 'uglify']);
+    grunt.registerTask('default', ['clean', 'concat', 'copy', 'uglify']);
 };
