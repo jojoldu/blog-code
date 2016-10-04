@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DataJpaTestApplication {
+public class SpringBootTestApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DataJpaTestApplication.class, args);
+		SpringApplication.run(SpringBootTestApplication.class, args);
 	}
 }

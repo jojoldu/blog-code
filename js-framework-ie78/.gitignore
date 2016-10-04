@@ -1,0 +1,11 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Example user template template
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+/build
+/classes
+node_modules
+/src/main/resources/static/build
