@@ -25,8 +25,8 @@ module.exports = function(grunt) {
                 //concat 타겟 설정(앞에서부터 순서대로 합쳐진다.)
                 src : [ 
                     // IE 하위버전 호환을 위해 jquery는 1.x 버전을 사용
-                    'node_modules/backbone/backbone-min.js',
                     'node_modules/backbone/node_modules/underscore-min.js',
+                    'node_modules/backbone/backbone-min.js',
                     'node_modules/json2/lib/JSON2/static/json2.js',
                     'node_modules/requirejs/require.js'
                 ],
