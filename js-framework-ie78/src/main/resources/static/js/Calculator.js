@@ -3,7 +3,7 @@
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
-var util = {
+var Calculator = {
   add : function(a,b){
       return a+b;
   }

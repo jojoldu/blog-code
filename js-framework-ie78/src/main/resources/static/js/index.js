@@ -3,10 +3,9 @@
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
-require(['/build/js/utils.js'],
-function(Utils){
-   $(function() {
-      var sum = Utils.add(1+2);
-      alert(sum);
-   });
+
+$(function() {
+   var a=1, b=2;
+   var sum = Calculator.add(a,b);
+   alert(sum);
 });
