@@ -3,8 +3,11 @@
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
-var Calculator = {
-  add : function(a,b){
-      return a+b;
-  }
-};
+
+define([], function() {
+   return {
+       add : function(a,b){
+           return a+b;
+       }
+   };
+});

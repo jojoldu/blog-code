@@ -323,4 +323,154 @@ package.json을 열어 scripts에 아래 코드를 추가하자
 
 여튼 다음시간엔 grunt를 통해 옮긴 require.js를 사용해보자!
 
+### require.js 사용
+전반적인 사용법은 [Nonblock님의 글](http://blog.javarouka.me/2013/04/requirejs-javascript.html)이 큰 도움이 되니 꼭 참고하길 바란다. <br/>
+여기서는 간단하게 사용해보려 한다. <br/>
+requirejs는 각 js간의 의존성 관리 및 동적로딩을 지원하는 js 라이브러리이다.<br/>
+a.js가 b.js가 필요한 경우 requirejs를 이용하여 의존성 관계를 적용할 수 있고, 미리 호출할 필요없이 필요한 경우에만 b.js가 호출되도록 하여 성능상으로도 이점이 생긴다. <br/>
+백분이 불여일타! 이전 코드를 requirejs로 리팩토링 해보자. <br/>
+
+requirejs는 js파일을 각자 모듈로 지정하여 사용하는것을 권장한다. <br/>
+모듈로 지정하지 않고 사용할 경우 전역스페이스 오염이나 scope 침범등의 문제가 발생할 확률이 높아 웬만하면 모듈로 지정하여 사용하는것을 권장하는 것이다.<br/>
+그래서 Calculator.js를 requirejs의 모듈로 되도록 아래와 같이 수정한다.
+
+```
+//Calculator.js
+
+define([], function() {
+   return {
+       add : function(a,b){
+           return a+b;
+       }
+   };
+});
+
+```
+
+requirejs는 모듈 선언을 **define** 이란 지시어로 한다. <br/>
+define의 인자는 아래와 같은 역할을 한다.
+* 1번째 인자는 필요한 의존성들을 선언할 수 있다
+* 2번째 인자인 function은 해당 js파일을 호출했을때 실행할 코드와 return될 값 혹은 객체를 생성한다 
+
+즉, Calculator.js를 호출하게 되면 return된 {} 객체를 사용 할 수 있게 된다. <br/>
+이제 Calculator.js를 사용하는 index.js를 수정해보겠다.
+
+```
+//index.js
+require(["/js/Calculator.js"], function(Calculator) {
+   var a=1, b=2;
+   var sum = Calculator.add(a,b);
+   alert(sum);
+});
+```
+
+index.js는 Calculator.js와 다른 지시어인 **require**를 사용하였다. <br/>
+require 지시어는 선언된 모듈들을 사용할 수 있게 해주는 지시어이다. <br/>
+define과 비슷하게 첫번째 인자로 의존성, 두번째 인자로 실행 코드 함수가 위치한다.<br/>
+1번째 인자를 보면 **/js/Calculator.js라는 의존성을 사용하고, 이를 2번째 인자에서 Calculator 라는 이름으로 사용**하겠다는 의미이다. <br/>
+js 관련 수정내용은 여기까지이고 마지막으로 requirejs를 사용할 수 있도록 index.ftl도 수정한다.
+
+```
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>모던 IE78</title>
+</head>
+<body>
+    <h1>모던하게 개발하는 IE 7/8</h1>
+    <script type="text/javascript" src="/js/lib/require.js"></script>
+    <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+</body>
+</html>
+```
+
+여기서 index.ftl에 보면 2가지 변경 사항이 있다.
+* require.js를 호출하는 코드가 추가되었다.
+* Calculator.js를 호출하는 코드가 **삭제**되었다.
+
+자 이상태에서 한번 프로젝트를 다시 구동시켜보자. 그리고 개발자 도구로 network를 보자
+
+![requirejs 1번째 예제](./images/require1.png)
+
+보는것처럼 정상적으로 Calculator.js를 호출하고 있다.<br/>
+그렇다면 index.ftl에서 삭제한 이 Calculator.js는 누가 호출해주는 것일까? <br/>
+예상한대로 index.js에서 선언한 ```require(["/js/Calculator.js"])``` 에서 호출해주는 것이다. <br/>
+여기서 알 수 있는 것은 requirejs는 html/jsp/freemarker등에서 직접 호출을 선언하지 않아도, 필요한 js파일이 있을 경우 의존성에 따라 직접 호출한다는 것이다. <br/>
+<br/>
+
+index.js를 보면 html에서 js파일을 호출하듯이 **절대주소**로 js를 호출하고 있다. <br/>
+requirejs는 **상대주소**로 호출할 경우 .js를 생략할 수 있다.
+
+```
+require(["js/Calculator"], function(Calculator) {
+   var a=1, b=2;
+   var sum = Calculator.add(a,b);
+   alert(sum);
+});
+
+```
+
+여기서 보면 중복될만한 코드가 보인다 <br/>
+바로 js/Calculator의 **js/**이다. 어차피 모든 js파일이 js폴더 아래에 있을텐데 코드를 작성할때는 js폴더를 지정하지 않아도 자동으로 js폴더내에서 해당 js파일을 찾았으면 한다. <br/>
+이런 요구사항을 위해 requirejs에서는 requirejs 설정을 지원한다. <br/>
+
+js 폴더 아래에 main.js 파일을 만들어 아래의 코드를 추가하자
+
+```
+//main.js
+// 이 코드를 require.js가 로딩된 뒤 기타 모듈을 로딩하기 전에 둔다.
+require.config({
+    baseUrl: "js", // 모듈을 로딩할 기본 패스를 지정한다.
+    waitSeconds: 15 // 모듈의 로딩 시간을 지정한다. 이 시간을 초과하면 Timeout Error 가 throw 된다
+});
+```
+
+위 main.js를 require.js 호출된 다음에 바로 호출할 수 있도록 index.ftl을 수정하자
+
+```
+//index.ftl
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>모던 IE78</title>
+</head>
+<body>
+    <h1>모던하게 개발하는 IE 7/8</h1>
+    <script type="text/javascript" src="/js/lib/require.js"></script>
+    <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+</body>
+</html>
+```
+
+그리고 해당 설정이 잘 적용되는지 확인하기 위해 index.js를 수정하자
+
+```
+require(["Calculator"], function(Calculator) {
+   var a=1, b=2;
+   var sum = Calculator.add(a,b);
+   alert(sum);
+});
+```
+
+보는것처럼 Calculator호출시에 **js/**를 생략해서 호출하고 있다. <br/>
+이대로 프로젝트를 재시작해서 localhost:8080에 접속하면!
+
+![requirejs 설정](./images/require2.png)
+
+js폴더 지정이 생략되어도 정상적으로 Calculator.js를 호출하는것을 확인할 수 있다.<br/>
+
+자 이제 require.js까지 적용해보았다. 다음은 backbone.js를 적용하자!
+
+
+
+
+
+
+
+ 
 
