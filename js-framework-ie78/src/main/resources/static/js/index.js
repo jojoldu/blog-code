@@ -4,8 +4,9 @@
  * Github : http://github.com/jojoldu
  */
 
-$(function() {
+require(["Calculator"], function(Calculator) {
    var a=1, b=2;
    var sum = Calculator.add(a,b);
    alert(sum);
 });
+
