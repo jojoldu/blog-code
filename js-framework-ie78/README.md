@@ -20,6 +20,7 @@ Angular나 React + @ 조합같은 경우 정말 매력적인 JS 프레임워크�
   
 * [backbone.js](http://backbonejs.org/)
   - Javascript를 MV* 구조로 개발할 수 있게 지원하는 프레임워크
+  - [조규태님의 backbone.js 가이드](http://webframeworks.kr/getstarted/backbonejs/)
   - [backbone.js 사용시 주의사항](http://huns.me/development/1212)
 
 * jquery
@@ -457,7 +458,7 @@ require(["Calculator"], function(Calculator) {
 });
 ```
 
-보는것처럼 Calculator호출시에 **js/**를 생략해서 호출하고 있다. <br/>
+보는 것처럼 Calculator호출시에 **js/**를 생략해서 호출하고 있다. <br/>
 이대로 프로젝트를 재시작해서 localhost:8080에 접속하면!
 
 ![requirejs 설정](./images/require2.png)
@@ -468,8 +469,61 @@ js폴더 지정이 생략되어도 정상적으로 Calculator.js를 호출하는
 
 
 ### backbone.js 사용
+backbone.js는 Model/Collection/View 라는 3가지 요소로 구성된 Javascript 프레임워크이다<br/>
+(Controller가 아니다 오해하시는분들이 꽤 많으신데 Collection이다)<br/>
+몇줄의 코드만으로 Model의 변경에 자동으로 view가 반응하도록 할 수 있다. <br/>
+  
+기본적인 개념과 사용법은 [조규태님의 backbone.js 가이드](http://webframeworks.kr/getstarted/backbonejs/)를 참고하면 될것같다. <br/>
 
+자 그럼 이제 개발을 시작해보자 <br/>
+backbonejs를 정상적으로 사용하기 위해서는 underscore.js와 jquery가 필요하다 <br/>
+이를 위해서 이전에 작업한 grunt를 이용하여 node_modules에 있는 js파일들을 복사하자 <br/>
+jquery는 이미 있으니 underscore.js와 backbone.js만 진행하면 된다 <br/>
+Gruntfile.js를 아래와 같이 수정하자
 
+```
+//Gruntfile.js
+
+'use strict';
+module.exports = function(grunt) {
+
+    grunt.initConfig({
+        pkg : grunt.file.readJSON('package.json'),
+        
+        //jquery와 requirejs, underscorejs, backbonejs를 copy하도록 지정
+        copy : {
+            jquery : {
+                src : 'node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js',
+                dest : 'src/main/resources/static/js/lib/jquery.min.js'
+            },
+            require : {
+                src : 'node_modules/requirejs/require.js',
+                dest : 'src/main/resources/static/js/lib/require.js'
+            },
+            underscore : {
+                src : 'node_modules/backbone/node_modules/underscore/underscore-min.js',
+                dest : 'src/main/resources/static/js/lib/underscore-min.js'
+            },
+            backbone : {
+                src : 'node_modules/backbone/backbone-min.js',
+                dest : 'src/main/resources/static/js/lib/backbone-min.js'
+            }
+        }
+    });
+
+    // 플러그인 load
+    grunt.loadNpmTasks('grunt-contrib-copy');
+
+    // Default task(s) : 즉, grunt 명령어로 실행할 작업
+    grunt.registerTask('default', ['copy']);
+};
+```
+
+작성후, 터미널 혹은 CMD에서 **npm start**를 입력하자 grunt가 진행되어 copy가 진행될 것이다
+
+![backbone+underscore copy](./images/backbone-grunt.png)
+
+ 
 
 
 
