@@ -5,8 +5,11 @@
  */
 
 require(["Calculator"], function(Calculator) {
-   var a=1, b=2;
+   var a = parseInt($('#input1').val()),
+       b = parseInt($('#input2').val());
+
    var sum = Calculator.add(a,b);
-   alert(sum);
+   $('#result').val(sum);
+
 });
 

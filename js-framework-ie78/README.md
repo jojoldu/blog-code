@@ -519,11 +519,30 @@ module.exports = function(grunt) {
 };
 ```
 
-작성후, 터미널 혹은 CMD에서 **npm start**를 입력하자 grunt가 진행되어 copy가 진행될 것이다
+작성후, 터미널 혹은 CMD에서 **npm start**를 입력하면 grunt가 진행되어 copy가 진행될 것이다
 
 ![backbone+underscore copy](./images/backbone-grunt.png)
 
- 
+이전과 마찬가지로 index.ftl에 underscore.js와 backbone.js를 추가하자
+
+```
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>모던 IE78</title>
+</head>
+<body>
+    <h1>모던하게 개발하는 IE 7/8</h1>
+    <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/lib/underscore-min.js"></script>
+    <script type="text/javascript" src="/js/lib/backbone-min.js"></script>
+    <script type="text/javascript" src="/js/lib/require.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+</body>
+</html>
+``` 
 
 
 
