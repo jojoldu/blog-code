@@ -1,0 +1,17 @@
+.gradle
+
+### STS ###
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### Example user template template
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+/build
+/classes
