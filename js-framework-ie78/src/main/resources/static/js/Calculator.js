@@ -7,7 +7,7 @@
 define([], function() {
    return {
        add : function(a,b){
-           return a+b;
+           return _.isNaN(a+b)? 0 : a+b;
        }
    };
 });

@@ -526,6 +526,8 @@ module.exports = function(grunt) {
 이전과 마찬가지로 index.ftl에 underscore.js와 backbone.js를 추가하자
 
 ```
+//index.ftl
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -544,7 +546,95 @@ module.exports = function(grunt) {
 </html>
 ``` 
 
+라이브러리 추가후, 접속할때마다 보여주는 alert을 빼자. 그리고 1+2를 2개의 input box에서 입력 받아 sum을 출력하는 방식으로 변경하자.
+```
+//index.ftl
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>모던 IE78</title>
+</head>
+<body>
+    <h1>모던하게 개발하는 IE 7/8</h1>
+    <div id="userInput" class="row">
+        입력 1: <input type="text" class="inputs" id="input1" value="1"><br/>
+        입력 2: <input type="text" class="inputs" id="input2" value="2">
+    </div>
+    <br/>
+    <div id="addResult" class="row">
+        + : <input type="text" id="result">
+    </div>
+    <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/lib/underscore-min.js"></script>
+    <script type="text/javascript" src="/js/lib/backbone-min.js"></script>
+    <script type="text/javascript" src="/js/lib/require.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+</body>
+</html>
 
 
- 
+//index.js
+require(["Calculator"], function(Calculator) {
+   var a = $('#input1').val(),
+       b = $('#input2').val();
 
+   var sum = Calculator.add(parseInt(a), parseInt(b));
+   $('#result').val(sum);
+
+});
+```
+
+index.ftl과 index.js를 수정 후 프로젝트를 재시작해보자. 그러면 바뀐 UI와 추가된 라이브러리들을 받는 것을 확인할 수 있다.
+
+![UI 변경](./images/backbone-lib.png)
+
+자 여기서 기능을 좀더 확장시켜보자. 현재는 input1,input2의 값이 변경될 경우 결과값이 반영되지 않는다. <br/>
+그래서 값이 변경되면 결과에 바로 반영되도록 index.js 코드를 조금 수정해보겠다.
+
+```
+
+//index.js
+require(["Calculator"], function(Calculator) {
+   var $inputs = $('.inputs'),
+       $result = $('#result');
+
+   var getResult = function() {
+      var a = $('#input1').val(),
+          b = $('#input2').val();
+      var sum = Calculator.add(parseInt(a), parseInt(b));
+      $result.val(sum);
+   };
+
+   $inputs.on('keyup', getResult);
+
+   getResult();
+});
+
+//NaN 발생 방지를 위해 Calculator.js도 수정하자
+define([], function() {
+   return {
+       add : function(a,b){
+           return _.isNaN(a+b)? 0 : a+b;
+       }
+   };
+});
+``` 
+이렇게 코드를 작성후 프로젝트를 다시 실행시켜보자 <br/>
+그럼 실시간으로 sum값이 반영되는 프로젝트가 보일 것이다.
+
+![실시간 sum](./images/sum1.png)
+
+기능 확인이 끝났다면 작성한 코드를 다시보자 <br/>
+이 코드에서는 문제가 없을까? 이렇게 간단한 코드에서도 문제가 있는걸까? <br/>
+
+index.js는 너무 많은 일을 하고 있다. 아래는 index.js가 하고 있는 일이다.
+* index.ftl이 호출되었을때 어떤 일을 해야하는지 지시하고 있다
+* input1, input2의 값을 가지고 Calculator를 통해 합을 구한다
+* inputs class를 가지고 있는 dom에 keyup 이벤트가 발생하면 getResult 함수를 호출한다
+* index.js가 호출되는 순간 1번은 getResult를 통해 합계를 구한다
+
+```
+
+```

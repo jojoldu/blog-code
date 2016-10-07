@@ -4,12 +4,8 @@
  * Github : http://github.com/jojoldu
  */
 
-require(["Calculator"], function(Calculator) {
-   var a = parseInt($('#input1').val()),
-       b = parseInt($('#input2').val());
-
-   var sum = Calculator.add(a,b);
-   $('#result').val(sum);
-
+require(['Calculator', 'add/AddView'], function(Calculator, AddView) {
+   var addView = new AddView();
+   addView.render();
 });
 
