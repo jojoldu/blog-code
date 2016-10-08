@@ -3,7 +3,7 @@
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
-define(["Calculator"],
+define(["Calculator"], //require->define으로 변경했다. 즉시실행할 필요가 없어져서.
 function(Calculator) {
     return Backbone.View.extend({
 
