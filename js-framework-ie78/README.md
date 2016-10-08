@@ -636,12 +636,52 @@ backbone의 경우 View와 Model이라는 2가지 타입이 있다. (Collection�
 보통의 경우 데이터 관리는 Model이, 데이터의 변경에 따라 화면변경 혹은 이벤트처리 등은 View에서 담당하고 있기 때문에 View가 Controller역할까지 한다고 보면 될것 같다. <br/>
 <br/>
 위 코드를 View만으로 수정해보자.<br/>
-js 폴더 아래에 add라는 폴더를 생성하여 addView.js 파일을 추가하자 
+js 폴더 아래에 add라는 폴더를 생성하여 AddView.js 파일을 추가하자 
 
 ![addView.js 생성](./images/backbone-addView생성.png)
 
 추가 및 수정할 코드는 아래와 같다. 
 
 ```
+//AddView.js
+define(["Calculator"], //require->define으로 변경했다. 즉시실행할 필요가 없어져서.
+function(Calculator) {
+    return Backbone.View.extend({
 
+        // view 객체 생성시 진행할 코드들
+        initialize: function () {
+            $('.inputs').on('keyup', this.render);
+        },
+
+        render : function() {
+            var a = $('#input1').val(),
+                b = $('#input2').val();
+            var sum = Calculator.add(parseInt(a), parseInt(b));
+
+            $('#result').val(sum);
+        }
+    });
+});
+
+//index.js
+require(['Calculator', 'add/AddView'], function(Calculator, AddView) {
+   var addView = new AddView();
+   addView.render();
+});
 ```
+
+backbone.js는 View 객체를 **Backbone.View.extend({})** 로 선언한다. <br/>
+requirejs 사용에 대해 다시 한번 기억을 떠올려 보면서 코드를 보자 <br/>
+define의 2번째 인자인 function에서 return 되는 객체는 해당 js파일을 호출할때 전달되는 값이라는 것이 기억 날 것이다. <br/>
+즉, AddView.js를 누군가 requirejs를 통해 호출할 경우 전달되는 값은 **Backbone.view.extend({...})** 인것이다. <br/>
+<br/> 
+AddView.js는 index.js의 역할 중, add에 관한 모든 책임을 받았다 <br/>
+즉, 1) inputs 클래스를 가진 dom element들에 keyup이벤트를 할당하고, 2) keyup 이벤트가 발생하면 Calculator.js를 이용하여 계산된 결과를 result에 할당한다.<br/>
+<br/>
+index.js는 add 기능에 관한 모든 책임을 AddView.js에 이관했기 때문에 남은건 AddView.js를 호출하는것 뿐이다. <br/>
+자 그럼 여기까지 한 결과가 정상적으로 작동하는지 확인을 해보자
+
+![AddView.js 도입]()
+
+잘 되는 것인 확인 되었다. <br/>
+
