@@ -8,22 +8,20 @@ define([],
 function() {
     return Backbone.Model.extend({
 
-        defaults:{
+        defaults: {
             input1: 0,
             input2: 0
         },
 
-        setInput1: function (num) {
-            this.defaults.input1 = num;
+        set : function (obj) {
+            var self = this;
+            _.each(obj, function(value, key){
+                self.defaults[key] = parseInt(value);
+            });
         },
-        setInput2: function (num) {
-            this.defaults.input2 = num;
-        },
-        getInput1: function () {
-            return this.defaults.input1;
-        },
-        getInput2: function () {
-            return this.defaults.input2;
+
+        get : function (key){
+            return this.defaults[key];
         }
     });
 });
