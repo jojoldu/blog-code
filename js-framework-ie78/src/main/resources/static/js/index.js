@@ -4,9 +4,12 @@
  * Github : http://github.com/jojoldu
  */
 
-require(["Calculator"], function(Calculator) {
-   var a=1, b=2;
-   var sum = Calculator.add(a,b);
-   alert(sum);
+require(['Calculator', 'add/AddView'], function(Calculator, AddView) {
+
+   //생성자 인자로 el을 넣어주면 AddView영역은 el에 할당된 dom 영역을 본인의 영역으로 지정하게 된다.
+   var addView = new AddView({
+      el : $('#userInput')
+   });
+   addView.render();
 });
 

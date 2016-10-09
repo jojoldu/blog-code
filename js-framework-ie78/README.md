@@ -20,6 +20,7 @@ Angular나 React + @ 조합같은 경우 정말 매력적인 JS 프레임워크�
   
 * [backbone.js](http://backbonejs.org/)
   - Javascript를 MV* 구조로 개발할 수 있게 지원하는 프레임워크
+  - [조규태님의 backbone.js 가이드](http://webframeworks.kr/getstarted/backbonejs/)
   - [backbone.js 사용시 주의사항](http://huns.me/development/1212)
 
 * jquery
@@ -457,7 +458,7 @@ require(["Calculator"], function(Calculator) {
 });
 ```
 
-보는것처럼 Calculator호출시에 **js/**를 생략해서 호출하고 있다. <br/>
+보는 것처럼 Calculator호출시에 **js/**를 생략해서 호출하고 있다. <br/>
 이대로 프로젝트를 재시작해서 localhost:8080에 접속하면!
 
 ![requirejs 설정](./images/require2.png)
@@ -466,11 +467,355 @@ js폴더 지정이 생략되어도 정상적으로 Calculator.js를 호출하는
 
 자 이제 require.js까지 적용해보았다. 다음은 backbone.js를 적용하자!
 
+### backbone.js 사용 (1)
+backbone.js는 Model/Collection/View 라는 3가지 요소로 구성된 Javascript 프레임워크이다<br/>
+(Controller가 아니다 오해하시는분들이 꽤 많으신데 Collection이다)<br/>
+몇줄의 코드만으로 Model의 변경에 자동으로 view가 반응하도록 할 수 있다. <br/>
 
+backbone을 시작하기전, 현재 시스템을 조금 더 고도화!? 해보자. <br/> 
+1+2를 2개의 input box에서 입력 받아 sum을 출력하는 방식으로 변경한다.
 
+```
+//index.ftl
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>모던 IE78</title>
+</head>
+<body>
+    <h1>모던하게 개발하는 IE 7/8</h1>
+    <div id="userInput" class="row">
+        입력 1: <input type="text" class="inputs" id="input1" value="0"><br/>
+        입력 2: <input type="text" class="inputs" id="input2" value="0">
+        <div id="addResult" class="row">
+            + : <input type="text" id="result">
+        </div>
+    </div>
+    <br/>
+    <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/lib/require.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+</body>
+</html>
 
+//index.js
+require(["Calculator"], function(Calculator) {
+   var a = $('#input1').val(),
+       b = $('#input2').val();
 
+   var sum = Calculator.add(parseInt(a), parseInt(b));
+   $('#result').val(sum);
 
+});
+```
 
- 
+index.ftl과 index.js를 수정 후 프로젝트를 재시작해보자. 그러면 바뀐 UI를 확인할 수 있다.
 
+자 여기서 기능을 좀더 확장시켜보자. 현재는 input1,input2의 값이 변경될 경우 결과값이 반영되지 않는다. <br/>
+그래서 값이 변경되면 결과에 바로 반영되도록 index.js 코드를 조금 수정해보겠다.
+
+```
+
+//index.js
+require(["Calculator"], function(Calculator) {
+   var $inputs = $('.inputs'),
+       $result = $('#result');
+
+   var getResult = function() {
+      var a = $('#input1').val(),
+          b = $('#input2').val();
+      var sum = Calculator.add(parseInt(a), parseInt(b));
+      $result.val(sum);
+   };
+
+   $inputs.on('keyup', getResult);
+
+   getResult();
+});
+
+``` 
+
+이렇게 코드를 작성후 프로젝트를 다시 실행시켜보자 <br/>
+그럼 실시간으로 sum값이 반영되는 프로젝트가 보일 것이다.
+
+![실시간 sum](./images/sum1.png)
+
+기능 확인이 끝났다면 작성한 코드를 다시보자 <br/>
+이 코드에서는 문제가 없을까? 이렇게 간단한 코드에서도 문제가 있는걸까? <br/>
+<br/>
+index.js는 너무 많은 일을 하고 있다. 아래는 index.js가 하고 있는 일이다.
+* index.ftl이 호출되었을때 어떤 일을 해야하는지 지시하고 있다
+* input1, input2의 값을 가지고 Calculator를 통해 합을 구한다
+* inputs class를 가지고 있는 dom에 keyup 이벤트가 발생하면 getResult 함수를 호출한다
+* 페이지 처음 로딩시 getResult를 통해 합계를 구한다
+
+index.js가 과연 저 많은 일들을 할 필요가 있을까? <br/>
+index.js는 index.ftl이 불렸을 때 어떤 js들을 통해 어떤 일을 지시하는지만 하면 되지 않을까? <br/>
+Java는 MVC 모델로 각 Layer를 분리하면서 Javascript는 왜 분리하지 않을까? <br/>
+이런 고민을 갖고 있다면 Backbone.js가 좋은 방법이 될 수 있다 <br/>
+(물론 angular.js도 가능하다. but! 우린 IE 7,8에서 개발해야 하니 pass.....) 
+
+![서론이 너무 길었어!!](./images/backbone-레바.png)
+
+서론이 너무 길었던것 같다. 이제 이 코드를 backbone 기반으로 변경을 시작해보자.<br/>
+기본적인 개념과 사용법은 [조규태님의 backbone.js 가이드](http://webframeworks.kr/getstarted/backbonejs/)를 참고하면 될것같다. <br/>
+
+backbonejs를 정상적으로 사용하기 위해서는 underscore.js와 jquery가 필요하다 <br/>
+이를 위해서 이전에 작업한 grunt를 이용하여 node_modules에 있는 js파일들을 복사하자 <br/>
+jquery는 이미 있으니 underscore.js와 backbone.js만 진행하면 된다 <br/>
+Gruntfile.js를 아래와 같이 수정하자
+
+```
+//Gruntfile.js
+
+'use strict';
+module.exports = function(grunt) {
+
+    grunt.initConfig({
+        pkg : grunt.file.readJSON('package.json'),
+        
+        //jquery와 requirejs, underscorejs, backbonejs를 copy하도록 지정
+        copy : {
+            jquery : {
+                src : 'node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js',
+                dest : 'src/main/resources/static/js/lib/jquery.min.js'
+            },
+            require : {
+                src : 'node_modules/requirejs/require.js',
+                dest : 'src/main/resources/static/js/lib/require.js'
+            },
+            underscore : {
+                src : 'node_modules/backbone/node_modules/underscore/underscore-min.js',
+                dest : 'src/main/resources/static/js/lib/underscore-min.js'
+            },
+            backbone : {
+                src : 'node_modules/backbone/backbone-min.js',
+                dest : 'src/main/resources/static/js/lib/backbone-min.js'
+            }
+        }
+    });
+
+    // 플러그인 load
+    grunt.loadNpmTasks('grunt-contrib-copy');
+
+    // Default task(s) : 즉, grunt 명령어로 실행할 작업
+    grunt.registerTask('default', ['copy']);
+};
+```
+
+작성후, 터미널 혹은 CMD에서 **npm start**를 입력하면 grunt가 진행되어 copy가 진행될 것이다
+
+![backbone+underscore copy](./images/backbone-grunt.png)
+
+이전과 마찬가지로 index.ftl에 underscore.js와 backbone.js를 추가하자
+
+```
+//index.ftl
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>모던 IE78</title>
+</head>
+<body>
+    <h1>모던하게 개발하는 IE 7/8</h1>
+    <div id="userInput" class="row">
+        입력 1: <input type="text" class="inputs" id="input1" value="0"><br/>
+        입력 2: <input type="text" class="inputs" id="input2" value="0">
+        <div id="addResult" class="row">
+            + : <input type="text" id="result">
+        </div>
+    </div>
+    <br/>
+    <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/lib/underscore-min.js"></script>
+    <script type="text/javascript" src="/js/lib/backbone-min.js"></script>
+    <script type="text/javascript" src="/js/lib/require.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+</body>
+</html>
+``` 
+
+backbone의 경우 View와 Model이라는 2가지 타입이 있다. (Collection은 나중에 소개하겠다) <br/>
+보통의 경우 데이터 관리는 Model이, 데이터의 변경에 따라 화면변경 혹은 이벤트처리 등은 View에서 담당하고 있기 때문에 View가 Controller역할까지 한다고 보면 될것 같다. <br/>
+<br/>
+위 코드를 View만으로 수정해보자.<br/>
+js 폴더 아래에 add라는 폴더를 생성하여 AddView.js 파일을 추가하자 
+
+![addView.js 생성](./images/backbone-addView생성.png)
+
+추가 및 수정할 코드는 아래와 같다. 
+
+```
+//AddView.js
+define(["Calculator"], //require->define으로 변경했다. 즉시실행할 필요가 없어져서.
+function(Calculator) {
+    return Backbone.View.extend({
+
+        // view 객체 생성시 진행할 코드들
+        initialize: function () {
+            $('.inputs').on('keyup', this.render);
+        },
+
+        render : function() {
+            var a = $('#input1').val(),
+                b = $('#input2').val();
+            var sum = Calculator.add(parseInt(a), parseInt(b));
+
+            $('#result').val(sum);
+        }
+    });
+});
+
+//index.js
+require(['Calculator', 'add/AddView'], function(Calculator, AddView) {
+   var addView = new AddView();
+   addView.render();
+});
+```
+
+backbone.js는 View 객체를 **Backbone.View.extend({})** 로 선언한다. <br/>
+requirejs 사용에 대해 다시 한번 기억을 떠올려 보면서 코드를 보자 <br/>
+define의 2번째 인자인 function에서 return 되는 객체는 해당 js파일을 호출할때 전달되는 값이라는 것이 기억 날 것이다. <br/>
+즉, AddView.js를 누군가 requirejs를 통해 호출할 경우 전달되는 값은 **Backbone.view.extend({...})** 인것이다. <br/>
+<br/> 
+AddView.js는 index.js의 역할 중, add에 관한 모든 책임을 받았다 <br/>
+즉, **inputs 클래스를 가진 dom element들에 keyup이벤트를 할당**하고,<br/> 
+**keyup 이벤트가 발생하면 Calculator.js를 이용하여 계산된 결과를 result에 할당**한다.<br/>
+<br/>
+index.js는 add 기능에 관한 모든 책임을 AddView.js에 이관했기 때문에 남은건 AddView.js를 호출하는것 뿐이다. <br/>
+자 그럼 여기까지 한 결과가 정상적으로 작동하는지 확인을 해보자
+
+![AddView.js 도입](./images/backbone-addview화면.png)
+
+잘 되는 것이 확인 되었다. <br/>
+
+자 근데 여기서 AddView 역시 가지고 있는 역할이 너무 많다. <br/>
+**화면 변화에 필요한 일만 AddView**가 담당하고 **데이터는 다른 곳이 책임**을 지는게 좀 더 역할 분리가 된것 아닐까? <br/>
+backbone.js의 Model이 바로 이때 사용된다. <br/>
+지정한 데이터만 순수하게 관리하는 역할을 하는 객체를 backbone.js에선 Model 객체라고 한다. <br/>
+AddView.js 객체와 동일한 위치에 AddModel.js를 생성하자 
+
+![AddModel 생성](./images/backbone-addmodel생성.png)
+
+코드는 아래와 같다.
+
+```
+// AddModel.js
+define(["Calculator"],
+function(Calculator) {
+
+    return Backbone.Model.extend({
+        // Model 객체 생성시 defaults를 기준으로 관리해야될 데이터(attributes)를 생성
+        defaults: {
+            input1: 0,
+            input2: 0,
+            result: 0
+        },
+
+        setInputs : function (obj) {
+            var input1 = parseInt(obj.input1),
+                input2 = parseInt(obj.input2),
+                result = Calculator.add(input1, input2);
+
+            // Model 객체의 attributes에 입력 받은 새로운 값을 set
+            this.set({input1: input1, input2: input2, result:result});
+        }
+    });
+});
+```
+
+defaults는 Model 객체가 관리해야할 데이터로 생각할 수 있지만, 정확히 그렇지는 않다. <br/>
+다만 Model이 **관리해야 할 데이터의 초기 데이터 형태가 defaults를 기준으로 생성**된다는 것을 알고 가자<br/>
+<br/>
+AddModel.js에서는 setInputs 함수가 있다.<br/>
+이 함수를 통해서 View영역에서 Model에 데이터 변경을 요청하게 된다. <br/>
+전달 받은 값으로 관리되는 데이터를 변경하고, result를 Calculator를 통해 전달 받아 result값도 변경해준다. <br/>
+<br/>
+input1/2, result등 데이터 관련된 부분을 모두 AddModel에 넘겨주었으니 AddView.js의 코드도 그에 맞춰 변경하자.<br/>
+AddView.js 코드 변경사항의 핵심은 **1) Dom이 변경되면, Model에 변경된 내역을 전달, 2) Model의 값에 따라 화면을 변경**하는 것이다.
+
+```
+//AddView.js
+//require->define으로 변경, View객체를 전달하기 위해
+define(["add/AddModel"], //사용할 AddModel.js를 requirejs를 통해 load
+function(AddModel) {
+    return Backbone.View.extend({
+        model : null,
+
+        /*  el로 지정한 dom 하위 element중 inputs 클래스를 가진 element에
+         keyup이벤트가 발생하면 set함수 호출되도록 지정  */
+        events: {
+            'keyup .inputs' : 'set'
+        },
+
+        // view 객체 생성시 진행할 코드들
+        initialize: function () {
+            //아래에서 사용하는 this는 현재 객체 즉, AddView객체를 얘기한다.
+            this.model = new AddModel();
+
+            //model의 값이 변경되는(change) 이벤트가 발생하면 view의 render 함수 호출되도록 지정
+            this.listenTo(this.model, 'change', this.render);
+        },
+
+        set : function() {
+            var input1 = $('#input1').val(),
+                input2 = $('#input2').val();
+
+            this.model.setInputs({'input1': input1, 'input2': input2});
+        },
+
+        render : function() {
+            $('#result').val(this.model.get('result'));
+        }
+    });
+});
+
+//index.js
+require(['Calculator', 'add/AddView'], function(Calculator, AddView) {
+
+   //생성자 인자로 el을 넣어주면 AddView영역은 el에 할당된 dom 영역을 본인의 영역으로 지정하게 된다.
+   var addView = new AddView({
+      el : $('#userInput')
+   });
+   addView.render();
+});
+```
+
+코드의 역할은 대부분 주석이 있어 이해하는데 크게 어려움은 없을 것 같다. <br/>
+전체 Flow는 
+* 화면상 input1, input2 값이 변경
+* ```events: {'keyup .inputs' : 'set'}``` 로 AddView.js의 set 함수 호출
+* set함수가 AddModel의 데이터 변경 (AddModel의 setInputs함수 호출)
+* ```this.listenTo(this.model, 'change', this.render)``` 코드로 인해 AddModel데이터 변경시 AddView.js의 render함수 호출
+* render함수가 AddModel의 result를 가져와 화면의 result 변경 
+
+index.js에서 new AddView에서 인자로 el을 추가하게 된 이유는 **backbone.js의 event binding** 때문이다.
+
+backbone.js에서 event binding을 할때 주의해야 할 점은, 해당 View 객체의 Dom 영역이 지정되어 있어야만 된다는 것이다. <br/>
+AddView.js를 new 로 생성할 때 **{el : $('#userInput')}** 처럼 어떤 dom을 해당 View객체의 영역으로 지정할 것인지 입력되지 않으면 .inputs 클래스가 어디 영역인지 알 수 없어 event bingind이 안된다. <br/>
+왜 이렇게 번거롭게 했냐하면, backbone.js는 SPA(Single Page Application)에 초점을 맞춰 나온 프레임워크로, <br/> 
+한 페이지 내에 분리된 Dom 영역은 각각에 맞는 Backbone객체들로 이루어지도록 하기 위함이다. <br/>
+하나의 js가 여러 Dom을 모두 관리하는게 아니라 A div 영역은 AView.js와 AModel.js가 전담하고, B div 영역은 BView.js와 BModel.js 가 전담하게 되는 것이다.
+여기에서도 ```<div id="userInput"></div>``` 영역은 AddView.js와 AddModel.js가 전담하게 된 것이다. <br/>
+
+한가지 더 주의사항이 있다면,<br/>
+backbone.js에서 model의 change 이벤트는 model의 defaults 속성에 반응하는 것이 아니라, attributes에 반응한다. 
+
+![defaults vs attributes](./images/backbone-model-attributes.png)
+
+위 그림처럼 set으로 변경하여도 defaults 값은 변경되지 않는다.<br/>
+만약 model.defaults로 직접 값을 변경할 경우 change 체크가 안되서 이벤트가 발생하지 않는다. <br/>
+model.set() 으로 attributes를 변경해야만 하는 것을 잊지 말자 <br/>
+            
+겨우 1+2 하는데 왜 이난리를 쳐야하는지 생각할 수도 있을것 같다.
+
+![레바-누진제](./images/레바-누진제.jpg)                             
+
+아직 backbone.js 파트의 전부를 다룬것이 아니니... 조금만 더 참고 따라가보자 <br/>
+현재 예제는 backbone.js의 진짜 장점을 나타내기에는 조금 부족한 예제이니 backbone.js가 이상하기 보다는 작성자 예제가 구리다고 판단하는게 좀더 옳은 판단임을 얘기하고 싶다.<br/>
+다음은 backbone.js의 진짜 강점인 Ajax를 진행하겠다.
