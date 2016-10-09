@@ -486,13 +486,13 @@ backbone을 시작하기전, 현재 시스템을 조금 더 고도화!? 해보�
 <body>
     <h1>모던하게 개발하는 IE 7/8</h1>
     <div id="userInput" class="row">
-        입력 1: <input type="text" class="inputs" id="input1" value="1"><br/>
-        입력 2: <input type="text" class="inputs" id="input2" value="2">
+        입력 1: <input type="text" class="inputs" id="input1" value="0"><br/>
+        입력 2: <input type="text" class="inputs" id="input2" value="0">
+        <div id="addResult" class="row">
+            + : <input type="text" id="result">
+        </div>
     </div>
     <br/>
-    <div id="addResult" class="row">
-        + : <input type="text" id="result">
-    </div>
     <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
     <script type="text/javascript" src="/js/lib/require.js"></script>
     <script type="text/javascript" src="/js/main.js"></script>
@@ -622,6 +622,14 @@ module.exports = function(grunt) {
 </head>
 <body>
     <h1>모던하게 개발하는 IE 7/8</h1>
+    <div id="userInput" class="row">
+        입력 1: <input type="text" class="inputs" id="input1" value="0"><br/>
+        입력 2: <input type="text" class="inputs" id="input2" value="0">
+        <div id="addResult" class="row">
+            + : <input type="text" id="result">
+        </div>
+    </div>
+    <br/>
     <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
     <script type="text/javascript" src="/js/lib/underscore-min.js"></script>
     <script type="text/javascript" src="/js/lib/backbone-min.js"></script>
@@ -676,12 +684,138 @@ define의 2번째 인자인 function에서 return 되는 객체는 해당 js파�
 즉, AddView.js를 누군가 requirejs를 통해 호출할 경우 전달되는 값은 **Backbone.view.extend({...})** 인것이다. <br/>
 <br/> 
 AddView.js는 index.js의 역할 중, add에 관한 모든 책임을 받았다 <br/>
-즉, 1) inputs 클래스를 가진 dom element들에 keyup이벤트를 할당하고, 2) keyup 이벤트가 발생하면 Calculator.js를 이용하여 계산된 결과를 result에 할당한다.<br/>
+즉, **inputs 클래스를 가진 dom element들에 keyup이벤트를 할당**하고,<br/> 
+**keyup 이벤트가 발생하면 Calculator.js를 이용하여 계산된 결과를 result에 할당**한다.<br/>
 <br/>
 index.js는 add 기능에 관한 모든 책임을 AddView.js에 이관했기 때문에 남은건 AddView.js를 호출하는것 뿐이다. <br/>
 자 그럼 여기까지 한 결과가 정상적으로 작동하는지 확인을 해보자
 
-![AddView.js 도입]()
+![AddView.js 도입](./images/backbone-addview화면.png)
 
-잘 되는 것인 확인 되었다. <br/>
+잘 되는 것이 확인 되었다. <br/>
 
+자 근데 여기서 AddView 역시 가지고 있는 역할이 너무 많다. <br/>
+**화면 변화에 필요한 일만 AddView**가 담당하고 **데이터는 다른 곳이 책임**을 지는게 좀 더 역할 분리가 된것 아닐까? <br/>
+backbone.js의 Model이 바로 이때 사용된다. <br/>
+지정한 데이터만 순수하게 관리하는 역할을 하는 객체를 backbone.js에선 Model 객체라고 한다. <br/>
+AddView.js 객체와 동일한 위치에 AddModel.js를 생성하자 
+
+![AddModel 생성](./images/backbone-addmodel생성.png)
+
+코드는 아래와 같다.
+
+```
+// AddModel.js
+define(["Calculator"],
+function(Calculator) {
+
+    return Backbone.Model.extend({
+        // Model 객체 생성시 defaults를 기준으로 관리해야될 데이터(attributes)를 생성
+        defaults: {
+            input1: 0,
+            input2: 0,
+            result: 0
+        },
+
+        setInputs : function (obj) {
+            var input1 = parseInt(obj.input1),
+                input2 = parseInt(obj.input2),
+                result = Calculator.add(input1, input2);
+
+            // Model 객체의 attributes에 입력 받은 새로운 값을 set
+            this.set({input1: input1, input2: input2, result:result});
+        }
+    });
+});
+```
+
+defaults는 Model 객체가 관리해야할 데이터로 생각할 수 있지만, 정확히 그렇지는 않다. <br/>
+다만 Model이 **관리해야 할 데이터의 초기 데이터 형태가 defaults를 기준으로 생성**된다는 것을 알고 가자<br/>
+<br/>
+AddModel.js에서는 setInputs 함수가 있다.<br/>
+이 함수를 통해서 View영역에서 Model에 데이터 변경을 요청하게 된다. <br/>
+전달 받은 값으로 관리되는 데이터를 변경하고, result를 Calculator를 통해 전달 받아 result값도 변경해준다. <br/>
+<br/>
+input1/2, result등 데이터 관련된 부분을 모두 AddModel에 넘겨주었으니 AddView.js의 코드도 그에 맞춰 변경하자.<br/>
+AddView.js 코드 변경사항의 핵심은 **1) Dom이 변경되면, Model에 변경된 내역을 전달, 2) Model의 값에 따라 화면을 변경**하는 것이다.
+
+```
+//AddView.js
+//require->define으로 변경, View객체를 전달하기 위해
+define(["add/AddModel"], //사용할 AddModel.js를 requirejs를 통해 load
+function(AddModel) {
+    return Backbone.View.extend({
+        model : null,
+
+        /*  el로 지정한 dom 하위 element중 inputs 클래스를 가진 element에
+         keyup이벤트가 발생하면 set함수 호출되도록 지정  */
+        events: {
+            'keyup .inputs' : 'set'
+        },
+
+        // view 객체 생성시 진행할 코드들
+        initialize: function () {
+            //아래에서 사용하는 this는 현재 객체 즉, AddView객체를 얘기한다.
+            this.model = new AddModel();
+
+            //model의 값이 변경되는(change) 이벤트가 발생하면 view의 render 함수 호출되도록 지정
+            this.listenTo(this.model, 'change', this.render);
+        },
+
+        set : function() {
+            var input1 = $('#input1').val(),
+                input2 = $('#input2').val();
+
+            this.model.setInputs({'input1': input1, 'input2': input2});
+        },
+
+        render : function() {
+            $('#result').val(this.model.get('result'));
+        }
+    });
+});
+
+//index.js
+require(['Calculator', 'add/AddView'], function(Calculator, AddView) {
+
+   //생성자 인자로 el을 넣어주면 AddView영역은 el에 할당된 dom 영역을 본인의 영역으로 지정하게 된다.
+   var addView = new AddView({
+      el : $('#userInput')
+   });
+   addView.render();
+});
+```
+
+코드의 역할은 대부분 주석이 있어 이해하는데 크게 어려움은 없을 것 같다. <br/>
+전체 Flow는 
+* 화면상 input1, input2 값이 변경
+* ```events: {'keyup .inputs' : 'set'}``` 로 AddView.js의 set 함수 호출
+* set함수가 AddModel의 데이터 변경 (AddModel의 setInputs함수 호출)
+* ```this.listenTo(this.model, 'change', this.render)``` 코드로 인해 AddModel데이터 변경시 AddView.js의 render함수 호출
+* render함수가 AddModel의 result를 가져와 화면의 result 변경 
+
+index.js에서 new AddView에서 인자로 el을 추가하게 된 이유는 **backbone.js의 event binding** 때문이다.
+
+backbone.js에서 event binding을 할때 주의해야 할 점은, 해당 View 객체의 Dom 영역이 지정되어 있어야만 된다는 것이다. <br/>
+AddView.js를 new 로 생성할 때 **{el : $('#userInput')}** 처럼 어떤 dom을 해당 View객체의 영역으로 지정할 것인지 입력되지 않으면 .inputs 클래스가 어디 영역인지 알 수 없어 event bingind이 안된다. <br/>
+왜 이렇게 번거롭게 했냐하면, backbone.js는 SPA(Single Page Application)에 초점을 맞춰 나온 프레임워크로, <br/> 
+한 페이지 내에 분리된 Dom 영역은 각각에 맞는 Backbone객체들로 이루어지도록 하기 위함이다. <br/>
+하나의 js가 여러 Dom을 모두 관리하는게 아니라 A div 영역은 AView.js와 AModel.js가 전담하고, B div 영역은 BView.js와 BModel.js 가 전담하게 되는 것이다.
+여기에서도 ```<div id="userInput"></div>``` 영역은 AddView.js와 AddModel.js가 전담하게 된 것이다. <br/>
+
+한가지 더 주의사항이 있다면,<br/>
+backbone.js에서 model의 change 이벤트는 model의 defaults 속성에 반응하는 것이 아니라, attributes에 반응한다. 
+
+![defaults vs attributes](./images/backbone-model-attributes.png)
+
+위 그림처럼 set으로 변경하여도 defaults 값은 변경되지 않는다.<br/>
+만약 model.defaults로 직접 값을 변경할 경우 change 체크가 안되서 이벤트가 발생하지 않는다. <br/>
+model.set() 으로 attributes를 변경해야만 하는 것을 잊지 말자 <br/>
+            
+겨우 1+2 하는데 왜 이난리를 쳐야하는지 생각할 수도 있을것 같다.
+
+![레바-누진제](./images/레바-누진제.jpg)                             
+
+아직 backbone.js 파트의 전부를 다룬것이 아니니... 조금만 더 참고 따라가보자 <br/>
+현재 예제는 backbone.js의 진짜 장점을 나타내기에는 조금 부족한 예제이니 backbone.js가 이상하기 보다는 작성자 예제가 구리다고 판단하는게 좀더 옳은 판단임을 얘기하고 싶다.<br/>
+다음은 backbone.js의 진짜 강점인 Ajax를 진행하겠다.

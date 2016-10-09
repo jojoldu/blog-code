@@ -4,24 +4,24 @@
  * Github : http://github.com/jojoldu
  */
 
-define([],
-function() {
-    return Backbone.Model.extend({
+define(["Calculator"],
+function(Calculator) {
 
+    return Backbone.Model.extend({
+        // Model 객체 생성시 defaults를 기준으로 관리해야될 데이터(attributes)를 생성
         defaults: {
             input1: 0,
-            input2: 0
+            input2: 0,
+            result: 0
         },
 
-        set : function (obj) {
-            var self = this;
-            _.each(obj, function(value, key){
-                self.defaults[key] = parseInt(value);
-            });
-        },
+        setInputs : function (obj) {
+            var input1 = parseInt(obj.input1),
+                input2 = parseInt(obj.input2),
+                result = Calculator.add(input1, input2);
 
-        get : function (key){
-            return this.defaults[key];
+            // Model 객체의 attributes에 입력 받은 새로운 값을 set
+            this.set({input1: input1, input2: input2, result:result});
         }
     });
 });
