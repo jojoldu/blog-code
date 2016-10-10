@@ -819,3 +819,8 @@ model.set() 으로 attributes를 변경해야만 하는 것을 잊지 말자 <br
 아직 backbone.js 파트의 전부를 다룬것이 아니니... 조금만 더 참고 따라가보자 <br/>
 현재 예제는 backbone.js의 진짜 장점을 나타내기에는 조금 부족한 예제이니 backbone.js가 이상하기 보다는 작성자 예제가 구리다고 판단하는게 좀더 옳은 판단임을 얘기하고 싶다.<br/>
 다음은 backbone.js의 진짜 강점인 Ajax를 진행하겠다.
+
+### backbone.js 사용 (2)
+이번 시간에는 앞서 진행했던 backbone을 좀 더 다듬어 볼 예정이다. <br/>
+backbone의 view는 값을 셋팅하는것이 주 목적이 아니라 Model에 따라 Rendering 하는것이 주 목적이다. <br/>
+Freemarker에서 result 

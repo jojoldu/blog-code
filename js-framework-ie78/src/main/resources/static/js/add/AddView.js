@@ -33,7 +33,7 @@ function(AddModel) {
         },
 
         render : function() {
-            $('#result').val(this.model.get('result'));
+            this.$el.find('#addResult').html('<span>+ : '+'<strong>'+this.model.get('result')+'</strong></span>');
         }
     });
 });
