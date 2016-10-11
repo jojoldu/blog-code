@@ -821,7 +821,7 @@ model.set() 으로 attributes를 변경해야만 하는 것을 잊지 말자 <br
 다음은 backbone.js의 진짜 강점인 Ajax를 진행하겠다.
 
 ### backbone.js 사용 (2)
-이번 시간에는 앞서 진행했던 backbone을 좀 더 다듬어 볼 예정이다. <br/>
+이번 시간에는 Ajax를 진행하기 앞서 backbone예제를 좀 더 다듬어 볼 예정이다. <br/>
 backbone의 view는 값을 셋팅하는것이 주 목적이 아니라 Model에 따라 Rendering 하는것이 주 목적이다. <br/>
 Freemarker에서 result를 input 박스가 아니라 ```<span><strong>``` 으로 조합해서 다시 만들어보자 <br/>
 여기서 좀 더 난이도를 높이자면 result의 합이 100이하 일 경우에는 기존과 동일하게 ```<input>```로, <br/>
@@ -912,8 +912,83 @@ input에 따라 실시간으로 화면이 변하는 것을 확인할 수 있다.
     <script type="text/javascript" src="/js/index.js"></script>
 </body>
 </html>
-
 ```
 
 index.ftl에 2개의 script가 추가되었다. <br/>
+text/template 타입의 경우 ```<%= %>``` 에 있는 요소들을 기준으로 전달받은 데이터로 치환하여 html문서로 만들수 있게 지원한다. <br/>
+우리가 사용할 underscore.template 함수는 이를 사용한 것이다. <br/>
+AddView.js 역시 아래와 같이 변경하자.
+```
+//require->define으로 변경, View객체를 전달하기 위해
+define(["add/AddModel"], //사용할 AddModel.js를 requirejs를 통해 load
+function(AddModel) {
+    return Backbone.View.extend({
+        model : null,
+
+        /*  el로 지정한 dom 하위 element중 inputs 클래스를 가진 element에
+         keyup이벤트가 발생하면 set함수 호출되도록 지정  */
+        events: {
+            'keyup .inputs' : 'set'
+        },
+
+        underTemplate : $('#underTemplate').html(),
+        overTemplate : $('#overTemplate').html(),
+
+        // view 객체 생성시 진행할 코드들
+        initialize: function () {
+            //아래에서 사용하는 this는 현재 객체 즉, AddView객체를 얘기한다.
+            this.model = new AddModel();
+
+            //model의 값이 변경되는(change) 이벤트가 발생하면 view의 render 함수 호출되도록 지정
+            this.listenTo(this.model, 'change', this.render);
+        },
+
+        set : function() {
+            var input1 = $('#input1').val(),
+                input2 = $('#input2').val();
+
+            this.model.setInputs({'input1': input1, 'input2': input2});
+        },
+
+        render : function() {
+            var result = this.model.get('result');
+            var template = this.getTemplate(result);
+
+            /*
+             AddView를 생성할때 el 인자를 주입하였다.
+             this.el : 순수한 dom element
+             this.$el : jquery로 wrapping 된 dom element
+             즉, $(this.el) == this.$el 이다.
+             */
+            this.$el.find('#addResult').html(template);
+        },
+
+        getTemplate : function (result) {
+            var template;
+
+            if(result > 100){
+                template = _.template(this.overTemplate);
+            }else{
+                template = _.template(this.underTemplate);
+            }
+
+            return template(this.model.toJSON());
+        }
+    });
+});
+```
+
+변경된 템플릿 과정은 아래와 같다.
+* text/template 타입의 script를 호출한다
+* _.template 함수에 호출한 script의 html을 인자로 넣어 결과를 리턴 받는다.
+* 위 리턴된 결과는 JSON 데이터를 ```<%= %>``` 의 요소로 치환시켜줄 수 있는 **템플릿 함수**이다.
+* Model의 데이터를 JSON 으로 변환시켜 템플릿 함수에 인자로 넣어 최종 템플릿된 html을 전달 받는다.
+* addResult의 innerHtml에 템플릿된 html을 덮어쓴다.
+
+다시 화면을 확인해보면 정상적으로 기능이 작동 되는 것을 확인할 수 있다.<br/>
+이번 시간에 진행한 template 과정은 많은 회사가 사용하는 방식이지만 여전히 다른 문제들이 남아있다.<br/>
+이후 handlebars.js를 통해 이를 해결하려고 한다. (handlebars.js는 backbone.js 과정이 끝나면 진행할 예정이다.) <br/>
+다음 과정은 backbone.js를 통한 Ajax이다 (이번엔 진짜로!)
+
+
 
