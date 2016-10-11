@@ -26,6 +26,25 @@
     </div>
     <br/>
 
+    <div class="list">
+
+    </div>
+
+    <h1>Member List</h1>
+    <div id="member">
+        <div id="memberList" class="list">
+
+        </div>
+
+        <script id="listTemplate" type="text/template">
+            <h5>회원 리스트</h5>
+            <ul>
+                <% _.each(members, function(member) { %>
+                <li><%= member.name %> : <%= member.email %></li>
+                <% }); %>
+            </ul>
+        </script>
+    </div>
     <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
     <script type="text/javascript" src="/js/lib/underscore-min.js"></script>
     <script type="text/javascript" src="/js/lib/backbone-min.js"></script>

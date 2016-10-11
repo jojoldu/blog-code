@@ -988,7 +988,10 @@ function(AddModel) {
 다시 화면을 확인해보면 정상적으로 기능이 작동 되는 것을 확인할 수 있다.<br/>
 이번 시간에 진행한 template 과정은 많은 회사가 사용하는 방식이지만 여전히 다른 문제들이 남아있다.<br/>
 이후 handlebars.js를 통해 이를 해결하려고 한다. (handlebars.js는 backbone.js 과정이 끝나면 진행할 예정이다.) <br/>
-다음 과정은 backbone.js를 통한 Ajax이다 (이번엔 진짜로!)
+다음 과정은 backbone.js를 통한 Ajax이다 
+
+![이번엔 거짓이 아니야](./images/이번엔거짓이아니야.png)
+(이번엔 진짜로!)
 
 
 
