@@ -16,6 +16,9 @@ function(AddModel) {
             'keyup .inputs' : 'set'
         },
 
+        underTemplate : $('#underTemplate').html(),
+        overTemplate : $('#overTemplate').html(),
+
         // view 객체 생성시 진행할 코드들
         initialize: function () {
             //아래에서 사용하는 this는 현재 객체 즉, AddView객체를 얘기한다.
@@ -33,7 +36,28 @@ function(AddModel) {
         },
 
         render : function() {
-            this.$el.find('#addResult').html('<span>+ : '+'<strong>'+this.model.get('result')+'</strong></span>');
+            var result = this.model.get('result');
+            var template = this.getTemplate(result);
+
+            /*
+             AddView를 생성할때 el 인자를 주입하였다.
+             this.el : 순수한 dom element
+             this.$el : jquery로 wrapping 된 dom element
+             즉, $(this.el) == this.$el 이다.
+             */
+            this.$el.find('#addResult').html(template);
+        },
+
+        getTemplate : function (result) {
+            var template;
+
+            if(result > 100){
+                template = _.template(this.overTemplate);
+            }else{
+                template = _.template(this.underTemplate);
+            }
+
+            return template(this.model.toJSON());
         }
     });
 });

@@ -5,7 +5,7 @@ Angular나 React + @ 조합같은 경우 정말 매력적인 JS 프레임워크�
 
 ![악마의 IE](./images/ie-devil.jpg)
 
-하지만 생각보다 많은 분들이 모던하게 Javascript를 개발하고 싶어한다. React/Angular/ES2015 스터디를 보면 **회사에서는 못쓰지만 이직을 위해** 라는 이유로 스터디에 참석하는 것을 정말 정말 많이 보았다.
+하지만 생각보다 많은 분들이 모던하게 Javascript를 개발하고 싶어한다. React/Angular/ECMA2015 스터디를 보면 **회사에서는 못쓰지만 이직을 위해** 라는 이유로 스터디에 참석하는 것을 정말 정말 많이 보았다.
 그래서 최대한 이런 환경에서 모던하게 개발할 수 있는 방법을 소개하려 한다. 본인의 회사가 IE9부터 지원한다면 뒤로가기 버튼을 살포시 누르면 된다 <br/>
 모든 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/js-framework-ie78) 에 있으니 참고하면 될것 같다.
 
@@ -823,4 +823,97 @@ model.set() 으로 attributes를 변경해야만 하는 것을 잊지 말자 <br
 ### backbone.js 사용 (2)
 이번 시간에는 앞서 진행했던 backbone을 좀 더 다듬어 볼 예정이다. <br/>
 backbone의 view는 값을 셋팅하는것이 주 목적이 아니라 Model에 따라 Rendering 하는것이 주 목적이다. <br/>
-Freemarker에서 result 
+Freemarker에서 result를 input 박스가 아니라 ```<span><strong>``` 으로 조합해서 다시 만들어보자 <br/>
+여기서 좀 더 난이도를 높이자면 result의 합이 100이하 일 경우에는 기존과 동일하게 ```<input>```로, <br/>
+100 초과일 경우에는 ```<span><strong>``` 로 표기하는 것이다. <br/>
+이럴 경우 freemarker 혹은 JSP/Html 에서는 실시간으로 화면을 변경할 수 없으므로, 클라이언트 사이드에서 화면 변경이 이루어져야 한다. <br/>
+즉, Javascript로 동적으로 Html을 그려야 (이하 렌더링) 한다는 것이다. <br/>
+아래의 코드를 보자.
+```
+//AddView.js에 추가
+
+render : function() {
+    var result = this.model.get('result');
+    var template = this.getTemplate(result);
+
+    /*
+     AddView를 생성할때 el 인자를 주입하였다.
+     this.el : 순수한 dom element
+     this.$el : jquery로 wrapping 된 dom element
+     즉, $(this.el) == this.$el 이다.
+     */
+    this.$el.find('#addResult').html(template);
+},
+
+getTemplate : function (result) {
+
+    if(result > 100){
+        return '<span>+ : '+'<strong>'+result+'</strong></span>';
+    }
+
+    return '<input type="text" id="result" value="'+result+'">';
+}
+```
+
+코드에서 얘기하는 것은 간단하다. 
+* render 함수는 AddModel을 통해 result 값을 가져온다.
+* getTemplate 함수로 result를 전달하여 원하는 형태의 html을 만들어 전달 받는다.
+* getTemplate 함수에서 전달받은 html 코드를 addResult의 innerHtml에 작성한다.
+
+여기까지 진행하고 다시 확인해보면!
+
+![100미만](./images/template-100미만.png)
+(result가 100미만일 경우의 화면)
+
+![100이상](./images/template-100이상.png)
+(result가 100이상일 경우의 화면)
+
+input에 따라 실시간으로 화면이 변하는 것을 확인할 수 있다. <br/>
+<br/>
+위 코드의 문제점은 무엇일까?
+* 결국 저 코드는 문자열이다.```</span>``` 이 누락되어도 에디터에서는 체크가 되지 않아 오류가 발생할 여지가 많다.
+* 어떤 Dom형태가 될지 예측이 안된다. 이렇게 될 경우 이후 수정이 필요할 때 많은 실수와 시간이 필요하게 된다.
+
+이런 단점으로 인해 backbone.js는 underscore의 template 함수를 사용하여 렌더링 하는것을 기본 가이드로 제공하고 있다. <br/>
+```
+// index.ftl
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>모던 IE78</title>
+</head>
+<body>
+    <h1>모던하게 개발하는 IE 7/8 Javascript</h1>
+    <div id="userInput" class="row">
+        입력 1: <input type="text" class="inputs" id="input1" value="0"><br/>
+        입력 2: <input type="text" class="inputs" id="input2" value="0">
+        <div id="addResult" class="row">
+        </div>
+        <!--
+            1. userInput div 안에 있어야만 AddView.js에서 찾을 수 있다.
+            2. type은 text/template 이다. javascript가 아니다.
+        -->
+        <script id="underTemplate" type="text/template">
+            <input type="text" id="result" value="<%= result %>">
+        </script>
+
+        <script id="overTemplate" type="text/template">
+            <span>+ : <strong><%= result %></strong></span>
+        </script>
+    </div>
+    <br/>
+
+    <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/lib/underscore-min.js"></script>
+    <script type="text/javascript" src="/js/lib/backbone-min.js"></script>
+    <script type="text/javascript" src="/js/lib/require.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+</body>
+</html>
+
+```
+
+index.ftl에 2개의 script가 추가되었다. <br/>
+
