@@ -4,24 +4,39 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootApplication
 @Controller
 public class Application {
 
 	public static void main(String[] args) {
+		members.add(new Member("jojoldu", "jojoldu@gmail.com"));
+		members.add(new Member("github", "github@github.com"));
+		members.add(new Member("okky", "okky@okky.com"));
+
 		SpringApplication.run(Application.class, args);
 	}
 
-
-	/*
-		@RequestMapping(value = "/", method = RequestMethod.GET)가 GetMapping("/") 가 됨
-	 */
-
+	//@RequestMapping(value = "/", method = RequestMethod.GET)가 GetMapping("/") 가 됨
 	@GetMapping("/")
 	public String index(){
 		return "index";
+	}
+
+	private static List<Member> members = new ArrayList<>();
+
+	@GetMapping("/members")
+	public List<Member> getMembers() {
+		return members;
+	}
+
+	@PostMapping("/member")
+	public boolean addMember(Member member) {
+		members.add(member);
+		return true;
 	}
 }
