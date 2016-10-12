@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,8 @@ import java.util.List;
 @SpringBootApplication
 @Controller
 public class Application {
+
+	private static List<Member> members = new ArrayList<>();
 
 	public static void main(String[] args) {
 		members.add(new Member("jojoldu", "jojoldu@gmail.com"));
@@ -27,14 +30,14 @@ public class Application {
 		return "index";
 	}
 
-	private static List<Member> members = new ArrayList<>();
-
 	@GetMapping("/members")
+	@ResponseBody
 	public List<Member> getMembers() {
 		return members;
 	}
 
 	@PostMapping("/member")
+	@ResponseBody
 	public boolean addMember(Member member) {
 		members.add(member);
 		return true;

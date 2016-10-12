@@ -993,5 +993,66 @@ function(AddModel) {
 ![이번엔 거짓이 아니야](./images/이번엔거짓이아니야.png)
 (이번엔 진짜로!)
 
+### backbone.js 사용 (3)
+
+```
+//index.ftl에 추가된 내용
+
+<div class="list">
+
+</div>
+
+<h1>Member List</h1>
+<div id="member">
+    <div id="memberList" class="list">
+
+    </div>
+
+    <script id="listTemplate" type="text/template">
+        <h5>회원 리스트</h5>
+        <ul>
+            <% _.each(members, function(member) { %>
+            <li><%= member.name %> : <%= member.email %></li>
+            <% }); %>
+        </ul>
+    </script>
+</div>
+```
+
+```
+//MemberModel
+define([],
+function () {
+    return Backbone.Model.extend({
+        defaults: {
+            members: [
+                {"name": "jojoldu", "email":"jojoldu@gmail.com"},
+                {"name": "github", "email": "github@github.com"},
+                {"name": "okky", "email": "okky@okky.com"}
+            ]
+        }
+    });
+});
+
+//MemberView
+define(['member/MemberModel'],
+function(MemberModel){
+    return Backbone.View.extend({
+        model : null,
+        template : null,
+
+        initialize: function () {
+            this.model = new MemberModel();
+            var templateHtml = this.$el.find('#listTemplate').html();
+            this.template = _.template(templateHtml);
+        },
+
+        render : function(){
+            this.$el.find('.list').html(this.template(this.model.toJSON()));
+        }
+    });
+});
+```
+
 
 

@@ -7,6 +7,7 @@
 define(['member/MemberModel'],
 function (MemberModel) {
     return Backbone.collection.extend({
-        model : MemberModel
+        model : MemberModel,
+        url : 'localhost:8080/members'
     });
 });

@@ -32,9 +32,16 @@
 
     <h1>Member List</h1>
     <div id="member">
-        <div id="memberList" class="list">
 
+        <div class="inputs">
+            이름 : <input type="text" id="name">
+            email : <input type="text" id="email">
+            <button name="button" type="button">회원 추가 </button>
         </div>
+
+        <h5>회원 Collection 리스트</h5>
+        <ul id="memberList" class="list">
+        </ul>
 
         <script id="listTemplate" type="text/template">
             <h5>회원 리스트</h5>
@@ -44,7 +51,12 @@
                 <% }); %>
             </ul>
         </script>
+
+        <script id="collectionTemplate" type="text/template">
+            <li><span><%= name %></span> : <%= email %></li>
+        </script>
     </div>
+
     <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
     <script type="text/javascript" src="/js/lib/underscore-min.js"></script>
     <script type="text/javascript" src="/js/lib/backbone-min.js"></script>
