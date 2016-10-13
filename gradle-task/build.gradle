@@ -1,0 +1,69 @@
+
+// 여러 task에서 사용할 수 있도록 build file 이름은 전역변수로 지정
+project.ext{
+	warBaseName = 'gradle-task'
+	warVersion = '0.0.1-'+ new Date().format('yyyyMMdd-HHmmss')
+}
+
+buildscript {
+	ext {
+		springBootVersion = '1.4.1.RELEASE'
+		gradleSshVersion = '2.2.0'
+	}
+	repositories {
+		jcenter()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("org.hidetake:gradle-ssh-plugin:${gradleSshVersion}")
+	}
+}
+
+apply plugin: "war"
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'spring-boot'
+apply plugin: 'org.hidetake.ssh'
+
+war {
+	baseName = project.warBaseName
+	version = project.warVersion
+	exclude("build/**")
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+	jcenter()
+}
+
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+remotes {
+	publicServer {
+		host = '호스트 혹은 IP'
+		port = 8021
+		user = '계정'
+		password = '비밀번호'
+		knownHosts = allowAnyHosts //알 수 없는 호스트라도 접속 가능
+	}
+}
+
+task scp <<{
+	ssh.run {
+		session(remotes.publicServer) {
+			// war 파일명을 로컬변수에 지정
+			final warName = project.warBaseName + "-" + project.warVersion+".war"
+			println "public 이름 : ${warName}"
+
+			put from: "build/libs/${warName}", into: '/'
+			println "public 서버 파일 전송"
+		}
+	}
+}
+
