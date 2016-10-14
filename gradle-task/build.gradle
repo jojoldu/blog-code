@@ -46,11 +46,10 @@ dependencies {
 
 remotes {
 	publicServer {
-		//
-		host = publicHost
-		port = publicPort.toInteger()
-		user = publicUser
-		password = publicPassword
+		host = project.properties["publicHost"]
+		port = project.properties["publicPort"].toInteger()
+		user = project.properties["publicUser"]
+		password = project.properties["publicPassword"]
 		knownHosts = allowAnyHosts //알 수 없는 호스트라도 접속 가능
 	}
 }
@@ -68,7 +67,7 @@ task scp <<{
 				from : 현재 폴더를 기준으로 from path 지정
 				into : 도착서버의 디렉토리 path 지정
 			 */
-			put from: "build/libs/${warName}", into: publicDir
+			put from: "build/libs/${warName}", into: project.properties["publicDir"]
 			println "public 서버 파일 전송 완료"
 		}
 	}
