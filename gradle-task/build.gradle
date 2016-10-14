@@ -46,23 +46,30 @@ dependencies {
 
 remotes {
 	publicServer {
-		host = '호스트 혹은 IP'
-		port = 8021
-		user = '계정'
-		password = '비밀번호'
+		//
+		host = publicHost
+		port = publicPort.toInteger()
+		user = publicUser
+		password = publicPassword
 		knownHosts = allowAnyHosts //알 수 없는 호스트라도 접속 가능
 	}
 }
 
 task scp <<{
 	ssh.run {
+		//remotes.publicServer으로 호스트 세션 시작
 		session(remotes.publicServer) {
 			// war 파일명을 로컬변수에 지정
 			final warName = project.warBaseName + "-" + project.warVersion+".war"
-			println "public 이름 : ${warName}"
+			println "war 이름 : ${warName}"
 
-			put from: "build/libs/${warName}", into: '/'
-			println "public 서버 파일 전송"
+			println "public 서버 파일 전송 시작"
+			/*
+				from : 현재 폴더를 기준으로 from path 지정
+				into : 도착서버의 디렉토리 path 지정
+			 */
+			put from: "build/libs/${warName}", into: publicDir
+			println "public 서버 파일 전송 완료"
 		}
 	}
 }
