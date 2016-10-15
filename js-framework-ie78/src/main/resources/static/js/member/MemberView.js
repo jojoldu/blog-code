@@ -7,6 +7,7 @@ define(['member/MemberModel', 'member/MemberCollection'],
 function(MemberModel, MemberCollection){
     return Backbone.View.extend({
         model : null,
+        collection : null,
         template : null,
         events : {
             'click #addMember' : 'save'
@@ -14,9 +15,11 @@ function(MemberModel, MemberCollection){
 
         initialize: function () {
             this.model = new MemberModel();
+            this.collection = new MemberCollection();
+            this.collection.fetch();
             var templateHtml = this.$el.find('#listTemplate').html();
             var collectionHtml = this.$el.find('#collectionTemplate').html();
-            this.template = _.template(templateHtml);
+            this.template = _.template(collectionHtml);
         },
 
         render : function(){
