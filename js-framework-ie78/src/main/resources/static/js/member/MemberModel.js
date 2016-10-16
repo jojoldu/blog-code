@@ -7,11 +7,8 @@ define([],
 function () {
     return Backbone.Model.extend({
         defaults: {
-            members: [
-                {"name": "jojoldu", "email":"jojoldu@gmail.com"},
-                {"name": "github", "email": "github@github.com"},
-                {"name": "okky", "email": "okky@okky.com"}
-            ]
+            name : null,
+            email : null
         }
     });
 });

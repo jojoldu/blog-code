@@ -20,10 +20,14 @@ function(MemberModel, MemberCollection){
             var templateHtml = this.$el.find('#listTemplate').html();
             var collectionHtml = this.$el.find('#collectionTemplate').html();
             this.template = _.template(collectionHtml);
+
+            this.listenTo(this.collection, 'change', this.render);
         },
 
         render : function(){
-            this.$el.find('.list').html(this.template(this.model.toJSON()));
+            this.collection.each(function(member){
+                this.$el.find('#memberList').append(this.template(member));
+            });
         },
 
         save : function() {

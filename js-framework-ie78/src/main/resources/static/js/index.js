@@ -15,6 +15,6 @@ require(['Calculator', 'add/AddView', 'member/MemberView'], function(Calculator,
    var memberView = new MemberView({
       el : $('#member')
    });
-   memberView.render();
+   //memberView.render();
 });
 
