@@ -9,6 +9,7 @@ function(MemberModel, MemberCollection){
         model : null,
         collection : null,
         template : null,
+        $memberList : null,
         events : {
             'click #addMember' : 'save'
         },
@@ -16,22 +17,36 @@ function(MemberModel, MemberCollection){
         initialize: function () {
             this.model = new MemberModel();
             this.collection = new MemberCollection();
-            this.collection.fetch();
-            var templateHtml = this.$el.find('#listTemplate').html();
             var collectionHtml = this.$el.find('#collectionTemplate').html();
             this.template = _.template(collectionHtml);
+            this.$memberList = this.$el.find('#memberList');
 
-            this.listenTo(this.collection, 'change', this.render);
+            this.listenTo(this.collection, 'reset', this.fetch);
+            this.listenTo(this.collection, 'add', this.render);
+
+            this.collection.fetch();
         },
 
-        render : function(){
-            this.collection.each(function(member){
-                this.$el.find('#memberList').append(this.template(member));
+        render : function(member){
+            this.$memberList.append(this.template(member.toJSON()));
+        },
+
+        fetch : function() {
+            /*
+             each의 내부 function에서는 this가 MemberView가 아니다.
+             MemberView를 사용하기 위해 this를 self로 변수할당 후 사용한다.
+             */
+            var self = this;
+            self.collection.forEach(function(member){ //member는 MemberModel 객체이다.
+                self.render(member);
             });
         },
 
         save : function() {
+            var name = this.$el.find('#name').val(),
+                email = this.$el.find('#email').val();
 
+            this.collection.add({name : name, email: email});
         }
     });
 });

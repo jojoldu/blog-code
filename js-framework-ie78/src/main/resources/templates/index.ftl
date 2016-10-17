@@ -26,31 +26,18 @@
     </div>
     <br/>
 
-    <div class="list">
-
-    </div>
-
     <h1>Member List</h1>
     <div id="member">
 
         <div class="inputs">
             이름 : <input type="text" id="name">
             email : <input type="text" id="email">
-            <button name="button" type="button">회원 추가 </button>
+            <button name="button" type="button" id="addMember">회원 추가 </button>
         </div>
 
         <h5>회원 Collection 리스트</h5>
         <ul id="memberList" class="list">
         </ul>
-
-        <script id="listTemplate" type="text/template">
-            <h5>회원 리스트</h5>
-            <ul>
-                <% _.each(members, function(member) { %>
-                <li><%= member.name %> : <%= member.email %></li>
-                <% }); %>
-            </ul>
-        </script>
 
         <script id="collectionTemplate" type="text/template">
             <li><span><%= name %></span> : <%= email %></li>
