@@ -40,7 +40,7 @@
         </ul>
 
         <script id="collectionTemplate" type="text/template">
-            <li><span><%= name %> : <%= email %> </span><button type="button" class="removeMember">삭제</button></li>
+            <li><span><%= name %> : <%= email %> </span></li>
         </script>
     </div>
 

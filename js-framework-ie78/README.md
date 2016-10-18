@@ -1,6 +1,6 @@
 IE 7,8에서 JS 프레임워크 조합하기
 ---------------------------------
-Angular나 React + @ 조합같은 경우 정말 매력적인 JS 프레임워크임은 분명하나 IE 7, 8에서는 사용할 수 없다는 치명적인 단점이 있다. 
+Angular나 React + @ 조합같은 경우 정말 매력적인 JS 프레임워크임은 분명하나 IE 7, 8에서는 사용할 수 없다는 치명적인 단점이 있다.
 국내에선 아직까지 IE 7,8의 점유율이 높은 편이라 회사 사정에 따라 IE 7,8을 지원해야하는 경우가 있다.
 
 ![악마의 IE](./images/ie-devil.jpg)
@@ -17,7 +17,7 @@ Angular나 React + @ 조합같은 경우 정말 매력적인 JS 프레임워크�
   - grunt를 사용하기 위해 먼저 설치되어 있어야함
   - Javascript 패키지 관리를 bower가 아닌 npm 으로 관리하기 위해 사용
   - bower는 버그가 좀 있다. 웬만하면 npm으로 패키지 관리를 추천
-  
+
 * [backbone.js](http://backbonejs.org/)
   - Javascript를 MV* 구조로 개발할 수 있게 지원하는 프레임워크
   - [조규태님의 backbone.js 가이드](http://webframeworks.kr/getstarted/backbonejs/)
@@ -26,18 +26,18 @@ Angular나 React + @ 조합같은 경우 정말 매력적인 JS 프레임워크�
 * jquery
   - 설명이 필요없는 Javascript 라이브러리
   - 여기선 Dom select와 이벤트 바인딩용으로 사용
-  
+
 * underscore.js
   - Javascript를 함수형으로 사용할 수 있게 지원 (client-side template engine용이 아니다.)
   - map, filter 등과 같은 함수형 기능들이 포함
   - backbone을 사용하려면 필수로 의존하게 되는데, 여기선 backbone 의존성을 위해서도 있지만, 좀 더 함수형으로 코드 작성하기 위해 사용
   - lodash라는 업그레이드 버전이 있지만 공식 사이트에서 IE 11까지만 확인되었다고해서 제외
   - underscore/lodash 모두 **ECMA2015** 때문에 포지션이 애매해졌다. (즉, ECMA2015 쓸수있는 환경이면 이거 다 몰라도 된다.)
-  
+
 * require.js
   - Javascript 의존성 관리 및 동적로딩
   - [네이버의 Requirejs 이해](http://d2.naver.com/helloworld/591319) 참고
-  
+
 * handlebars.js
   - client-side template engine
   - 서버 통신 없이 화면을 다시 그려야할 경우 사용
@@ -146,9 +146,9 @@ src/main/resources/static 폴더 아래에 js 라는 폴더를 생성하고, ind
 ![1번째 index.js](./images/indexjs1.png)
 
 이렇게 생성은 했는데 이걸 쓰려면 jquery가 필요하다. <br/>
-앞에 서버코드를 설정한것을 보면 ```registry.addResourceHandler("/**").addResourceLocations("classpath:/static/"); ``` 이렇게 되어있는데, 
+앞에 서버코드를 설정한것을 보면 ```registry.addResourceHandler("/**").addResourceLocations("classpath:/static/"); ``` 이렇게 되어있는데,
 이 말은 src/main/resources/static 폴더에 있는 static 파일들을 지원하겠다는 의미이다.  <br/>
-  
+
 그래서 귀찮지만 jquery 라이브러리를 src/main/resources/static/js/lib 폴더에 복사하자<br/>
 (계속 이렇게 하지 않으니 조금만 참아달라) <br/>
 jquery 라이브러리의 위치는 node_modules/jquery.1/node_modules/jquery/dist/에 있는 jquery.min.js 이다
@@ -219,7 +219,7 @@ $(function() {
 
 이렇게 구성후 프로젝트를 재시동하여 localhost:8080을 접속하면 정상적으로 코드가 분리된 것을 확인할 수 있다. <br/>
 자 이 간단한 구성에서 조차 문제가 있다. <br/>
-index.js는 항상 Calculator.js가 필요하다. 이를 index.js가 Calculator.js에 **의존한다** 라고 한다. <br/> 
+index.js는 항상 Calculator.js가 필요하다. 이를 index.js가 Calculator.js에 **의존한다** 라고 한다. <br/>
 즉, index.js를 사용하기 위해선 Calculator.js를 항상 먼저 호출해야한다. <br/>
 <br/>
 헌데 1~2개의 파일이면 문제 없지만 사이트의 규모가 커지면 커질수록 어떤 js를 호출하기 위해선 어떤 js가 먼저 호출되어야 한다는 것을 인지하고 개발하는것이 매우 어렵다. <br/>
@@ -235,7 +235,7 @@ require.js를 사용하기 위해 node_modules에서 파일을 옮기자. 근데
 grunt의 경우 워낙 [널리 블로그](http://nuli.navercorp.com/sharing/blog/post/1132682)에서 잘 설명하고 있어 참고하면 될 것같다. <br/>
 <br/>
 자 그럼 grunt 작업을 진행해보자. <br/>
-grunt를 사용하기 위해 grunt 라이브러리를 npm으로 받자. 
+grunt를 사용하기 위해 grunt 라이브러리를 npm으로 받자.
 ```
 //터미널 혹은 cmd를 프로젝트 폴더에서 open하여 아래 명령어 입력
 npm install --save-dev grunt
@@ -255,7 +255,7 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         pkg : grunt.file.readJSON('package.json'),
-        
+
         //jquery와 requirejs를 copy하도록 지정
         copy : {
             jquery : {
@@ -293,7 +293,7 @@ npm install --save-dev grunt-contrib-copy
 
 ![grunt run](./images/grunt-run1.png)
 
-정상적으로 done 확인후 프로젝트 폴더를 다시 확인해보자 
+정상적으로 done 확인후 프로젝트 폴더를 다시 확인해보자
 
 ![grunt run after](./images/grunt-run2.png)
 
@@ -316,7 +316,7 @@ package.json을 열어 scripts에 아래 코드를 추가하자
 
 ![npm start 결과](./images/npm-start2.png)
 
-자! 이제야 require.js를 사용할 수 있게 되었다!! 
+자! 이제야 require.js를 사용할 수 있게 되었다!!
 
 ![삼천포](./images/삼천포.jpg)
 
@@ -351,7 +351,7 @@ define([], function() {
 requirejs는 모듈 선언을 **define** 이란 지시어로 한다. <br/>
 define의 인자는 아래와 같은 역할을 한다.
 * 1번째 인자는 필요한 의존성들을 선언할 수 있다
-* 2번째 인자인 function은 해당 js파일을 호출했을때 실행할 코드와 return될 값 혹은 객체를 생성한다 
+* 2번째 인자인 function은 해당 js파일을 호출했을때 실행할 코드와 return될 값 혹은 객체를 생성한다
 
 즉, Calculator.js를 호출하게 되면 return된 {} 객체를 사용 할 수 있게 된다. <br/>
 이제 Calculator.js를 사용하는 index.js를 수정해보겠다.
@@ -472,7 +472,7 @@ backbone.js는 Model/Collection/View 라는 3가지 요소로 구성된 Javascri
 (Controller가 아니다 오해하시는분들이 꽤 많으신데 Collection이다)<br/>
 몇줄의 코드만으로 Model의 변경에 자동으로 view가 반응하도록 할 수 있다. <br/>
 
-backbone을 시작하기전, 현재 시스템을 조금 더 고도화!? 해보자. <br/> 
+backbone을 시작하기전, 현재 시스템을 조금 더 고도화!? 해보자. <br/>
 1+2를 2개의 input box에서 입력 받아 sum을 출력하는 방식으로 변경한다.
 
 ```
@@ -535,7 +535,7 @@ require(["Calculator"], function(Calculator) {
    getResult();
 });
 
-``` 
+```
 
 이렇게 코드를 작성후 프로젝트를 다시 실행시켜보자 <br/>
 그럼 실시간으로 sum값이 반영되는 프로젝트가 보일 것이다.
@@ -555,7 +555,7 @@ index.js가 과연 저 많은 일들을 할 필요가 있을까? <br/>
 index.js는 index.ftl이 불렸을 때 어떤 js들을 통해 어떤 일을 지시하는지만 하면 되지 않을까? <br/>
 Java는 MVC 모델로 각 Layer를 분리하면서 Javascript는 왜 분리하지 않을까? <br/>
 이런 고민을 갖고 있다면 Backbone.js가 좋은 방법이 될 수 있다 <br/>
-(물론 angular.js도 가능하다. but! 우린 IE 7,8에서 개발해야 하니 pass.....) 
+(물론 angular.js도 가능하다. but! 우린 IE 7,8에서 개발해야 하니 pass.....)
 
 ![서론이 너무 길었어!!](./images/backbone-레바.png)
 
@@ -575,7 +575,7 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         pkg : grunt.file.readJSON('package.json'),
-        
+
         //jquery와 requirejs, underscorejs, backbonejs를 copy하도록 지정
         copy : {
             jquery : {
@@ -638,17 +638,17 @@ module.exports = function(grunt) {
     <script type="text/javascript" src="/js/index.js"></script>
 </body>
 </html>
-``` 
+```
 
 backbone의 경우 View와 Model이라는 2가지 타입이 있다. (Collection은 나중에 소개하겠다) <br/>
 보통의 경우 데이터 관리는 Model이, 데이터의 변경에 따라 화면변경 혹은 이벤트처리 등은 View에서 담당하고 있기 때문에 View가 Controller역할까지 한다고 보면 될것 같다. <br/>
 <br/>
 위 코드를 View만으로 수정해보자.<br/>
-js 폴더 아래에 add라는 폴더를 생성하여 AddView.js 파일을 추가하자 
+js 폴더 아래에 add라는 폴더를 생성하여 AddView.js 파일을 추가하자
 
 ![addView.js 생성](./images/backbone-addView생성.png)
 
-추가 및 수정할 코드는 아래와 같다. 
+추가 및 수정할 코드는 아래와 같다.
 
 ```
 //AddView.js
@@ -682,9 +682,9 @@ backbone.js는 View 객체를 **Backbone.View.extend({})** 로 선언한다. <br
 requirejs 사용에 대해 다시 한번 기억을 떠올려 보면서 코드를 보자 <br/>
 define의 2번째 인자인 function에서 return 되는 객체는 해당 js파일을 호출할때 전달되는 값이라는 것이 기억 날 것이다. <br/>
 즉, AddView.js를 누군가 requirejs를 통해 호출할 경우 전달되는 값은 **Backbone.view.extend({...})** 인것이다. <br/>
-<br/> 
+<br/>
 AddView.js는 index.js의 역할 중, add에 관한 모든 책임을 받았다 <br/>
-즉, **inputs 클래스를 가진 dom element들에 keyup이벤트를 할당**하고,<br/> 
+즉, **inputs 클래스를 가진 dom element들에 keyup이벤트를 할당**하고,<br/>
 **keyup 이벤트가 발생하면 Calculator.js를 이용하여 계산된 결과를 result에 할당**한다.<br/>
 <br/>
 index.js는 add 기능에 관한 모든 책임을 AddView.js에 이관했기 때문에 남은건 AddView.js를 호출하는것 뿐이다. <br/>
@@ -698,7 +698,7 @@ index.js는 add 기능에 관한 모든 책임을 AddView.js에 이관했기 때
 **화면 변화에 필요한 일만 AddView**가 담당하고 **데이터는 다른 곳이 책임**을 지는게 좀 더 역할 분리가 된것 아닐까? <br/>
 backbone.js의 Model이 바로 이때 사용된다. <br/>
 지정한 데이터만 순수하게 관리하는 역할을 하는 객체를 backbone.js에선 Model 객체라고 한다. <br/>
-AddView.js 객체와 동일한 위치에 AddModel.js를 생성하자 
+AddView.js 객체와 동일한 위치에 AddModel.js를 생성하자
 
 ![AddModel 생성](./images/backbone-addmodel생성.png)
 
@@ -787,31 +787,31 @@ require(['Calculator', 'add/AddView'], function(Calculator, AddView) {
 ```
 
 코드의 역할은 대부분 주석이 있어 이해하는데 크게 어려움은 없을 것 같다. <br/>
-전체 Flow는 
+전체 Flow는
 * 화면상 input1, input2 값이 변경
 * ```events: {'keyup .inputs' : 'set'}``` 로 AddView.js의 set 함수 호출
 * set함수가 AddModel의 데이터 변경 (AddModel의 setInputs함수 호출)
 * ```this.listenTo(this.model, 'change', this.render)``` 코드로 인해 AddModel데이터 변경시 AddView.js의 render함수 호출
-* render함수가 AddModel의 result를 가져와 화면의 result 변경 
+* render함수가 AddModel의 result를 가져와 화면의 result 변경
 
 index.js에서 new AddView에서 인자로 el을 추가하게 된 이유는 **backbone.js의 event binding** 때문이다.
 
 backbone.js에서 event binding을 할때 주의해야 할 점은, 해당 View 객체의 Dom 영역이 지정되어 있어야만 된다는 것이다. <br/>
 AddView.js를 new 로 생성할 때 **{el : $('#userInput')}** 처럼 어떤 dom을 해당 View객체의 영역으로 지정할 것인지 입력되지 않으면 .inputs 클래스가 어디 영역인지 알 수 없어 event bingind이 안된다. <br/>
-왜 이렇게 번거롭게 했냐하면, backbone.js는 SPA(Single Page Application)에 초점을 맞춰 나온 프레임워크로, <br/> 
+왜 이렇게 번거롭게 했냐하면, backbone.js는 SPA(Single Page Application)에 초점을 맞춰 나온 프레임워크로, <br/>
 한 페이지 내에 분리된 Dom 영역은 각각에 맞는 Backbone객체들로 이루어지도록 하기 위함이다. <br/>
 하나의 js가 여러 Dom을 모두 관리하는게 아니라 A div 영역은 AView.js와 AModel.js가 전담하고, B div 영역은 BView.js와 BModel.js 가 전담하게 되는 것이다.
 여기에서도 ```<div id="userInput"></div>``` 영역은 AddView.js와 AddModel.js가 전담하게 된 것이다. <br/>
 
 한가지 더 주의사항이 있다면,<br/>
-backbone.js에서 model의 change 이벤트는 model의 defaults 속성에 반응하는 것이 아니라, attributes에 반응한다. 
+backbone.js에서 model의 change 이벤트는 model의 defaults 속성에 반응하는 것이 아니라, attributes에 반응한다.
 
 ![defaults vs attributes](./images/backbone-model-attributes.png)
 
 위 그림처럼 set으로 변경하여도 defaults 값은 변경되지 않는다.<br/>
 만약 model.defaults로 직접 값을 변경할 경우 change 체크가 안되서 이벤트가 발생하지 않는다. <br/>
 model.set() 으로 attributes를 변경해야만 하는 것을 잊지 말자 <br/>
-            
+
 겨우 1+2 하는데 왜 이난리를 쳐야하는지 생각할 수도 있을것 같다.
 
 ![레바-누진제](./images/레바-누진제.jpg)                             
@@ -855,7 +855,7 @@ getTemplate : function (result) {
 }
 ```
 
-코드에서 얘기하는 것은 간단하다. 
+코드에서 얘기하는 것은 간단하다.
 * render 함수는 AddModel을 통해 result 값을 가져온다.
 * getTemplate 함수로 result를 전달하여 원하는 형태의 html을 만들어 전달 받는다.
 * getTemplate 함수에서 전달받은 html 코드를 addResult의 innerHtml에 작성한다.
@@ -988,71 +988,258 @@ function(AddModel) {
 다시 화면을 확인해보면 정상적으로 기능이 작동 되는 것을 확인할 수 있다.<br/>
 이번 시간에 진행한 template 과정은 많은 회사가 사용하는 방식이지만 여전히 다른 문제들이 남아있다.<br/>
 이후 handlebars.js를 통해 이를 해결하려고 한다. (handlebars.js는 backbone.js 과정이 끝나면 진행할 예정이다.) <br/>
-다음 과정은 backbone.js를 통한 Ajax이다 
+다음 과정은 backbone.js를 통한 Ajax이다
 
 ![이번엔 거짓이 아니야](./images/이번엔거짓이아니야.png)
 (이번엔 진짜로!)
 
 ### backbone.js 사용 (3)
+이번 시간은 backbone의 꽃! rest api와의 연동을 진행할 예정이다.<br/>
+backbone의 경우 특히나 구분 없이, 중복적으로 사용하는 Ajax 처리에 큰 강점을 가지고 있기에 ([조규태님의 발표자료](http://www.slideshare.net/gyutaejo/backbonejs-m-v) 참고) jquery만으로 프론트엔드를 진행하고 있다면 아주 좋은 시간이 될 것 같다. <br/>
+<br/>
+자 그럼 본격적으로 내용을 진행하자.<br/>
+오늘의 예제는 회원 관리 리스트이다. 기본적인 회원 전체 리스트를 조회하고, 추가를 할 수 있다. <br/>
+해당 회원 정보는 실시간으로 서버와 통신하며 반영되어야 한다는 조건이 있다. <br/>
+실제 DB까지 구축할 필요는 없으니 내부 변수로 회원 리스트를 선언하는 방식으로 진행하겠다. <br/>
+<br/>
+제일 먼저 서버 코드를 수정해보자.
 
 ```
-//index.ftl에 추가된 내용
+// Application.java
+@SpringBootApplication
+@Controller
+public class Application {
 
-<div class="list">
+	private static List<Member> members = new ArrayList<>();
 
-</div>
+	public static void main(String[] args) {
+    //DB를 대신해서 사용
+		members.add(new Member(0, "jojoldu", "jojoldu@gmail.com"));
+		members.add(new Member(1, "github", "github@github.com"));
+		members.add(new Member(2, "okky", "okky@okky.com"));
 
+		SpringApplication.run(Application.class, args);
+	}
+
+	//@RequestMapping(value = "/", method = RequestMethod.GET)가 GetMapping("/") 가 됨
+	@GetMapping("/")
+	public String index(){
+		return "index";
+	}
+
+	@GetMapping("/member")
+	@ResponseBody
+	public List<Member> getMembers() {
+		return members;
+	}
+
+	@PostMapping("/member")
+	@ResponseBody
+	public boolean addMember(@RequestBody Member member) {
+		member.setIdx(members.size());
+		members.add(member);
+		return true;
+	}
+
+}
+
+// Member.java 생성
+// lombok을 사용하였다. 참고 : https://blogs.idincu.com/dev/?p=17
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class Member {
+
+    @Getter @Setter
+    private long idx;
+
+    @Getter @Setter
+    private String name;
+
+    @Getter @Setter
+    private String email;
+}
+
+```
+
+Application.java에 Rest API 2개를 추가, DB를 대신할 members라는 ArrayList를 추가하였다. <br/>
+여기서 사용하는 Member type는 앞으로 backbone에서 넘겨줄 데이터 타입으로 봐도 무방하다. <br/>
+2개 코드가 추가되었으니 간단하게 기능 확인을 먼저 해보겠다. 프로젝트를 재실행하여 localhost:8080/member를 호출해보자
+
+![회원 리스트](./images/ajax-member-get.png)
+
+main 메소드에서 저장한 3개의 객체가 올바르게 출력되는 것을 확인할 수 있다.<br/>
+자 그럼 간단하게 서버코드 작업은 끝이 났으니 프론트로 넘어가보자. <br/>
+프론트는 크게 2가지를 수정할 예정이다.
+* 회원 리스트를 보여줄 수 있도록 index.ftl 수정
+* Member와 관련된 처리를 담당할 MemberView.js, MemberModel.js, MemberCollection.js 을 추가
+먼저 index.ftl을 수정하자.
+
+```
+//index.ftl에 아래 코드 추가
 <h1>Member List</h1>
 <div id="member">
-    <div id="memberList" class="list">
 
+    <div class="inputs">
+        이름 : <input type="text" id="name">
+        email : <input type="text" id="email">
+        <button name="button" type="button" id="addMember">회원 추가 </button>
     </div>
 
-    <script id="listTemplate" type="text/template">
-        <h5>회원 리스트</h5>
-        <ul>
-            <% _.each(members, function(member) { %>
-            <li><%= member.name %> : <%= member.email %></li>
-            <% }); %>
-        </ul>
+    <h5>회원 Collection 리스트</h5>
+    <ul id="memberList" class="list">
+    </ul>
+
+    <script id="collectionTemplate" type="text/template">
+        <li><span><%= name %> : <%= email %> </span></li>
     </script>
 </div>
 ```
 
+위 코드의 위치를 모르겠다면, [Github](https://github.com/jojoldu/blog-code/blob/master/js-framework-ie78/src/main/resources/templates/index.ftl) 코드를 참고하자. <br/>
+index.ftl에는 크게 어려운 것이 없다. 이전시간에 진행했던 것처럼 화면 템플릿용으로 text/template type의 코드가 추가 되고, 입력화면이 구성되었다. <br/>
+자 다음으로는 Member와 관련된 backbone 모듈 생성이다.
+
+![Member backbone 파일](./images/member-backbone.png)
+
+각각의 코드는 아래와 같다. <br/>
+**MemberModel.js**
+
 ```
-//MemberModel
 define([],
 function () {
     return Backbone.Model.extend({
         defaults: {
-            members: [
-                {"name": "jojoldu", "email":"jojoldu@gmail.com"},
-                {"name": "github", "email": "github@github.com"},
-                {"name": "okky", "email": "okky@okky.com"}
-            ]
+            idx : null,
+            name : null,
+            email : null
         }
     });
 });
+```
+MemberModel.js는 회원 하나하나를 나타내는 모듈이 된다. <br/>
+이전 시간에는 Model이 데이터를 전부 담당하였지만, 여기서는 Model을 **데이터를 다루는 단위**로서 사용하고 있다. <br/>
+이유는 backbone에서는 단일 단위들의 집합체를 나타내기 위해 Collection이라는 타입을 지원하기 때문이다. <br/>
+우리가 Java에서 Member class로 만들어진 인스턴스들의 집합을 관리하기 위해 List, Map 등의 Collection을 사용하는 것과 유사하다고 보면 된다. <br/>
+backbone은 단일 객체는 Model로, Model의 집합은 Collection으로 관리한다고 생각하면 편할 것이다. <br/>
+다음은 MemberCollection.js를 생성해보자 <br/><br/>
+**MemberCollection.js**
 
-//MemberView
+```
 define(['member/MemberModel'],
-function(MemberModel){
-    return Backbone.View.extend({
-        model : null,
-        template : null,
+function (MemberModel) {
+    return Backbone.Collection.extend({
+        model : MemberModel,
+        url : '/member'
+    });
+});
+```
 
-        initialize: function () {
-            this.model = new MemberModel();
-            var templateHtml = this.$el.find('#listTemplate').html();
-            this.template = _.template(templateHtml);
+위 코드를 보면 MemberCollection.js는 자신이 어떤 타입을 관리할지 선언해야 한다. <br/>
+여기선 MemberModel을 관리해야하므로 MemberModel을 model에 지정하였다. <br/>
+그리고 추가로 url을 지정하였는데, 이게 collection의 코드를 간소화하는 핵심이다. <br/>
+backbone의 collection은 기본적으로 RESTFul API를 기준으로 한다. 그래서 서버쪽이 RESTFul API를 지원한다는 가정하에 url 속성에 지정한 값 (여기서는 /member)으로 RequestMethod에 따라 아래와 같은 기능을 **자동 지원**한다.
+* 전체리스트 조회 : GET, "/member"
+* 단일 조회 : GET, "/member/key값"
+* 등록 : POST, "/member"
+* 수정 : PUT, "/member"
+* 삭제 : DELETE, "/member/key값"
+
+RequestMethod가 용도에 맞게 지정되면 동일 url로 CRUD (Create, Read, Update, Delete)가 가능하기 때문에 backbone에서는 url을 단일값으로 지정하도록 되어있다. 우리도 그래서 Application.java의 2개 메소드가 동일한 url에 mapping되도록 하였다. <br/><br/>
+다음은 MemberView.js이다.
+
+**MemberView.js**
+
+```
+define(['member/MemberCollection'],
+function(MemberCollection){
+    return Backbone.View.extend({
+        collection : null,
+        template : null,
+        $memberList : null,
+        events : {
+            'click #addMember' : 'save'
         },
 
-        render : function(){
-            this.$el.find('.list').html(this.template(this.model.toJSON()));
+        initialize: function () {
+            this.collection = new MemberCollection();
+            var html = this.$el.find('#collectionTemplate').html();
+            this.template = _.template(html);
+            this.$memberList = this.$el.find('#memberList');
+
+            this.collection.fetch();
+
+            //collection.reset 이벤트 발생시 view.rednerAll 이벤트 실행
+            this.listenTo(this.collection, 'reset', this.renderAll);
+
+            //collection.add 이벤트 발생시 view.render 이벤트 실행
+            this.listenTo(this.collection, 'add', this.render);
+        },
+
+        render : function(member){
+            this.$memberList.append(this.template(member.toJSON()));
+        },
+
+        renderAll : function() {
+            /*
+             forEach의 내부 function에서는 this가 MemberView가 아니다.
+             MemberView를 사용하기 위해 this를 self로 변수할당 후 사용한다.
+             */
+            var self = this;
+            self.collection.forEach(function(member){ //member는 MemberModel 객체이다.
+                self.render(member);
+            });
+        },
+
+        save : function() {
+            var name = this.$el.find('#name').val(),
+                email = this.$el.find('#email').val();
+
+            this.collection.create({name : name, email: email});
         }
     });
 });
 ```
 
+MemberView.js는 AddView.js와 크게 다른건 없지만 몇가지 차이점이 존재한다.
+* Model 대신에 Collection (MemberCollection)에 의존성을 두고 있다.
+  - Model 관리는 Collection에게 위임하였다.
+  - 대신 Collection에 Model이 추가되는 경우 반응하도록 Listener를 등록하였다.
+* 1가지 렌더링 타입을 확장해서 사용한다.
+  - render : Model하나만을 대상으로 진행한다.
+  - renderAll : collection 내부에 있는 모든 Model을 대상으로 진행한다.
+  - 즉, 이전처럼 전체를 위한 렌더링 하나, 단일 대상을 위한 렌더링 하나 이렇게 구현하는 것이 아니라, 전체라는 것이 결국은 단일 대상이 모여서 구성된 것이므로 단일 대상만을 위한 렌더링만 구현하여 이를 확장해서 사용하도록 하였다.
+* 이벤트 대상에 **change는 없다**.
+  - collection은 이벤트 대상에 change가 없다.
+  - 대신 reset (전체 초기화 혹은 갱신), add(단일 대상 추가), remove(단일 대상 제거)등이 있다.
+  - 해당 이벤트에 맞춰 렌더링이 발생하도록 지정하였다.
+  - 즉, fetch를 통해 전체 대상 갱신을 하여 renderAll이 발생하고, 회원 추가 버튼으로 회원이 추가되면 collection에 model이 추가되어 render 이벤트가 자동으로 발생하도록 지정한 것이다.
 
+자 그럼 여기까지 진행후 전체 기능 확인을 진행해보자.<br/>
+처음 로딩을 하게 될 경우 collection.fetch가 발생하여 빈 화면에 서버에서 받은 회원 리스트가 출력된다.
 
+![회원 첫 화면](./images/backbone-collection-renderall.png)
+
+위 화면처럼 네트워크상에 member가 호출되어 값을 전달 받고 화면에 출력되는 것을 확인할 수 있다. <br/>
+여기서 input box를 통해 회원을 추가해보겠다.
+
+![회원 추가](./images/backbone-collection-add.png)
+
+화면상에 신규 회원이 추가되고, 네트워크상으로 post로 회원정보가 전송된 것을 확인할 수 있다. <br/>
+실제로 서버에서 잘 전달 받았는지 확인하기 위해 브라우저의 주소를 localhost:8080/member로 변경해보자
+
+![회원 저장 확인](./images/backbone-collection-addafter.png)
+
+짜잔!<br/>
+3개였던 서버 회원 정보가 4개가 된 것을 확인할 수 있다.<br/>
+<br/>
+드디어 길고 길었던 backbone 시간이 끝이 났다!! <br/>
+backbone만으로 3챕터를 진행할것이라 생각못했지만... 그래도 기본적인 backbone의 기능은 볼수 있었던것 같다.<br/>
+예제는 get/post만 진행하였지만 좀 더 backbone을 공부하고 싶다면 put/delete도 직접 구현하여 수정/삭제 기능을 완성해보는 것도 좋은 경험이 될 것 같다. <br/>
+국내에는 backbone의 한국교재가 하나밖에 없는걸로 알고 있다. <br/>
+그래도 처음 튜토리얼로 진행하기에 굉장히 좋은 책이니 backbone을 시작해봐야겠다는 마음이 있으면 큰맘먹고 진행해보는 것도 좋을것 같다. <br/>
+다음 시간은 grunt를 사용하여 배포용 프로젝트 전환을 진행해보겠다.
+
+![bye bye](./images/byebye.png)
+
+(다음에 또 만나요!)

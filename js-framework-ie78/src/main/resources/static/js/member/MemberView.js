@@ -3,10 +3,9 @@
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
-define(['member/MemberModel', 'member/MemberCollection'],
-function(MemberModel, MemberCollection){
+define(['member/MemberCollection'],
+function(MemberCollection){
     return Backbone.View.extend({
-        model : null,
         collection : null,
         template : null,
         $memberList : null,
@@ -15,15 +14,17 @@ function(MemberModel, MemberCollection){
         },
 
         initialize: function () {
-            this.model = new MemberModel();
             this.collection = new MemberCollection();
-            var collectionHtml = this.$el.find('#collectionTemplate').html();
-            this.template = _.template(collectionHtml);
+            var html = this.$el.find('#collectionTemplate').html();
+            this.template = _.template(html);
             this.$memberList = this.$el.find('#memberList');
 
             this.collection.fetch();
 
+            //collection.reset 이벤트 발생시 view.rednerAll 이벤트 실행
             this.listenTo(this.collection, 'reset', this.renderAll);
+
+            //collection.add 이벤트 발생시 view.render 이벤트 실행
             this.listenTo(this.collection, 'add', this.render);
         },
 
