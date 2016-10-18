@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg : grunt.file.readJSON('package.json'),
         
-        //jquery와 requirejs, underscorejs, backbonejs를 copy하도록 지정
+        //jquery와 requirejs, underscorejs, backbonejs, json2를 copy하도록 지정
         copy : {
             jquery : {
                 src : 'node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js',
@@ -27,6 +27,10 @@ module.exports = function(grunt) {
             backbone : {
                 src : 'node_modules/backbone/backbone-min.js',
                 dest : 'src/main/resources/static/js/lib/backbone-min.js'
+            },
+            json2 : {
+                src : 'node_modules/json2/lib/jSON2/static/json2.js',
+                dest : 'src/main/resources/static/js/lib/json2.js'
             }
         }
     });
