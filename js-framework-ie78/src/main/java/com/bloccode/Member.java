@@ -17,6 +17,9 @@ import lombok.*;
 public class Member {
 
     @Getter @Setter
+    private long idx;
+
+    @Getter @Setter
     private String name;
 
     @Getter @Setter

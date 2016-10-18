@@ -3,9 +3,7 @@ package com.bloccode;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +15,9 @@ public class Application {
 	private static List<Member> members = new ArrayList<>();
 
 	public static void main(String[] args) {
-		members.add(new Member("jojoldu", "jojoldu@gmail.com"));
-		members.add(new Member("github", "github@github.com"));
-		members.add(new Member("okky", "okky@okky.com"));
+		members.add(new Member(0, "jojoldu", "jojoldu@gmail.com"));
+		members.add(new Member(1, "github", "github@github.com"));
+		members.add(new Member(2, "okky", "okky@okky.com"));
 
 		SpringApplication.run(Application.class, args);
 	}
@@ -30,7 +28,7 @@ public class Application {
 		return "index";
 	}
 
-	@GetMapping("/members")
+	@GetMapping("/member")
 	@ResponseBody
 	public List<Member> getMembers() {
 		return members;
@@ -38,8 +36,16 @@ public class Application {
 
 	@PostMapping("/member")
 	@ResponseBody
-	public boolean addMember(Member member) {
+	public boolean addMember(@RequestBody Member member) {
+		member.setIdx(members.size());
 		members.add(member);
+		return true;
+	}
+
+	@DeleteMapping("/member/{idx}")
+	@ResponseBody
+	public boolean deleteMember(@PathVariable long idx){
+		members.remove(idx);
 		return true;
 	}
 }

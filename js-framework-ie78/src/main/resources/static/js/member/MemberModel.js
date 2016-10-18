@@ -7,6 +7,7 @@ define([],
 function () {
     return Backbone.Model.extend({
         defaults: {
+            idx : null,
             name : null,
             email : null
         }
