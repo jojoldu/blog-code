@@ -882,7 +882,7 @@ Application.java에 Rest API 2개를 추가, DB를 대신할 members라는 Array
 
 ![회원 리스트](./images/ajax-member-get.png)
 
-main 메소드에서 저장한 3개의 객체가 올바르게 출력되는 것을 확인할 수 있다.<br/> 자 그럼 간단하게 서버코드 작업은 끝이 났으니 프론트로 넘어가보자. <br/> 프론트는 크게 3가지를 수정할 예정이다.* json2.js 라이브러리 추가 - IE7에서는 JSON 객체가 기본으로 포함되어 있지 않다. JSON.parse, JSON.stringify등을 사용해야 하므로 등록하자* 회원 리스트를 보여줄 수 있도록 index.ftl 수정* Member와 관련된 처리를 담당할 MemberView.js, MemberModel.js, MemberCollection.js 을 추가
+main 메소드에서 저장한 3개의 객체가 올바르게 출력되는 것을 확인할 수 있다.<br/> 자 그럼 간단하게 서버코드 작업은 끝이 났으니 프론트로 넘어가보자. <br/> 프론트는 크게 3가지를 수정할 예정이다. - json2.js 라이브러리 추가 - IE7에서는 JSON 객체가 기본으로 포함되어 있지 않다. JSON.parse, JSON.stringify등을 사용해야 하므로 등록하자 - 회원 리스트를 보여줄 수 있도록 index.ftl 수정 - Member와 관련된 처리를 담당할 MemberView.js, MemberModel.js, MemberCollection.js 을 추가
 
 먼저 Gruntfile.js를 수정하자. <br/> json2 모듈을 받아야하므로 `npm install json2 --save`를 입력하자. 그러면 package.json에 json2가 추가된 것을 확인할 수 있다.
 
