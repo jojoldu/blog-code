@@ -1,6 +1,7 @@
 .gradle
 /build/
 !gradle/wrapper/gradle-wrapper.jar
+war.json
 
 ### STS ###
 .classpath

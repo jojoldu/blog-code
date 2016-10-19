@@ -3,6 +3,7 @@
 project.ext{
 	warBaseName = 'gradle-task'
 	warVersion = '0.0.1-'+ new Date().format('yyyyMMdd-HHmmss')
+	jsonName = 'war.json'
 }
 
 buildscript {
@@ -68,8 +69,22 @@ task scp <<{
 				into : 도착서버의 디렉토리 path 지정
 			 */
 			put from: "build/libs/${warName}", into: project.properties["publicDir"]
+			put from: "${project.jsonName}", into: project.properties["publicDir"]
 			println "public 서버 파일 전송 완료"
 		}
 	}
 }
 
+import groovy.json.JsonBuilder
+task makeWarNamejson <<{
+	// sample
+	//final warName = "war"
+	final warName = project.warBaseName + "-" + project.warVersion+".war"
+	final jsonName = project.jsonName
+	def content = [:]
+	content['name'] = warName;
+	new File(jsonName).write(new JsonBuilder(content).toPrettyString())
+}
+
+//scp task가 실행되기전에 makeWarNamejson task가 무조건 실행되도록 의존 추가
+scp.dependsOn makeWarNamejson
