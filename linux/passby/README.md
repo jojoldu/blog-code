@@ -130,8 +130,13 @@ task scp <<{
 				from : 현재 폴더를 기준으로 from path 지정
 				into : 도착서버의 디렉토리 path 지정
 			 */
-			put from: "build/libs/${warName}", into: project.properties["publicDir"]
-			put from: "${project.jsonName}", into: project.properties["publicDir"]
+		    put from: "build/libs/${warName}", into: project.properties["publicDir"]
+
+		    println "public 서버의 war.json 제거"
+		    remove project.properties["publicDir"]+"${jsonName}"
+
+		    println "public 서버 war.json 전송"
+		    put from: "${jsonName}", into: project.properties["publicDir"]
 			println "public 서버 파일 전송 완료"
 		}
 	}
