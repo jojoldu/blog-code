@@ -46,12 +46,21 @@ module.exports = function(grunt) {
                 ],
                 dest: 'src/main/resources/static/build/js/lib.js' //concat 결과 파일
             }
+        },
+
+        useminPrepare: {
+            ftl: ['src/main/resources/templates/*.ftl']
+        },
+        usemin: {
+            ftl: ['src/main/resources/templates/*.ftl']
         }
     });
 
     // 플러그인 load
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-usemin');
 
     /*
         Default task(s) : 즉, grunt 명령어로 실행할 작업
