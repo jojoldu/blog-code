@@ -8,4 +8,5 @@ gen
 build
 /classes
 node_modules
+/src/main/resources/static/js/lib
 /src/main/resources/static/build

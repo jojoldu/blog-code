@@ -1,7 +1,7 @@
 {
   "name": "js-framework-ie78",
   "version": "1.0.0",
-  "description": "Javascript Framework Example for ie7/8",
+  "description": "SpringBoot And Javascript Framework Example for Old Internet Explorer",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -16,6 +16,7 @@
     "handlebar",
     "underscore",
     "require",
+    "grunt",
     "ie78",
     "spring boot"
   ],
@@ -33,11 +34,9 @@
     "requirejs": "^2.3.2"
   },
   "devDependencies": {
-    "almond": "^0.3.3",
     "grunt": "^1.0.1",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-requirejs": "^1.0.0",
-    "grunt-usemin": "^3.1.1"
+    "grunt-contrib-requirejs": "^1.0.0"
   }
 }

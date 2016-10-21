@@ -44,14 +44,18 @@
         </script>
     </div>
 
-    <#--<script type="text/javascript" src="/js/lib/jquery.min.js"></script>-->
-    <#--<script type="text/javascript" src="/js/lib/underscore-min.js"></script>-->
-    <#--<script type="text/javascript" src="/js/lib/backbone-min.js"></script>-->
-    <#--<script type="text/javascript" src="/js/lib/require.js"></script>-->
-    <#--<script type="text/javascript" src="/js/lib/json2.js"></script>-->
-    <script type="text/javascript" src="/build/js/lib.js"></script>
-    <script type="text/javascript" src="/optimized/js/service.js"></script>
-    <#--<script type="text/javascript" src="/js/main.js"></script>-->
-    <#--<script type="text/javascript" src="/js/index.js"></script>-->
+    <#if profile == "dev">
+        <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+        <script type="text/javascript" src="/js/lib/underscore-min.js"></script>
+        <script type="text/javascript" src="/js/lib/backbone-min.js"></script>
+        <script type="text/javascript" src="/js/lib/require.js"></script>
+        <script type="text/javascript" src="/js/lib/json2.js"></script>
+        <script type="text/javascript" src="/js/main.js"></script>
+        <script type="text/javascript" src="/js/index.js"></script>
+    <#else>
+        <script type="text/javascript" src="/build/js/lib.js"></script>
+        <script type="text/javascript" src="/build/js/service.js"></script>
+    </#if>
+
 </body>
 </html>
