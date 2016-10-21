@@ -1298,3 +1298,387 @@ backbone만으로 3챕터를 진행할것이라 생각못했지만... 그래도 
 ![bye bye](./images/byebye.png)
 
 (다음에 또 만나요!)
+
+### Product 배포환경 구축
+길고 길었던 Backbone의 시간을 지나 이번엔 실제 배포환경에서 Javascript들을 어떻게 관리해야하는지 진행하려고 한다. <br/>
+localhost:8080으로 본인 혼자서 사용할때는 상관없지만, 실제로 서비스되는 환경에서는 이대로 배포할 경우 굉장히 느린 사이트를 보게 될 것이다. <br/>
+일반적으로 웹 사이트의 속도는 다음의 요소에 의해 좌지우지된다. (서버의 요소는 제외하고 순수하게 프론트엔드에 한해서만)
+<br/><br/>
+* HTTP Request(요청) 수
+  - 즉, 한번 페이지가 로딩되는데 HTTP Request가 많으면 많을수록 사이트의 성능은 떨어진다.
+
+* 호출하는 정적 파일들의 용량
+  - 정적파일이라 함은 css, js, image 등을 얘기한다. 즉, 이러한 파일들의 용량이 적을 수록 사이트의 성능은 좋아진다.
+
+물론 이것보다 훨씬 많은 요소가 존재한다. 좀 더 자세한 내용을 알고 싶다면 [웹사이트 최적화 기법](http://book.naver.com/bookdb/book_detail.nhn?bid=4587095) 을 참고하길 바란다. <br/>
+여튼 우리는 위 2가지 요소를 놓치지 않고 배포해야만 한다. <br/>
+그래서 다음의 2가지 작업을 진행할 예정이다.
+<br/><br/>
+
+* HTTP Request(요청) 수를 줄일 것이다.
+  - 외부 라이브러리들을 합친 js파일 1개와 직접 개발한 js파일들을 모두 합친 js파일 1개를 만들어 사용할 것이다.
+  - 기존에 10개 이상 호출되던 js파일들이 단 2개로 줄어드는 것이다.
+  - 회사 기준에 따라 외부라이브러리들과 개발한 js파일들도 다합치는 경우도 있다. 하지만 여기에선 2개를 분리해서 나갈 예정이다.
+
+* 정적 파일들의 용량을 줄일 것이다.
+  - css는 현재 없으니 js들을 전부 uglify할 예정이다
+  - 즉, 엔터/스페이스 등은 모두 제거
+  - 긴 변수명은 짧은 변수명으로 교체
+
+하나하나 진행해보자!
+
+#### 외부 라이브러리 합치기 (concat)
+첫번째로 진행할 내용은 js파일들을 합치는 것이다. <br/>
+기본적으로 이렇게 배포전에 하는 자동화된 행동들은 모두 task라고 불리며 이를 실행시키는 도구를 task runner라고 부른다. <br/>
+(프론트엔드에는 grunt와 gulp가 있고, 백엔드에는 gradle 등이 있다.)<br/>
+
+우리의 task runner는 grunt이기 때문에 grunt를 이용할 예정이다. <br/>
+grunt에는 정적파일(js, css등)을 합치는 것을 지원하는 플러그인으로 **grunt-contrib-concat** 이 있다. <br/>
+해당 플러그인을 통해 우리의 js파일들을 합쳐보자. <br/>
+npm install을 통해 플러그인을 받고 이를 load할 수 있도록 Gruntfile.js에 등록하자.
+
+```
+npm install grunt-contrib-concat --save-dev
+```
+
+위 처럼 npm install 커맨드를 입력하면
+
+![concat install](./images/grunt/concat-install.png)
+
+정상적으로 인스톨 되는 것을 확인할 수 있다. 이후
+
+![concat gruntfile](./images/grunt/concat-file.png)
+
+Gruntfile.js에 위 코드를 추가하자. <br/>
+처음 concat할 파일들은 외부 라이브러리들이다. <br/>
+backbone, jquery, require 등등 외부 라이브러리들이 많아 이를 하나하나 호출하는게 부담이 된다.
+
+![외부라이브러리 호출](./images/grunt/concat-network.png)
+
+(접속하면 5개의 라이브러리를 받아야만 한다... 대형포털은 이것보다 배는 받을 수도 있다.) <br/>
+이 5개를 하나로 합치기 위해 아래와 같이 Gruntfile.js를 수정해보자.
+
+```
+'use strict';
+module.exports = function(grunt) {
+
+    grunt.initConfig({
+        pkg : grunt.file.readJSON('package.json'),
+
+        //jquery와 requirejs, underscorejs, backbonejs, json2를 copy하도록 지정
+        copy : {
+            jquery : {
+                src : 'node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js',
+                dest : 'src/main/resources/static/js/lib/jquery.min.js'
+            },
+            require : {
+                src : 'node_modules/requirejs/require.js',
+                dest : 'src/main/resources/static/js/lib/require.js'
+            },
+            underscore : {
+                src : 'node_modules/backbone/node_modules/underscore/underscore-min.js',
+                dest : 'src/main/resources/static/js/lib/underscore-min.js'
+            },
+            backbone : {
+                src : 'node_modules/backbone/backbone-min.js',
+                dest : 'src/main/resources/static/js/lib/backbone-min.js'
+            },
+            json2 : {
+                src : 'node_modules/json2/lib/jSON2/static/json2.js',
+                dest : 'src/main/resources/static/js/lib/json2.js'
+            }
+        },
+
+        // concat task 설정
+        concat: {
+            lib: {
+                //순서가 중요하다. 꼭 라이브러리 순서를 지켜서 작성하자.
+                src:[
+                    'src/main/resources/static/js/lib/jquery.min.js',
+                    'src/main/resources/static/js/lib/underscore-min.js',
+                    'src/main/resources/static/js/lib/backbone-min.js',
+                    'src/main/resources/static/js/lib/require.js',
+                    'src/main/resources/static/js/lib/json2.js'
+                ],
+                dest: 'src/main/resources/static/build/js/lib.js' //concat 결과 파일
+            }
+        }
+    });
+
+    // 플러그인 load
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-concat'); //concat load
+
+    /*
+        Default task(s) : 즉, grunt 명령어로 실행할 작업
+        copy -> concat 진행
+    */
+    grunt.registerTask('default', ['copy', 'concat']);
+};
+
+```
+concat 옵션의 lib라는 이름은 상관이 없다. 다른 이름으로 지어도 무방하나 여기선 라이브러리들을 합치는 task이니 lib라고 지었을 뿐이다. <br/>
+concat은 src에 작성된 순서대로 js파일들을 합치는데, 저 순서가 어긋나면 **각자가 맺고 있는 의존성이 겹치게 되어** 정상적으로 각 라이브러리들이 작동하지 않는 현상이 발생한다. <br/>
+dest 옵션은 src에 포함된 라이브러리들을 합친 결과 js파일을 지정하는 것이다. 난 lib.js 라는 파일에 다 합쳐지도록 지정한 것이다. <br/>
+마지막 registerTask에 copy task 다음으로 concat task가 실행되도록 등록하였다. 이렇게 되면 grunt 실행시 copy -> concat 순으로 실행된다. <br/>
+잘 설정 되었는지 확인을 해보자.
+
+![concat 실행](./images/grunt/concat-console.png)
+
+그리고 lib.js를 사용할 수 있도록 index.ftl을 수정해보자. <br/>
+(기존의 라이브러리들을 주석처리하고 lib.js를 추가할 것이다.)
+
+```
+<!--
+<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+<script type="text/javascript" src="/js/lib/underscore-min.js"></script>
+<script type="text/javascript" src="/js/lib/backbone-min.js"></script>
+<script type="text/javascript" src="/js/lib/require.js"></script>
+<script type="text/javascript" src="/js/lib/json2.js"></script>
+-->
+<script type="text/javascript" src="/build/js/lib.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+```
+
+작업이 완료되었으니 프로젝트를 재실행시켜보자.
+
+![concat 후](./images/grunt/concat-result.png)
+
+짜잔! <br/>
+모든 라이브러리들이 사라지고 lib.js만 호출되면서도 오류가 발생하지 않는것을 확인할 수 있다. <br/>
+기존의 5번의 호출이 1번의 호출로 변경된 것이다! <br/>
+다음은 우리가 직접 만든 js파일들을 합쳐보겠다. <br/>
+
+#### 개발한 js파일들 합치기 (requirejs)
+외부 라이브러리들을 합치는 것과 달리 우리가 개발한 js 파일들을 합치는 것은 조금 고민해봐야 한다. <br/>
+왜그러냐하면 우리가 작성한 파일들은 단독으로 돌아가는게 아니라 서로가 서로를 requirejs를 통해 호출하고 있는 형태이기 때문이다. 그래서 무작정 concat을 할수는 없다. <br/>
+grunt에서도 이런 문제를 알고 있기에 **grunt-contrib-requirejs** 라는 플러그인을 통해 requirejs로 호출되는 js파일들을 합치는것 뿐만 아니라 압축까지 옵션에 따라 시켜준다. <br/>
+<br/>
+
+설치법은 concat과 동일하다.
+
+```
+npm install grunt-contrib-requirejs --save-dev
+```
+
+마찬가지로 Gruntfile.js에 등록하자.
+
+```
+'use strict';
+module.exports = function(grunt) {
+
+    grunt.initConfig({
+        pkg : grunt.file.readJSON('package.json'),
+
+        //jquery와 requirejs, underscorejs, backbonejs, json2를 copy하도록 지정
+        copy : {
+            jquery : {
+                src : 'node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js',
+                dest : 'src/main/resources/static/js/lib/jquery.min.js'
+            },
+            require : {
+                src : 'node_modules/requirejs/require.js',
+                dest : 'src/main/resources/static/js/lib/require.js'
+            },
+            underscore : {
+                src : 'node_modules/backbone/node_modules/underscore/underscore-min.js',
+                dest : 'src/main/resources/static/js/lib/underscore-min.js'
+            },
+            backbone : {
+                src : 'node_modules/backbone/backbone-min.js',
+                dest : 'src/main/resources/static/js/lib/backbone-min.js'
+            },
+            json2 : {
+                src : 'node_modules/json2/lib/jSON2/static/json2.js',
+                dest : 'src/main/resources/static/js/lib/json2.js'
+            }
+        },
+
+        // concat task 설정
+        concat: {
+            lib: {
+                //순서가 중요하다. 꼭 라이브러리 순서를 지켜서 작성하자.
+                src:[
+                    'src/main/resources/static/js/lib/jquery.min.js',
+                    'src/main/resources/static/js/lib/underscore-min.js',
+                    'src/main/resources/static/js/lib/backbone-min.js',
+                    'src/main/resources/static/js/lib/require.js',
+                    'src/main/resources/static/js/lib/json2.js'
+                ],
+                dest: 'src/main/resources/static/build/js/lib.js' //concat 결과 파일
+            }
+        },
+
+        // requirejs task 설정
+        requirejs: {
+            build: {
+                options: {
+                    baseUrl : 'src/main/resources/static/js',
+                    name : 'index',
+                    mainConfigFile : 'src/main/resources/static/js/main.js',
+                    optimize : 'none',
+                    out : 'src/main/resources/static/build/js/service.js'
+                }
+            }
+        }
+    });
+
+    // 플러그인 load
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-concat'); //concat load
+    grunt.loadNpmTasks('grunt-contrib-requirejs'); //requirejs load
+
+    /*
+        Default task(s) : 즉, grunt 명령어로 실행할 작업
+        copy -> concat 진행
+    */
+    grunt.registerTask('default', ['copy', 'concat', 'requirejs']);
+};
+```
+
+requirejs task의 옵션에 대한 소개는 아래와 같다. <br/>
+
+* build : requirejs task를 여러개 사용하고 싶을 경우 각각의 설정들을 나타내는 이름
+* options : 실제 build 라는 이름의 requirejs task에 적용될 옵션들을 나타낸다.
+* baseUrl : 아래 name을 호출할때 기본이 되는 base 주소를 나타낸다.
+* name : 기준이 될 js 파일을 지정한다.
+  - 우리는 index.js에서 사이트가 시작되니 index.js를 등록하였다.
+  - index.js에서 빠진 js의 경우 task 대상에 포함되지 않는다.
+  - index.js에서 ModelView 의존성을 제거해보고 실행시키면 바로 알 수 있다.
+* mainConfigFile : requirejs를 적용할때 사용하는 설정 파일. 이전에 만들어두었던 main.js를 등록하였다.
+* optimize : 최적화 옵션. none / uglify 등이 있다.
+* out : 위 옵션들을 통해 생성되는 결과물
+
+자 그럼 다시 한번 ```npm start``` 명령어로 grunt를 실행시켜보자.
+
+![requirejs 결과 파일](./images/grunt/requirejs-result.png)
+
+보는 것처럼 아주 이쁘게 service.js 파일에 모든 js파일들이 모여 있는것을 확인할 수 있다. <br/>
+코드를 보면 이상함을 느낄 수 있는데, index.js에서 부르는 view파일들 외에도 model, collection 파일들까지 모여있는 것을 볼 수 있다. <br/>
+이건 grunt-contrib-requirejs에서 **의존성의 마지막까지 쫓아가서 합쳐준 결과** 이다. <br/>
+options에서 지정한 index.js에서 포함된 AddView.js와 MemberView.js가 각각 Model.js, Collection.js를 필요로 하기 때문에 모두 가져와 합치게 된 것이다. <br/>
+즉, service.js는 **필요한 모든 의존성을 가지고 있는 단일 파일** 이 된 것이다.
+
+![MemberView.js 제외](./images/grunt/requirejs-name1.png)
+
+(MemberView.js를 **제외** 하고 grunt를 실행시킨 결과: MemberModel이 없다.)
+
+![MemberView.js 제외](./images/grunt/requirejs-name2.png)
+
+(MemberView.js를 **추가** 하여 grunt를 실행시킨 결과: MemberModel이 있다.) <br/>
+<br/>
+파일 확인은 끝났으니 기능확인을 진행하자. index.ftl을 수정하고 프로젝트를 재실행 시켜보자.
+
+```
+<!--
+<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+<script type="text/javascript" src="/js/lib/underscore-min.js"></script>
+<script type="text/javascript" src="/js/lib/backbone-min.js"></script>
+<script type="text/javascript" src="/js/lib/require.js"></script>
+<script type="text/javascript" src="/js/lib/json2.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+-->
+
+<script type="text/javascript" src="/build/js/lib.js"></script>
+<script type="text/javascript" src="/build/js/service.js"></script>
+```
+
+![requirejs 네트워크](./images/grunt/requirejs-result-network.png)
+
+와우! 아주 이쁘게 딱 2개의 js 파일만 호출하는 것을 볼 수 있다! <br/>
+자 그럼 다음 단계로 가보자!
+
+#### 파일 최적화 (uglify)
+service.js 파일을 보면 코드 그대로 합친것이라 수많은 enter와 space들이 존재하며, 아주 긴 변수/함수명들이 있는것을 확인할 수 있다. <br/>
+이럴 경우 불필요한 용량을 차지하게 된다. (enter와 space도 결국은 문자라 용량을 차지한다.) <br/>
+그리고 변수/함수명도 결국은 코드의 의도를 확인하기 위함이지, 실제 배포에서는 변수명이 a이나 addMember이나 별 상관없다. 정확히 그 함수 혹은 변수만 호출할 수 있으면 되기 때문이다. <br/>
+그래서 변수/함수명을 줄이고 공백 제거를 진행할 예정이다. <br/>
+조금전에 작성했던 grunt-contrib-requirejs의 optimize 옵션을 사용하면 아주 쉽게 적용할 수 있다. <br/>
+optimize옵션 값을 **uglify** 로 변경해보자. <br/>
+그리고 다시 ```npm start```를 실행해보자. 그러면 service.js가 완전 달라져있을 것이다.
+
+![service.js 최적화](./images/grunt/requirejs-uglify.png)
+
+보는것처럼 변수명들이 아주 단순하게 변경되고 모든 공백들이 사라진 것을 확인할 수 있다. <br/>
+실제로 모든 웹서비스는 이렇게 js파일들을 uglify하여 나간다. (네이버,다음,줌,네이트 모두 확인해봐도 좋다.)<br/>
+그럼 이렇게만 하면 실제 서비스에 배포할 수 있는 프로젝트가 된걸까? <br/>
+No No! <br/>
+한단계가 더 남았다.
+
+#### 개발/배포 환경 분리하기 (Spring profile)
+타이틀을 보면 짐작하시는 분도 계실테고, 아닌 분들도 계실것 같다. <br/>
+최근 react가 확산되면서 webpack dev server가 많이 얘기가 되서 개발/배포 환경은 대부분 알고 계신것 같다.<br/>
+<br/>
+방금전까지 우리는 **배포 환경** 위주의 작업을 진행하였다. <br/>
+즉, lib.js와 service.js만 index.ftl에 포함시켜서 배포하면 되는 것으로 진행하였지만, 이럴 경우 다시 수정 및 개발을 해야할 때는 어떻게 할 것인가? <br/>
+개발할때는 기존 js들의 주석을 풀고, 배포할때는 다시 주석을 추가하는 식으로 관리할까? <br/>
+절대 아니다. 실수할 여지도 많을 뿐더러, 갑작스럽게 기존 개발자가 퇴사하게 될 경우 프로젝트의 히스토리를 모르는 후임자라면 사고날 확률이 너무나 높다.<br/>
+그래서 개발할때와 배포할때 사용할 js파일들을 주석이 아닌 자동으로 관리하도록 수정을 해보자. <br/>
+<br/>
+우리가 사용할 방법은 Spring의 profile 이다. <br/>
+Spring의 경우 해당 jar 혹은 war를 실행시킬때 active profile을 지정할수가 있다. <br/>
+실제 많은 서비스 회사에서는 dev/QA/Stage/Product 환경을 분리해서 사용하고 있다. <br/>
+여기서는 간단하게 로컬에서 IDE로 실행시킬때는 dev환경으로, 나머지는 배포환경으로 진행을 하겠다. <br/>
+Application.java 파일을 열어 기존의 index 메소드를 아래와 같이 수정하자
+
+```
+@Autowired
+Environment env;
+
+//@RequestMapping(value = "/", method = RequestMethod.GET)가 GetMapping("/") 가 됨
+@GetMapping("/")
+public String index(Model model){
+  //activeProfiles는 profile이 없을 경우 size가 0이 되므로, 이를 보정하는 삼항연산자
+  String profile = env.getActiveProfiles().length > 0? env.getActiveProfiles()[0] : "default";
+  model.addAttribute("profile", profile);
+  return "index";
+}
+```
+
+Environment는 현재 실행중인 application의 환경변수들을 포함하고 있다.
+
+![profile 디버깅](./images/grunt/profile-dev-debug.png)
+
+보는것처럼 여러 속성중, 우리가 사용할 것은 activeProfiles이다. dev 옵션을 주고 프로젝트를 실행시키면 이때 **activeProfiles 에는 dev값이** 할당되고, dev옵션 없이 실행시킬 경우
+default 값이 할당된다. <br/>
+이렇게 되면 index.ftl에서는 model에 담긴 profile 값을 보고 dev일 경우에는 기존 js파일들을 호출하도록, 그외에 다른 값일 경우엔 lib.js와 service.js를 사용하도록 분기문을 추가만 해주면
+개발/배포 환경에 대한 처리가 끝이 난다.
+
+```
+<#if profile == "dev">
+    <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/lib/underscore-min.js"></script>
+    <script type="text/javascript" src="/js/lib/backbone-min.js"></script>
+    <script type="text/javascript" src="/js/lib/require.js"></script>
+    <script type="text/javascript" src="/js/lib/json2.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+<#else>
+    <script type="text/javascript" src="/build/js/lib.js"></script>
+    <script type="text/javascript" src="/build/js/service.js"></script>
+</#if>
+```
+
+자 그럼 실제로 IDE에서 한번 dev환경으로 구동시켜보자. <br/>
+IntelliJ를 기준으로 run 옵션에 ```-Dspring.profiles.active=dev``` 만 추가하면 끝이다.
+
+![dev로 run](./images/grunt/profile-run.png)
+
+실행후 확인을 하게 되면
+
+![dev 결과](./images/grunt/profile-dev-result.png)
+
+이렇게 모든 js파일을 호출하는 것을 볼 수 있다. <br/>
+자 그럼 배포할 경우엔 어떻게 되는지 보자. <br/>
+gradle을 이용해서 jar 파일로 build 후 이 jar파일을 직접 실행시켜보자. (Spring Boot의 대부분은 이런식으로 배포를 하게 된다.)
+
+![배포 결과](./images/grunt/profile-default-result.png)
+
+이렇게! build된 jar를 배포한 경우에는 lib.js와 service.js만 사용하는 것을 확인할 수 있다.<br/>
+조금은 우려스러운 것은 현재 내가 소개한 방법은 **프론트엔드와 백엔드가 분리되지 않은 프로젝트** 에서 사용법이다. <br/>
+프론트와 백이 분리되어 있는 회사를 다녀본적이 없어 ㅠㅠ 어떻게 하고 있는지 잘 모르겠지만, 두 영역이 한 프로젝트에서 진행하고 있다면 이 방법으로 해도 괜찮다고 얘기해주고 싶다. <br/>
+이 시리즈도 서서히 마지막을 향해 가는것 같다. <br/>
+끝까지 잘 마무리 해야겠다!

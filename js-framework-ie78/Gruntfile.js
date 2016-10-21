@@ -32,12 +32,45 @@ module.exports = function(grunt) {
                 src : 'node_modules/json2/lib/jSON2/static/json2.js',
                 dest : 'src/main/resources/static/js/lib/json2.js'
             }
+        },
+
+        // concat task 설정
+        concat: {
+            lib: {
+                //순서가 중요하다. 꼭 라이브러리 순서를 지켜서 작성하자.
+                src:[
+                    'src/main/resources/static/js/lib/jquery.min.js',
+                    'src/main/resources/static/js/lib/underscore-min.js',
+                    'src/main/resources/static/js/lib/backbone-min.js',
+                    'src/main/resources/static/js/lib/require.js',
+                    'src/main/resources/static/js/lib/json2.js'
+                ],
+                dest: 'src/main/resources/static/build/js/lib.js' //concat 결과 파일
+            }
+        },
+
+        // requirejs task 설정
+        requirejs: {
+            build: {
+                options: {
+                    baseUrl : 'src/main/resources/static/js',
+                    name : 'index',
+                    mainConfigFile : 'src/main/resources/static/js/main.js',
+                    optimize : 'uglify',
+                    out : 'src/main/resources/static/build/js/service.js'
+                }
+            }
         }
     });
 
     // 플러그인 load
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-concat'); //concat load
+    grunt.loadNpmTasks('grunt-contrib-requirejs'); //requirejs load
 
-    // Default task(s) : 즉, grunt 명령어로 실행할 작업
-    grunt.registerTask('default', ['copy']);
+    /*
+        Default task(s) : 즉, grunt 명령어로 실행할 작업
+        copy -> concat 진행
+    */
+    grunt.registerTask('default', ['copy', 'concat', 'requirejs']);
 };
