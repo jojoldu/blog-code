@@ -31,6 +31,10 @@ module.exports = function(grunt) {
             json2 : {
                 src : 'node_modules/json2/lib/jSON2/static/json2.js',
                 dest : 'src/main/resources/static/js/lib/json2.js'
+            },
+            almond : {
+                src : 'node_modules/almond/almond.js',
+                dest : 'src/main/resources/static/js/lib/almond.js'
             }
         },
 
@@ -48,11 +52,16 @@ module.exports = function(grunt) {
             }
         },
 
-        useminPrepare: {
-            ftl: ['src/main/resources/templates/*.ftl']
-        },
-        usemin: {
-            ftl: ['src/main/resources/templates/*.ftl']
+        requirejs: {
+            build: {
+                options: {
+                    baseUrl : 'src/main/resources/static/js',
+                    name : 'index',
+                    mainConfigFile : 'src/main/resources/static/js/main.js',
+                    optimize : 'uglify',
+                    out : 'src/main/resources/static/optimized/js/service.js'
+                }
+            }
         }
     });
 
@@ -60,7 +69,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-usemin');
 
     /*
         Default task(s) : 즉, grunt 명령어로 실행할 작업

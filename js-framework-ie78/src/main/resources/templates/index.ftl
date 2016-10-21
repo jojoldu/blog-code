@@ -50,7 +50,8 @@
     <#--<script type="text/javascript" src="/js/lib/require.js"></script>-->
     <#--<script type="text/javascript" src="/js/lib/json2.js"></script>-->
     <script type="text/javascript" src="/build/js/lib.js"></script>
-    <script type="text/javascript" src="/js/main.js"></script>
-    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/optimized/js/service.js"></script>
+    <#--<script type="text/javascript" src="/js/main.js"></script>-->
+    <#--<script type="text/javascript" src="/js/index.js"></script>-->
 </body>
 </html>
