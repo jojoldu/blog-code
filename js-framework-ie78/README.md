@@ -1682,3 +1682,108 @@ gradle을 이용해서 jar 파일로 build 후 이 jar파일을 직접 실행시
 프론트와 백이 분리되어 있는 회사를 다녀본적이 없어 ㅠㅠ 어떻게 하고 있는지 잘 모르겠지만, 두 영역이 한 프로젝트에서 진행하고 있다면 이 방법으로 해도 괜찮다고 얘기해주고 싶다. <br/>
 이 시리즈도 서서히 마지막을 향해 가는것 같다. <br/>
 끝까지 잘 마무리 해야겠다!
+
+### Handlebars 적용하기
+IE 7/8에서 모던하게 개발하기 시리즈의 마지막 챕터인 Handlebars 적용이다.
+
+![Handlebars 공식사이트](./images/handlebar/공식사이트.png)
+
+[공식사이트](http://handlebarsjs.com/) <br/>
+
+Handlebars의 경우 많은 회사에서 클라이언트 템플릿 엔진으로 사용중에 있다. <br/>
+Handlebars에 대한 자세한 내용들은 여러 블로그에서 소개가 되어있지만 최근 [티몬의 개발 블로그](http://tmondev.blog.me/220398995882?Redirect=Log&from=postView)에 올라온 글이 잘 설명되어있으니 Handlebars를 처음 접한다면 꼭 읽어봤으면 한다. <br/>
+<br/>
+오늘 진행할 Handlebars는 Handlebars의 기능 자체에 초점이 잡혀있지 않고, Backbone에서 underscore로 템플릿하던것을 Handlebars로 교체하는 것에 초점이 잡혀있다. <br/>
+이전 블로그에 포스팅된 [Handlebars를 사용하여 배포까지](http://jojoldu.tistory.com/23) 내용의 재탕이긴 해서 이전 포스팅을 안봤다면 한번 보고 가면 다음 내용을 이해하기 쉬울것 같다. <br/>
+그럼 이제 시작하겠다. <br/>
+<br/>
+Backbone은 기본적으로 underscorejs의 template()를 사용한다. <br/>
+헌데 이 underscore의 template은 기본적으로 Html 파일에서 type="text/template" 인 script를 호출하여 사용하기 때문에 몇가지 문제가 있다. <br/>
+(생각하기에 따라 큰 문제가 아닐수도 있다. underscore로 계속 사용중인 회사도 있는걸로 알고 있다.) <br/>
+index.ftl을 열어 collectionTemplate를 확인해보자.
+
+![underscore 예제화면](./images/handlebar/underscore-template.png)
+
+* backbone의 view 영역이 오염된다.
+  - view.el 영역에 handlebar script가 계속 추가됨으로써 실제 view영역이 너무 비대해진다.
+  - 다른 view영역에서 동일하게 사용되는 템플릿이 있으면 재활용 없이 똑같이 handlebar script를 만들어야 한다.
+  - 다른 view영역의 dom을 선택하는 것이 가능은 하나, 기본적인 backbone이 바라보는 방향과는 많이 다르다.
+
+* 후처리로 template하기 때문에 순수 js로 html을 그리는것보다 **느리다.**
+  - text/template로 html dom을 만드려면 결국 javascipt 코드가 되어야만 한다. 그래서 다음과 같은 과정이 필요하다.
+  - text/template 호출 -> text/template 코드를 Javascript코드로 전환 -> 전환된 Javascript코드 (이하 템플릿된 코드)에 JSON 데이터를 넣어 HTML로 전환
+  - 페이지가 reload 될때마다 저 과정이 필수로 1번은 꼭 필요하여 첫 로딩시 속도가 느릴수 밖에 없다.
+  - reload 이후에는 view에 template된 코드가 캐시되고 있어 큰 문제가 되진 않는다.
+
+![template의 캐시](./images/handlebar/underscore-source.png)
+
+(MemberView.js의 초기화 과정. 보는것처럼 처음 view 초기화시 text/template코드를 순수 js코드로 전환하는 작업이 필요하다)<br/>
+그래서 위와 같은 문제를 해결하기 위해 Handlebars를 적용하여 아래와 같이 수정할 것이다. <br/>
+
+* text/template 를 별도의 파일과 영역으로 관리
+  - .handebars 파일로 각각의 text/template를 생성한다.
+  - 이후 각 view영역에서 필요한 template
+* 빌드시 precompile하여 미리 컴파일된 js파일들로 변환한다.
+  - 즉, ```text/template 호출 -> text/template 코드를 Javascript코드로 전환``` 하는 과정을 grunt로 배포전에 미리 해버린다.
+  - Backbone의 view에서는 HTML 전환 과정이 사라져 이전보다 성능 향상이 있다.
+
+<br/>
+그럼 위 내용을 하나씩 적용해보자. <br/>
+index.ftl의 collectionTemplate을 memberList.handlebars 라는 파일로 분리하자. <br/>
+그리고 아래와 같이 코드내용을 조금 수정 하자.
+
+![memberList.Handlebars](./images/handlebar/memberList.png)
+
+이 .handlebars 파일을 precompile 하기 위해 grunt 패키지의 도움을 받아야 한다. <br/>
+이전과 동일한 방식으로 설치를 진행하겠다.
+
+```
+npm install grunt-contrib-handlebars --save-dev
+```
+
+그리고 Gruntfile.js에 아래의 코드를 추가하자
+
+```
+handlebars: {
+    options: {
+        namespace: "Handlebars.templates",
+        //해당 handlebars 파일의 템플릿을 js에서 호출할때 사용할 함수명 지정
+        processName:function(filePath) {
+            //여기선 .handebars파일 앞의 이름을 호출 함수명으로 지정
+            var pattern=/handlebars\/(.+\/)*(.+)\.handlebars/gi;
+            var process = pattern.exec(filePath)[2];
+            console.log("process : " + process);
+            return process;
+        }
+    },
+    compile : {
+        files: {
+            //templates.js에 모든 .handlebars 파일이 compile되서 processName에 따라 정리됨
+            "src/main/resources/static/js/templates.js" : ["src/main/resources/static/handlebars/*.handlebars"]
+        }
+    }
+}
+
+grunt.loadNpmTasks('grunt-contrib-handlebars'); // handlebars load
+
+grunt.registerTask('default', ['copy', 'handlebars', 'concat', 'requirejs']);
+```
+
+여기까지만 하고 한번 정상적으로 실행되는지 확인해보자. <br/>
+터미널 혹은 CMD를 열어 아래와 같이 입력해보자.
+
+```
+grunt handlebars
+```
+
+그러면 아래와 같이 콘솔이 출력된다.
+
+![grunt 콘솔](./images/handlebar/grunt-console.png)
+
+보면 memberList가 출력되었다. 자 그럼 src/main/resources/static/js/templates.js 파일을 열어보자.
+
+![template.js](./images/handlebar/templatejs.png)
+
+수많은 양의 js 코드를 확인할 수 있는데, 여기서 ```this["Handlebars"]["templates"]["memberList"]```가 바로 우리가 사용할 함수의 이름이다. <br/>
+즉, **templates.js가 호출된 상태면 Handlebars.templates.memberList 로 템플릿 함수를 호출해서 사용** 할 수 있게 된것이다. <br/>
+자 그럼 이걸 적용해보자.

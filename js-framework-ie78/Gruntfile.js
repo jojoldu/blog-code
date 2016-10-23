@@ -31,6 +31,10 @@ module.exports = function(grunt) {
             json2 : {
                 src : 'node_modules/json2/lib/jSON2/static/json2.js',
                 dest : 'src/main/resources/static/js/lib/json2.js'
+            },
+            handlebars : {
+                src : 'node_modules/handlebar/node_modules/handlebars/dist/handlebars.runtime.js',
+                dest : 'src/main/resources/static/js/lib/handlebars.runtime.js'
             }
         },
 
@@ -43,7 +47,8 @@ module.exports = function(grunt) {
                     'src/main/resources/static/js/lib/underscore-min.js',
                     'src/main/resources/static/js/lib/backbone-min.js',
                     'src/main/resources/static/js/lib/require.js',
-                    'src/main/resources/static/js/lib/json2.js'
+                    'src/main/resources/static/js/lib/json2.js',
+                    'src/main/resources/static/js/lib/handlebars.runtime.js'
                 ],
                 dest: 'src/main/resources/static/build/js/lib.js' //concat 결과 파일
             }
@@ -60,6 +65,26 @@ module.exports = function(grunt) {
                     out : 'src/main/resources/static/build/js/service.js'
                 }
             }
+        },
+
+        handlebars: {
+            options: {
+                namespace: "Handlebars.templates",
+                //해당 handlebars 파일의 템플릿을 js에서 호출할때 사용할 함수명 지정
+                processName:function(filePath) {
+                    //여기선 .handebars파일 앞의 이름을 호출 함수명으로 지정
+                    var pattern=/handlebars\/(.+\/)*(.+)\.handlebars/gi;
+                    var process = pattern.exec(filePath)[2];
+                    console.log("process : " + process);
+                    return process;
+                }
+            },
+            compile : {
+                files: {
+                    //templates.js에 모든 .handlebars 파일이 compile되서 processName에 따라 정리됨
+                    "src/main/resources/static/js/templates.js" : ["src/main/resources/static/handlebars/*.handlebars"]
+                }
+            }
         }
     });
 
@@ -67,10 +92,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-concat'); //concat load
     grunt.loadNpmTasks('grunt-contrib-requirejs'); //requirejs load
+    grunt.loadNpmTasks('grunt-contrib-handlebars'); // handlebars load
 
     /*
         Default task(s) : 즉, grunt 명령어로 실행할 작업
-        copy -> concat 진행
+        copy -> handlebars -> concat -> requiresjs  진행
     */
-    grunt.registerTask('default', ['copy', 'concat', 'requirejs']);
+    grunt.registerTask('default', ['copy', 'handlebars', 'concat', 'requirejs']);
 };
