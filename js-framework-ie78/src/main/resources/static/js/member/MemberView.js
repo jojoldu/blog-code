@@ -16,7 +16,8 @@ function(MemberCollection){
             this.collection = new MemberCollection();
             this.$memberList = this.$el.find('#memberList');
 
-            this.collection.fetch();
+            //reset: true 옵션이 없으면 model 갯수만큼 add이벤트가 발생한다.
+            this.collection.fetch({reset: true});
 
             //collection.reset 이벤트 발생시 view.rednerAll 이벤트 실행
             this.listenTo(this.collection, 'reset', this.render);
@@ -29,8 +30,9 @@ function(MemberCollection){
             var data = {
                 members : this.collection.toJSON()
             };
-
+            //기존 화면 초기화
             this.$memberList.html('');
+            //미리 템플릿된 memberList를 호출하여 템플릿 작업
             this.$memberList.html(Handlebars.templates.memberList(data));
         },
 

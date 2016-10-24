@@ -1786,4 +1786,272 @@ grunt handlebars
 
 수많은 양의 js 코드를 확인할 수 있는데, 여기서 ```this["Handlebars"]["templates"]["memberList"]```가 바로 우리가 사용할 함수의 이름이다. <br/>
 즉, **templates.js가 호출된 상태면 Handlebars.templates.memberList 로 템플릿 함수를 호출해서 사용** 할 수 있게 된것이다. <br/>
-자 그럼 이걸 적용해보자.
+한가지 더! <br/>
+["memberList"] 우측에 있는 Handlebars.template는 Handlebars 라이브러리의 함수이다.<br/>
+그래서 우리는 Handlebars 라이브러리를 포함시켜야하는데, 단! 전체 라이브러리는 필요하지 않고, precompile된 templates.js를 사용하기 위해 필요한 라이브러리를 포함시키겠다.<br/>
+Gruntfile.js에 2가지 코드를 추가할 것이다.
+
+```
+//copy task에 추가
+handlebars : {
+    src : 'node_modules/handlebars/dist/handlebars.runtime.js',
+    dest : 'src/main/resources/static/js/lib/handlebars.runtime.js'
+}
+
+// concat task에 추가
+'src/main/resources/static/js/lib/handlebars.runtime.js'
+```
+
+**최종 Gruntfile.js**
+
+```
+'use strict';
+module.exports = function(grunt) {
+
+    grunt.initConfig({
+        pkg : grunt.file.readJSON('package.json'),
+
+        //jquery와 requirejs, underscorejs, backbonejs, json2를 copy하도록 지정
+        copy : {
+            jquery : {
+                src : 'node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js',
+                dest : 'src/main/resources/static/js/lib/jquery.min.js'
+            },
+            require : {
+                src : 'node_modules/requirejs/require.js',
+                dest : 'src/main/resources/static/js/lib/require.js'
+            },
+            underscore : {
+                src : 'node_modules/underscore/underscore-min.js',
+                dest : 'src/main/resources/static/js/lib/underscore-min.js'
+            },
+            backbone : {
+                src : 'node_modules/backbone/backbone-min.js',
+                dest : 'src/main/resources/static/js/lib/backbone-min.js'
+            },
+            json2 : {
+                src : 'node_modules/json2/lib/jSON2/static/json2.js',
+                dest : 'src/main/resources/static/js/lib/json2.js'
+            },
+            handlebars : {
+                src : 'node_modules/handlebars/dist/handlebars.runtime.js',
+                dest : 'src/main/resources/static/js/lib/handlebars.runtime.js'
+            }
+        },
+
+        // concat task 설정
+        concat: {
+            lib: {
+                //순서가 중요하다. 꼭 라이브러리 순서를 지켜서 작성하자.
+                src:[
+                    'src/main/resources/static/js/lib/handlebars.runtime.js',
+                    'src/main/resources/static/js/lib/jquery.min.js',
+                    'src/main/resources/static/js/lib/underscore-min.js',
+                    'src/main/resources/static/js/lib/backbone-min.js',
+                    'src/main/resources/static/js/lib/require.js',
+                    'src/main/resources/static/js/lib/json2.js'
+                ],
+                dest: 'src/main/resources/static/build/js/lib.js' //concat 결과 파일
+            }
+        },
+
+        // requirejs task 설정
+        requirejs: {
+            build: {
+                options: {
+                    baseUrl : 'src/main/resources/static/js',
+                    name : 'index',
+                    mainConfigFile : 'src/main/resources/static/js/main.js',
+                    optimize : 'uglify',
+                    out : 'src/main/resources/static/build/js/service.js'
+                }
+            }
+        },
+
+        handlebars: {
+            options: {
+                namespace: "Handlebars.templates",
+                //해당 handlebars 파일의 템플릿을 js에서 호출할때 사용할 함수명 지정
+                processName:function(filePath) {
+                    //여기선 .handebars파일 앞의 이름을 호출 함수명으로 지정
+                    var pattern=/handlebars\/(.+\/)*(.+)\.handlebars/gi;
+                    var process = pattern.exec(filePath)[2];
+                    console.log("process : " + process);
+                    return process;
+                }
+            },
+            compile : {
+                files: {
+                    //templates.js에 모든 .handlebars 파일이 compile되서 processName에 따라 정리됨
+                    "src/main/resources/static/js/templates.js" : ["src/main/resources/static/handlebars/*.handlebars"]
+                }
+            }
+        }
+    });
+
+    // 플러그인 load
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-concat'); //concat load
+    grunt.loadNpmTasks('grunt-contrib-requirejs'); //requirejs load
+    grunt.loadNpmTasks('grunt-contrib-handlebars'); // handlebars load
+
+    /*
+        Default task(s) : 즉, grunt 명령어로 실행할 작업
+        copy -> handlebars -> concat -> requiresjs  진행
+    */
+    grunt.registerTask('default', ['copy', 'handlebars', 'concat', 'requirejs']);
+};
+
+```
+
+이에 맞춰 index.ftl과 MemberView.js를 수정하자 <br/>
+**index.ftl**
+
+```
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>모던 IE78</title>
+</head>
+<body>
+    <h1>모던하게 개발하는 IE 7/8 Javascript</h1>
+    <div id="userInput" class="row">
+        입력 1: <input type="text" class="inputs" id="input1" value="0"><br/>
+        입력 2: <input type="text" class="inputs" id="input2" value="0">
+        <div id="addResult" class="row">
+        </div>
+
+        <!--
+            1. userInput div 안에 있어야만 AddView.js에서 찾을 수 있다.
+            2. type은 text/template 이다. javascript가 아니다.
+        -->
+        <script id="underTemplate" type="text/template">
+            <input type="text" id="result" value="<%= result %>">
+        </script>
+
+        <script id="overTemplate" type="text/template">
+            <span>+ : <strong><%= result %></strong></span>
+        </script>
+    </div>
+    <br/>
+
+    <h1>Member List</h1>
+    <div id="member">
+
+        <div class="inputs">
+            이름 : <input type="text" id="name">
+            email : <input type="text" id="email">
+            <button name="button" type="button" id="addMember">회원 추가 </button>
+        </div>
+
+        <h5>회원 Collection 리스트</h5>
+        <ul id="memberList" class="list">
+        </ul>
+
+    </div>
+
+    <#if profile == "dev">
+        <script type="text/javascript" src="/js/lib/handlebars.runtime.js"></script>
+        <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+        <script type="text/javascript" src="/js/lib/underscore-min.js"></script>
+        <script type="text/javascript" src="/js/lib/backbone-min.js"></script>
+        <script type="text/javascript" src="/js/lib/require.js"></script>
+        <script type="text/javascript" src="/js/lib/json2.js"></script>
+        <script type="text/javascript" src="/js/templates.js"></script>
+        <script type="text/javascript" src="/js/main.js"></script>
+        <script type="text/javascript" src="/js/index.js"></script>
+    <#else>
+        <script type="text/javascript" src="/build/js/lib.js"></script>
+        <script type="text/javascript" src="/build/js/service.js"></script>
+    </#if>
+
+</body>
+</html>
+```
+
+**MemberView.js**
+
+```
+define(['member/MemberCollection'],
+function(MemberCollection){
+    return Backbone.View.extend({
+        collection : null,
+        $memberList : null,
+        events : {
+            'click #addMember' : 'save'
+        },
+
+        initialize: function () {
+            this.collection = new MemberCollection();
+            this.$memberList = this.$el.find('#memberList');
+
+            //reset: true 옵션이 없으면 model 갯수만큼 add이벤트가 발생한다.
+            this.collection.fetch({reset: true});
+
+            //collection.reset 이벤트 발생시 view.rednerAll 이벤트 실행
+            this.listenTo(this.collection, 'reset', this.render);
+
+            //collection.add 이벤트 발생시 view.render 이벤트 실행
+            this.listenTo(this.collection, 'add', this.render);
+        },
+
+        render : function(){
+            var data = {
+                members : this.collection.toJSON()
+            };
+            //기존 화면 초기화
+            this.$memberList.html('');
+            //미리 템플릿된 memberList를 호출하여 템플릿 작업
+            this.$memberList.html(Handlebars.templates.memberList(data));
+        },
+
+        save : function() {
+            var name = this.$el.find('#name').val(),
+                email = this.$el.find('#email').val();
+
+            this.collection.create({name : name, email: email});
+        }
+    });
+});
+```
+
+MemberView의 경우 기존 코드를 많이 제거하였다. <br/>
+text/template 코드를 호출하는 부분과 renderAll하는 부분등 불필요한 부분을 모두 제거하였다. <br/>
+추가된 부분은 collection의 데이터를 받아 data.members에 할당하고 이를 Handlebars.templates.memberList에 인자로 추가하여 그 결과값을 this.$memberList에 추가하였다. <br/>
+코드 작업은 다 끝이 났으니, 실행을 해보자.
+
+```
+npm start
+```
+
+![npm start](./images/handlebar/grunt-final-console.png)
+
+**실행화면**
+
+![결과화면](./images/handlebar/결과화면.png)
+
+잘 출력되는 것을 확인할 수 있다.<br/>
+이번 챕터로 인해 underscore template이 가지고 있던 문제를 handlebars를 통해 대체할 수 있게 되었다. <br/>
+실제로 이렇게 구성될 경우 모든 템플릿 파일들이 handlebars 디렉토리 안의 .handlebars 이기 때문에 코드 수정면에서도 굉장히 장점이 많다. <br/>
+아직 Handlebars를 사용해보지 않았다면 이번기회에 적용해보는것도 좋을것 같다. <br/>
+<br/>
+현재까지 적용한 모든 내용들은 빠짐없이 실제 서비스에 적용되어 사용중에 있다. (물론 샘플예제라 많은 내용이 생략되어 있긴하지만..)<br/>
+그래도 **일일 천만 이상의 PV(Page View)를** 내는 사이트에서 적용된 내용이니 IE7,8을 지원하면서 대규모 스크립트 적입이 필요한 상황이라면 한번 정도 도입에 대해 고민 해보는것도 좋을것 같다.
+<br/><br/>
+> 드디어 IE7/8에서 모던하게 개발하기 시리즈가 끝이 났습니다.<br/>
+개인적으로 이렇게 시리즈물로 기록하는 것은 처음이라 끝까지 마무리할 수 있을까 걱정도 많았는데, 마무리할 수 있게 되어 정말 다행이라고 생각합니다. <br/>
+
+![일일커밋](./images/handlebar/일일커밋.png)
+
+> 시리즈 물로 포스팅을 하게 되니 의도치 않게 일일커밋을 하게 되었습니다. <br/>
+Github 커밋관리를 하고싶으시다면 시리즈물 적극 추천드립니다. <br/>
+백엔드에 관심이 많았지만 어떻게 하다보니 프론트엔드가 주가 되었는것 같습니다. <br/>
+앞으로는 백엔드에 좀 더 초점을 맞춰 정리하고 적용해보려고 합니다. <br/>
+많은 응원 부탁드리겠습니다. <br/>
+매번 방문 해주신 분들께 정말 감사의 말씀드립니다.
+
+
+![진짜 끝!!!!!](./images/handlebar/드디어엔딩.png)
+
+(사용한 짤들은 [레진코믹스, 레바작가님의 레바툰](http://www.lezhin.com/ko/comic/revatoon) 입니다.)

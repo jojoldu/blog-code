@@ -21,7 +21,7 @@ module.exports = function(grunt) {
                 dest : 'src/main/resources/static/js/lib/require.js'
             },
             underscore : {
-                src : 'node_modules/backbone/node_modules/underscore/underscore-min.js',
+                src : 'node_modules/underscore/underscore-min.js',
                 dest : 'src/main/resources/static/js/lib/underscore-min.js'
             },
             backbone : {
@@ -33,7 +33,7 @@ module.exports = function(grunt) {
                 dest : 'src/main/resources/static/js/lib/json2.js'
             },
             handlebars : {
-                src : 'node_modules/handlebar/node_modules/handlebars/dist/handlebars.runtime.js',
+                src : 'node_modules/handlebars/dist/handlebars.runtime.js',
                 dest : 'src/main/resources/static/js/lib/handlebars.runtime.js'
             }
         },
@@ -43,12 +43,12 @@ module.exports = function(grunt) {
             lib: {
                 //순서가 중요하다. 꼭 라이브러리 순서를 지켜서 작성하자.
                 src:[
+                    'src/main/resources/static/js/lib/handlebars.runtime.js',
                     'src/main/resources/static/js/lib/jquery.min.js',
                     'src/main/resources/static/js/lib/underscore-min.js',
                     'src/main/resources/static/js/lib/backbone-min.js',
                     'src/main/resources/static/js/lib/require.js',
-                    'src/main/resources/static/js/lib/json2.js',
-                    'src/main/resources/static/js/lib/handlebars.runtime.js'
+                    'src/main/resources/static/js/lib/json2.js'
                 ],
                 dest: 'src/main/resources/static/build/js/lib.js' //concat 결과 파일
             }
