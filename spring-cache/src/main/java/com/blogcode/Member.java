@@ -1,11 +1,5 @@
 package com.blogcode;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import javax.persistence.*;
 
 /**
  * Created by jojoldu@gmail.com on 2016-10-26.
@@ -13,23 +7,42 @@ import javax.persistence.*;
  * Github : http://github.com/jojoldu
  */
 
-@Entity
-@NoArgsConstructor
-@AllArgsConstructor
 public class Member {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Getter @Setter
     private long idx;
 
-    @Column
-    @Getter @Setter
     private String email;
 
-    @Column
-    @Getter @Setter
     private String name;
 
+    public Member() {
+    }
 
+    public Member(long idx, String email, String name) {
+        this.email = email;
+        this.name = name;
+    }
+
+    public long getIdx() {
+        return idx;
+    }
+
+    public void setIdx(long idx) {
+        this.idx = idx;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
