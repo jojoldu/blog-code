@@ -15,5 +15,4 @@
 		<persistence strategy="localTempSwap" />
 	</cache>
 
-
 </ehcache>

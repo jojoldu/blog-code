@@ -29,7 +29,7 @@ public class Application {
 		Member member = memberRepository.findByNameNoCache(name); // db 조회
 		long end = System.currentTimeMillis();
 
-		logger.info("NoCache 수행시간 : "+ Long.toString(end-start));
+		logger.info(name+ "의 NoCache 수행시간 : "+ Long.toString(end-start));
 
 		return member;
 	}
@@ -42,7 +42,7 @@ public class Application {
 		Member member = memberRepository.findByNameCache(name); // db 조회
 		long end = System.currentTimeMillis();
 
-		logger.info("Cache 수행시간 : "+ Long.toString(end-start));
+		logger.info(name+ "의 Cache 수행시간 : "+ Long.toString(end-start));
 
 		return member;
 	}
@@ -64,6 +64,4 @@ public class Application {
 	public String index(){
 		return "HelloWorld";
 	}
-
-
 }
