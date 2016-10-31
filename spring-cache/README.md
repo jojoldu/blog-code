@@ -78,8 +78,41 @@ dependencies {
 spring-boot-starter-cache는 **캐시관련 설정을 편리하게 지원해주는 패키지** 이다. 덕분에 CacheManager, EhCacheManagerFactoryBean 등의 bean 생성을 직접 안할수 있게 되었다. <br/>
 spring-boot-starter-cache는 기본 CacheManager로 ConcurrentHashMap을 사용하고 있어서 Ehcache 2.x 로 교체하기 위해 직접 의존성을 추가하였다. <br/>
 여기서 DB를 사용하지 않기 때문에 추가적인 starter 패키지는 없다. <br/>
-
 혹시나 SpringBoot 환경이 아니라면 [mykong님의 포스팅](https://www.mkyong.com/spring/spring-caching-and-ehcache-example/)을 따라 설정하면 된다. <br/>
+
+**CacheManagerCheck.java**
+
+```
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.cache.CacheManager;
+import org.springframework.stereotype.Component;
+
+@Component
+public class CacheManagerCheck implements CommandLineRunner {
+
+    private static final Logger logger = LoggerFactory.getLogger(CacheManagerCheck.class);
+
+    private final CacheManager cacheManager;
+
+    public CacheManagerCheck(CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
+    }
+
+    @Override
+    public void run(String... strings) throws Exception {
+        logger.info("\n\n" + "=========================================================\n"
+                + "Using cache manager: " + this.cacheManager.getClass().getName() + "\n"
+                + "=========================================================\n\n");
+    }
+}
+```
+
+<br/>
+EhCache가 설정 안된것 아닐까 의구심을 갖고 있을수 있기에 현재 어플리케이션에서 사용중인 CacheManager가 무엇인지 확인하기 위한 Component를 추가하였다. <br/>
+CommandLineRunner를 통해 Application 실행시 무조건 run() 이 실행되도록 하여 CacheManager를 확인할 수 있다.
+<br/>
 
 **ehcache.xml**
 
@@ -325,6 +358,10 @@ slowQuery가 2초간 thread를 sleep 시키기 때문에 findByNameNoCache와 fi
 기본적인 stdout용 logback.xml 설정이다. <br/>
 
 ### 실습
+프로젝트를 구동시키면 아래와 같이 현재 CacheManager가 EhCache임을 표시해준다. <br/>
+
+![CacheManager 체크](./images/ehcache체크.png)
+
 먼저 캐시하지 않는 메소드를 호출해보자 <br/>
 브라우저에 아래 URL을 입력후 새로고침을 몇번 해보자.
 
