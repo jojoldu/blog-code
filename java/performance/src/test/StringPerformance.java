@@ -14,33 +14,14 @@ public class StringPerformance implements Performance {
         System.out.println("=====문자일 합치기에 대한 성능 비교=====");
 
         long start = System.currentTimeMillis();
-        test_stringBuilder();
-        long end = System.currentTimeMillis();
-        System.out.println("test_stringBuilder 수행시간 : " + Long.toString(end - start));
-
-        start = System.currentTimeMillis();
         test_oneLineSum();
-        end = System.currentTimeMillis();
+        long end = System.currentTimeMillis();
         System.out.println("test_oneLineSum 수행시간 : " + Long.toString(end - start));
 
         start = System.currentTimeMillis();
         test_multiLineSum();
         end = System.currentTimeMillis();
         System.out.println("test_multiLineSum 수행시간 : " + Long.toString(end - start));
-
-    }
-
-    public void test_stringBuilder() {
-        StringBuilder sb = null;
-        String s = null;
-        for(int i=0;i<SIZE;i++){
-            sb = new StringBuilder();
-            s = sb.append("jojoldu")
-                    .append(".")
-                    .append("blog code")
-                    .toString();
-        }
-
     }
 
     public void test_oneLineSum() {
