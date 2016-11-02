@@ -7,6 +7,14 @@
 
 ## Nginx 캐시 문제
 아래에서 사용한 예제 코드의 경우 모두 [Github]()
+**Nginx 실행여부 확인**
+```
+ps auxww |grep nginx
+```
+
+![Nginx 확인](./images/nginx확인.png)
+
+
 ### 캐시 용량 문제
 최근 zum.com에서는 두들 캠페인을 진행하였습니다. <br/>
 
@@ -35,7 +43,15 @@
 
 ### 404 캐시 문제
 
+### 설치 및 설정관련
 [Virtual box에 centos설치하기](http://webdevnovice.tistory.com/2) <br/>
 이거 최고다 전부 따라가면서 설치하면 된다. <br/>
-현재까지 파일지라 설치전까지 진행 (2016.10.29)
-[Nginx 캐시 설명](http://www.joinc.co.kr/w/man/12/nginx/static)
+
+[Nginx 캐시 설명](http://www.joinc.co.kr/w/man/12/nginx/static) <br/>
+
+
+80, 8080포트를 오픈하자
+
+![80,8080포트오픈](./images/8080포트오픈.png)
+
+![proxy.conf](./images/proxy-conf.png)
