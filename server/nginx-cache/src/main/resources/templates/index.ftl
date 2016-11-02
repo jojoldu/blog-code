@@ -3,9 +3,10 @@
     <title>Nginx Cache by Blog Code</title>
 </head>
 <body>
-    <h1>검색하세요!</h1>
-    <img src="/images/doodle.gif" alt="검색하세요">
+    <h1>아래는 gif파일입니다.</h1>
+    <img src="/images/doodle.gif?t=${currentTime}" alt="검색하세요">
     <br/>
-    <img src="/images/zum.png" alt="zum.com">
+    <h1>아래는 이미지입니다.</h1>
+    <img src="/images/zum.png?v=1" alt="zum.com">
 </body>
 </html>

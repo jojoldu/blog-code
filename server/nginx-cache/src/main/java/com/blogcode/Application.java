@@ -3,7 +3,10 @@ package com.blogcode;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.Date;
 
 @SpringBootApplication
 @Controller
@@ -14,7 +17,8 @@ public class Application {
 	}
 
 	@GetMapping("/")
-	public String index() {
+	public String index(Model model) {
+        model.addAttribute("currentTime", Long.toString(new Date().getTime()));
 		return "index";
 	}
 }
