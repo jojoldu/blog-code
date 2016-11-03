@@ -7,8 +7,10 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 --------------------
 
 ### Java
+- [제네릭 타입추론시 주의할 점](https://github.com/jojoldu/generic-guide)
 -	[Freemarker 안전하게 사용하기](https://github.com/jojoldu/freemarker-guide)
 -	[Gradle 적응하기](https://github.com/jojoldu/blog-code/tree/master/gradle-task)
+- [Java SE 성능비교](https://github.com/jojoldu/blog-code/tree/master/java/performance)
 
 ### Spring
 -	[Spring Boot의 깨알같은 팁](https://github.com/jojoldu/blog-code/tree/master/compareboot)
@@ -24,3 +26,4 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 -	[tcpdump로 문제해결 시리즈](https://github.com/jojoldu/blog-code/tree/master/tcpdump)
 - [리눅스 자동화 스크립트 내용](https://github.com/jojoldu/blog-code/tree/master/linux)
   - [망 분리된 상태에서 build 파일 전달하기](https://github.com/jojoldu/blog-code/tree/master/linux/passby)
+  - [원격접속 및 root권한 받기 자동화](https://github.com/jojoldu/blog-code/tree/master/linux/go)
