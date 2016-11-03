@@ -14,9 +14,9 @@ public class StringPerformance implements Performance {
         System.out.println("=====문자일 합치기에 대한 성능 비교=====");
 
         long start = System.currentTimeMillis();
-        test_oneLineSum();
+        test_singleLineSum();
         long end = System.currentTimeMillis();
-        System.out.println("test_oneLineSum 수행시간 : " + Long.toString(end - start));
+        System.out.println("test_singleLineSum 수행시간 : " + Long.toString(end - start));
 
         start = System.currentTimeMillis();
         test_multiLineSum();
@@ -24,7 +24,7 @@ public class StringPerformance implements Performance {
         System.out.println("test_multiLineSum 수행시간 : " + Long.toString(end - start));
     }
 
-    public void test_oneLineSum() {
+    public void test_singleLineSum() {
         String s = null;
 
         for(int i=0;i<SIZE;i++){
