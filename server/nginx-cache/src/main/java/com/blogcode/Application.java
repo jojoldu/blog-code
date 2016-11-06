@@ -18,6 +18,7 @@ public class Application {
 
 	@GetMapping("/")
 	public String index(Model model) {
+        String 
         model.addAttribute("currentTime", Long.toString(new Date().getTime()));
 		return "index";
 	}
