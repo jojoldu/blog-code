@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Date;
+import java.util.Random;
 
 @SpringBootApplication
 @Controller
@@ -16,10 +17,15 @@ public class Application {
 		SpringApplication.run(Application.class, args);
 	}
 
+    private Random random = new Random();
+
 	@GetMapping("/")
 	public String index(Model model) {
-        String 
-        model.addAttribute("currentTime", Long.toString(new Date().getTime()));
+        // 기존의 날짜형식의 파라미터
+        //String param = Long.toString(new Date().getTime());
+
+        int param = random.nextInt(1000);
+        model.addAttribute("param", param);
 		return "index";
 	}
 }
