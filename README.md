@@ -24,6 +24,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
 ### Server
 -	[tcpdump로 문제해결 시리즈](https://github.com/jojoldu/blog-code/tree/master/tcpdump)
+- [Nginx 캐시 관련 문제해결](https://github.com/jojoldu/blog-code/tree/master/server/nginx-cache)
 - [리눅스 자동화 스크립트 내용](https://github.com/jojoldu/blog-code/tree/master/linux)
   - [망 분리된 상태에서 build 파일 전달하기](https://github.com/jojoldu/blog-code/tree/master/linux/passby)
   - [원격접속 및 root권한 받기 자동화](https://github.com/jojoldu/blog-code/tree/master/linux/go)
