@@ -16,7 +16,7 @@ apply plugin: 'spring-boot'
 
 jar {
 	baseName = 'nginx-cache'
-	version = '0.0.1-SNAPSHOT'
+	version = '0.0.2'
 }
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
