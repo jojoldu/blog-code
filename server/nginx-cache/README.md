@@ -19,7 +19,8 @@ L4를 Load Balancer로 사용하여 28대의 서버에 균등하게 요청을 �
 자세한 내용은 [joinc님의 포스팅](http://www.joinc.co.kr/w/man/12/proxy)을 참조하시면 더욱 이해하기 쉬우실 것 같습니다. <br/>
 
 ### 시작 전에..
-아래에서 사용한 예제 코드의 경우 모두 [Github](https://github.com/jojoldu/blog-code/tree/master/server/nginx-cache)에서 확인할 수 있으며, 내용들은 모두 제 [개인 블로그](http://jojoldu.tistory.com/)에도 동시 포스팅 되었음을 미리 말씀드립니다. <br/>
+아래에서 사용한 예제 코드의 경우 모두 [Github](https://github.com/jojoldu/blog-code/tree/master/server/nginx-cache)에서 확인할 수 있으며, 내용들은 모두 제 [개인 블로그](http://jojoldu.tistory.com/60)에도 동시 포스팅 되었음을 미리 말씀드립니다.<br/>
+(저의 실수들을 [Github](https://github.com/jojoldu/blog-code)에 계속해서 기록중입니다. star를 해주시면 포스팅때마다 바로 알람을 받으실 수 있습니다!)<br/>
 예제를 실행하기 위해선 Java8, Nginx, CentOS가 설치되어 있어야만 합니다. <br/>
 혹시나 Nginx가 설치되어있는지 확인이 필요하다면 아래와 같은 명령어로 확인이 가능합니다. <br/>
 
@@ -193,7 +194,7 @@ grep -rnw '찾고자하는 디렉토리 위치' -e "찾는 텍스트명"
 ### 마무리
 최근에 제가 발생시키고 해결했던 Nginx에 관한 2가지 문제를 소개드렸습니다. <br/>
 다른 분들이 보시기엔 어떻게 이런 일을 실수할 수 있느냐며 생각하실 것 같아 기록할까 말까 참 많은 고민을 했었습니다. <br/>
-하지만 이런 이슈 내용들을 부끄럽더라도 계속 공유해야 같은 실수를 저나, 신입사원 분들이 안하실 것이라는 생각에 작성할 수 있었습니다. <br/>
+하지만 이런 이슈 내용들을 부끄럽더라도 계속 공유해야 저나, 신입사원 분들이 같은 실수를 안할 것이라는 생각에 작성할 수 있었습니다. <br/>
 앞으로도 이런 실수들을 계속해서 기록해나가겠습니다.<br/>
 긴글 끝까지 읽어주셔서 감사합니다.
 
