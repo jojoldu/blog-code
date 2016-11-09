@@ -1,9 +1,4 @@
 # Created by .ignore support plugin (hsz.mobi)
-### Example user template template
-# IntelliJ project files
+.gradle
 .idea
-*.iml
-out
-gen
 /build
-/classes

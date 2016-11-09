@@ -42,10 +42,9 @@ public class ExceptionPerformance implements Performance {
                     throw new NullPointerException();
                 }
 
-                String s = "test";
+                String s = "performance";
                 list.add(s);
             } catch (NullPointerException npe) {
-
             }
         }
     }
@@ -56,13 +55,14 @@ public class ExceptionPerformance implements Performance {
             String s = null;
 
             if (i % 2 == 0) {
-                s = "test";
+                s = "performance";
             }
 
             try {
                 list.add(s);
+                // NPE 강제 발생
+                list.get(i).indexOf(0);
             } catch (NullPointerException npe) {
-
             }
         }
     }
@@ -73,7 +73,7 @@ public class ExceptionPerformance implements Performance {
             String s = null;
 
             if (i % 2 == 0) {
-                s = "test";
+                s = "performance";
             }
 
             if (s != null) {
