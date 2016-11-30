@@ -1,4 +1,4 @@
-package com.blogcode;
+package com.blogcode.board;
 
 import javax.persistence.*;
 

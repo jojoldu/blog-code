@@ -141,17 +141,20 @@ public class Application implements CommandLineRunner{
 		return boardService.getBoards();
 	}
 
-
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
 }
 ```
+
+상속과 위임 외에 해결할 수 있는 방법은 없을까요? <br/>
+비지니스 로직에만 신경쓰고 그외에 필요한 부가 기능들에 대해서는 신경 쓰지 않도록 하려면 어떻게 해야할까요?? <br/>
+이 의문에 대답하기 위해 AOP에 대해 학습을 시작해보겠습니다.
+
 ### AOP란?
 Spring의 핵심 개념중 하나인 DI가 애플리케이션 모듈들 간의 결합도를 낮춰준다면, AOP는 **애플리케이션 전체에 걸쳐 사용되는 기능을 재사용**하도록 지원하는 것입니다. <br/>  
 AOP (Aspect-Oriented Programming) 란 단어를 번역하면 **관점(관심) 지향 프로그래밍**으로 됩니다. <br/>
 이 관점(관심)이란 단어가 잘 와닿지 않아 AOP를 이해하는데 있어 더 어려움을 일으킨다고 생각하였습니다. <br/>
-
 
 * OOP : 비지니스 로직의 모듈화
   - 모듈화의 핵심 단위는 비지니스 로직

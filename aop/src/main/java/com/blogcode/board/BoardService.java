@@ -1,4 +1,4 @@
-package com.blogcode;
+package com.blogcode.board;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,5 +1,8 @@
 package com.blogcode;
 
+import com.blogcode.board.Board;
+import com.blogcode.board.BoardRepository;
+import com.blogcode.board.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
