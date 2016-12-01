@@ -4,7 +4,8 @@ Spring의 가장 중요한 개념 중 하나인 AOP를 제 나름의 이해로 �
 (공부한 내용을 정리하는 [Github](https://github.com/jojoldu/blog-code)와 세미나+책 후기를 정리하는 [Github](https://github.com/jojoldu/review)를 star 하시면 실시간으로 feed를 받을 수 있습니다.)
 
 ### 문제 상황
-
+하나의 게시판 서비스가 있다고 가정하겠습니다. <br/>
+해당 게시판은 간단하게 구현하기 위해 SpringBoot + JPA + H2 + Gradle로 구현되었습니다. <br/>
 **build.gradle**
 ```
 buildscript {
@@ -140,15 +141,51 @@ public class Application implements CommandLineRunner{
 	public List<Board> getBoards() {
 		return boardService.getBoards();
 	}
+	
+    @GetMapping("/{idx}")
+    public Board getBoardByIdx(@PathVariable long idx){
+        return boardService.getBoardByIdx(idx);
+    }
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
 }
 ```
+게시글을 전체 조회, 단일 조회 기능이 있는 서비스입니다. 위와 같은 상황에서 각 기능별로 실행시간을 남겨야 하는 조건이 추가되었다고 가정해보겠습니다.<br/>
+가장 쉬운 방법은 서비스 코드에서 직접 시간을 측정하여 남기는 것입니다. <br/>
+
+```
+    public List<Board> getBoards() {
+        long start = System.currentTimeMillis();
+        List<Board> boards = repository.findAll();
+        long end = System.currentTimeMillis();
+
+        System.out.println("수행 시간 : "+ (end - start));
+
+        return boards;
+    }
+
+    public Board getBoardByIdx(long idx){
+        long start = System.currentTimeMillis();
+        Board board = repository.findOne(idx);
+        long end = System.currentTimeMillis();
+
+        System.out.println("수행 시간 : "+ (end - start));
+
+        return board;
+    }
+```
+아주 쉽게 해결이 되었지만, 이게 정답일까요?? <br/>
+getBoards 메소드나 getBoardByIdx 메소드 모두 중복된 코드를 가지고 있는데 이를 분리하려면 어떻게 해야할까요? <br/>
+제일 먼저 떠올릴수 있는 것은 **상속** 인것 같습니다. <br/>
+상속을 이용해서 한번 해결해보도록 하겠습니다. <br/>
 
 상속과 위임 외에 해결할 수 있는 방법은 없을까요? <br/>
-비지니스 로직에만 신경쓰고 그외에 필요한 부가 기능들에 대해서는 신경 쓰지 않도록 하려면 어떻게 해야할까요?? <br/>
+비지니스 로직외에 필요한 부가 기능들에 대해서는 신경 쓰지 않도록 하려면 어떻게 해야할까요?? <br/>
+추가로 이와 비슷한 경우로 메소드 실행전에 Connection을 open하고, 메소드가 정상적으로 실행완료 되면 commit을, 
+예외 발생시엔 rollback을 처리하도록 하는 트랜잭션은 어떻게 처리되길래 개발자가 비지니스 로직만 작성하면 될까요? <br/>
+
 이 의문에 대답하기 위해 AOP에 대해 학습을 시작해보겠습니다.
 
 ### AOP란?

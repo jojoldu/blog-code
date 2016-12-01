@@ -1,21 +1,13 @@
 package com.blogcode.board;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 /**
- * Created by jojoldu@gmail.com on 2016-11-30.
+ * Created by jojoldu@gmail.com on 2016-12-01
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
-@Service
-public class BoardService {
-
-    @Autowired
-    private BoardRepository repository;
-
+public abstract class BoardServicePerformance {
     public List<Board> getBoards() {
         long start = System.currentTimeMillis();
         List<Board> boards = repository.findAll();
