@@ -1,4 +1,4 @@
-package com.blogcode.user;
+package com.blogcode.board;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -6,17 +6,18 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Created by jojoldu@gmail.com on 2016-12-01
+ * Created by jojoldu@gmail.com on 2016-11-30.
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
-@Service
-public class UserService {
+@Service("boardServiceImpl")
+public class BoardServiceImpl implements BoardService{
 
     @Autowired
-    private UserRepository repository;
+    private BoardRepository repository;
 
-    public List<User> getUsers() {
+    @Override
+    public List<Board> getBoards() {
         return repository.findAll();
     }
 }

@@ -11,10 +11,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
 
 @SpringBootApplication
 @RestController
@@ -42,12 +42,12 @@ public class Application implements CommandLineRunner{
 
 	@GetMapping("/boards")
 	public List<Board> getBoards() {
-		return boardService.getDataAll();
+		return boardService.getBoards();
 	}
 
 	@GetMapping("/users")
 	public List<User> getUsers() {
-		return userService.getDataAll();
+		return userService.getUsers();
 	}
 
 	public static void main(String[] args) {

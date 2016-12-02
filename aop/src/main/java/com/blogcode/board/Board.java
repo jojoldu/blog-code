@@ -1,6 +1,9 @@
 package com.blogcode.board;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * Created by jojoldu@gmail.com on 2016-11-30.
