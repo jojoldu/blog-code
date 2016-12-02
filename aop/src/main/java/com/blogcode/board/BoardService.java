@@ -1,5 +1,7 @@
 package com.blogcode.board;
 
+import com.blogcode.aop.BoardPerformance;
+import com.blogcode.aop.SuperPerformance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,28 +13,14 @@ import java.util.List;
  * Github : http://github.com/jojoldu
  */
 @Service
-public class BoardService {
+public class BoardService extends SuperPerformance<Board> {
 
     @Autowired
     private BoardRepository repository;
 
-    public List<Board> getBoards() {
-        long start = System.currentTimeMillis();
-        List<Board> boards = repository.findAll();
-        long end = System.currentTimeMillis();
-
-        System.out.println("수행 시간 : "+ (end - start));
-
-        return boards;
+    @Override
+    public List<Board> findAll() {
+        return repository.findAll();
     }
 
-    public Board getBoardByIdx(long idx){
-        long start = System.currentTimeMillis();
-        Board board = repository.findOne(idx);
-        long end = System.currentTimeMillis();
-
-        System.out.println("수행 시간 : "+ (end - start));
-
-        return board;
-    }
 }
