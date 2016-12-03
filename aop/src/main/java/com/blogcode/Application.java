@@ -5,7 +5,7 @@ import com.blogcode.board.BoardRepository;
 import com.blogcode.board.BoardService;
 import com.blogcode.user.User;
 import com.blogcode.user.UserRepository;
-import com.blogcode.user.UserService;
+import com.blogcode.user.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -27,7 +27,7 @@ public class Application implements CommandLineRunner{
 	private BoardRepository boardRepository;
 
 	@Autowired
-	private UserService userService;
+	private UserServiceImpl userService;
 
 	@Autowired
 	private UserRepository userRepository;

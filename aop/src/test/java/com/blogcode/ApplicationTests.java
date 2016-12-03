@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ApplicationTests {
 
 	@Autowired
-	@Qualifier("boardService")
+	//@Qualifier("boardServicePerformance")
 	private BoardService boardService;
 
 	@Test

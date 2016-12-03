@@ -2,6 +2,7 @@ package com.blogcode.board;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  * Github : http://github.com/jojoldu
  */
 @Service
+@Primary
 public class BoardServicePerformance implements BoardService{
 
     @Autowired
