@@ -11,11 +11,12 @@ import java.util.List;
  * Github : http://github.com/jojoldu
  */
 @Service
-public class UserServiceImpl {
+public class UserServiceImpl implements UserService{
 
     @Autowired
     private UserRepository repository;
 
+    @Override
     public List<User> getUsers() {
         return repository.findAll();
     }

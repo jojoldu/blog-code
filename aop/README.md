@@ -410,6 +410,52 @@ public class UserService extends SuperPerformance<User> {
 중복되던 before와 after의 문제를 해결하였습니다. <br/>
 하지만 상속은 부모 클래스에 너무나 종속적인 문제 때문에 특별한 일이 있지 않는 이상 피하는 것이 좋습니다. ([이펙티브 자바](http://www.kyobobook.co.kr/product/detailViewKor.laf?barcode=9788966261161) 참고)<br/>
 그래서 이 상속으로 범벅인 코드를 **DI (Dependency Injection)**으로 개선해보겠습니다. <br/>
+제일 먼저 바꿀것은 BoardService 입니다. <br/>
+전체적으로 바꿀 구조는 아래와 같습니다. <br/>
+
+![DI Board 구조도](./images/di_board_map.png)
+
+**BoardService.java**
+```
+public interface BoardService {
+    List<Board> getBoards();
+}
+```
+
+**BoardServicePerformance.java**
+```
+@Service
+@Primary
+public class BoardServicePerformance implements BoardService{
+
+    @Autowired
+    @Qualifier("boardServiceImpl")
+    private BoardService boardService;
+
+    @Override
+    public List<Board> getBoards() {
+        long start = before();
+        List<Board> boards = boardService.getBoards();
+        after(start);
+
+        return boards;
+    }
+
+    private long before() {
+        return System.currentTimeMillis();
+    }
+
+    private void after(long start) {
+        long end = System.currentTimeMillis();
+        System.out.println("수행 시간 : "+ (end - start));
+    }
+}
+```
+
+**BoardServiceImpl.java**
+```
+```
+
 
 상속과 위임 외에 해결할 수 있는 방법은 없을까요? <br/>
 비지니스 로직외에 필요한 부가 기능들에 대해서는 신경 쓰지 않도록 하려면 어떻게 해야할까요?? <br/>

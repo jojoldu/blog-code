@@ -1,6 +1,7 @@
 package com.blogcode;
 
 import com.blogcode.board.BoardService;
+import com.blogcode.user.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +18,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ApplicationTests {
 
 	@Autowired
-	//@Qualifier("boardServicePerformance")
 	private BoardService boardService;
+
+	@Autowired
+	private UserService userService;
 
 	@Test
 	public void findBoards() throws Exception {
 		assertThat(boardService.getBoards().size()).isEqualTo(100);
+	}
+
+	@Test
+	public void findUsers() throws Exception {
+		assertThat(userService.getUsers().size()).isEqualTo(100);
 	}
 
 }
