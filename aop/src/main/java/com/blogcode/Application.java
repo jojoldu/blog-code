@@ -1,5 +1,6 @@
 package com.blogcode;
 
+import com.blogcode.aspect.Performance;
 import com.blogcode.board.Board;
 import com.blogcode.board.BoardRepository;
 import com.blogcode.board.BoardService;
@@ -9,7 +10,10 @@ import com.blogcode.user.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +22,7 @@ import java.util.List;
 
 @SpringBootApplication
 @RestController
+@EnableAspectJAutoProxy
 public class Application implements CommandLineRunner{
 
 	@Autowired
@@ -52,5 +57,10 @@ public class Application implements CommandLineRunner{
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
+	}
+
+	@Bean
+	public Performance performance() {
+		return new Performance();
 	}
 }

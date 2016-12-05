@@ -1,16 +1,18 @@
 # AOP 시작하기
 현재 신입사원 분들의 입사로 Spring에서 중요한 개념들에 대해 한번 정리하려고 작성하게 되었습니다. <br/>
-Spring의 가장 중요한 개념 중 하나인 AOP를 제 나름의 이해로 정리할 예정입니다. 틀린 내용이 있다면 가감 없이 풀리퀘나 댓글 부탁드리겠습니다.<br/>
+Spring의 가장 중요한 개념 중 하나인 AOP를 제 나름의 이해로 정리하였습니다. 틀린 내용이 있다면 가감 없이 풀리퀘나 댓글 부탁드리겠습니다.<br/>
 (공부한 내용을 정리하는 [Github](https://github.com/jojoldu/blog-code)와 세미나+책 후기를 정리하는 [Github](https://github.com/jojoldu/review)를 star 하시면 실시간으로 feed를 받을 수 있습니다.)
 <br/>
 Spring을 이해하는데 있어 최고는 토비님의 토비의 스프링을 읽어보는 것입니다. <br/>
-제 블로그를 포함해서 대부분의 블로그의 내용들은 단발성에 지나지 않습니다. 이것만으로 Spring을 이해하는것은 사용만 하는것이지 이해한 것은 아니라고 개인적으로 생각하고 있습니다. <br/>
-Spring의 이런 개념이 왜 나오게 된것인지, 어떻게 해결하고 해결하다보니 결국 이 형태가 된것인지 정말 상세하게 나오기 때문에 <br/>
-객체지향과 Java를 좀 더 잘 이해하기 위해서라도 무조건 읽어보시길 추천드립니다. <br/>
+제 블로그의 내용들은 단발성에 지나지 않습니다. 이것만으로 Spring을 이해하는것은 사용만 하는것이지 이해한 것은 아니라고 개인적으로 생각하고 있습니다. <br/>
+Spring의 이런 개념이 왜 나오게 된것인지, 어떻게 해결하고 해결하다보니 결국 이 형태가 된것인지 정말 상세하게 나오기 때문에 객체지향과 Java를 좀 더 잘 이해하기 위해서라도 무조건 읽어보시길 추천드립니다. <br/>
 ### 문제 상황
 하나의 게시판 서비스가 있다고 가정하겠습니다. <br/>
 해당 게시판은 간단하게 구현하기 위해 SpringBoot + JPA + H2 + Gradle로 구현되었습니다. <br/>
+게시글을 전체 조회, 단일 조회 기능이 있는 서비스입니다. 해당 서비스의 구현 코드는 아래와 같습니다. <br/>
+
 **build.gradle**
+
 ```
 buildscript {
 	ext {
@@ -54,6 +56,7 @@ dependencies {
 ```
 
 **Board.java**
+
 ```
 @Entity
 public class Board {
@@ -103,6 +106,7 @@ public class Board {
 ```
 
 **BoardService.java**
+
 ```
 @Service
 public class BoardService {
@@ -117,13 +121,15 @@ public class BoardService {
 ```
 
 **BoardRepository.java**
+
 ```
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long>{}
 ```
-Board외에 User도 추가해보겠습니다.
-
+Board외에 User도 추가해보겠습니다. <br/>
+<br/>
 **User.java**
+
 ```
 @Entity
 public class User {
@@ -171,6 +177,7 @@ public class User {
 }
 ```
 **UserService.java**
+
 ```
 @Service
 public class UserService extends UserPerformance{
@@ -186,6 +193,7 @@ public class UserService extends UserPerformance{
 ```
 
 **UserRepository.java**
+
 ```
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>{
@@ -194,6 +202,7 @@ public interface UserRepository extends JpaRepository<User, Long>{
 ```
 
 **Application.java**
+
 ```
 @SpringBootApplication
 @RestController
@@ -234,10 +243,11 @@ public class Application implements CommandLineRunner{
 	}
 }
 ```
-게시글을 전체 조회, 단일 조회 기능이 있는 서비스입니다. 위와 같은 상황에서 각 기능별로 실행시간을 남겨야 하는 조건이 추가되었다고 가정해보겠습니다.<br/>
+위와 같은 상황에서 각 기능별로 실행시간을 남겨야 하는 조건이 추가되었다고 가정해보겠습니다.<br/>
 가장 쉬운 방법은 서비스 코드에서 직접 시간을 측정하여 남기는 것입니다. <br/>
 
 **BoardService.java와 UserService.java**
+
 ```
     public List<Board> getBoards() {
         long start = System.currentTimeMillis();
@@ -274,6 +284,7 @@ public class Application implements CommandLineRunner{
 이전시간에 이어 상속으로 문제를 해결해보도록 하겠습니다. <br/>
 
 **BoardPerformance.java와 UserPerformance.java 추가**
+
 ```
 public abstract class BoardPerformance {
 
@@ -323,6 +334,7 @@ public abstract class UserPerformance {
 ```
 
 **BoardService.java 와 UserService.java**
+
 ```
 @Service
 public class BoardService extends BoardPerformance {
@@ -362,6 +374,7 @@ XXXPerformance 추상 클래스를 생성하여 메소드 실행순서를 강제
 (개편된 구조도) <br/>
 
 **SuperPerformance.java**
+
 ```
 public abstract class SuperPerformance<T> {
     private long before() {
@@ -386,6 +399,7 @@ public abstract class SuperPerformance<T> {
 ```
 
 **BoardService.java 와 UserService.java**
+
 ```
 @Service
 public class BoardService extends SuperPerformance<Board> {
@@ -399,6 +413,7 @@ public class UserService extends SuperPerformance<User> {
 ```
 
 **Application.java**
+
 ```
 	@GetMapping("/boards")
 	public List<Board> getBoards() {
@@ -637,41 +652,69 @@ AOP에 대한 소개는 여기까지하고, 실제 AOP 사용에 대해 소개�
 DI와 IoC에 대한 개념이 갖춰져있다면 6장만 보셔도 충분히 이해하실 수 있으실것 같습니다.)<br/>
 
 ### AOP 용어
-아래 용어들은 Spring에서만 사용되는 용어들이 아닌 AOP 프레임워크 전체에서 사용되는 공용어입니다. <br/>
+아래 용어들은 Spring에서만 사용되는 용어들이 아닌 **AOP 프레임워크 전체에서 사용되는 공용어**입니다. <br/>
 **타겟 (Target)** <br/>
 부가기능을 부여할 대상을 얘기합니다. <br/>
 여기선 핵심기능을 담당하는 getBoards 혹은 getUsers를 하는 Service 들을 얘기합니다. <br/>
-
+<br/>
 **애스펙트 (Aspect)** <br/>
 객체지향 모듈을 오프젝트라 부르는것과 비슷하게 부가기능 모듈을 애스펙트라고 부르며, **핵심기능에 부가되어 의미를 갖는** 특별한 모듈이라 생각하시면 됩니다. <br/>
 애스펙트는 부가될 기능을 정의한 **어드바이스**와 어드바이스를 어디에 적용할지를 결정하는 **포인트컷**을 함께 갖고 있습니다. <br/>
 참고로 AOP(Aspect Oriented Programming)라는 뜻 자체가 어플리케이션의 핵심적인 기능에서 부가적인 기능을 분리해서 애스팩트라는 독특한 모듈로 만들어서 설계하고 개발하는 방법을 얘기합니다. <br/>
-
+<br/>
 **어드바이스 (Advice)** <br/>
 실질적으로 부가기능을 담은 클래스를 얘기합니다. <br/>
 어드바이스의 경우 타겟 오프젝트에 종속되지 않기 때문에 순수하게 **부가기능에만 집중**할 수 있습니다. <br/>
-
+<br/>
 **포인트컷 (PointCut)** <br/>
 부가기능이 적용될 대상(메소드)를 선정하는 방법을 얘기합니다. <br/>
 즉, 어드바이스를 적용할 조인포인트를 선별하는 기능을 정의한 모듈을 애기합니다. <br/>
-
+<br/>
 **조인포인트 (JoinPoint)** <br/>
 어드바이스가 적용될 수 있는 위치를 얘기합니다. <br/>
 다른 AOP 프레임워크와 달리 Spring에서는 **메소드 조인포인트만 제공**하고 있습니다. <br/>
-
+<br/>
 **프록시 (Proxy)** <br/>
 타겟을 감싸서 타겟의 요청을 대신 받아주는 랩핑(Wrapping) 오브젝트입니다. <br/>
 호출자 (클라이언트)에서 타겟을 호출하게 되면 타겟이 아닌 타겟을 감싸고 있는 프록시가 호출되어, 
 타겟 메소드 실행전에 선처리, 타겟 메소드 실행 후, 후처리를 실행시키도록 구성되어있습니다. <br/>
 
-**인트로덕션 (Introduction)** <br/>
+![프록시](./images/프록시.png)
 
-자세한 설명은 [자바지기님의 포스팅](http://www.javajigi.net/pages/viewpage.action?pageId=1084) 참고
+(AOP에서 프록시는 호출을 가로챈 후, 어드바이스에 등록된 기능을 수행 후 타겟 메소드를 호출합니다.)<br/>
+<br/>
+**인트로덕션 (Introduction)** <br/>
+타겟 클래스에 코드 변경없이 신규 메소드나 멤버변수를 추가하는 기능을 얘기합니다. <br/>
+자세한 설명은 [자바지기님의 포스팅](http://www.javajigi.net/pages/viewpage.action?pageId=1084) 참고 <br/>
+<br/>
 **위빙 (Weaving)** <br/>
 지정된 객체에 애스팩트를 적용해서 새로운 프록시 객체를 생성하는 과정을 얘기합니다. <br/>
 예를 들면 A라는 객체에 트랜잭션 애스팩트가 지정되어 있다면, A라는 객체가 실행되기전 커넥션을 오픈하고 실행이 끝나면 커넥션을 종료하는 기능이 추가된 프록시 객체가 생성되고, 
 이 프록시 객체가 앞으로 A 객체가 호출되는 시점에서 사용됩니다. 이때의 프록시객체가 생성되는 과정을 **위빙**이라 생각하시면 됩니다. <br/> 
 컴파일 타임, 클래스로드 타임, 런타임과 같은 시점에서 실행되지만, Spring AOP는 런타임에서 프록시 객체가 생성 됩니다. <br/>
 
+AOP에서 사용되는 용어들을 대략적으로 알아보았습니다. <br/>
+그럼 이들을 이용하여 실질적으로 이전의 문제들을 해결해보겠습니다. <br/>
 
 ### 실습
+제일 먼저 BoardService에 애스펙트를 적용해보겠습니다. <br/>
+<br/>
+**Performance.java**
+```
+@Aspect
+public class Performance {
+
+    @Around("execution(** com.blogcode.board.BoardServiceImpl.getBoards(..))")
+    public void calculatePerformanceTime(ProceedingJoinPoint proceedingJoinPoint) {
+        try {
+            long start = System.currentTimeMillis();
+            proceedingJoinPoint.proceed();
+            long end = System.currentTimeMillis();
+
+            System.out.println("수행 시간 : "+ (end - start));
+        } catch (Throwable throwable) {
+            System.out.println("exception! ");
+        }
+    }
+}
+```
