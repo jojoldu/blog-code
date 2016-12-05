@@ -5,16 +5,16 @@ import com.blogcode.board.BoardRepository;
 import com.blogcode.board.BoardService;
 import com.blogcode.user.User;
 import com.blogcode.user.UserRepository;
-import com.blogcode.user.UserService;
+import com.blogcode.user.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
 
 @SpringBootApplication
 @RestController
@@ -27,7 +27,7 @@ public class Application implements CommandLineRunner{
 	private BoardRepository boardRepository;
 
 	@Autowired
-	private UserService userService;
+	private UserServiceImpl userService;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -42,12 +42,12 @@ public class Application implements CommandLineRunner{
 
 	@GetMapping("/boards")
 	public List<Board> getBoards() {
-		return boardService.getDataAll();
+		return boardService.getBoards();
 	}
 
 	@GetMapping("/users")
 	public List<User> getUsers() {
-		return userService.getDataAll();
+		return userService.getUsers();
 	}
 
 	public static void main(String[] args) {
