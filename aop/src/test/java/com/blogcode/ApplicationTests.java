@@ -32,5 +32,4 @@ public class ApplicationTests {
 	public void findUsers() throws Exception {
 		assertThat(userService.getUsers().size()).isEqualTo(100);
 	}
-
 }

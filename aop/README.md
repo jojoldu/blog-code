@@ -270,6 +270,9 @@ public class Application implements CommandLineRunner{
 제일 먼저 떠올릴수 있는 것은 **상속** 인것 같습니다. <br/>
 상속을 이용해서 한번 해결해보도록 하겠습니다. <br/>
 
+### 문제해결하기 - 상속
+이전시간에 이어 상속으로 문제를 해결해보도록 하겠습니다. <br/>
+
 **BoardPerformance.java와 UserPerformance.java 추가**
 ```
 public abstract class BoardPerformance {
@@ -410,12 +413,22 @@ public class UserService extends SuperPerformance<User> {
 중복되던 before와 after의 문제를 해결하였습니다. <br/>
 하지만 상속은 부모 클래스에 너무나 종속적인 문제 때문에 특별한 일이 있지 않는 이상 피하는 것이 좋습니다. ([이펙티브 자바](http://www.kyobobook.co.kr/product/detailViewKor.laf?barcode=9788966261161) 참고)<br/>
 그래서 이 상속으로 범벅인 코드를 **DI (Dependency Injection)**으로 개선해보겠습니다. <br/>
+
+### 문제해결하기 - DI
+상속을 피하기 위해 이번시간엔 DI (Dependency Injection)를 통해 문제를 해결해보려고 합니다. <br/> 
 제일 먼저 바꿀것은 BoardService 입니다. <br/>
 전체적으로 바꿀 구조는 아래와 같습니다. <br/>
 
 ![DI Board 구조도](./images/di_board_map.png)
 
+BoardService 인터페이스를 BoardServicePerformance와 BoardServiceImpl이 구현하였습니다. <br/>
+대신 집중해야할 로직인 Board 리스트를 조회하는 것은 BoardServiceImpl이 담당하고, <br/>
+기타옵션인 수행시간 측정은 BoardServicePerformance가 구현하되, 그 과정에서 BoardServiceImpl을 주입(Injection) 받도록 하였습니다. <br/>
+이렇게 되면 BoardServiceImpl과 BoardServicePerformance는 **느슨한 관계**를 가지며, Board 리스트를 조회라는 기능은 BoardServiceImpl만 보면 되는 구조가 될 수 있습니다. <br/>
+이를 직접 코드로 구현해보겠습니다. <br/>
+
 **BoardService.java**
+
 ```
 public interface BoardService {
     List<Board> getBoards();
@@ -423,6 +436,7 @@ public interface BoardService {
 ```
 
 **BoardServicePerformance.java**
+
 ```
 @Service
 @Primary
@@ -453,49 +467,191 @@ public class BoardServicePerformance implements BoardService{
 ```
 
 **BoardServiceImpl.java**
+
 ```
+@Service
+public class BoardServiceImpl implements BoardService{
+
+    @Autowired
+    private BoardRepository repository;
+
+    @Override
+    public List<Board> getBoards() {
+        return repository.findAll();
+    }
+}
+```
+지금부터는 테스트코드를 작성해서 테스트를 해보겠습니다. <br/>
+지속적으로 결과를 확인하는데 있어서 브라우저에서 URL을 입력하며 확인하는 방식은 불편함이 많습니다. <br/>
+테스트 코드를 통해 좀 더 수월하고 자동화된 테스트를 진행하겠습니다.
+
+**ApplicationTests.java**
+```
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class ApplicationTests {
+
+	@Autowired
+	private BoardService boardService;
+
+	@Test
+	public void findBoards() throws Exception {
+		assertThat(boardService.getBoards().size()).isEqualTo(100);
+	}
+
+}
+```
+자 이렇게 테스트 코드를 작성후에 코드가 잘 돌아가는지 확인해보겠습니다.
+
+![Boards 테스트 결과](./images/di_boards_test.png)
+
+정상적으로 수행시간과 테스트결과가 통과되는 것을 확인하였습니다. <br/>
+BoardService와 마찬가지고 UserService도 같은 구조로 코드를 작성해보겠습니다. <br/>
+<br/>
+**UserService.java**
+
+```
+public interface UserService {
+    List<User> getUsers();
+}
+
 ```
 
+**UserServiceImpl.java**
 
-상속과 위임 외에 해결할 수 있는 방법은 없을까요? <br/>
-비지니스 로직외에 필요한 부가 기능들에 대해서는 신경 쓰지 않도록 하려면 어떻게 해야할까요?? <br/>
-추가로 이와 비슷한 경우로 메소드 실행전에 Connection을 open하고, 메소드가 정상적으로 실행완료 되면 commit을, 
-예외 발생시엔 rollback을 처리하도록 하는 트랜잭션은 어떻게 처리되길래 개발자가 비지니스 로직만 작성하면 될까요? <br/>
+```
+@Service
+public class UserServiceImpl implements UserService{
 
+    @Autowired
+    private UserRepository repository;
+
+    @Override
+    public List<User> getUsers() {
+        return repository.findAll();
+    }
+}
+```
+
+**UserServicePerformance.java**
+```
+@Service
+@Primary
+public class UserServicePerformance implements UserService{
+
+    @Autowired
+    @Qualifier("userServiceImpl")
+    private UserService userService;
+
+    @Override
+    public List<User> getUsers() {
+        long start = before();
+        List<User> users = userService.getUsers();
+        after(start);
+        return users;
+    }
+
+    private long before() {
+        return System.currentTimeMillis();
+    }
+
+    private void after(long start) {
+        long end = System.currentTimeMillis();
+        System.out.println("수행 시간 : "+ (end - start));
+    }
+}
+```
+테스트를 위해 테스트 코드도 추가해보겠습니다.
+
+**ApplicationTests.java**
+
+```
+	@Autowired
+	private UserService userService;
+
+	@Test
+	public void findUsers() throws Exception {
+		assertThat(userService.getUsers().size()).isEqualTo(100);
+	}
+```
+
+테스트 코드를 작성후 실행해보면!
+
+![DI UserService 테스트결과](./images/di_users_test.png)
+
+정상적으로 잘 되는 것을 확인할 수 있습니다. <br/>
+기능은 정상적으로 잘되지만 코드가 깔끔하지 않고, 많은 관계가 필요한 상태입니다. <br/>
+만약 getXXX외에 다른 메소드에도 이와 같은 수행시간출력 기능이 포함되어야된다면 코드는 어떻게 될까요? <br/>
+Board와 User외에 다른 타입의 Service에 수행시간출력이 필요하면 어떻게 될까요? <br/>
+실제 가장 중요한 비지니스 로직외에 **부가 기능**들에 대해서는 신경 쓰지 않도록 하려면 어떻게 해야할까요?? <br/>
+이와 비슷한 경우로 메소드 실행전에 Connection을 open하고, 메소드가 정상적으로 실행완료 되면 commit을, 
+예외 발생시엔 rollback을 처리하도록 하는 트랜잭션은 어떻게 처리되고 있기에 개발자가 비지니스 로직만 작성하면 될까요? <br/>
+<br/>
 이 의문에 대답하기 위해 AOP에 대해 학습을 시작해보겠습니다.
 
 ### AOP란?
 Spring의 핵심 개념중 하나인 DI가 애플리케이션 모듈들 간의 결합도를 낮춰준다면, AOP는 **애플리케이션 전체에 걸쳐 사용되는 기능을 재사용**하도록 지원하는 것입니다. <br/>  
 AOP (Aspect-Oriented Programming) 란 단어를 번역하면 **관점(관심) 지향 프로그래밍**으로 됩니다. <br/>
 이 관점(관심)이란 단어가 잘 와닿지 않아 AOP를 이해하는데 있어 더 어려움을 일으킨다고 생각하였습니다. <br/>
+쉽게 얘기하면 프로젝트 구조를 바라 보는 **관점**을 바꿔보자는 이야기입니다. <br/>
+우리는 보통 제 3자의 관점에서 바라보자 라는 이야기를 합니다. <br/>
+
+![제3자의관점](./images/제3자.png)
+
+(제 3자의 관점) <br/>
+즉, **대상을 바라보는 방향을 바꿔보자**라는 이야기입니다. <br/>
+
+![핵심기능에서의 관점](./images/핵심관점.png)
+
+(핵심기능에서 바라본 관점) <br/>
+각각의 Service는 핵심기능에서 바라보았을때는 Board 조회, User조회, XXX조회 등 **공통된 요소가 없습니다**. <br/>
+이런 관점에서는 각각의 Service는 각자 코드를 구현하고 있다. 하지만, 이 관점을 돌려서 **부가기능** 이란 관점에서 바라보면 상황이 달라집니다. <br/>
+
+![부가기능에서의 관점](./images/부가기능관점.png)
+
+(부가기능에서 바라본 관점)<br/>
+부가기능의 관점에서 바라보면 각각의 Service는 수행시간 측정을 나타내는 before라는 메소드와 after라는 메소드가 공통되는 것을 알 수 있습니다. <br/>
+AOP는 여기서부터 시작합니다. <br/>
+기존에 OOP에서 바라보던 관점을 다르게 하여 부가기능적인 측면에서 보았을때 공통된 요소를 추출하자는 것입니다. <br/>
+이때 가로(횡단) 영역의 공통된 부분을 잘라냈다고 하여, AOP를 크로스 컷팅(Cross-Cuttin) 이라고 불리기도 합니다. <br/>
+요약하자면 아래와 같습니다. <br/>
 
 * OOP : 비지니스 로직의 모듈화
   - 모듈화의 핵심 단위는 비지니스 로직
-* AOP : 인프라 단위의 모듈화
+* AOP : 인프라 혹은 보조단위의 모듈화
   - 대표적 예 : 로깅, 트랜잭션, 보안 등
   - 각각의 모듈들의 주 목적 외에 필요한 부가적인 기능들 
   
-AOP라고 해서 전에 없던 새로운 개념이 아닙니다. 결국은 **공통된 기능을 재사용하는 기법**입니다. <br/>
-일반적으로 공통된 기능을 재사용하는 방법으로 상속이나 위임을 사용합니다. <br/>
+AOP라고 해서 전에 없던 새로운 개념이 등장한것이 아닙니다. 결국은 **공통된 기능을 재사용하는 기법**입니다. <br/>
+OOP에선 공통된 기능을 재사용하는 방법으로 상속이나 위임을 사용합니다. <br/>
 하지만 전체 어플리케이션에서 여기저기에서 사용되는 **부가기능**들을 상속이나 위임으로 처리하기에는 깔끔하게 모듈화가 어렵습니다. <br/>
-(일례로 트랜잭션을 생각해보시면 됩니다. JDBC 커넥션을 오픈하고 정상적 처리후엔 커밋, 예외발생시엔 롤백, 끝나면 커넥션 종료등과 같은 처리를 
-상속과 위임의 개념만으로 해결하려고 하면 깔끔한 모듈화가 되기에 어려움이 많습니다.) <br/>
-
+(위 수행시간출력에 대한 코드를 다시 확인해보셔도 좋고, 트랜잭션 기능에 대해 다시 떠올려보셔도 좋습니다.) <br/>
+그래서 이문제를 해결하기 위해 AOP가 등장하게 됩니다. <br/>
 AOP의 장점은 2가지입니다. <br/>
 
 * 어플리케이션 전체에 흩어진 공통 기능이 하나의 장소에서 관리된다는 점
 * 다른 서비스 모듈들이 본인의 목적에만 충실하고 그외 사항들은 신경쓰지 않아도 된다는 점
 
+AOP에 대한 소개는 여기까지하고, 실제 AOP 사용에 대해 소개해보겠습니다. <br/>
+(참고로 AOP가 어떻게 구현되어있는지 혹은 어떤 과정을 거쳐 오게되었는지 자세히 알고싶으시다면 토비님의 스프링 책을 꼭꼭! 읽어보시길 바랍니다. <br/>
+DI와 IoC에 대한 개념이 갖춰져있다면 6장만 보셔도 충분히 이해하실 수 있으실것 같습니다.)<br/>
+
 ### AOP 용어
+아래 용어들은 Spring에서만 사용되는 용어들이 아닌 AOP 프레임워크 전체에서 사용되는 공용어입니다. <br/>
+
 **애스펙트 (Aspect)** <br/>
 
 **어드바이스 (Advice)** <br/>
-일종의 부가기능을 담은 클래스를 얘기합니다. <br/>
+실질적으로 부가기능을 담은 클래스를 얘기합니다. <br/>
+어드바이스의 경우 타겟 오프젝트에 종속되지 않기 때문에 순수하게 **부가기능에만 집중**할 수 있습니다. <br/>
+
+**포인트컷 (PointCut)** <br/>
+부가기능이 적용될 대상(메소드)를 선정하는 방법을 얘기합니다. <br/>
 
 **조인포인트 (JoinPoint)** <br/>
 어드바이스가 적용될 수 있는 위치를 얘기합니다. <br/>
 
-**포인트컷 (PointCut)** <br/>
+
 
 **인트로덕션 (Introduction)** <br/>
 **위빙 (Weaving)** <br/>
