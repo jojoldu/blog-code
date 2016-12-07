@@ -1,6 +1,7 @@
 package com.blogcode.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -13,7 +14,7 @@ import org.aspectj.lang.annotation.Before;
 @Aspect
 public class Performance {
 
-    @Around("execution(* com.blogcode.board.BoardService.getBoards(..))")
+    @Around("execution(* com.blogcode.board.BoardService.getBoards(..)) || execution(* com.blogcode.user.UserService.getUsers(..))")
     public Object calculatePerformanceTime(ProceedingJoinPoint proceedingJoinPoint) {
         Object result = null;
         try {
@@ -26,23 +27,5 @@ public class Performance {
             System.out.println("exception! ");
         }
         return result;
-    }
-
-    @Before("this(com.blogcode.user.UserService)")
-    public void printThis(){
-        System.out.println("this : UserService");
-    }
-
-    @Before("this(com.blogcode.user.UserServiceImpl)")
-    public void printThisImpl() {
-        System.out.println("this : UserServiceImpl ");
-    }
-
-    @Before("target(com.blogcode.user.UserService)")
-    public void printTarget(){ System.out.println("target : UserService"); }
-
-    @Before("target(com.blogcode.user.UserServiceImpl)")
-    public void printTargetImpl() {
-        System.out.println("target : UserServiceImpl ");
     }
 }

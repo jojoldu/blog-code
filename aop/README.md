@@ -808,24 +808,34 @@ public void 어드바이스메소드() {
   - 이전 예제와 같이 풀패키지에 메소드명까지 직접 지정할 수도 있으며, 아래와 같이 특정 타입내의 모든 메소드를 지정할 수도 있다.
   - ex) execution(* com.blogcode.service.AccountService.*(..) : AccountService 인터페이스의 모든 메소드
 * within()
-  - execution 지정자에서 클래스/인터페이스까지만 적용된 지정자
+  - execution 지정자에서 클래스/인터페이스까지만 적용된 경우
   - 즉, 클래스 혹은 인터페이스 단위까지만 범위 지정이 가능하다.
   - ex) within(com.blogcode.service.*) : service 패키지 아래의 클래스와 인터페이스가 가진 모든 메소드
   - ex) within(com.blogcode.service..*) : service 아래의 모든 **하위패키지까지** 포함한 클래스와 인터페이스가 가진 메소드
 * @within()
-  - 
+  - 주어진 어노테이션을 사용하는 타입으로 선언된 메소드
 * this()
-  - Bean 
+  - 타겟 메소드가 지정된 빈 타입의 인스턴스인 경우
 * target()
-  - 
+  - this와 유사하지만 빈 타입이 아닌 타입의 인스턴스인 경우
 * @target()
-  - 
+  - 타겟 메소드를 실행하는 객체의 클래스가 타겟 명세에 지정된 타입의 어노테이션이 있는 경우
 * @annotation
   - 타겟 메소드에 특정 어노테이션이 지정된 경우
   - ex) @annotation(org.springframework.transaction.annotation.Transactional) : Transactional 어노테이션이 지정된 메소드 전부
 
 다양한 지정자가 등장하였지만 실제로 execution과 @annotation을 주로 사용하는 것으로 알고 있습니다. (혹시 아니라면 댓글 부탁드립니다.) <br/>
+기본적인 사용법을 정리하였으니, 이젠 좀 더 응용해서 사용해보겠습니다.
 
+### 사용법 확장
+먼저 아직 AOP가 적용되지 않은 UserService를 진행해보겠습니다. <br/>
+**Perpormance.java**
+```
+@Around("execution(* com.blogcode.board.BoardService.getBoards(..)) || execution(* com.blogcode.user.UserService.getUsers(..))")
+```
+포인트컷 표현식에 OR 연산자인 ||를 이용하여 UserService를 추가시켰습니다. <br/>
+이로 인해 알 수 있는 것은 포인트컷 표현식에는 AND, OR, NOT와 같은 **관계연산자를 이용**할 수 있다는 것입니다. <br/>
+여기서 추가로 해당 표현식을 
 실제로 트랜잭션, 캐시 추상화 외에도 프로젝트에 맞춰 AOP를 사용하는 경우가 많습니다. <br/>
 예를 들어 Dao에서 Service를, Service에서 Controller를 호출하지 못하도록(계층형 구조에서 하위계층이 상위 계층을 호출하는 것은 금지합니다.) 막는 용도로 사용되기도 합니다. <br/>
 ([백기선님의 블로그](http://whiteship.tistory.com/1960) 참고) <br/>
