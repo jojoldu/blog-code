@@ -1,10 +1,11 @@
 # AOP 시작하기
 현재 신입사원 분들의 입사로 Spring에서 중요한 개념들에 대해 한번 정리하려고 작성하게 되었습니다. <br/>
-Spring의 가장 중요한 개념 중 하나인 AOP를 제 나름의 이해로 정리하였습니다. 틀린 내용이 있다면 가감 없이 풀리퀘나 댓글 부탁드리겠습니다.<br/>
+Spring의 가장 중요한 개념 중 하나인 AOP를 제 나름의 이해로 정리하였습니다. 틀린 내용이 있다면 가감 없이 댓글 부탁드리겠습니다.<br/>
+모든 코드는 [Github](https://github.com/jojoldu/blog-code/aop)에 있으니 코드와 함께 보셔도 좋을것 같습니다. <br/>
 (공부한 내용을 정리하는 [Github](https://github.com/jojoldu/blog-code)와 세미나+책 후기를 정리하는 [Github](https://github.com/jojoldu/review)를 star 하시면 실시간으로 feed를 받을 수 있습니다.)
 <br/>
 Spring을 이해하는데 있어 최고는 토비님의 토비의 스프링을 읽어보는 것입니다. <br/>
-제 블로그의 내용들은 단발성에 지나지 않습니다. 이것만으로 Spring을 이해하는것은 사용만 하는것이지 이해한 것은 아니라고 개인적으로 생각하고 있습니다. <br/>
+제 블로그의 내용들은 단발성에 지나지 않습니다. 이것만으로는 Spring을 사용만 하는것이지 이해한 것은 아니라고 개인적으로 생각하고 있습니다. <br/>
 Spring의 이런 개념이 왜 나오게 된것인지, 어떻게 해결하고 해결하다보니 결국 이 형태가 된것인지 정말 상세하게 나오기 때문에 객체지향과 Java를 좀 더 잘 이해하기 위해서라도 무조건 읽어보시길 추천드립니다. <br/>
 ### 문제 상황
 하나의 게시판 서비스가 있다고 가정하겠습니다. <br/>
@@ -614,17 +615,20 @@ AOP (Aspect-Oriented Programming) 란 단어를 번역하면 **관점(관심) �
 ![제3자의관점](./images/제3자.png)
 
 (제 3자의 관점) <br/>
+<br/>
 즉, **대상을 바라보는 방향을 바꿔보자**라는 이야기입니다. <br/>
 
 ![핵심기능에서의 관점](./images/핵심관점.png)
 
 (핵심기능에서 바라본 관점) <br/>
-각각의 Service는 핵심기능에서 바라보았을때는 Board 조회, User조회, XXX조회 등 **공통된 요소가 없습니다**. <br/>
-이런 관점에서는 각각의 Service는 각자 코드를 구현하고 있다. 하지만, 이 관점을 돌려서 **부가기능** 이란 관점에서 바라보면 상황이 달라집니다. <br/>
+<br/>
+각각의 Service는 핵심기능에서 바라보았을때는 Board, User, XXX 등 **공통된 요소가 없습니다**. <br/>
+이런 관점에서는 각각의 Service는 각자 코드를 구현하고 있습니다. 하지만, 이 관점을 돌려서 **부가기능** 이란 관점에서 바라보면 상황이 달라집니다. <br/>
 
 ![부가기능에서의 관점](./images/부가기능관점.png)
 
 (부가기능에서 바라본 관점)<br/>
+<br/>
 부가기능의 관점에서 바라보면 각각의 Service는 수행시간 측정을 나타내는 before라는 메소드와 after라는 메소드가 공통되는 것을 알 수 있습니다. <br/>
 AOP는 여기서부터 시작합니다. <br/>
 기존에 OOP에서 바라보던 관점을 다르게 하여 부가기능적인 측면에서 보았을때 공통된 요소를 추출하자는 것입니다. <br/>
@@ -791,6 +795,8 @@ public void 어드바이스메소드() {
 }
 ```
 식으로 작성하시면 됩니다. <br/>
+여기서 주의하실 점은 @Around의 경우 **반드시 proceed() 메소드가 호출**되어야 한다는 것입니다. <br/>
+proceed() 메소드는 타겟 메소드를 지칭하기 때문에 proceed 메소드를 실행시켜야만 타겟 메소드가 수행이 된다는것을 잊으시면 안됩니다. <br/>
 <br/>
 다음으로 알아볼것은 @Around 다음에 작성된 ```"execution(* com.blogcode.board.BoardService.getBoards(..))"``` 입니다. <br/>
 어드바이스의 value로 들어간 이 문자열을 **포인트컷 표현식** 이라고 합니다. <br/>
@@ -835,8 +841,221 @@ public void 어드바이스메소드() {
 ```
 포인트컷 표현식에 OR 연산자인 ||를 이용하여 UserService를 추가시켰습니다. <br/>
 이로 인해 알 수 있는 것은 포인트컷 표현식에는 AND, OR, NOT와 같은 **관계연산자를 이용**할 수 있다는 것입니다. <br/>
-여기서 추가로 해당 표현식을 
+여기서 만약 추가로 표현식이 더 추가가 되면 어떻게 될까요? <br/>
+저 긴 표현식이 하나씩 추가 될때마다 가독성에 큰 무리가 있습니다. <br/>
+추가로 해당 표현식을 재사용하고 싶을땐 어떻게 해야할까요? 변수처럼 표현식을 담을수는 없을까요? <br/>
+이제 저 표현식을 변수처럼 변경해보겠습니다. <br/>
+
+```
+@Aspect
+public class Performance {
+
+    @Pointcut("execution(* com.blogcode.board.BoardService.getBoards(..))")
+    public void getBoards(){}
+
+    @Pointcut("execution(* com.blogcode.user.UserService.getUsers(..))")
+    public void getUsers(){}
+
+    @Around("getBoards() || getUsers()")
+    public Object calculatePerformanceTime(ProceedingJoinPoint proceedingJoinPoint) {
+        Object result = null;
+        try {
+            long start = System.currentTimeMillis();
+            result = proceedingJoinPoint.proceed();
+            long end = System.currentTimeMillis();
+
+            System.out.println("수행 시간 : "+ (end - start));
+        } catch (Throwable throwable) {
+            System.out.println("exception! ");
+        }
+        return result;
+    }
+}
+```
+@Pointcut 어노테이션은 애스펙트에서 마치 변수와 같이 **재사용 가능한 포인트컷**을 정의할 수 있습니다.
+그래서 이를 이용하여 각각의 표현식을 getBoards() 메소드와 getUsers() 메소드에 담았습니다. <br/>
+이렇게 될 경우 다음부터는 동일한 표현식은 **미리 지정된 메소드명으로 표현식을 그대로 사용**할 수 있는 것입니다. <br/>
+<br/>
+그럼 좀 더 추가예제를 진행해보겠습니다. <br/>
+여태 한 것은 파라미터가 없는 애스펙트만 다루었습니다. <br/>
+만약 타겟 메소드를 어드바이스 하는 애스펙트가 타겟 메소드에 전달된 인자(Arguments)값을 사용하고 싶을땐 어떻게 해야할까요? <br/>
+이번엔 타겟 메소드의 인자를 사용하는 애스펙트를 만들어 보겠습니다. <br/>
+신규 기능은 User의 정보가 수정되면 이를 History에서 저장하여 관리하는 **수정내역관리** 입니다.
+userService의 update 메소드가 실행될때마다 History Table에 user의 idx가 저장되도록 코드를 추가하겠습니다. <br/>
+<br/>
+**History.java**
+```
+@Entity
+public class History {
+
+    @Id
+    @GeneratedValue
+    private long idx;
+
+    @Column
+    private long userIdx;
+
+    @Column
+    private Date updateDate;
+
+    public History() {
+    }
+
+    public History(long userIdx, Date updateDate) {
+        this.userIdx = userIdx;
+        this.updateDate = updateDate;
+    }
+
+    public long getIdx() {
+        return idx;
+    }
+
+    public void setIdx(long idx) {
+        this.idx = idx;
+    }
+
+    public long getUserIdx() {
+        return userIdx;
+    }
+
+    public void setUserIdx(long userIdx) {
+        this.userIdx = userIdx;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
+}
+```
+
+**HistoryRepository.java**
+```
+@Repository
+public interface HistoryRepository extends JpaRepository<History, Long>{}
+
+```
+**UserHistory**
+```
+@Aspect
+@Component // @Bean과 동일하게 Spring Bean 등록 어노테이션
+public class UserHistory {
+
+    @Autowired
+    private HistoryRepository historyRepository;
+
+    @Pointcut("execution(* com.blogcode.user.UserService.update(*)) && args(user)")
+    public void updateUser(User user){}
+
+    @AfterReturning("updateUser(user)")
+    public void saveHistory(User user){
+        historyRepository.save(new History(user.getIdx()));
+    }
+}
+```
+가장 중요한 UserHistory 애스펙트입니다. <br/>
+이전의 Performance 애스펙트와 다르게 bean등록을 @Bean을 사용하지 않고 @Component를 사용하여 등록하였습니다. <br/>
+(@Bean과 @Component의 차이는 [이전의 포스팅](http://jojoldu.tistory.com/27)을 참고하시면 될것 같습니다.) <br/>
+**애스펙트 역시 Spring이 관리하는 bean**이기 때문에 같은 bean인 HistoryRepository를 사용할 수 있습니다. <br/>
+<br/>
+여기 코드에서 중점으로 보셔야할 것은 ```args(user)``` 표현식입니다. <br/>
+해당 표현식을 통해 타겟 메소드의 인자와 어드바이스의 인자가 매칭이 되는 것입니다. <br/>
+(저 코드를 제거해보시면 무슨말인지 바로 이해하실 수 있으실 것입니다.)<br/>
+updateUser라는 포인트컷이 user라는 인자를 사용하도록 args(user) 표현식으로 지정한 것입니다. <br/>
+<br/>
+@AfterReturning를 통해 **정상적으로 타겟 메소드가 실행 후**에 DB에 저장되도록 구현을 완성하였습니다. <br/>
+자 그럼 마지막으로 UserService와 UserServiceImpl 코드를 수정하도록 하겠습니다. <br/>
+<br/>
+**UserService.java와 UserServiceImpl.java**
+```
+public interface UserService {
+    List<User> getUsers();
+
+    void update(User user) throws Exception;
+}
+
+@Service
+public class UserServiceImpl implements UserService{
+
+    @Autowired
+    private UserRepository repository;
+
+    @Override
+    public List<User> getUsers() {
+        return repository.findAll();
+    }
+
+    @Override
+    public void update(User user) throws Exception{
+        repository.save(user);
+    }
+}
+```
+최종적으로 프로젝트 구조는 아래와 같습니다. <br/>
+
+![프로젝트 구조](./images/프로젝트구조.png)
+
+(최종 프로젝트 구조)<br/>
+<br/>
+그럼 위 코드가 정상적으로 작동하는지 확인 하기 위해 테스트 코드를 작성하겠습니다. <br/>
+
+**ApplicationTests.java**
+```
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class ApplicationTests {
+
+	@Autowired
+	private UserService userService;
+
+	@Autowired
+	private HistoryRepository historyRepository;
+
+	@Test
+	public void updateUsers() throws Exception {
+		List<User> users = userService.getUsers();
+		for(int i=0;i<5;i++){
+			User user = users.get(i);
+			user.setEmail("jojoldu@gmail.com");
+			userService.update(user);
+		}
+
+		List<History> histories = historyRepository.findAll();
+		assertThat(histories.size()).isEqualTo(5);
+		assertThat(histories.get(0).getUserIdx()).isEqualTo(1L);
+		assertThat(histories.get(1).getUserIdx()).isEqualTo(2L);
+	}
+}
+```
+1~5까지의 user들의 메일을 수정하였습니다. <br/>
+그리고 수정 후, History 테이블에 정상적으로 데이터가 들어간 것인지 확인하도록 코드가 작성되었습니다. <br/>
+그럼 테스트를 돌려보겠습니다!
+
+![인자값 있는 애스펙트 테스트 결과](./images/updateUser테스트결과.png)
+
+(테스트 결과) <br/>
+<br/>
+짠! 테스트가 정확히 통과하는 것을 확인할 수 있습니다. <br/>
+AOP에 대해 어느정도 감이 잡히시나요? <br/>
+저 개인적으로 Spring을 다시 이해해야하는 시기가 되서 공부중인데 다른분들께도 조금이나마 도움이 되었길 바랄뿐입니다. <br/>
+여기에 소개한 예제외에도 AOP는 많은 곳에서 사용되고 있습니다. <br/>
 실제로 트랜잭션, 캐시 추상화 외에도 프로젝트에 맞춰 AOP를 사용하는 경우가 많습니다. <br/>
 예를 들어 Dao에서 Service를, Service에서 Controller를 호출하지 못하도록(계층형 구조에서 하위계층이 상위 계층을 호출하는 것은 금지합니다.) 막는 용도로 사용되기도 합니다. <br/>
 ([백기선님의 블로그](http://whiteship.tistory.com/1960) 참고) <br/>
-이외에도 
+이외에도 AOP를 사용한 사례를 많은 분들이 공유해주시면 저같은 주니어 개발자들이 AOP와 스프링을 이해하는데 큰 도움이 되지 않을까 생각합니다^^;
+너무나 긴글 끝까지 읽어주셔서 정말 감사드립니다.
+
+### 마무리
+> 작성하면서도 이게 과연 다른분들께 얼마나 이해를 드릴수있을까 하는 고민이 계속 들었던 포스팅인것 같습니다.<br/>
+개인적으로 감사한 것은 이번주 평일이 전부 휴가로 쉴 수 있어서 마무리 할 수 있었습니다. <br/>
+평소 시간만으로는 생각보다 진도가 나가지 않아 포스팅을 완료하는데 정말 긴 시간이 들었습니다. <br/>
+
+![등록전](./images/등록전.png)
+
+> 보시는것처럼 11월 28일부터 contribution이 없는데, aop 작업을 브랜치를 따서 진행하다보니 master에 머지된것이 없어 여태껏 커밋그래프가 비어보이게 되었습니다. ㅠㅠ <br/>
+이번 내용이 merge되면 아마 이쁜 그래프로 다시 돌아갈것 같습니다. <br/>
+다음은 전에 작성했던 [블랙잭 게임의 코드리뷰](http://okky.kr/article/362491?note=1147582)를 반영해보려고 합니다. <br/>
+계속해서 좋은 내용들을 정리하고 공유하도록 하겠습니다. 매번 방문해주셔서 더할나위 없이 감사드립니다.

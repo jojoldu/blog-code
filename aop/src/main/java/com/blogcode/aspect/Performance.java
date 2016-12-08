@@ -1,10 +1,7 @@
 package com.blogcode.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.*;
 
 /**
  * Created by jojoldu@gmail.com on 2016-12-05.
@@ -14,7 +11,13 @@ import org.aspectj.lang.annotation.Before;
 @Aspect
 public class Performance {
 
-    @Around("execution(* com.blogcode.board.BoardService.getBoards(..)) || execution(* com.blogcode.user.UserService.getUsers(..))")
+    @Pointcut("execution(* com.blogcode.board.BoardService.getBoards(..))")
+    public void getBoards(){}
+
+    @Pointcut("execution(* com.blogcode.user.UserService.getUsers(..))")
+    public void getUsers(){}
+
+    @Around("getBoards() || getUsers()")
     public Object calculatePerformanceTime(ProceedingJoinPoint proceedingJoinPoint) {
         Object result = null;
         try {
