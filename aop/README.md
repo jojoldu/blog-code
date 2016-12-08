@@ -2,8 +2,11 @@
 현재 신입사원 분들의 입사로 Spring에서 중요한 개념들에 대해 한번 정리하려고 작성하게 되었습니다. <br/>
 Spring의 가장 중요한 개념 중 하나인 AOP를 제 나름의 이해로 정리하였습니다. 틀린 내용이 있다면 가감 없이 댓글 부탁드리겠습니다.<br/>
 모든 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/aop)에 있으니 코드와 함께 보셔도 좋을것 같습니다. <br/>
-(공부한 내용을 정리하는 [Github](https://github.com/jojoldu/blog-code)와 세미나+책 후기를 정리하는 [Github](https://github.com/jojoldu/review)를 star 하시면 실시간으로 feed를 받을 수 있습니다.)
-<br/>
+(공부한 내용을 정리하는 [Github](https://github.com/jojoldu/blog-code)와 세미나+책 후기를 정리하는 [Github](https://github.com/jojoldu/review)를 star 하시면 실시간으로 feed를 받을 수 있습니다.)<br/>
+
+![Spring AOP](./images/aop.png)
+
+
 Spring을 이해하는데 있어 최고는 토비님의 토비의 스프링을 읽어보는 것입니다. <br/>
 제 블로그의 내용들은 단발성에 지나지 않습니다. 이것만으로는 Spring을 사용만 하는것이지 이해한 것은 아니라고 개인적으로 생각하고 있습니다. <br/>
 Spring의 이런 개념이 왜 나오게 된것인지, 어떻게 해결하고 해결하다보니 결국 이 형태가 된것인지 정말 상세하게 나오기 때문에 객체지향과 Java를 좀 더 잘 이해하기 위해서라도 무조건 읽어보시길 추천드립니다. <br/>
