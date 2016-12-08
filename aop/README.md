@@ -1,7 +1,7 @@
 # AOP 시작하기
 현재 신입사원 분들의 입사로 Spring에서 중요한 개념들에 대해 한번 정리하려고 작성하게 되었습니다. <br/>
 Spring의 가장 중요한 개념 중 하나인 AOP를 제 나름의 이해로 정리하였습니다. 틀린 내용이 있다면 가감 없이 댓글 부탁드리겠습니다.<br/>
-모든 코드는 [Github](https://github.com/jojoldu/blog-code/aop)에 있으니 코드와 함께 보셔도 좋을것 같습니다. <br/>
+모든 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/aop)에 있으니 코드와 함께 보셔도 좋을것 같습니다. <br/>
 (공부한 내용을 정리하는 [Github](https://github.com/jojoldu/blog-code)와 세미나+책 후기를 정리하는 [Github](https://github.com/jojoldu/review)를 star 하시면 실시간으로 feed를 받을 수 있습니다.)
 <br/>
 Spring을 이해하는데 있어 최고는 토비님의 토비의 스프링을 읽어보는 것입니다. <br/>
@@ -238,7 +238,7 @@ public class Application implements CommandLineRunner{
 	public List<User> getUsers() {
 		return userService.getUsers();
 	}
-	
+
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
@@ -258,16 +258,16 @@ public class Application implements CommandLineRunner{
         System.out.println("수행 시간 : "+ (end - start));
         return boards;
     }
-    
+
 	public List<User> getUsers() {
 	    long start = System.currentTimeMillis();
-	    List<User> users = repository.findAll(); 
+	    List<User> users = repository.findAll();
         long end = System.currentTimeMillis();
 
         System.out.println("수행 시간 : "+ (end - start));
-		return users; 
+		return users;
 	}
-	
+
 ```
 아주 쉽게 해결이 되었지만, 이게 정답일까요?? <br/>
 현재 getXXX메소드들은 몇가지 문제가 있습니다. <br/>
@@ -305,7 +305,7 @@ public abstract class BoardPerformance {
 
         return boards;
     }
-    
+
     //추상메소드
     public abstract List<Board> findAll();
 }
@@ -328,7 +328,7 @@ public abstract class UserPerformance {
 
         return users;
     }
-    
+
     //추상메소드
     public abstract List<User> findAll();
 }
@@ -431,7 +431,7 @@ public class UserService extends SuperPerformance<User> {
 그래서 이 상속으로 범벅인 코드를 **DI (Dependency Injection)**으로 개선해보겠습니다. <br/>
 
 ### 문제해결하기 - DI
-상속을 피하기 위해 이번시간엔 DI (Dependency Injection)를 통해 문제를 해결해보려고 합니다. <br/> 
+상속을 피하기 위해 이번시간엔 DI (Dependency Injection)를 통해 문제를 해결해보려고 합니다. <br/>
 제일 먼저 바꿀것은 BoardService 입니다. <br/>
 전체적으로 바꿀 구조는 아래와 같습니다. <br/>
 
@@ -600,7 +600,7 @@ public class UserServicePerformance implements UserService{
 만약 getXXX외에 다른 메소드에도 이와 같은 수행시간출력 기능이 포함되어야된다면 코드는 어떻게 될까요? <br/>
 Board와 User외에 다른 타입의 Service에 수행시간출력이 필요하면 어떻게 될까요? <br/>
 실제 가장 중요한 비지니스 로직외에 **부가 기능**들에 대해서는 신경 쓰지 않도록 하려면 어떻게 해야할까요?? <br/>
-이와 비슷한 경우로 메소드 실행전에 Connection을 open하고, 메소드가 정상적으로 실행완료 되면 commit을, 
+이와 비슷한 경우로 메소드 실행전에 Connection을 open하고, 메소드가 정상적으로 실행완료 되면 commit을,
 예외 발생시엔 rollback을 처리하도록 하는 트랜잭션은 어떻게 처리되고 있기에 개발자가 비지니스 로직만 작성하면 될까요? <br/>
 <br/>
 이 의문에 대답하기 위해 AOP에 대해 학습을 시작해보겠습니다.
@@ -639,8 +639,8 @@ AOP는 여기서부터 시작합니다. <br/>
   - 모듈화의 핵심 단위는 비지니스 로직
 * AOP : 인프라 혹은 부가기능의 모듈화
   - 대표적 예 : 로깅, 트랜잭션, 보안 등
-  - 각각의 모듈들의 주 목적 외에 필요한 부가적인 기능들 
-  
+  - 각각의 모듈들의 주 목적 외에 필요한 부가적인 기능들
+
 AOP라고 해서 전에 없던 새로운 개념이 등장한것이 아닙니다. 결국은 **공통된 기능을 재사용하는 기법**입니다. <br/>
 OOP에선 공통된 기능을 재사용하는 방법으로 상속이나 위임을 사용합니다. <br/>
 하지만 전체 어플리케이션에서 여기저기에서 사용되는 **부가기능**들을 상속이나 위임으로 처리하기에는 깔끔하게 모듈화가 어렵습니다. <br/>
@@ -684,7 +684,7 @@ DI와 IoC에 대한 개념이 갖춰져있다면 6장만 보셔도 충분히 이
 <br/>
 **프록시 (Proxy)** <br/>
 타겟을 감싸서 타겟의 요청을 대신 받아주는 랩핑(Wrapping) 오브젝트입니다. <br/>
-호출자 (클라이언트)에서 타겟을 호출하게 되면 타겟이 아닌 타겟을 감싸고 있는 프록시가 호출되어, 
+호출자 (클라이언트)에서 타겟을 호출하게 되면 타겟이 아닌 타겟을 감싸고 있는 프록시가 호출되어,
 타겟 메소드 실행전에 선처리, 타겟 메소드 실행 후, 후처리를 실행시키도록 구성되어있습니다. <br/>
 
 ![프록시](./images/프록시.png)
@@ -697,8 +697,8 @@ DI와 IoC에 대한 개념이 갖춰져있다면 6장만 보셔도 충분히 이
 <br/>
 **위빙 (Weaving)** <br/>
 지정된 객체에 애스팩트를 적용해서 새로운 프록시 객체를 생성하는 과정을 얘기합니다. <br/>
-예를 들면 A라는 객체에 트랜잭션 애스팩트가 지정되어 있다면, A라는 객체가 실행되기전 커넥션을 오픈하고 실행이 끝나면 커넥션을 종료하는 기능이 추가된 프록시 객체가 생성되고, 
-이 프록시 객체가 앞으로 A 객체가 호출되는 시점에서 사용됩니다. 이때의 프록시객체가 생성되는 과정을 **위빙**이라 생각하시면 됩니다. <br/> 
+예를 들면 A라는 객체에 트랜잭션 애스팩트가 지정되어 있다면, A라는 객체가 실행되기전 커넥션을 오픈하고 실행이 끝나면 커넥션을 종료하는 기능이 추가된 프록시 객체가 생성되고,
+이 프록시 객체가 앞으로 A 객체가 호출되는 시점에서 사용됩니다. 이때의 프록시객체가 생성되는 과정을 **위빙**이라 생각하시면 됩니다. <br/>
 컴파일 타임, 클래스로드 타임, 런타임과 같은 시점에서 실행되지만, Spring AOP는 런타임에서 프록시 객체가 생성 됩니다. <br/>
 
 AOP에서 사용되는 용어들을 대략적으로 알아보았습니다. <br/>
@@ -776,7 +776,7 @@ BoardServicePerformance 없이도 수행시간이 출력되는것을 확인할 �
 여기서 "무엇"은 calculatePerformanceTime() 메소드를 나타냅니다. <br/>
 그리고 "언제"는 @Around가 되는데, 이 언제 라는 시점의 경우 @Around만 존재하지 않고 총 5가지의 타입이 존재합니다.
 <br/>
-* @Before (이전) 
+* @Before (이전)
   - 어드바이스 타겟 메소드가 호출되기 전에 어드바이스 기능을 수행
 * @After (이후)
   - 타겟 메소드의 결과에 관계없이(즉 성공, 예외 관계없이) 타겟 메소드가 완료 되면 어드바이스 기능을 수행
@@ -787,7 +787,7 @@ BoardServicePerformance 없이도 수행시간이 출력되는것을 확인할 �
 * @Around (메소드 실행 전후)
   - 어드바이스가 타겟 메소드를 감싸서 타겟 메소드 호출전과 후에 어드바이스 기능을 수행
 
-예를 들어 타겟 메소드의 이전 시점에서만 어드바이스 메소드를 수행하고 싶다면, 
+예를 들어 타겟 메소드의 이전 시점에서만 어드바이스 메소드를 수행하고 싶다면,
 ```
 @Before("포인트컷 표현식")
 public void 어드바이스메소드() {

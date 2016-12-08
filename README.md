@@ -18,6 +18,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 -	[Spring Boot 1.4.0으로 진행하는 TDD](https://github.com/jojoldu/blog-code/tree/master/springboot-test)
 -	[Swagger를 이용한 API문서 자동화](https://github.com/jojoldu/blog-code/tree/master/swagger)
 - [Ehcache 기본](https://github.com/jojoldu/blog-code/tree/master/spring-cache)
+- [Spring AOP 정리](https://github.com/jojoldu/blog-code/tree/master/aop)
 
 ### Javascript
 -	[Handlebar를 이용하여 배포까지](https://github.com/jojoldu/tuto-handlebar)
