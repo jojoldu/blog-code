@@ -23,6 +23,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 ### Javascript
 -	[Handlebar를 이용하여 배포까지](https://github.com/jojoldu/tuto-handlebar)
 -	[IE 7/8에서 모던하게 개발하기](https://github.com/jojoldu/blog-code/tree/master/js-framework-ie78)
+- [나만의 CLI 만들기 by nodejs](https://github.com/jojoldu/my-cli)
 
 ### Server
 -	[tcpdump로 문제해결 시리즈](https://github.com/jojoldu/blog-code/tree/master/tcpdump)
