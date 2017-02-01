@@ -26,5 +26,7 @@ git commit --amend --author="사용자명 <이메일>"
 
 6) 3~5 과정 반복
 
+### 소스트리
+소스트리 가능한지 체크
 ### 참고
 [stackoverflow](http://stackoverflow.com/questions/3042437/change-commit-author-at-one-specific-commit)
