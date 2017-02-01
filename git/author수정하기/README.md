@@ -29,4 +29,5 @@ git commit --amend --author="사용자명 <이메일>"
 ### 소스트리
 소스트리 가능한지 체크
 ### 참고
+[블로그](https://www.git-tower.com/learn/git/faq/change-author-name-email)
 [stackoverflow](http://stackoverflow.com/questions/3042437/change-commit-author-at-one-specific-commit)
