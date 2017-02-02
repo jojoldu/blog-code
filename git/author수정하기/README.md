@@ -3,6 +3,10 @@
 이럴 경우 원하는 계정으로 커밋이 되지 않아 github 컨트리뷰션에 남지않는 불상사가 생기는데요, 이럴때 rebase를 이용하여 문제를 해결할 수 있습니다.  
 이번 시간에는 rebase에 초점을 맞추는 것이 아니기 때문에 rebase에 대해 좀 더 찾아보고 싶으신 분들은 [아웃사이더님의 포스팅](https://blog.outsider.ne.kr/666)과 [김찬웅님의 NDC2016 발표자료(p.38부터)](http://www.slideshare.net/kexplo/ndc2016-effective-git) 을 참고 부탁드립니다.  
 
+### 문제상황
+로컬 git에 잘못된 github 계정을 등록하여 커밋 & 푸시가 github에 반영이 안되는 경우 어떻게 해야할까요?  
+예를 들어 아래와 같이
+### 해결책
 1) rebase 시작
 ```
 git rebase -i B
