@@ -32,5 +32,8 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
   - [망 분리된 상태에서 build 파일 전달하기](https://github.com/jojoldu/blog-code/tree/master/linux/passby)
   - [원격접속 및 root권한 받기 자동화](https://github.com/jojoldu/blog-code/tree/master/linux/go)
 
+### Git
+- [이미 커밋된 내용에서 author(작성자) 수정하기](https://github.com/jojoldu/blog-code/tree/master/git/author%EC%88%98%EC%A0%95%ED%95%98%EA%B8%B0)
+
 ### 번역
 - [서블릿동작방식](https://github.com/jojoldu/blog-code/blob/master/%EB%B2%88%EC%97%AD/%EC%84%9C%EB%B8%94%EB%A6%BF%EB%8F%99%EC%9E%91%EB%B0%A9%EC%8B%9D.md)
