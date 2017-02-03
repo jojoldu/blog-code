@@ -57,17 +57,32 @@ rebase 하고싶은 커밋의 경우 ```pick```을 ```edit```로 수정하면 �
 
 ![rebase편집](./images/rebase편집.png)  
 
-**3. author 수정**  
-```:wq```를 이용하여 편집창을 저장종료하면 바로 rebase가 시작됩니다.  
+```:wq```를 이용하여 편집창을 저장종료하면 바로 rebase가 시작됩니다.
 
+**3. author 수정**  
+rebase 진행 모드로 변경된 후 바로 아래의 명령어를 입력하시면 됩니다.      
 ```
 git commit --amend --author="사용자명 <이메일>"
 ```
 
+![rebase 사용자 수정](./images/rebase사용자수정.png)  
+
+(각자의 이메일 주소를 입력하시면 됩니다.)  
+
+입력하시면 성공의 메세지를 확인하실 수 있습니다.  
+
+![rebase 성공](./images/rebase성공.png)  
+
 **4. 다음 커밋으로 계속 진행**  
+rebase 종료 혹은 다음 rebase 대상으로 진행하고 싶으시면 아래 명령어를 입력하시면 됩니다.  
+
 ```
 git rebase --continue
 ```
+
+위 명령어는 다음 rebase 대상이 있을 경우 진행하며, 없을 경우 종료를 진행합니다.  
+
+![rebase 종료](./images/rebase끝.png)  
 
 **5. 수정을 원하는 커밋일 경우 다시 rebase로 수정**  
 ```
@@ -76,8 +91,25 @@ git commit --amend --author="사용자명 <이메일>"
 
 **6. 3~5 과정 반복**  
 
-### 소스트리
-소스트리 가능한지 체크
+**7. 확인**  
+자 6번까지의 과정을 통해서 정상적으로 커밋이 수정되었는지 확인해보겠습니다.  
+
+![커밋 변경 확인](./images/변경된커밋.png)  
+
+(**.con**이 **.com**으로 변경된 것 보이시나요!?)  
+
+자 그럼 커밋을 푸시하여 github에도 반영이 되는지 확인해보겠습니다.  
+
+![컨트리뷰션 확인](./images/컨트리뷰션반영.png)  
+
+짠! 정상적으로 컨트리뷰션이 반영된 것을 확인할 수 있습니다.  
+회사용 github계정과 본인 계정을 동시 사용하다가 컨트리뷰션이 잘못된 분들에게 도움이 되셨으면 좋겠습니다^^;  
+
+> 제가 이걸 포스팅 하게 된 계기가 이런 상황을 2번 겪었기 때문입니다.  
+1번 실수한 뒤에 해결책을 검색하고 해결하고 난뒤, 같은 일이 또 벌어질까 하는 생각에 정리를 안했더니, 또 같은 문제가 발생해서 구글링 하는게 답답해서 포스팅하게 되었습니다.   
+앞으로도 실수한 내용들은 정리해서 바보같은 반복을 하지 않도록 하겠습니다.  
+감사합니다!
+
 ### 참고
-[블로그](https://www.git-tower.com/learn/git/faq/change-author-name-email)
+[git-tower](https://www.git-tower.com/learn/git/faq/change-author-name-email)
 [stackoverflow](http://stackoverflow.com/questions/3042437/change-commit-author-at-one-specific-commit)
