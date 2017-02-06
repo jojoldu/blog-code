@@ -1,4 +1,4 @@
-package com.blogcode.old;
+package com.blogcode.before;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +12,7 @@ import javax.persistence.Id;
  */
 
 @Entity
-public class OldCompanyContract {
+public class Contract {
 
     @Id
     @GeneratedValue
@@ -30,9 +30,9 @@ public class OldCompanyContract {
     @Column(nullable = false)
     private String commissionCutting; // 수수료 절삭 (예: 반올림, 올림, 버림)
 
-    public OldCompanyContract() {}
+    public Contract() {}
 
-    public OldCompanyContract(String company, double commission, String commissionType, String commissionCutting) {
+    public Contract(String company, double commission, String commissionType, String commissionCutting) {
         this.company = company;
         this.commission = commission;
         this.commissionType = commissionType;
