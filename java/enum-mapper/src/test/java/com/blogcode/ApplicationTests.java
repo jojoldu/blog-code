@@ -1,8 +1,8 @@
 package com.blogcode;
 
+import com.blogcode.before.Commission;
 import com.blogcode.before.Contract;
 import com.blogcode.before.ContractRepository;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,29 +17,32 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ApplicationTests {
 
 	@Autowired
-	private ContractRepository stringRepository;
+	private ContractRepository repository;
 
-	private Contract contract;
-
-	@Before
-	public void setup() {
-		contract = new Contract(
+	@Test
+	public void add() {
+		Contract contract = new Contract(
 				"우아한짐카",
 				1.0,
 				"percent",
 				"round"
 		);
-	}
-
-	@Test
-	public void add() {
-		stringRepository.save(contract);
-		Contract saved = stringRepository.findAll().get(0);
+		repository.save(contract);
+		Contract saved = repository.findAll().get(0);
 		assertThat(saved.getCommission(), is(1.0));
 	}
 
 	@Test
-	public void findByCommissionType() {
+	public void add_staticVariable() {
+		Contract contract = new Contract(
+				"우아한짐카",
+				1.0,
+				Commission.TYPE_PERCENT,
+				Commission.CUTTING_ROUND
+		);
 
+		repository.save(contract);
+		Contract saved = repository.findAll().get(0);
+		assertThat(saved.getCommission(), is(1.0));
 	}
 }

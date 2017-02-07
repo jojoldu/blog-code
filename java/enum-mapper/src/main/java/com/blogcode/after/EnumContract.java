@@ -10,7 +10,7 @@ import javax.persistence.EnumType;
  */
 
 @Entity
-public class Contract {
+public class EnumContract {
     @Id
     @GeneratedValue
     private Long id;
@@ -73,9 +73,9 @@ public class Contract {
         }
     }
 
-    public Contract() {}
+    public EnumContract() {}
 
-    public Contract(String company, double commission, CommissionType commissionType, CommissionCutting commissionCutting) {
+    public EnumContract(String company, double commission, CommissionType commissionType, CommissionCutting commissionCutting) {
         this.company = company;
         this.commission = commission;
         this.commissionType = commissionType;

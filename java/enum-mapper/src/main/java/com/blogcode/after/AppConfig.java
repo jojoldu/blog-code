@@ -14,8 +14,8 @@ public class AppConfig {
     @Bean
     public EnumMapper enumMapper() {
         EnumMapper enumMapper = new EnumMapper();
-        enumMapper.put("commissionType", Contract.CommissionType.class);
-        enumMapper.put("commissionCutting", Contract.CommissionCutting.class);
+        enumMapper.put("commissionType", EnumContract.CommissionType.class);
+        enumMapper.put("commissionCutting", EnumContract.CommissionCutting.class);
         return enumMapper;
     }
 }
