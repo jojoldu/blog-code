@@ -125,13 +125,13 @@ save & find가 잘되는 것을 확인할 수 있습니다.
 몇가지 문제점이 보이시나요?  
 생각하시는것과 다를수는 있지만, 제가 생각하기엔 다음과 같은 문제가 있어 보입니다.  
   
-* commissionType과 commissionCutting에 잘못된 값이 할당되도 **검증하기가 어렵다**.
-  - percent, money가 아닌 값이 할당되는 경우를 방지하기 위해 검증 메소드가 필요합니다.
 * commissionType과 commissionCutting은 **IDE 지원을 받을 수 없다**.
   - 자동완성, 오타검증 등등
 * commissionType과 commissionCutting의 **변경 범위가 너무 크다**.
   - 예를 들어, commissionType의 ```money```를 ```mount```로 변경해야 한다면 프로젝트 전체에서 ```money```를 찾아 변경해야 합니다.
   - 추가로 commissionType의 ```money``` 인지, 다른 domain의 ```money```인지 확인하는 과정도 추가되어 비용이 배로 들어가게 됩니다.
+* commissionType과 commissionCutting에 잘못된 값이 할당되도 **검증하기가 어렵다**.
+  - percent, money가 아닌 값이 할당되는 경우를 방지하기 위해 검증 메소드가 필요합니다.
 * commissionType과 commissionCutting의 허용된 **값 범위를 파악하기 힘들다**.
   - 예를 들어, commissionType과 commissionCutting을 select box로 표기해야 한다고 생각해보겠습니다.
   - 이들의 가능한 값 리스트가 필요한데, 현재 형태로는 하드코딩할 수 밖에 없습니다.
@@ -180,8 +180,108 @@ Commission 인터페이스를 통해서 테스트 코드를 작성해보겠습�
 	}
 ```
 
-자 이렇게 ```static 상수``` 선언을 함으로써 IDE
+자 이렇게 ```static 상수``` 선언을 함으로써 IDE의 지원을 받을 수 있게 되었고, 혹시나 값을 변경할 일이 있어도 Commission 인터페이스의 값들만 변경하면 되므로 
+변경범위도 최소화 되었습니다.  
+하지만 나머지 2가지 문제가 해결되지 않았습니다.  
+* 해당 시스템을 잘 모르는 사람의 경우 Commission 인터페이스의 값을 써야한다는걸 어떻게 알 수 있을까요?
+  - 모르는 경우 ```"money"```로 직접 입력하는 경우를 막을 방법이 있을까요?
+* commissionType, commissionCutting으로 select box를 출력시키려면 어떻게 해야할까요?
+ 
+위 2가지 문제가 아직 해결되지 않았습니다.  
+static 상수로는 결국 해결할 수 없기에 다른 방법을 시도해보겠습니다.  
+그 방법이 바로 **enum**입니다.  
+  
 ### 문제해결 - 2
+enum은 워낙 많은 Java 기본서에서 다루고 있기 때문에 enum에 대한 설명은 별도로 하지 않겠습니다.  
+바로 코드를 작성해보겠습니다. 이전 코드는 남겨둔채로 진행해야 하기에 entity 클래스는 ```EnumContract```로 하겠습니다.  
+  
+**EnumContract.java**  
+```
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING) // enum의 name을 DB에 저장하기 위해, 없을 경우 enum의 숫자가 들어간다.
+    private CommissionType commissionType; // 수수료 타입 (예: 퍼센테이지, 금액)
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CommissionCutting commissionCutting; // 수수료 절삭 (예: 반올림, 올림, 버림)
+
+    public enum CommissionType {
+
+        PERCENT("percent"),
+        MONEY("money");
+
+        private String value;
+
+        CommissionType(String value) {
+            this.value = value;
+        }
+
+        public String getKey() {
+            return name();
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    public enum CommissionCutting {
+        ROUND("round"),
+        CEIL("ceil"),
+        FLOOR("floor");
+
+        private String value;
+
+        CommissionCutting(String value) {
+            this.value = value;
+        }
+
+        public String getKey() {
+            return name();
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+```
+  
+domain 클래스의 다른 부분은 ```Contract```와 동일하며, 다른 부분만 작성하였습니다.  
+이렇게 타입을 String에서 enum으로 변경하게 되면 CommissionType과 CommissionCutting은 제한된 범위내에서만 선택이 가능하게 됩니다.  
+테스트 코드를 통해 DB 입출력 결과를 확인해보겠습니다.  
+  
+```
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class EnumApplicationTests {
+
+    @Autowired
+    private EnumContractRepository enumContractRepository;
+
+    @Test
+    public void add() {
+        enumContractRepository.save(new EnumContract(
+                "우아한짐카",
+                1.0,
+                EnumContract.CommissionType.MONEY,
+                EnumContract.CommissionCutting.ROUND));
+
+        EnumContract saved = enumContractRepository.findOne(1L);
+
+        assertThat(saved.getCommissionType(), is(EnumContract.CommissionType.MONEY));
+        assertThat(saved.getCommissionCutting(), is(EnumContract.CommissionCutting.ROUND));
+    }
+}
+```
+
+![enum 값 확인](./images/enum-테스트값-확인.png)  
+  
+enum을 타입으로 하여도 DB 입출력이 잘되는것을 확인할 수 있습니다.  
+이렇게 되서 이젠 다른 개발자들이 개발을 진행할때도 타입 제한을 걸어 **enum외에 다른 값들은 못받도록** 하였습니다.  
+자 여기까지는 쉽게 온것 같습니다. 하지만! 마지막 문제인 commissionType, commissionCutting의 리스트를 보여주는 것은 어떻게 해야할까요?  
+enum을 어떻게 잘 활용하면 될것 같은 느낌이 들지 않으신가요?  
+
 ### 첨언
 변경이 잦은 데이터일 경우 데이터베이스의 테이블로 관리하는 것이 좀 더 좋은 방법일 수 있습니다.  
 다만, 변경이 거의 없는 데이터 그룹의 경우 enum은 좋은 방법이 될 수 있습니다.  

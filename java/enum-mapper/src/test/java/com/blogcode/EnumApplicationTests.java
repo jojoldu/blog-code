@@ -1,5 +1,7 @@
 package com.blogcode;
 
+import com.blogcode.after.EnumContract;
+import com.blogcode.after.EnumContractRepository;
 import com.blogcode.after.EnumMapper;
 import com.blogcode.after.EnumValue;
 import org.junit.Test;
@@ -22,6 +24,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class EnumApplicationTests {
+
+    @Autowired
+    private EnumContractRepository enumContractRepository;
+
+    @Test
+    public void add() {
+        enumContractRepository.save(new EnumContract(
+                "우아한짐카",
+                1.0,
+                EnumContract.CommissionType.MONEY,
+                EnumContract.CommissionCutting.ROUND));
+
+        EnumContract saved = enumContractRepository.findOne(1L);
+
+        assertThat(saved.getCommissionType(), is(EnumContract.CommissionType.MONEY));
+        assertThat(saved.getCommissionCutting(), is(EnumContract.CommissionCutting.ROUND));
+    }
 
     @Autowired
     private EnumMapper enumMapper;
