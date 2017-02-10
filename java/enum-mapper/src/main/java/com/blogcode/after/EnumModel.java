@@ -5,7 +5,7 @@ package com.blogcode.after;
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
-public interface EnumType {
+public interface EnumModel {
     String getKey();
     String getValue();
 }

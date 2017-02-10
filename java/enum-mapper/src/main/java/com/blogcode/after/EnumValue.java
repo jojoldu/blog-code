@@ -6,17 +6,19 @@ package com.blogcode.after;
  * Github : http://github.com/jojoldu
  */
 public class EnumValue {
-    private EnumType enumType;
+    private String key;
+    private String value;
 
-    public EnumValue(EnumType enumType) {
-        this.enumType = enumType;
+    public EnumValue(EnumModel enumModel) {
+        key = enumModel.getKey();
+        value = enumModel.getValue();
     }
 
     public String getKey() {
-        return enumType.getKey();
+        return key;
     }
 
     public String getValue() {
-        return enumType.getValue();
+        return value;
     }
 }

@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 public class EnumMapper {
     private Map<String, List<EnumValue>> factory = new HashMap<>();
 
-    private List<EnumValue> toEnumValues(Class<? extends EnumType> e){
+    private List<EnumValue> toEnumValues(Class<? extends EnumModel> e){
         /*
-            // Java8 문법이 아닐경우 아래와 같습니다.
+            // Java8이 아닐경우
             List<EnumValue> enumValues = new ArrayList<>();
-            for (EnumType enumType : e.getEnumConstants()) {
+            for (EnumModel enumType : e.getEnumConstants()) {
                 enumValues.add(new EnumValue(enumType));
             }
             return enumValues;
@@ -28,13 +28,13 @@ public class EnumMapper {
                 .collect(Collectors.toList());
     }
 
-    public void put(String key, Class<? extends EnumType> e){
+    public void put(String key, Class<? extends EnumModel> e){
         factory.put(key, toEnumValues(e));
     }
 
     public Map<String, List<EnumValue>> get(String keys){
         /*
-            // Java8 문법이 아닐경우 아래와 같습니다.
+            // Java8이 아닐경우
             Map<String, List<EnumValue>> result = new LinkedHashMap<>();
             for (String key : keys.split(",")) {
                 result.put(key, factory.get(key));

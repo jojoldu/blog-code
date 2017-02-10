@@ -29,7 +29,7 @@ public class EnumContract {
     @Enumerated(EnumType.STRING)
     private CommissionCutting commissionCutting; // 수수료 절삭 (예: 반올림, 올림, 버림)
 
-    public enum CommissionType implements com.blogcode.after.EnumType {
+    public enum CommissionType implements EnumModel {
 
         PERCENT("percent"),
         MONEY("money");
@@ -51,7 +51,7 @@ public class EnumContract {
         }
     }
 
-    public enum CommissionCutting implements com.blogcode.after.EnumType {
+    public enum CommissionCutting implements EnumModel {
         ROUND("round"),
         CEIL("ceil"),
         FLOOR("floor");

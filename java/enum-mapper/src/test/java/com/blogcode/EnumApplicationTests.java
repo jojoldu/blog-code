@@ -1,15 +1,13 @@
 package com.blogcode;
 
-import com.blogcode.after.EnumContract;
-import com.blogcode.after.EnumContractRepository;
-import com.blogcode.after.EnumMapper;
-import com.blogcode.after.EnumValue;
+import com.blogcode.after.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +38,17 @@ public class EnumApplicationTests {
 
         assertThat(saved.getCommissionType(), is(EnumContract.CommissionType.MONEY));
         assertThat(saved.getCommissionCutting(), is(EnumContract.CommissionCutting.ROUND));
+    }
+
+
+    @Test
+    public void EnumModel타입확인() {
+        List<EnumModel> enumModels = new ArrayList<>();
+        enumModels.add(EnumContract.CommissionType.MONEY);
+        enumModels.add(EnumContract.CommissionCutting.CEIL);
+
+        assertThat(enumModels.get(0).getValue(), is("금액"));
+        assertThat(enumModels.get(1).getValue(), is("올림"));
     }
 
     @Autowired
