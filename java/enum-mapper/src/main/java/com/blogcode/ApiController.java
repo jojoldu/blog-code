@@ -1,6 +1,7 @@
 package com.blogcode;
 
 import com.blogcode.after.EnumContract;
+import com.blogcode.after.EnumMapper;
 import com.blogcode.after.EnumModel;
 import com.blogcode.after.EnumValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,5 +54,17 @@ public class ApiController {
                 .stream(e.getEnumConstants())
                 .map(EnumValue::new)
                 .collect(Collectors.toList());
+    }
+
+
+    private EnumMapper enumMapper;
+
+    public ApiController(EnumMapper enumMapper) {
+        this.enumMapper = enumMapper;
+    }
+
+    @GetMapping("/mapper")
+    public Map<String, List<EnumValue>> getMapper() {
+        return enumMapper.getAll();
     }
 }
