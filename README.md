@@ -12,6 +12,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 -	[Gradle 적응하기](https://github.com/jojoldu/blog-code/tree/master/gradle-task)
 - [Java SE 성능비교](https://github.com/jojoldu/blog-code/tree/master/java/performance)
 - [블랙잭 게임 - 객체지향 이해하기](https://github.com/jojoldu/oop-java)
+- [Enum 활용하기](https://github.com/jojoldu/blog-code/tree/master/java/enum-mapper)  
 
 ### Spring
 -	[Spring Boot의 깨알같은 팁](https://github.com/jojoldu/blog-code/tree/master/compareboot)
