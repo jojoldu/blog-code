@@ -8,8 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -68,5 +70,15 @@ public class EnumApplicationTests {
 
         assertThat(percent.getKey(), is("PERCENT"));
         assertThat(percent.getValue(), is("percent"));
+    }
+
+    @Test
+    public void EnumModel() {
+
+        List<EnumModel> enumModels = Arrays
+                .stream(EnumContract.CommissionType.class.getEnumConstants())
+                .collect(Collectors.toList());
+
+        assertThat(enumModels.get(0).getKey(), is("PERCENT"));
     }
 }

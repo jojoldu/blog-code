@@ -67,4 +67,13 @@ public class ApiController {
     public Map<String, List<EnumValue>> getMapper() {
         return enumMapper.getAll();
     }
+
+    @GetMapping("/models")
+    public List<EnumModel> getModel() {
+        return Arrays
+                .stream(EnumContract.CommissionType.class.getEnumConstants())
+                .collect(Collectors.toList());
+    }
+
+
 }
