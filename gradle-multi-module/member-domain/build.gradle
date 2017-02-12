@@ -29,5 +29,7 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	runtime('com.h2database:h2')
+
+	testCompile('junit:junit:4.12')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
