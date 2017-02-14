@@ -25,3 +25,9 @@ project(':module-api') {
         compile project(':module-common')
     }
 }
+
+project(':module-web') {
+    dependencies {
+        compile project(':module-common')
+    }
+}

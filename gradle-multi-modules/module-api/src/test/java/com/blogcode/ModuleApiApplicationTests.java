@@ -19,9 +19,10 @@ public class ModuleApiApplicationTests {
 	private MemberServiceCustom memberServiceCustom;
 
 	@Test
-	public void contextLoads() {
-		Member member = memberServiceCustom.generate();
-		assertThat(member.getName(), is("jojoldu"));
+	public void save() {
+		Member member = new Member("jojoldu", "jojoldu@gmail.com");
+		Long id = memberServiceCustom.signup(member);
+		assertThat(id, is(1L));
 	}
 
 }
