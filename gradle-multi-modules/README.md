@@ -1,9 +1,9 @@
 # Gradle 멀티 모듈 관리
 
 ### member-domain
-  
+
 **Member.java**  
-  
+
 ```
 @Entity
 public class Member {
@@ -38,14 +38,14 @@ public class Member {
     }
 }
 ```
-  
 
-member-domain 프로젝트는 단독으로 구동시킬 프로젝트가 아니기 때문에 spring context를 불러올 수 없어 SpringBoot Test를 구동시킬 경우 아래와 같은 에러가 발생합니다.  
-  
+
+member-domain 프로젝트는 단독으로 구동시킬 프로젝트가 아니기 때문에 spring context를 불러올 수 없습니다.   그래서 SpringBoot Test를 구동시킬 경우 아래와 같은 에러가 발생합니다.  
+
 ![Spring Context 불러오기 실패](./images/context불러오기실패.png)  
-  
+
 그래서 아래처럼 메인 테스트 클래스에 ```@SpringBootApplication```을 추가하였습니다.     
-  
+
 **DomainApplicationTest.java**  
 ```
 @SpringBootApplication
@@ -53,8 +53,8 @@ public class DomainApplicationTest {
 }
 
 ```
-  
-  
+
+
 **MemberRepositoryTest.java**  
 ```
 @RunWith(SpringRunner.class)
