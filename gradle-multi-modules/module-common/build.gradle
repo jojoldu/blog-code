@@ -1,3 +1,6 @@
+bootRepackage {
+	enabled = false
+}
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	runtime('com.h2database:h2')
