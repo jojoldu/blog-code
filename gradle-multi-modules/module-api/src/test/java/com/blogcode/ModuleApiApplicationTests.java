@@ -24,5 +24,4 @@ public class ModuleApiApplicationTests {
 		Long id = memberServiceCustom.signup(member);
 		assertThat(id, is(1L));
 	}
-
 }
