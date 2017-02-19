@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <!--Import Google Icon Font-->
+  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
+
+
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    ::-webkit-scrollbar {
+      display:none;
+    }
+    .collection { cursor: pointer;}
+  </style>
+</head>
+
+<body>
+<div class="row">
+  <div class="col s3" style="padding:0; margin:0; overflow-y:auto; overflow-x:hidden; height:1080px; -ms-overflow-style: none;">
+    <!-- Grey navigation panel -->
+    <ul class="collection"  style="padding:0; margin:0;"></ul>
+  </div>
+
+  <div class="col s9" style="padding:0; margin:0; max-height:1080px;">
+    <!-- Teal page content  -->
+    <nav>
+      <div class="nav-wrapper">
+        <div class="col s12">
+          <a href="#!" class="breadcrumb"><span id="modifyDate"></span></a>
+
+        </div>
+      </div>
+    </nav>
+
+    <textarea style="height:1000px;" class="textarea" width="100%" rows="1000" placeholder="새로운 메모를 입력해보세요^^"></textarea>
+  </div>
+
+  <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+    <a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">add</i></a>
+  </div>
+
+  <div class="preloader-wrapper big active" style="position:absolute; z-index:1000; left:50%; top:50%; display:none;">
+    <div class="spinner-layer spinner-blue-only">
+      <div class="circle-clipper left">
+        <div class="circle"></div>
+      </div><div class="gap-patch">
+      <div class="circle"></div>
+    </div><div class="circle-clipper right">
+      <div class="circle"></div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!--Import jQuery before materialize.js-->
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+
+
+<script src="/lib/firebase.js"></script>
+<script>
+    var userInfo;
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyAdim9w7ZT1JU56LajAz9lJ-XDJUibwqcs",
+        authDomain: "memo-af297.firebaseapp.com",
+        databaseURL: "https://memo-af297.firebaseio.com",
+        storageBucket: "memo-af297.appspot.com",
+        messagingSenderId: "996751575787"
+    };
+    firebase.initializeApp(config);
+    var auth = firebase.auth();
+    var database = firebase.database();
+    var authProvider = new firebase.auth.GoogleAuthProvider();
+
+    auth.onAuthStateChanged(function(user){
+        if(user) {
+            console.log('success');
+            console.log(user);
+            userInfo = user;
+        } else{
+            auth.signInWithPopup(authProvider);
+        }
+    });
+
+    var onChildAdded = function (data) {
+        var key = data.key;
+        var memo = data.val();
+        var txt = memo.txt;
+        var title = memo.title;
+        var firstTxt = memo.substr(0,1);
+
+        var html =
+            "<li id='"+key+"' class=\"collection-item avatar\" onclick=\"fn_get_data_one(this.id);\" >" +
+            "<i class=\"material-icons circle red\">" + firstTxt + "</i>" +
+            "<span class=\"title\">" + title + "</span>" +
+            "<p class='txt'>" + summary + "<br>" +
+            "</p>" +
+            "</li>";
+
+        $('.collection').append(html);
+    };
+
+    var getMemos = function () {
+        var memoRef = database.ref('memo' + userInfo.uid);
+        memoRef.on('child_added', onChildAdded);
+    };
+
+</script>
+
+</body>
+</html>

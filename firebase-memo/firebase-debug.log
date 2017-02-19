@@ -1,0 +1,14 @@
+[debug] ----------------------------------------------------------------------
+[debug] Command:      /usr/local/bin/node /usr/local/bin/firebase serve
+[debug] CLI Version:  3.3.0
+[debug] Platform:     darwin
+[debug] Node Version: v6.9.2
+[debug] Time:         Sun Feb 19 2017 22:59:09 GMT+0900 (KST)
+[debug] ----------------------------------------------------------------------
+[debug] 
+[info] Starting Firebase development server...
+[info] 
+[info] Project Directory: /Users/woowahan/Documents/git/blog-code/firebase-memo
+[info] Public Directory: public
+[info] 
+[info] Server listening at: http://localhost:5000
