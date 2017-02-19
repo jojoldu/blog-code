@@ -9,7 +9,6 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 ### Java
 - [제네릭 타입추론시 주의할 점](https://github.com/jojoldu/generic-guide)
 -	[Freemarker 안전하게 사용하기](https://github.com/jojoldu/freemarker-guide)
--	[Gradle 적응하기](https://github.com/jojoldu/blog-code/tree/master/gradle-task)
 - [Java SE 성능비교](https://github.com/jojoldu/blog-code/tree/master/java/performance)
 - [블랙잭 게임 - 객체지향 이해하기](https://github.com/jojoldu/oop-java)
 - [Enum 활용하기](https://github.com/jojoldu/blog-code/tree/master/java/enum-mapper)  
@@ -21,6 +20,9 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 - [Ehcache 기본](https://github.com/jojoldu/blog-code/tree/master/spring-cache)
 - [Spring AOP 정리](https://github.com/jojoldu/blog-code/tree/master/aop)
 
+### Gradle
+-	[Gradle 적응하기](https://github.com/jojoldu/blog-code/tree/master/gradle-task)
+- [Gradle Multi Module](https://github.com/jojoldu/blog-code/tree/master/gradle-multi-modules)
 ### Javascript
 -	[Handlebar를 이용하여 배포까지](https://github.com/jojoldu/tuto-handlebar)
 -	[IE 7/8에서 모던하게 개발하기](https://github.com/jojoldu/blog-code/tree/master/js-framework-ie78)
