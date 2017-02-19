@@ -323,5 +323,5 @@ public class MemberController {
 긴글 끝까지 읽어주셔서 감사합니다^^  
 
 ### 참고
-[권남님의 위키](http://kwonnam.pe.kr/wiki/gradle/multiproject)
-[Gradle 레퍼런스](https://docs.gradle.org/current/userguide/multi_project_builds.html)
+* [권남님의 위키](http://kwonnam.pe.kr/wiki/gradle/multiproject)
+* [Gradle 레퍼런스](https://docs.gradle.org/current/userguide/multi_project_builds.html)
