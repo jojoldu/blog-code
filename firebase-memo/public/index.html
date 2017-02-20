@@ -41,7 +41,7 @@
   </div>
 
   <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">add</i></a>
+    <a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons" onclick="initMemo()">add</i></a>
   </div>
 
   <div class="preloader-wrapper big active" style="position:absolute; z-index:1000; left:50%; top:50%; display:none;">
@@ -65,7 +65,7 @@
 
 <script src="/lib/firebase.js"></script>
 <script>
-    var userInfo;
+    var userInfo, selectedKey;
     // Initialize Firebase
     var config = {
         apiKey: "AIzaSyAdim9w7ZT1JU56LajAz9lJ-XDJUibwqcs",
@@ -84,6 +84,7 @@
             console.log('success');
             console.log(user);
             userInfo = user;
+            getMemos();
         } else{
             auth.signInWithPopup(authProvider);
         }
@@ -93,24 +94,82 @@
         var key = data.key;
         var memo = data.val();
         var txt = memo.txt;
-        var title = memo.title;
-        var firstTxt = memo.substr(0,1);
+        var title = txt.substr(0, txt.indexOf('\n'));
+        var firstTxt = txt.substr(0,1);
 
         var html =
-            "<li id='"+key+"' class=\"collection-item avatar\" onclick=\"fn_get_data_one(this.id);\" >" +
+            "<li id='"+key+"' class=\"collection-item avatar\" onclick=\"getData(this.id);\" >" +
             "<i class=\"material-icons circle red\">" + firstTxt + "</i>" +
             "<span class=\"title\">" + title + "</span>" +
-            "<p class='txt'>" + summary + "<br>" +
             "</p>" +
+            '<a href="#!" onclick="deleteData(\''+key+'\')" class="secondary-content">삭제</a>'+
             "</li>";
 
         $('.collection').append(html);
     };
 
+    var getData = function (key) {
+        selectedKey = key;
+        var memoRef = database.ref('memo' + userInfo.uid+'/'+key)
+            .once('value')
+            .then(function (snapshot) {
+                $('.textarea').val(snapshot.val().txt);
+
+            });
+    };
+
+    var deleteData = function (key) {
+        var memoRef = database.ref('memo' + userInfo.uid+'/'+key);
+        memoRef.remove();
+        $('#'+key).remove();
+    };
+
+    var saveData = function () {
+        var memoRef = database.ref('memo' + userInfo.uid);
+        var txt = $('.textarea').val();
+        if(!txt) {
+            return ;
+        }
+
+        if(selectedKey) {
+            memoRef = database.ref('memo' + userInfo.uid +'/'+selectedKey);
+            memoRef.update({
+                txt: txt,
+                updateDate: new Date().getTime()
+            });
+        }else{
+            memoRef.push({
+                txt: $('.textarea').val(),
+                createDate: new Date().getTime()
+            });
+        }
+    };
+
     var getMemos = function () {
         var memoRef = database.ref('memo' + userInfo.uid);
         memoRef.on('child_added', onChildAdded);
+        memoRef.on('child_changed', function (data) {
+            console.log(data.key);
+            console.log(data.val());
+
+            var key = data.key;
+            var txt = data.val().txt;
+            var title = txt.substr(0, txt.indexOf('\n'));
+
+            $('#'+key+' > .title').text(title);
+            $('#'+key+' > .txt').text(txt);
+        })
     };
+
+    var initMemo = function () {
+        $('.textarea').val('');
+    };
+
+    $(function () {
+        $('.textarea').blur(function () {
+            saveData();
+        });
+    });
 
 </script>
 
