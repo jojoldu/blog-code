@@ -22,35 +22,45 @@ public class Member {
     private String name;
 
     @Column(nullable = false)
-    private String job;
+    private String phone1;
+
+    @Column(nullable = false)
+    private String phone2;
+
+    @Column(nullable = false)
+    private String phone3;
 
     @Column(nullable = false)
     private String email;
 
     public Member() {}
 
-    public Member(Long id, String name, String job, String email) {
-        this.id = id;
+    public Member(String name, String phone1, String phone2, String phone3, String email) {
         this.name = name;
-        this.job = job;
+        this.phone1 = phone1;
+        this.phone2 = phone2;
+        this.phone3 = phone3;
         this.email = email;
-    }
-
-    public void update(String name, String job){
-        this.name = name;
-        this.job = job;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getJob() {
-        return job;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public String getPhone1() {
+        return phone1;
+    }
+
+    public String getPhone2() {
+        return phone2;
+    }
+
+    public String getPhone3() {
+        return phone3;
     }
 
     public String getEmail() {

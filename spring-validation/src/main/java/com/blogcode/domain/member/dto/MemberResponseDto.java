@@ -1,5 +1,7 @@
 package com.blogcode.domain.member.dto;
 
+import com.blogcode.domain.member.Member;
+
 /**
  * Created by jojoldu@gmail.com on 2017. 2. 20.
  * Blog : http://jojoldu.tistory.com
@@ -9,10 +11,15 @@ package com.blogcode.domain.member.dto;
 public class MemberResponseDto {
     private Long id;
     private String name;
-    private String job;
+    private String phoneNumber;
     private String email;
 
     public MemberResponseDto() {}
+
+    public MemberResponseDto(Member member) {
+        id = member.getId();
+        name = member.getName();
+    }
 
     public Long getId() {
         return id;
@@ -22,8 +29,8 @@ public class MemberResponseDto {
         return name;
     }
 
-    public String getJob() {
-        return job;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
     public String getEmail() {

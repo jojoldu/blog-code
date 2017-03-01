@@ -1,7 +1,7 @@
 package com.blogcode.web;
 
 import com.blogcode.domain.member.dto.ValidTestDto;
-import com.blogcode.domain.web.MainController;
+import com.blogcode.domain.web.MemberController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,21 +20,21 @@ import static org.junit.Assert.assertNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class MainControllerTest {
+public class MemberControllerTest {
 
     @Autowired
-    private MainController mainController;
+    private MemberController memberController;
 
     @Test
     public void NotEmpty와NotBlank와NotNull비교() {
         ValidTestDto 빈문자열 = new ValidTestDto("","","");
-        assertThat(mainController.validTest(빈문자열).getNotBlank(), is(""));
+        assertThat(memberController.validTest(빈문자열).getNotBlank(), is(""));
 
         ValidTestDto 스페이스 = new ValidTestDto(" ", " ", " ");
-        mainController.validTest(스페이스);
-        assertThat(mainController.validTest(스페이스).getNotBlank(), is(" "));
+        memberController.validTest(스페이스);
+        assertThat(memberController.validTest(스페이스).getNotBlank(), is(" "));
 
         ValidTestDto 널 = new ValidTestDto(null, null, null);
-        assertNull(mainController.validTest(널).getNotBlank());
+        assertNull(memberController.validTest(널).getNotBlank());
     }
 }

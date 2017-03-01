@@ -21,20 +21,8 @@ public class MemberService {
 
     @Transactional
     public Long save(MemberRequestDto memberRequestDto){
-        Long id;
-        if(memberRequestDto.getId() == null){
-            id = memberRepository.save(memberRequestDto.toEntity()).getId();
-        }else{
-            Member origin = memberRepository.findOne(memberRequestDto.getId());
-            origin.update(memberRequestDto.getName(), memberRequestDto.getJob());
-            id = origin.getId();
-        }
-
-        return id;
+        return memberRepository.save(memberRequestDto.toEntity()).getId();
     }
-
-
-
 
 
 

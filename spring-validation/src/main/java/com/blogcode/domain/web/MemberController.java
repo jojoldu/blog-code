@@ -18,11 +18,11 @@ import javax.validation.Valid;
  */
 
 @RestController
-public class MainController {
+public class MemberController {
 
     private MemberService memberService;
 
-    public MainController(MemberService memberService) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
 
