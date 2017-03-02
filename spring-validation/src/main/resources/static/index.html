@@ -53,11 +53,25 @@
             })
         });
 
-        var showErrorMessage = function (response) {
-            if(!response.errors){
-                alert(response);
+        var markingErrorField = function (response) {
+            const errorFields = response.response.errors;
+
+            if(!errorFields){
+                alert(response.response.message);
+                return;
             }
-            
+
+            let $field, error, errorMessage;
+            for(let i=0, length = errorFields.length; i<length;i++){
+                error = errorFields[i];
+                $field = that.$el.find('#'+error['field']);
+
+                if($field && $field.length > 0){
+                    $field.siblings('.error-message').remove();
+                    errorMessage = error.defaultMessage;
+                    $field.after('<span class="error-message text-muted taxt-small text-danger"></span>');
+                }
+            }
         }
     </script>
 </body>
