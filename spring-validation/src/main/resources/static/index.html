@@ -65,7 +65,6 @@
             $.ajax({
                 url:'/members',
                 method: 'GET',
-                contentType: "application/json; charset=utf-8",
                 success: function (response) {
                     var source   = $("#table-template").html();
                     var template = Handlebars.compile(source);
