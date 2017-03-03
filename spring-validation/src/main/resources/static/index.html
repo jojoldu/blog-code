@@ -28,12 +28,54 @@
         </div>
         <div class="col-md-6">
             <h1> 회원 리스트 </h1>
+            <table class="table table-horizontal table-bordered">
+                <thead class="thead-strong">
+                <tr>
+                    <th>ID</th>
+                    <th>이름</th>
+                    <th>휴대폰번호</th>
+                    <th>Email</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+
+                </tbody>
+            </table>
         </div>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.runtime.amd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.min.js"></script>
+
+    <script id="table-template" type="text/x-handlebars-template">
+        {{#each members}}
+            <tr>
+                <td>{{id}}</td>
+                <td>{{name}}</td>
+                <td>{{phoneNumber}}</td>
+                <td>{{email}}</td>
+            </tr>
+        {{/each}}
+    </script>
+
     <script type="application/javascript">
+        var $tbody = $('#tbody');
+
+        var findAll = function () {
+            $.ajax({
+                url:'/members',
+                method: 'GET',
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    var source   = $("#table-template").html();
+                    var template = Handlebars.compile(source);
+                    var html = template({members:response});
+                    $tbody.html('');
+                    $tbody.html(html);
+                }
+            });
+        };
+
         $('#btnSave').click(function () {
             var member = {
                 name: $('#name').val(),
@@ -46,34 +88,35 @@
                 data: JSON.stringify(member),
                 contentType: "application/json; charset=utf-8",
                 success: function (response) {
-                    alert(response);
+                    findAll();
                 },
                 error: function (response) {
                     markingErrorField(response);
                 }
-            })
+            });
         });
 
         var markingErrorField = function (response) {
-            const errorFields = response.response.errors;
+            const errorFields = response.responseJSON.errors;
 
             if(!errorFields){
                 alert(response.response.message);
                 return;
             }
 
-            var $field, error, errorMessage;
+            var $field, error;
             for(let i=0, length = errorFields.length; i<length;i++){
                 error = errorFields[i];
-                $field = that.$el.find('#'+error['field']);
+                $field = $('#'+error['field']);
 
                 if($field && $field.length > 0){
                     $field.siblings('.error-message').remove();
-                    errorMessage = error.defaultMessage;
-                    $field.after('<span class="error-message text-muted taxt-small text-danger"></span>');
+                    $field.after('<span class="error-message text-muted taxt-small text-danger">'+error.defaultMessage+'</span>');
                 }
             }
-        }
+        };
+
+        findAll();
     </script>
 </body>
 </html>

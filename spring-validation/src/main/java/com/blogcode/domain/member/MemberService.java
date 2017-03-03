@@ -26,7 +26,7 @@ public class MemberService {
 
     @Transactional
     public Long save(MemberRequestDto memberRequestDto){
-        verifyDuplicateEmail();
+        verifyDuplicateEmail(memberRequestDto.getEmail());
         return memberRepository.save(memberRequestDto.toEntity()).getId();
     }
 
