@@ -32,6 +32,7 @@
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.runtime.amd.js"></script>
     <script type="application/javascript">
         $('#btnSave').click(function () {
             var member = {
@@ -48,7 +49,7 @@
                     alert(response);
                 },
                 error: function (response) {
-                    alert(response);
+                    markingErrorField(response);
                 }
             })
         });
@@ -61,7 +62,7 @@
                 return;
             }
 
-            let $field, error, errorMessage;
+            var $field, error, errorMessage;
             for(let i=0, length = errorFields.length; i<length;i++){
                 error = errorFields[i];
                 $field = that.$el.find('#'+error['field']);

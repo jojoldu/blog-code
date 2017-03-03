@@ -2,14 +2,13 @@ package com.blogcode.domain.web;
 
 import com.blogcode.domain.member.MemberService;
 import com.blogcode.domain.member.dto.MemberRequestDto;
+import com.blogcode.domain.member.dto.MemberResponseDto;
 import com.blogcode.domain.member.dto.ValidTestDto;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 2. 20.
@@ -29,6 +28,11 @@ public class MemberController {
     @PostMapping("/member")
     public Long saveMember(@RequestBody @Valid MemberRequestDto memberRequestDto) {
         return memberService.save(memberRequestDto);
+    }
+
+    @GetMapping("/members")
+    public List<MemberResponseDto> findAll(){
+        return memberService.findAll();
     }
 
     @PostMapping("/test")
