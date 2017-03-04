@@ -136,6 +136,118 @@ public class MemberRequestDto {
 }
 ```  
 
+**MemberResponseDto**  
+
+```
+public class MemberResponseDto {
+    private Long id;
+    private String name;
+    private String phoneNumber;
+    private String email;
+
+    public MemberResponseDto() {}
+
+    public MemberResponseDto(Member member) {
+        id = member.getId();
+        name = member.getName();
+        phoneNumber = toStringPhone(member.getPhone1(), member.getPhone2(), member.getPhone3());
+        email = member.getEmail();
+    }
+
+    private String toStringPhone(String phone1, String phone2, String phone3){
+        return phone1+"-"+phone2+"-"+phone3;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+}
+```
+
+Member, MemberRequestDto, MemberResponseDto 3개의 클래스를 생성하였습니다.  
+회원 정보를 나타내기 위해 Member클래스만 사용하지 않은 이유는, Entity 클래스를 파라미터 혹은 View 데이터로 사용하게 되면 **변화에 대응하기가 힘들기 때문**입니다.  
+휴대폰 번호 같은 경우 테이블에 저장되는 형태는 3개의 컬럼으로 저장되는데, 화면에 입력 받는 형태는 하나의 문자열입니다. 이걸 Entity에서 구현하려면 Entity 클래스는 테이블의 역할을 벗어난 **많은 책임을 담당**하게 되고, **파라미터가 변경될 때마다 메인이 되는 Entity 클래스의 구조가 계속해서 변경**되게 됩니다.  
+반면에 MemberRequestDto가 화면에서 입력 받는 파라미터 타입의 역할을 하게 될 경우 파라미터 형태가 변경되어도 MemberRequestDto만 변경하면 되고 Entity 클래스는 변경되지 않아도 되기에 테이블 구조가 변경될일은 없습니다.  
+동일한 이유로 View에 출력되는 타입 역시 Entity가 아닌 Response 클래스를 별도로 두어 어떤 출력 형태라도 큰 변경 없이 대응할 수 있도록 하였습니다.  
+<br/>
+그럼 이를 사용하는 Controller/Service/Repository를 생성하겠습니다.  
+<br/>
+**MemberRepository**  
+<br/>
+
+```
+public interface MemberRepository extends JpaRepository<Member, Long>{
+    Optional<Member> findByEmail(String email);
+}
+```
+<br/>
+**MemberService**
+
+```
+@Service
+public class MemberService {
+
+    private MemberRepository memberRepository;
+
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+
+    @Transactional
+    public Long save(MemberRequestDto memberRequestDto){
+        return memberRepository.save(memberRequestDto.toEntity()).getId();
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<MemberResponseDto> findAll() {
+        return memberRepository
+                .findAll()
+                .stream()
+                .map(MemberResponseDto::new)
+                .collect(Collectors.toList());
+    }
+}
+```
+<br/>
+**MemberController**  
+
+```
+@RestController
+public class MemberController {
+
+    private MemberService memberService;
+
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
+
+    @PostMapping("/member")
+    public Long saveMember(@RequestBody @Valid MemberRequestDto memberRequestDto) {
+        return memberService.save(memberRequestDto);
+    }
+
+    @GetMapping("/members")
+    public List<MemberResponseDto> findAll(){
+        return memberService.findAll();
+    }
+}
+```
+
+스프링에 대한 의존성을 낮추고 Mock 객체 주입을 좀 더 쉽게하기 위해 생성자 Injection을 하였습니다.   
+
 * resources/static/index.html을 생성하면 "/" 접속시 자동으로 index.html을 호출한다
 
 ![IntelliJ 자동반영 설정](./images/자동반영설정.png)

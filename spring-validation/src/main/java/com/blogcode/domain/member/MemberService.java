@@ -44,5 +44,4 @@ public class MemberService {
                 .map(MemberResponseDto::new)
                 .collect(Collectors.toList());
     }
-
 }
