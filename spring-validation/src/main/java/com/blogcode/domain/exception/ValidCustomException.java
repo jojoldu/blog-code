@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class ValidCustomException extends RuntimeException{
-    public static final ValidCustomException DUPLICATE_EMAIL = new ValidCustomException(new Error[]{new Error("이미 사용중인 이메일주소입니다", "email")});
 
     private Error[] errors;
 

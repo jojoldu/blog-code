@@ -32,7 +32,7 @@ public class MemberService {
 
     private void verifyDuplicateEmail(String email){
         if(memberRepository.findByEmail(email).isPresent()){
-            throw ValidCustomException.DUPLICATE_EMAIL;
+            throw new ValidCustomException("이미 사용중인 이메일주소입니다", "email");
         }
     }
 
