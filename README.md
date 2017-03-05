@@ -19,6 +19,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 -	[Swagger를 이용한 API문서 자동화](https://github.com/jojoldu/blog-code/tree/master/swagger)
 - [Ehcache 기본](https://github.com/jojoldu/blog-code/tree/master/spring-cache)
 - [Spring AOP 정리](https://github.com/jojoldu/blog-code/tree/master/aop)
+- [Spring Validation 공통모듈 만들기](https://github.com/jojoldu/blog-code/tree/master/spring-validation)
 
 ### Gradle
 -	[Gradle 적응하기](https://github.com/jojoldu/blog-code/tree/master/gradle-task)
