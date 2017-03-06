@@ -1,0 +1,20 @@
+{
+  "name": "springboot-angular2",
+  "version": "1.0.0",
+  "description": "spring boot & angular2",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "./node_modules/typescript/bin/tsc"
+  },
+  "keywords": [
+    "springboot",
+    "angular",
+    "angular2"
+  ],
+  "author": "jojoldu",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^2.2.1"
+  }
+}
