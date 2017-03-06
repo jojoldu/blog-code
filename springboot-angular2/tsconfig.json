@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "module": "commonjs",
+    "target": "ES5",
+    "outDir": "src/main/resources/static/js/build", // 컴파일된 js 저장위치
+    "rootDir": "src/main/resources/static/js" // 대상 ts 위치
+  }
+}
