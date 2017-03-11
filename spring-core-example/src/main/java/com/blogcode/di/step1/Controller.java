@@ -14,11 +14,40 @@ public class Controller {
         Member member = getMemberFromDb();
 
         if("html".equals(type)){
-            return "html : " + member.toString();
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("<html><body><table>");
+            sb.append("<th>").append("id").append("</th>");
+            sb.append("<td>").append(member.getId()).append("</td>");
+
+            sb.append("<th>").append("name").append("</th>");
+            sb.append("<td>").append(member.getName()).append("</td>");
+
+            sb.append("<th>").append("email").append("</th>");
+            sb.append("<td>").append(member.getEmail()).append("</td>");
+
+            sb.append("</table></body></html>");
+
+            return sb.toString();
+
         } else if("json".equals(type)){
-            return "json : " + member.toString();
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("{ \"id\":\"").append(member.getId()).append("\",");
+            sb.append(" \"name\":\"").append(member.getName()).append("\",");
+            sb.append(" \"email\":\"").append(member.getEmail()).append("\"}");
+
+            return sb.toString();
+
         } else if("xml".equals(type)){
-            return "xml : " + member.toString();
+            StringBuilder sb = new StringBuilder();
+            sb.append("<xml>");
+            sb.append("<id>").append(member.getId()).append("</id>");
+            sb.append("<name>").append(member.getName()).append("</name>");
+            sb.append("<email>").append(member.getEmail()).append("</email>");
+            sb.append("</xml>");
+
+            return sb.toString();
         } else {
             throw new NotMatchTypeException(type);
         }
