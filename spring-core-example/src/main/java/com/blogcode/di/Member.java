@@ -31,8 +31,4 @@ public class Member {
         return email;
     }
 
-    @Override
-    public String toString() {
-        return "id: "+id+" name: "+name+" email: "+email;
-    }
 }
