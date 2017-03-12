@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
     "emitDecoratorMetadata": true,
-    "module": "commonjs",
+    "experimentalDecorators": true,
+    "module": "system",
     "target": "ES5",
-    "outDir": "src/main/resources/static/js/build", // 컴파일된 js 저장위치
-    "rootDir": "src/main/resources/static/js" // 대상 ts 위치
+    "removeComments": true,
+    "sourceMap": true,
+    "rootDir": "src/main/resources/static/js/app/", // 컴파일시킬 js 루트 위치
+    "outFile": "src/main/resources/static/js/build/lib.js" // 컴파일된 js 저장위치
   }
 }
