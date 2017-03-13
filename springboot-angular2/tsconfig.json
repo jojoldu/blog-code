@@ -3,10 +3,11 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "system",
-    "target": "ES5",
+    "target": "ES6",
     "removeComments": true,
     "sourceMap": true,
+    "moduleResolution": "node",
     "rootDir": "src/main/resources/static/js/app/", // 컴파일시킬 js 루트 위치
-    "outFile": "src/main/resources/static/js/build/lib.js" // 컴파일된 js 저장위치
+    "outFile": "src/main/resources/static/js/build/app.js" // 컴파일된 js 저장위치
   }
 }
