@@ -4,7 +4,13 @@
 
 ### package.json
 * systemjs : amd와 같은 모듈 로더, ```import``` 구문을 지원한다.
-
+* @angular/platform-browser-dynamic
+  * angular2 bootstrap을 위한 모듈
+* @angular/platform-browser-dynamic을 위해 필요한 모듈
+  * @angular/compiler@2.4.9 
+  * @angular/platform-browser@2.4.9
+  * @angular/common@2.4.9
+  
 ### 타입스크립트 연습하기
 
 * tsconfig.json 생성하기
@@ -21,9 +27,6 @@
     "tsc:w": "./node_modules/typescript/bin/tsc -w"
   },
 
-  "devDependencies": {
-    "typescript": "^2.2.1"
-  }
 }
 ```
 

@@ -18,9 +18,12 @@
   "devDependencies": {
     "typescript": "^2.2.1"
   },
-
   "dependencies": {
+    "@angular/common": "^2.4.9",
+    "@angular/compiler": "^2.4.9",
     "@angular/core": "^2.4.9",
+    "@angular/platform-browser": "^2.4.9",
+    "@angular/platform-browser-dynamic": "^2.4.9",
     "rxjs": "^5.2.0",
     "systemjs": "^0.20.9",
     "zone.js": "^0.7.2"

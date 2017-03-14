@@ -9,7 +9,11 @@ import {NgModule} from "@angular/core";
 @NgModule({
     declarations: [
         AppComponent
+    ],
+    bootstrap: [
+        AppComponent
     ]
+
 })
 
 export class AppModule{}
