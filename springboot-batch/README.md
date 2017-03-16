@@ -15,9 +15,10 @@
 
 * Tasklet
   * 각 step에서 수행되는 로직
-  * 아래와 같은 컴포넌트를 사용할 수 있다.
-  * ItermReader : 데이터 읽기
-  * ItemProcessor : 읽은 데이터 처리
-  * ItemWriter : 처리된 데이터를 저장
+  * 개발자가 직접 명세한 배치작업
+  * 기본적으로는 아래와 같은 작업을 제공한다.
+    * ItermReader : 데이터 읽기
+    * ItemProcessor : 읽은 데이터 처리
+    * ItemWriter : 처리된 데이터를 저장
 
 * chunck

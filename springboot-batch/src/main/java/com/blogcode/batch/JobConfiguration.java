@@ -22,16 +22,25 @@ public class JobConfiguration {
     private JobBuilderFactory jobBuilderFactory;
 
     private Step step;
+    private Step paramStep;
 
-    public JobConfiguration(JobBuilderFactory jobBuilderFactory, Step step) {
+    public JobConfiguration(JobBuilderFactory jobBuilderFactory, Step step, Step paramStep) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.step = step;
+        this.paramStep = paramStep;
     }
 
     @Bean
     public Job job() {
         return jobBuilderFactory.get(JOB_NAME)
                 .start(step)
+                .build();
+    }
+
+    @Bean
+    public Job paramJob() {
+        return jobBuilderFactory.get("paramJob")
+                .start(paramStep)
                 .build();
     }
 

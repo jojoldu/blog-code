@@ -1,16 +1,20 @@
 package com.blogcode.batch;
 
-import com.blogcode.Person;
+import com.blogcode.domain.Person;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.persistence.EntityManagerFactory;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 3. 16.
@@ -19,44 +23,44 @@ import javax.persistence.EntityManagerFactory;
  */
 
 @Configuration
-public class StepConfiguration {
-
-    private static final String STEP_NAME = "step";
+public class StepParamConfiguration {
+    private static final String STEP_NAME = "stepParam";
 
     private EntityManagerFactory entityManagerFactory;
     private StepBuilderFactory stepBuilderFactory;
 
-    public StepConfiguration(EntityManagerFactory entityManagerFactory, StepBuilderFactory stepBuilderFactory) {
+    private ItemProcessor<Person, Person> processor;
+    private JpaItemWriter<Person> writer;
+
+    public StepParamConfiguration(EntityManagerFactory entityManagerFactory, StepBuilderFactory stepBuilderFactory, ItemProcessor<Person, Person> processor, JpaItemWriter<Person> writer) {
         this.entityManagerFactory = entityManagerFactory;
         this.stepBuilderFactory = stepBuilderFactory;
+        this.processor = processor;
+        this.writer = writer;
     }
 
     @Bean
-    public Step step() {
+    @StepScope
+    public Step paramStep() {
         return stepBuilderFactory.get(STEP_NAME)
                 .<Person, Person>chunk(1)
-                .reader(reader())
-                .processor(processor())
-                .writer(writer())
+                .reader(paramReader(null))
+                .processor(processor)
+                .writer(writer)
                 .build();
     }
 
     @Bean
-    public ItemProcessor<Person, Person> processor() {
-        return new PersonItemProcessor();
-    }
+    public ItemReader<Person> paramReader(@Value("#{jobParameters[firstName]}") String firstName) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("firstName", firstName);
 
-    @Bean
-    public ItemReader<Person> reader() {
         JpaPagingItemReader<Person> reader = new JpaPagingItemReader<>();
         reader.setEntityManagerFactory(entityManagerFactory);
-        return reader;
-    }
+        reader.setQueryString("select p From Person p where p.firstName=:firstName");
+        reader.setParameterValues(paramMap);
+        reader.setPageSize(10);
 
-    @Bean
-    public JpaItemWriter<Person> writer() {
-        JpaItemWriter<Person> writer = new JpaItemWriter<>();
-        writer.setEntityManagerFactory(entityManagerFactory);
-        return writer;
+        return reader;
     }
 }

@@ -1,4 +1,9 @@
-package com.blogcode;
+package com.blogcode.domain;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 3. 16.
@@ -6,8 +11,16 @@ package com.blogcode;
  * Github : http://github.com/jojoldu
  */
 
+@Entity
 public class Person {
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @Column
     private String lastName;
+
+    @Column
     private String firstName;
 
     public Person() {}
@@ -17,8 +30,8 @@ public class Person {
         this.lastName = lastName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public Long getId() {
+        return id;
     }
 
     public String getFirstName() {
@@ -27,6 +40,14 @@ public class Person {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public void setLastName(String lastName) {
