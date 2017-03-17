@@ -26,7 +26,7 @@ public class JobTests {
 	private JobLauncherTestUtils jobLauncherTestUtils;
 
 	@Test
-	public void param_test() throws Exception{
+	public void test() throws Exception{
 		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 		assertThat(jobExecution.getStatus(), is(BatchStatus.COMPLETED));
 	}

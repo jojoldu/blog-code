@@ -33,7 +33,6 @@ import static com.blogcode.batch.JobParamConfiguration.JOB_NAME;
 public class JobParamConfiguration {
 
     public static final String JOB_NAME = "jobParam";
-
     private static final String STEP_NAME = "stepParam";
 
      private EntityManagerFactory entityManagerFactory;
@@ -50,12 +49,11 @@ public class JobParamConfiguration {
     public Job job() {
         return jobBuilderFactory.get(JOB_NAME)
                 .incrementer(new RunIdIncrementer())
-                .start(stepParam())
+                .start(step())
                 .build();
     }
 
-    @Bean
-    public Step stepParam() {
+    private Step step() {
         return stepBuilderFactory.get(STEP_NAME)
                 .<Person, Person>chunk(1)
                 .reader(reader(null))
@@ -66,7 +64,7 @@ public class JobParamConfiguration {
 
     @Bean
     @StepScope
-    public ItemReader<Person> reader(@Value("#{jobParameters[firstName]}") String firstName){
+    public JpaPagingItemReader<Person> reader(@Value("#{jobParameters[firstName]}") String firstName){
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("firstName", firstName);
 
@@ -79,13 +77,11 @@ public class JobParamConfiguration {
         return reader;
     }
 
-    @Bean
-    public ItemProcessor<Person, Person> processor() {
+    private ItemProcessor<Person, Person> processor() {
         return new PersonItemProcessor();
     }
 
-    @Bean
-    public JpaItemWriter<Person> writer() {
+    private JpaItemWriter<Person> writer() {
         JpaItemWriter<Person> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(entityManagerFactory);
         return writer;
