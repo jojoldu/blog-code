@@ -22,3 +22,8 @@
     * ItemWriter : 처리된 데이터를 저장
 
 * chunck
+
+### reader open() 실행되지 않는 문제
+**일반 reader item 실행순서**  
+
+* TaskletStep.open() -> CompositeItemStream.open() -> AbstractItemCountingItemStreamItemReader.open() -> JpaPagingItemReader.doOpen()

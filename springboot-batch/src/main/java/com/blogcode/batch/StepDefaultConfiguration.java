@@ -23,7 +23,7 @@ import java.util.Map;
 @Configuration
 public class StepDefaultConfiguration {
 
-    private static final String STEP_NAME = "step";
+    private static final String STEP_NAME = "stepParam";
 
     private EntityManagerFactory entityManagerFactory;
     private StepBuilderFactory stepBuilderFactory;
@@ -43,13 +43,11 @@ public class StepDefaultConfiguration {
                 .build();
     }
 
-    @Bean
-    public ItemProcessor<Person, Person> processor() {
+    private ItemProcessor<Person, Person> processor() {
         return new PersonItemProcessor();
     }
 
-    @Bean
-    public ItemReader<Person> reader() {
+    private ItemReader<Person> reader() {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("firstName", "Donguk");
 
@@ -62,8 +60,7 @@ public class StepDefaultConfiguration {
         return reader;
     }
 
-    @Bean
-    public JpaItemWriter<Person> writer() {
+    private JpaItemWriter<Person> writer() {
         JpaItemWriter<Person> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(entityManagerFactory);
         return writer;

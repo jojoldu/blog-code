@@ -4,3 +4,5 @@ spring:
       enabled: true
   jpa:
     show-sql: true
+
+spring.batch.job.names: ${job.name:NONE}

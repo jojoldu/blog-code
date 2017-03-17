@@ -8,26 +8,27 @@ package com.blogcode.batch;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.blogcode.batch.JobConfiguration.JOB_NAME;
+
+
 @Configuration
-@EnableBatchProcessing
+@ConditionalOnProperty(name = "job.name", havingValue = JOB_NAME)
 public class JobConfiguration {
 
-    private static final String JOB_NAME = "job";
+    public static final String JOB_NAME = "job";
 
     private JobBuilderFactory jobBuilderFactory;
 
     private Step step;
-    private Step paramStep;
 
-    public JobConfiguration(JobBuilderFactory jobBuilderFactory, Step step, Step paramStep) {
+    public JobConfiguration(JobBuilderFactory jobBuilderFactory, Step step) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.step = step;
-        this.paramStep = paramStep;
     }
 
     @Bean
@@ -37,11 +38,6 @@ public class JobConfiguration {
                 .build();
     }
 
-    @Bean
-    public Job paramJob() {
-        return jobBuilderFactory.get("paramJob")
-                .start(paramStep)
-                .build();
-    }
+
 
 }
