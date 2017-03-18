@@ -65,7 +65,6 @@ public class JobConfiguration {
     }
 
     @Bean
-    @StepScope
     public ItemReader<Person> reader() {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("firstName", "Donguk");

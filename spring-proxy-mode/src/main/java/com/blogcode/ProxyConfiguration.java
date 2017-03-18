@@ -16,7 +16,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 public class ProxyConfiguration {
 
     @Bean
-    @Scope(value = "singleton", proxyMode = ScopedProxyMode.TARGET_CLASS)
+    @Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
     public Proxy proxy() {
         return new ProxyImpl();
     }
