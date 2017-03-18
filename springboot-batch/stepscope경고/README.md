@@ -55,12 +55,14 @@ step의 build 수행시에 문제가 발생한건가 싶어 구현체인 SimpleS
 
 ![눈물](./images/눈물.png)
   
-즉, ```reader()```에서 ItemReader 타입을 리턴할 경우 @StepScope의 ```proxyMode = ScopedProxyMode.TARGET_CLASS```로 인해서 **ItemReader 인터페이스의 프록시 구현체**를 생성하여 리턴하게 됩니다.  
+즉, ```reader()```에서 ItemReader 타입을 리턴할 경우 @StepScope의 ```proxyMode = ScopedProxyMode.TARGET_CLASS```로 인해서 **ItemReader 인터페이스의 프록시 객체**를 생성하여 리턴하게 됩니다.  
+(처음 생성된 reader에 문제가 없었던 것은 @StepScope가 없어서 **생성한 객체 그대로를 bean으로 전달**했기 때문에 프록시 객체가 사용되지 않았기 때문입니다.)  
+  
 이게 중요한 것인데 ItemReader의 프록시 객체이다 보니 아래와 같이 read() 메소드밖에 없습니다.    
 
 ![ItemReader](./images/ItemReader.png)
 
-그래서 실제로 stream을 open/close하는 메소드는 전혀 없는 상태입니다.  
+실제로 stream을 open/close하는 메소드는 전혀 없는 상태입니다.  
 open/close 메소드는 모두 **ItemStream 인터페이스**에서 갖고 있기 때문입니다.  
 
 ![ItemStream](./images/ItemStream.png)  
