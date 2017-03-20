@@ -1,6 +1,7 @@
 package com.blogcode.batch;
 
 import com.blogcode.domain.Person;
+import com.blogcode.domain.PersonCopy;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -19,8 +20,6 @@ import javax.persistence.EntityManagerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.blogcode.batch.JobParamConfiguration.JOB_NAME;
-
 /**
  * Created by jojoldu@gmail.com on 2017. 3. 17.
  * Blog : http://jojoldu.tistory.com
@@ -28,17 +27,17 @@ import static com.blogcode.batch.JobParamConfiguration.JOB_NAME;
  */
 
 @Configuration
-@ConditionalOnProperty(name = "job.name", havingValue = JOB_NAME)
-public class JobParamConfiguration {
+@ConditionalOnProperty(name = "job.name", havingValue = JobOtherEntityConfiguration.JOB_NAME)
+public class JobOtherEntityConfiguration {
 
-    public static final String JOB_NAME = "jobParam";
-    private static final String STEP_NAME = "stepParam";
+    public static final String JOB_NAME = "jobOtherEntity";
+    private static final String STEP_NAME = "stepOtherEntity";
 
-     private EntityManagerFactory entityManagerFactory;
-     private JobBuilderFactory jobBuilderFactory;
-     private StepBuilderFactory stepBuilderFactory;
+    private EntityManagerFactory entityManagerFactory;
+    private JobBuilderFactory jobBuilderFactory;
+    private StepBuilderFactory stepBuilderFactory;
 
-    public JobParamConfiguration(EntityManagerFactory entityManagerFactory, JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
+    public JobOtherEntityConfiguration(EntityManagerFactory entityManagerFactory, JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
         this.entityManagerFactory = entityManagerFactory;
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
@@ -47,14 +46,13 @@ public class JobParamConfiguration {
     @Bean
     public Job job() {
         return jobBuilderFactory.get(JOB_NAME)
-                .incrementer(new RunIdIncrementer())
                 .start(step())
                 .build();
     }
 
     private Step step() {
         return stepBuilderFactory.get(STEP_NAME)
-                .<Person, Person>chunk(1)
+                .<Person, PersonCopy>chunk(1)
                 .reader(reader(null))
                 .processor(processor())
                 .writer(writer())
@@ -63,12 +61,12 @@ public class JobParamConfiguration {
 
     @Bean
     @StepScope
-    public JpaPagingItemReader<Person> reader(@Value("#{jobParameters[firstName]}") String firstName){
+    public JpaPagingItemReader<Person> reader(@Value("#{jobParameters[lastName]}") String lastName){
         Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("firstName", firstName);
+        paramMap.put("lastName", lastName);
 
         JpaPagingItemReader<Person> reader = new JpaPagingItemReader<>();
-        reader.setQueryString("select p From Person p where p.firstName=:firstName");
+        reader.setQueryString("select p From Person p where p.lastName=:lastName");
         reader.setParameterValues(paramMap);
         reader.setEntityManagerFactory(entityManagerFactory);
         reader.setPageSize(10);
@@ -76,12 +74,12 @@ public class JobParamConfiguration {
         return reader;
     }
 
-    private ItemProcessor<Person, Person> processor() {
-        return new PersonItemProcessor();
+    private ItemProcessor<Person, PersonCopy> processor() {
+        return new PersonCopyItemProcessor();
     }
 
-    private JpaItemWriter<Person> writer() {
-        JpaItemWriter<Person> writer = new JpaItemWriter<>();
+    private JpaItemWriter<PersonCopy> writer() {
+        JpaItemWriter<PersonCopy> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(entityManagerFactory);
         return writer;
     }
