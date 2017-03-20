@@ -1,10 +1,7 @@
 package com.blogcode;
 
 import com.blogcode.batch.JobOtherEntityConfiguration;
-import com.blogcode.batch.JobParamConfiguration;
-import com.blogcode.domain.PersonCopy;
 import com.blogcode.domain.PersonCopyRepository;
-import com.blogcode.domain.PersonRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.BatchStatus;
@@ -18,7 +15,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -43,11 +39,10 @@ public class JobOtherEntityTest {
         JobParameters jobParameters =
                 new JobParametersBuilder().addString("lastName", "Lee").toJobParameters();
 
-        assertNull(personCopyRepository.findByLastName("Lee"));
-
+        assertThat(personCopyRepository.findByLastName("Lee").size(), is(0));
         JobExecution jobExecution = jobLauncherTestUtils.launchJob(jobParameters);
 
         assertThat(jobExecution.getStatus(), is(BatchStatus.COMPLETED));
-        assertThat(personCopyRepository.findByLastName("Lee").getFirstName(), is("Donguk"));
+        assertThat(personCopyRepository.findByLastName("Lee").get(0).getFirstName(), is("Donguk"));
     }
 }

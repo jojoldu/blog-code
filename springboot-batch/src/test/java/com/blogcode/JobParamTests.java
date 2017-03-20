@@ -31,12 +31,12 @@ public class JobParamTests {
 		JobParameters jobParameters =
 				new JobParametersBuilder().addString("firstName", "Sungsu").toJobParameters();
 
-		assertNull(personRepository.findByFirstName("SUNGSU"));
+		assertThat(personRepository.findByFirstName("SUNGSU").size(), is(0));
 
 		JobExecution jobExecution = jobLauncherTestUtils.launchJob(jobParameters);
 
 		assertThat(jobExecution.getStatus(), is(BatchStatus.COMPLETED));
-		assertThat(personRepository.findByFirstName("SUNGSU").getFirstName(), is("SUNGSU"));
+		assertThat(personRepository.findByFirstName("SUNGSU").get(0).getFirstName(), is("SUNGSU"));
 	}
 
 }

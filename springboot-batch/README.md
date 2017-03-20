@@ -22,6 +22,11 @@
     * ItemWriter : 처리된 데이터를 저장
 
 * chunck
+  * 읽기/쓰기 단위
+
+![chunk](./images/chunk쓰기.png)
+
+(chunk를 3개로 할 경우 writer가 3개 단위로 된다.)  
 
 ### reader open() 실행되지 않는 문제
 **일반 reader item 실행순서**  

@@ -1,3 +1,15 @@
 insert into person (first_name, last_name) values ('Donguk', 'Lee');
 insert into person (first_name, last_name) values ('Gildong', 'Hong');
 insert into person (first_name, last_name) values ('Sungsu', 'Kim');
+insert into person (first_name, last_name) values ('Donguk2', 'Lee');
+insert into person (first_name, last_name) values ('Gildong2', 'Hong');
+insert into person (first_name, last_name) values ('Sungsu2', 'Kim');
+insert into person (first_name, last_name) values ('Donguk3', 'Lee');
+insert into person (first_name, last_name) values ('Gildong3', 'Hong');
+insert into person (first_name, last_name) values ('Sungsu3', 'Kim');
+insert into person (first_name, last_name) values ('Donguk4', 'Lee');
+insert into person (first_name, last_name) values ('Gildong4', 'Hong');
+insert into person (first_name, last_name) values ('Sungsu4', 'Kim');
+insert into person (first_name, last_name) values ('Donguk5', 'Lee');
+insert into person (first_name, last_name) values ('Gildong5', 'Hong');
+insert into person (first_name, last_name) values ('Sungsu5', 'Kim');

@@ -2,6 +2,8 @@ package com.blogcode.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 /**
  * Created by jojoldu@gmail.com on 2017. 3. 16.
  * Blog : http://jojoldu.tistory.com
@@ -10,5 +12,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PersonRepository extends JpaRepository<Person, Long> {
 
-    Person findByFirstName(String firstName);
+    List<Person> findByFirstName(String firstName);
 }

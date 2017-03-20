@@ -52,7 +52,7 @@ public class JobOtherEntityConfiguration {
 
     private Step step() {
         return stepBuilderFactory.get(STEP_NAME)
-                .<Person, PersonCopy>chunk(1)
+                .<Person, PersonCopy>chunk(4)
                 .reader(reader(null))
                 .processor(processor())
                 .writer(writer())
@@ -69,7 +69,7 @@ public class JobOtherEntityConfiguration {
         reader.setQueryString("select p From Person p where p.lastName=:lastName");
         reader.setParameterValues(paramMap);
         reader.setEntityManagerFactory(entityManagerFactory);
-        reader.setPageSize(10);
+        reader.setPageSize(1);
 
         return reader;
     }
