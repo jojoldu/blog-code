@@ -37,5 +37,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-batch')
 	compile('org.springframework.batch:spring-batch-test') // spring batch test를 위한 의존성
 
+	compile('com.querydsl:querydsl-jpa') //querydsl
+
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
