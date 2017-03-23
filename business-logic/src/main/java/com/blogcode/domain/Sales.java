@@ -1,5 +1,9 @@
 package com.blogcode.domain;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,6 +16,8 @@ import javax.persistence.Id;
  */
 
 @Entity
+@NoArgsConstructor
+@Getter
 public class Sales {
 
     @Id
@@ -19,5 +25,42 @@ public class Sales {
     private Long id;
 
     @Column
-    private int amount;
+    private Long ownerId;
+
+    @Column
+    private String calculateCode;
+
+    @Column
+    private int totalAmount;
+
+    @Column
+    private int mobileAmount;
+
+    @Column
+    private int creditCardAmount;
+
+    @Column
+    private int cashAmount;
+
+    @Builder
+    public Sales(Long ownerId, String calculateCode, int totalAmount, int mobileAmount, int creditCardAmount, int cashAmount) {
+        this.ownerId = ownerId;
+        this.calculateCode = calculateCode;
+        this.totalAmount = totalAmount;
+        this.mobileAmount = mobileAmount;
+        this.creditCardAmount = creditCardAmount;
+        this.cashAmount = cashAmount;
+    }
+
+    public void add(int amount, Payment.Method paymentMethod){
+        if(paymentMethod == Payment.Method.MOBILE){
+            mobileAmount = amount;
+        } else if(paymentMethod == Payment.Method.CREDIT_CARD){
+            creditCardAmount = amount;
+        } else if(paymentMethod == Payment.Method.CASH) {
+            cashAmount = amount;
+        }
+
+        totalAmount += amount;
+    }
 }

@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Pay {
+public class Payment {
 
     @Id
     @GeneratedValue
@@ -29,32 +29,32 @@ public class Pay {
     private LocalDate payDate; // 결제일
 
     @Column
-    private String settleCode; // 정산방식을 선택하는 정산코드
+    private String calculateCode; // 계산방식을 선택하는 계산코드
 
     @Column
     @Enumerated(EnumType.STRING)
-    private PayType type;
+    private Method method; // 결제방식
 
     @Column
     private int price;
 
     @Builder
-    public Pay(Long ownerId, LocalDate payDate, String settleCode, PayType type, int price) {
+    public Payment(Long ownerId, LocalDate payDate, String calculateCode, Method method, int price) {
         this.ownerId = ownerId;
         this.payDate = payDate;
-        this.settleCode = settleCode;
-        this.type = type;
+        this.calculateCode = calculateCode;
+        this.method = method;
         this.price = price;
     }
 
-    public enum PayType {
+    public enum Method {
         MOBILE("휴대폰"),
         CREDIT_CARD("신용카드"),
         CASH("현금");
 
         private String text;
 
-        PayType(String text) {
+        Method(String text) {
             this.text = text;
         }
 
@@ -62,7 +62,4 @@ public class Pay {
             return text;
         }
     }
-
-
-
 }
