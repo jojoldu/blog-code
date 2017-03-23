@@ -10,6 +10,9 @@
 * Job
   * 하나의 배치 작업
 * Job Instance
+* JobRepository
+  * 수행되는 Job에 대한 정보를 담고 있는 저장소
+  * 어떠한 Job이 언제 수행되었고, 언제 끝났으며, 몇 번이 실행되었고 실행에 대한 결과가 어떤지 등의 Batch수행과 관련된 모든 meta data가 저장
 
 * Step
 
@@ -27,6 +30,7 @@
 ![chunk](./images/chunk쓰기.png)
 
 (chunk를 3개로 할 경우 writer가 3개 단위로 된다.)  
+
 
 ### reader open() 실행되지 않는 문제
 **일반 reader item 실행순서**  
