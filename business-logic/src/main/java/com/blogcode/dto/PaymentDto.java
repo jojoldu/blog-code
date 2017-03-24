@@ -5,7 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -33,8 +34,22 @@ public class PaymentDto {
         this.price = entity.getPrice();
     }
 
-    public static Stream<PaymentDto> toStream(List<Payment> payments){
-        return payments.stream()
-                .map(PaymentDto::new);
+    public static Stream<List<PaymentDto>> classify(List<Payment> payments){
+        Map<PaymentDto, List<PaymentDto>> classifiedPayment = new LinkedHashMap<>();
+
+        for (Payment payment : payments) {
+            PaymentDto dto = new PaymentDto(payment);
+            List<PaymentDto> list = classifiedPayment.get(dto);
+
+            if(list != null){
+                list.add(dto);
+            } else {
+                classifiedPayment.put(dto, new ArrayList<>(Collections.singletonList(dto)));
+            }
+        }
+
+        return classifiedPayment.entrySet().stream()
+                .map(Map.Entry::getValue);
     }
+
 }

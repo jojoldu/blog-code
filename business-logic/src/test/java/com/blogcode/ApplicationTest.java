@@ -3,6 +3,7 @@ package com.blogcode;
 import com.blogcode.domain.Payment;
 import com.blogcode.domain.Sales;
 import com.blogcode.dto.PaymentDto;
+import com.blogcode.dto.SalesConverter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,56 +27,56 @@ public class ApplicationTest {
 						.ownerId(1L)
 						.payDate(LocalDate.of(2017, 3, 23))
 						.calculateCode("C001")
-						.price(10000)
-						.paymentMethod(Payment.Method.CREDIT_CARD)
+						.price(20000)
+						.method(Payment.Method.MOBILE)
 						.build(),
 				Payment.builder()
 						.ownerId(1L)
 						.payDate(LocalDate.of(2017, 3, 23))
 						.calculateCode("C001")
-						.price(20000)
-						.paymentMethod(Payment.Method.MOBILE)
+						.price(10000)
+						.method(Payment.Method.CREDIT_CARD)
 						.build(),
 				Payment.builder()
 						.ownerId(1L)
 						.payDate(LocalDate.of(2017, 3, 23))
 						.calculateCode("C001")
 						.price(5000)
-						.paymentMethod(Payment.Method.CASH)
+						.method(Payment.Method.CASH)
 						.build(),
 				Payment.builder()
 						.ownerId(1L)
 						.payDate(LocalDate.of(2017, 3, 23))
 						.calculateCode("C002")
 						.price(20000)
-						.paymentMethod(Payment.Method.MOBILE)
+						.method(Payment.Method.MOBILE)
 						.build(),
 				Payment.builder()
 						.ownerId(2L)
 						.payDate(LocalDate.of(2017, 3, 23))
 						.calculateCode("C001")
 						.price(15000)
-						.paymentMethod(Payment.Method.CREDIT_CARD)
+						.method(Payment.Method.CREDIT_CARD)
 						.build(),
 				Payment.builder()
 						.ownerId(1L)
 						.payDate(LocalDate.of(2017, 4, 1))
 						.calculateCode("C002")
 						.price(30000)
-						.paymentMethod(Payment.Method.MOBILE)
+						.method(Payment.Method.MOBILE)
 						.build()
 		);
 	}
 
 	@Test
 	public void test_payment분류() {
-		Stream<PaymentDto> paymentDtos = PaymentDto.toStream(payments);
-		Sales sales = new Sales();
+		List<Sales> salesList = SalesConverter.createSalesList(PaymentDto.classify(payments));
+		Sales sales = salesList.get(0);
 
-		assertThat(sales.getTotalAmount(), is(100000));
-		assertThat(sales.getMobileAmount(), is(100000));
-		assertThat(sales.getCreditCardAmount(), is(100000));
-		assertThat(sales.getCashAmount(), is(100000));
+		assertThat(sales.getTotalAmount(), is(35000));
+		assertThat(sales.getMobileAmount(), is(20000));
+		assertThat(sales.getCreditCardAmount(), is(10000));
+		assertThat(sales.getCashAmount(), is(5000));
 
 
 
