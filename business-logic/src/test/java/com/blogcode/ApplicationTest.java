@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -70,16 +71,29 @@ public class ApplicationTest {
 
 	@Test
 	public void test_payment분류() {
+		//given
+		List<List<PaymentDto>> classified = PaymentDto.classify(payments).collect(Collectors.toList());
+		List<PaymentDto> firstPaymentDtos = classified.get(0);
+
+		//expected
+		assertThat(classified.size(), is(4));
+		assertThat(firstPaymentDtos.size(), is(3));
+		assertThat(firstPaymentDtos.get(0).getPaymentMethod(), is(Payment.Method.MOBILE));
+		assertThat(firstPaymentDtos.get(1).getPaymentMethod(), is(Payment.Method.CREDIT_CARD));
+		assertThat(firstPaymentDtos.get(2).getPaymentMethod(), is(Payment.Method.CASH));
+	}
+
+	@Test
+	public void test_payment를sales로_전환() {
+		//given
 		List<Sales> salesList = SalesConverter.createSalesList(PaymentDto.classify(payments));
 		Sales sales = salesList.get(0);
 
+		//expected
 		assertThat(sales.getTotalAmount(), is(35000));
 		assertThat(sales.getMobileAmount(), is(20000));
 		assertThat(sales.getCreditCardAmount(), is(10000));
 		assertThat(sales.getCashAmount(), is(5000));
-
-
-
 	}
 
 }
