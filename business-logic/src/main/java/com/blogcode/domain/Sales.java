@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.time.LocalDate;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 3. 22.
@@ -28,6 +29,9 @@ public class Sales {
     private Long ownerId;
 
     @Column
+    private LocalDate payDate;
+
+    @Column
     private String calculateCode;
 
     @Column
@@ -43,8 +47,9 @@ public class Sales {
     private int cashAmount;
 
     @Builder
-    public Sales(Long ownerId, String calculateCode, int totalAmount, int mobileAmount, int creditCardAmount, int cashAmount) {
+    public Sales(Long ownerId, LocalDate payDate, String calculateCode, int totalAmount, int mobileAmount, int creditCardAmount, int cashAmount) {
         this.ownerId = ownerId;
+        this.payDate = payDate;
         this.calculateCode = calculateCode;
         this.totalAmount = totalAmount;
         this.mobileAmount = mobileAmount;
@@ -53,14 +58,9 @@ public class Sales {
     }
 
     public void add(int amount, Payment.Method paymentMethod){
-        if(paymentMethod == Payment.Method.MOBILE){
-            mobileAmount = amount;
-        } else if(paymentMethod == Payment.Method.CREDIT_CARD){
-            creditCardAmount = amount;
-        } else if(paymentMethod == Payment.Method.CASH) {
-            cashAmount = amount;
-        }
-
+        if(paymentMethod == Payment.Method.MOBILE){ mobileAmount = amount; }
+        else if(paymentMethod == Payment.Method.CREDIT_CARD){ creditCardAmount = amount; }
+        else if(paymentMethod == Payment.Method.CASH) { cashAmount = amount; }
         totalAmount += amount;
     }
 }

@@ -19,7 +19,12 @@ public class SalesConverter {
     private SalesConverter() {}
 
     public static Sales createSales(List<PaymentDto> payments){
-        Sales sales = new Sales();
+        Sales sales = Sales.builder()
+                .ownerId(payments.get(0).getOwnerId())
+                .calculateCode(payments.get(0).getCalculateCode())
+                .payDate(payments.get(0).getPayDate())
+                .build();
+
         payments.forEach(paymentDto -> sales.add(paymentDto.getPrice(), paymentDto.getPaymentMethod()));
         return sales;
     }

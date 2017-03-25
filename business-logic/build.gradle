@@ -21,6 +21,7 @@ repositories {
 	mavenCentral()
 }
 
+ext['hibernate.version'] = '5.2.8.Final'
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')

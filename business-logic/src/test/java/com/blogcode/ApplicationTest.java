@@ -90,6 +90,8 @@ public class ApplicationTest {
 		Sales sales = salesList.get(0);
 
 		//expected
+		assertThat(sales.getPayDate(), is(LocalDate.of(2017, 3, 23)));
+		assertThat(sales.getCalculateCode(), is("C001"));
 		assertThat(sales.getTotalAmount(), is(35000));
 		assertThat(sales.getMobileAmount(), is(20000));
 		assertThat(sales.getCreditCardAmount(), is(10000));
