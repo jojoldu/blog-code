@@ -12,6 +12,8 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 - [Java SE 성능비교](https://github.com/jojoldu/blog-code/tree/master/java/performance)
 - [블랙잭 게임 - 객체지향 이해하기](https://github.com/jojoldu/oop-java)
 - [Enum 활용하기](https://github.com/jojoldu/blog-code/tree/master/java/enum-mapper)  
+- [업무속에서 Java 개념사용하기](https://github.com/jojoldu/blog-code/tree/master/business-logic)
+  - [equals & hashCode](https://github.com/jojoldu/blog-code/tree/master/business-logic/%ED%85%8C%EC%9D%B4%EB%B8%94_row_%ED%95%A9%EC%B9%98%EA%B8%B0)
 
 ### Spring
 -	[Spring Boot의 깨알같은 팁](https://github.com/jojoldu/blog-code/tree/master/compareboot)
@@ -20,6 +22,8 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 - [Ehcache 기본](https://github.com/jojoldu/blog-code/tree/master/spring-cache)
 - [Spring AOP 정리](https://github.com/jojoldu/blog-code/tree/master/aop)
 - [Spring Validation 공통모듈 만들기](https://github.com/jojoldu/blog-code/tree/master/spring-validation)
+- [Spring Boot Batch](https://github.com/jojoldu/blog-code/tree/master/springboot-batch)
+  - [@StepScope 사용시 주의사항](https://github.com/jojoldu/blog-code/tree/master/springboot-batch/stepscope%EA%B2%BD%EA%B3%A0)
 
 ### Gradle
 -	[Gradle 적응하기](https://github.com/jojoldu/blog-code/tree/master/gradle-task)
