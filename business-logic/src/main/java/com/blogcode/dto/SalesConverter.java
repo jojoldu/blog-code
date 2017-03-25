@@ -1,7 +1,6 @@
 package com.blogcode.dto;
 
 import com.blogcode.domain.Sales;
-import lombok.Getter;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +12,6 @@ import java.util.stream.Stream;
  * Github : http://github.com/jojoldu
  */
 
-@Getter
 public class SalesConverter {
 
     private SalesConverter() {}
