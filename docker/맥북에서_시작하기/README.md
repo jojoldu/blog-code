@@ -117,7 +117,6 @@ docker rm [OPTIONS] CONTAINER [CONTAINER...]
 docker logs [OPTIONS] [CONTAINER ID]
 ```
 
-
 ### 컨테이너 명령어 실행
 * 실행중인 컨테이너에 접속하여 커맨드 실행하기
   * ssh는 권장하지 않는다.
@@ -126,7 +125,17 @@ docker logs [OPTIONS] [CONTAINER ID]
 
 ![docker exec](./images/docker-exec.png)
 
+### 컨테이너 마운트
+* 컨테이너가 삭제되면 해당 컨테이너에 포함된 데이터 역시 같이 삭제된다.
+  * DB 컨테이너 같은 경우 DB 데이터까지 같이 삭제되므로 큰일임
+* 호스트 PC (여기선 수행되는 개인 PC) 디렉토리를 마운트해서 컨테이너가 삭제되도 호스트 PC에 남기도록 함
 
+```
+docker run -d -p 3306:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=true --name mysql -v /my/own/datadir:/var/lib/mysql mysql:5.7
+```
+
+* ```/my/own/datadir```디렉토리를 컨테이너의 ```/var/lib/mysql``` 디렉토리로 마운트
+  * 이제 데이터베이스 파일은 호스트의 ```/my/own/datadir```디렉토리에 저장되고 컨테이너를 삭제해도 데이터는 사라지지 않음
   
   
 ## 참고자료
