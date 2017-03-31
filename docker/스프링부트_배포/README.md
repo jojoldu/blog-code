@@ -20,6 +20,15 @@
 
 ![젠킨스 플러그인 설치](./images/젠킨스_플러그인설치.png)
 
+설치해야할 플러그인 목록
+* Git plugin
+* Github plugin
+* Gradle
+젠킨스 java위치  
+
+```
+/usr/lib/jvm/java-8-openjdk-amd64
+```
 
 ## 참고
 * [iamkyu.com](http://www.iamkyu.com/121)
