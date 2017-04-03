@@ -18,13 +18,22 @@
   * 의존성 패키지, 설정파일 생성등 모든 것을 관리
 
 
-* CLI
+## CLI
 
 ![client와 host](./images/client-host.png)
 
 * 도커 커맨드를 입력하면 도커 클라이언트가 도커 서버로 명령을 전송하고 결과를 받아 터미널에 출력
 
-* 명령어 옵션
+### 명령어
+* [`docker run`](http://docs.docker.io/en/latest/commandline/cli/#run) 컨테이너를 생성한다.
+* [`docker stop`](http://docs.docker.io/en/latest/commandline/cli/#stop) 컨테이너를 정지시킨다.
+* [`docker start`](http://docs.docker.io/en/latest/commandline/cli/#start) 컨테이너를 다시 실행시킨다. 
+* [`docker restart`](http://docs.docker.io/en/latest/commandline/cli/#restart) 컨테이너를 재가동한다.
+* [`docker rm`](http://docs.docker.io/en/latest/commandline/cli/#rm) 컨테이너를 삭제한다.
+* [`docker kill`](http://docs.docker.io/en/latest/commandline/cli/#kill) 컨테이너에게 SIGKILL을 보낸다.  [이에 관련된 이슈가 있다.](https://github.com/dotcloud/docker/issues/197).
+* [`docker attach`](http://docs.docker.io/en/latest/commandline/cli/#attach) 실행중인 컨테이너에 접속한다. * [`docker wait`](http://docs.docker.io/en/latest/commandline/cli/#wait) 컨테이너가 멈출 때까지 블럭한다.
+
+### 명령어 옵션
 
 ![옵션](./images/옵션.png)
 
