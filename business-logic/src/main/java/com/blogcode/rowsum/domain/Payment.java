@@ -1,4 +1,4 @@
-package com.blogcode.domain;
+package com.blogcode.rowsum.domain;
 
 import lombok.Builder;
 import lombok.Getter;

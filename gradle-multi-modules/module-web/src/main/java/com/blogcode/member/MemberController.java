@@ -15,6 +15,6 @@ public class MemberController {
 
     @GetMapping("/")
     public Member get() {
-        return new Member("jojoldu", "jojoldu@gmail.com");
+        return new Member("jojoldu", "jojoldu@gmail.com", "");
     }
 }

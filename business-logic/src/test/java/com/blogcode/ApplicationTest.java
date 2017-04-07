@@ -1,9 +1,9 @@
 package com.blogcode;
 
-import com.blogcode.domain.Payment;
-import com.blogcode.domain.Sales;
-import com.blogcode.dto.PaymentDto;
-import com.blogcode.dto.SalesConverter;
+import com.blogcode.rowsum.domain.Payment;
+import com.blogcode.rowsum.domain.Sales;
+import com.blogcode.rowsum.dto.PaymentDto;
+import com.blogcode.rowsum.dto.SalesConverter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

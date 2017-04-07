@@ -23,7 +23,16 @@ public class Member {
     @Column
     private String email;
 
+    @Column
+    private String nickname;
+
     public Member() {
+    }
+
+    public Member(String name, String email, String nickname) {
+        this.name = name;
+        this.email = email;
+        this.nickname = nickname;
     }
 
     public Member(String name, String email) {
@@ -41,5 +50,9 @@ public class Member {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getNickname() {
+        return nickname;
     }
 }

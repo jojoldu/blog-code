@@ -1,6 +1,6 @@
-package com.blogcode.dto;
+package com.blogcode.rowsum.dto;
 
-import com.blogcode.domain.Sales;
+import com.blogcode.rowsum.domain.Sales;
 
 import java.util.List;
 import java.util.stream.Collectors;

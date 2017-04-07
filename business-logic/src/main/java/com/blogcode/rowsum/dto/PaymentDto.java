@@ -1,12 +1,11 @@
-package com.blogcode.dto;
+package com.blogcode.rowsum.dto;
 
-import com.blogcode.domain.Payment;
+import com.blogcode.rowsum.domain.Payment;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
