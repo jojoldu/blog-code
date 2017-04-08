@@ -14,11 +14,11 @@ public enum SalesAmountType {
     VAT_AMOUNT("부가세", amount -> Math.round(amount.doubleValue() / 11)),
     NOT_USED("사용안함", amount -> 0L);
 
-    private String text;
+    private String viewName;
     private Function<Long, Long> expression;
 
-    SalesAmountType(String text, Function<Long, Long> expression) {
-        this.text = text;
+    SalesAmountType(String viewName, Function<Long, Long> expression) {
+        this.viewName = viewName;
         this.expression = expression;
     }
 
@@ -26,7 +26,7 @@ public enum SalesAmountType {
         return expression.apply(amount);
     }
 
-    public String getText() {
-        return text;
+    public String getViewName() {
+        return viewName;
     }
 }
