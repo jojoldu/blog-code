@@ -14,6 +14,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 - [Enum 활용하기](https://github.com/jojoldu/blog-code/tree/master/java/enum-mapper)  
 - [업무속에서 Java 개념사용하기](https://github.com/jojoldu/blog-code/tree/master/business-logic)
   - [equals & hashCode](https://github.com/jojoldu/blog-code/tree/master/business-logic/%ED%85%8C%EC%9D%B4%EB%B8%94_row_%ED%95%A9%EC%B9%98%EA%B8%B0)
+  - [enum 활용사례 3가지](https://github.com/jojoldu/blog-code/tree/master/enum-uses)
 
 ### Spring
 -	[Spring Boot의 깨알같은 팁](https://github.com/jojoldu/blog-code/tree/master/compareboot)

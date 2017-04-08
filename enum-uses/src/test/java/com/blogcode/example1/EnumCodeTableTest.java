@@ -13,18 +13,18 @@ import static org.junit.Assert.assertThat;
 
 public class EnumCodeTableTest {
 
-
     @Test
     public void 코드테이블_대신_enum() {
         //given
-        AffiliateCode sisters = AffiliateCode.WOOWA_SISTERS;
-        AffiliateCode children = AffiliateCode.WOOWA_CHILDREN;
-        AffiliateCode adults = AffiliateCode.WOOWA_ADULTS;
+        Affiliate.Code sisters = Affiliate.Code.WOOWA_SISTERS;
+        Affiliate.Code children = Affiliate.Code.WOOWA_CHILDREN;
+        Affiliate.Code adults = Affiliate.Code.WOOWA_ADULTS;
+        Affiliate.Code adultsValueOf = Affiliate.Code.valueOf("WOOWA_ADULTS");
 
         //then
         assertThat(sisters.getViewName(), is("우아한자매들"));
-        assertThat(sisters.getBizNumber(), is("123-45-6789"));
         assertThat(children.getBizTypeCode(), is("s0099"));
         assertThat(adults.getCompanyCode(), is("w03"));
+        assertThat(adultsValueOf.getViewName(), is("우아한어른들"));
     }
 }
