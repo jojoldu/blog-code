@@ -1,4 +1,5 @@
 # enum 활용사례 3가지
+
 안녕하세요? 이번 시간엔 enum 활용사례를 3가지정도 소개하려고 합니다.  
 모든 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/enum-uses)에 있기 때문에 함께 보시면 더 이해하기 쉬우실 것 같습니다.  
 (공부한 내용을 정리하는 [Github](https://github.com/jojoldu/blog-code)와 세미나+책 후기를 정리하는 [Github](https://github.com/jojoldu/review), 이 모든 내용을 담고 있는 [블로그](http://jojoldu.tistory.com/)가 있습니다. )<br/>
@@ -9,6 +10,7 @@
 그럼 시작하겠습니다!   
   
 ### 사례1 - code 관리용 테이블 대체하기
+
 프로젝트를 진행하다보면 **code 들을 관리하기 위한 테이블**을 별도로 만드는 경우가 빈번합니다.  
 
 ![코드테이블](./images/코드테이블.png)
@@ -32,18 +34,18 @@
 
 ![example1](./images/example1.png)
 
-테스트 코드를 작성하게 되면, 
+테스트 코드를 작성하게 되면,
 
 ![example1 test](./images/example1_test.png)
 
 Entity 클래스에 선언한 ```@Enumerated(javax.persistence.EnumType.STRING)```을 entity의 필드에 선언하시면, 해당 enum 타입의 name이 DB에 저장됩니다.  
 (여기서는 ```WOOWA_SISTERS```, ```WOOWA_CHILDREN``` 등이 DB에 저장되며, DB에서 조회하면 ```Affiliate.Code.WOOWA_SISTERS```와 ```Affiliate.Code.WOOWA_CHILDREN```으로 값이 할당됩니다.)  
-  
-```Affiliate.Code```을 여러 Entity 클래스에서 ```join select``` 없이 사용할 수 있으며, 어떤 계열사일때 어떤 code가 사용될지 바로 알 수가 있습니다.  
+이렇게 enum으로 풀게되면 ```Affiliate.Code```을 여러 Entity 클래스에서 ```join select``` 없이 사용할 수 있으며, 어떤 계열사일때 어떤 code가 사용될지 바로 알 수가 있습니다.  
 단, 대전제는 **enum으로 관리되는 데이터가 빈번하게 변경(추가/제거) 되지 않아야**하는 것과 이 code enum을 다른 테이블에서도 빈번하게 사용해야 한다는 것입니다.   
 이럴 경우 enum을 고려해보심을 추천드립니다.   
 
 ### 사례2 - 타입별 다른 연산식 처리하기
+
 예를 들어 매출금을 계산하는 프로그램이 필요하다고 가정하겠습니다.  
 매출금의 경우 원금액, 공급가액, 부가세 이 3가지로 분류할 수 있는데, 한번의 결제가 발생하면 결제된 총 금액을 **원금액**으로, 원금액을 1.1로 나눈 금액을 **공급가액**으로, 공급가액의 10%를 **부가세**로 분류해야 합니다.   
 
@@ -77,6 +79,7 @@ A와 B가 책임져야하는 부분이 아닐까요?
 > 꼭 이 상황에서 enum을 써야하느냐 보다는, **타입별로 다른 연산식을 적용해야 할 경우**엔 이렇게 사용하면 좋다 정도로 보시면 될것 같습니다.  
 
 ### 사례3 - 각 타입을 그룹화 하기
+
 마지막 사례는 그룹화를 해야할때 입니다.  
 예를 들어 결제방식에 따라 다른 수수료를 부가해야하는 과정이 필요하다고 가정하겠습니다.  
 아래와 같이 결제방식에 따른 수수료 그룹이 있는 것입니다.  
@@ -96,7 +99,7 @@ A와 B가 책임져야하는 부분이 아닐까요?
 
 ![example3_1](./images/example3_1.png)
 
-```PaymentGroup```은 ```PaymentOption```의 배열을 갖고 있습니다.  
+보시는것처럼 ```PaymentGroup```은 ```PaymentOption```의 배열을 갖고 있습니다.  
 특정 ```PaymentOption```이 있을때 이 값이 어느 그룹에 포함될지는 ```PaymentGroup```에 직접 물어보면(```findGroup```) 됩니다.  
 각 그룹별로 추가 기능이 필요한 경우엔 ```PaymentGroup```에 추가하면 됩니다.  
 또한 select box로 그룹 리스트를 출력해야하는 경우엔 ```PaymentGroup.values()```을 사용하면 아주 쉽게 대응할 수 있습니다.  
