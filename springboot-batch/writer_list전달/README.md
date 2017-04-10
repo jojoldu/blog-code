@@ -11,18 +11,15 @@
 
 ![config1](./images/config1.png)
 
-특별할것이 없는 코드입니다.  
-저 같은 경우엔 ```ItemWriter```를 ```JpaItemWriter```를 사용했는데, ```IbatisBatchItemWriter```, ```JdbcBatchItemWriter```등을 사용하셔도 무방합니다.  
+특별할것이 없는 코드입니다. 저 같은 경우엔 ```ItemWriter```를 ```JpaItemWriter```를 사용했는데, ```IbatisBatchItemWriter```, ```JdbcBatchItemWriter```등을 사용하셔도 무방합니다.  
 
 ![ItemWriter 구현체](./images/itemwriter.png)
 
 ([docs.spring.io](https://docs.spring.io/spring-batch/apidocs/org/springframework/batch/item/ItemWriter.html))
 
-코드의 내용은 단순합니다.  
+코드의 내용은 단순합니다. ```reader```에서 읽은 데이터(```Sales```)를 ```processor```를 거쳐 ```List<Tax>```로 전환한뒤, ```writer```에서 DB에 저장합니다.  
 
-```reader```에서 읽은 데이터(```Sales```)를 ```processor```를 거쳐 ```List<Tax>```로 전환한뒤, ```writer```에서 DB에 저장합니다.  
-
-```ItemListProcessor```의 코드는 아래와 같습니다.  
+다음 ```ItemListProcessor```의 코드는 아래와 같습니다.  
 
 ![processor](./images/processor.png)
 
@@ -54,9 +51,7 @@
 
 ![write 실행](./images/write.png)
 
-이상하지 않으신가요?  
-
-```items```에 ```ArrayList```가 2개 할당되었습니다.  
+이상하지 않으신가요? ```items```에 ```ArrayList```가 2개 할당되었습니다.  
 1개 혹은 3개도 아닌 2개는 어디서 나온걸까요?  
 바로 ```step```에 지정한 ```chunk``` 사이즈입니다.  
 
