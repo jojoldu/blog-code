@@ -1,6 +1,6 @@
-package com.blogcode.batch;
+package com.blogcode.example1.batch;
 
-import com.blogcode.domain.Person;
+import com.blogcode.example1.domain.Person;
 import com.blogcode.step.QuerydslPagingItemReader;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;

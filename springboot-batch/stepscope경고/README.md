@@ -104,7 +104,7 @@ o.s.b.c.l.AbstractListenerFactoryBean    : org.springframework.batch.item.ItemRe
 위 로그를 번역해보면 아래와 같습니다.
 
  > org.springframework.batch.item.ItemReader는 인터페이스입니다. 
-구현 클래스는 어노테이션 기반 listner 구성에 대해 살행되지 않습니다. 
+구현 클래스는 어노테이션 기반 listner 구성에 대해 실행되지 않습니다. 
 @Bean 메소드에서 @StepScope를 사용하는 경우 listner 어노테이션을 사용할 수 있도록 구현 클래스를 리턴해야합니다.
 
 

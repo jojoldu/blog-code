@@ -12,8 +12,8 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 -	[Freemarker 안전하게 사용하기](https://github.com/jojoldu/freemarker-guide)
 - [Java SE 성능비교](https://github.com/jojoldu/blog-code/tree/master/java/performance)
 - [블랙잭 게임 - 객체지향 이해하기](https://github.com/jojoldu/oop-java)
-- [Enum 활용하기](https://github.com/jojoldu/blog-code/tree/master/java/enum-mapper)  
 - [업무속에서 Java 개념사용하기](https://github.com/jojoldu/blog-code/tree/master/business-logic)
+  - [enum 공통화 모듈 만들기](https://github.com/jojoldu/blog-code/tree/master/java/enum-mapper) 
   - [equals & hashCode](https://github.com/jojoldu/blog-code/tree/master/business-logic/%ED%85%8C%EC%9D%B4%EB%B8%94_row_%ED%95%A9%EC%B9%98%EA%B8%B0)
   - [enum 활용사례 3가지](https://github.com/jojoldu/blog-code/tree/master/enum-uses)
 
@@ -46,6 +46,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 - [리눅스 자동화 스크립트 내용](https://github.com/jojoldu/blog-code/tree/master/linux)
   - [망 분리된 상태에서 build 파일 전달하기](https://github.com/jojoldu/blog-code/tree/master/linux/passby)
   - [원격접속 및 root권한 받기 자동화](https://github.com/jojoldu/blog-code/tree/master/linux/go)
+- [도커로 CI 구축 연습하기 (젠킨스, slack)](https://github.com/jojoldu/springboot-jenkins-docker-slack)
 
 ### Git
 

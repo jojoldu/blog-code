@@ -39,5 +39,6 @@ dependencies {
 
 	compile('com.querydsl:querydsl-jpa') //querydsl
 
+	compile group: 'org.projectlombok', name: 'lombok', version: '1.16.16'
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

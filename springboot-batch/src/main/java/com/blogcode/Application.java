@@ -1,7 +1,7 @@
 package com.blogcode;
 
-import com.blogcode.domain.Person;
-import com.blogcode.domain.PersonRepository;
+import com.blogcode.example1.domain.Person;
+import com.blogcode.example1.domain.PersonRepository;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

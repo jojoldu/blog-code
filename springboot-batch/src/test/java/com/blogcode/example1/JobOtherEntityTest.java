@@ -1,7 +1,7 @@
-package com.blogcode;
+package com.blogcode.example1;
 
-import com.blogcode.batch.JobOtherEntityConfiguration;
-import com.blogcode.domain.PersonCopyRepository;
+import com.blogcode.example1.batch.JobOtherEntityConfiguration;
+import com.blogcode.example1.domain.PersonCopyRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.BatchStatus;

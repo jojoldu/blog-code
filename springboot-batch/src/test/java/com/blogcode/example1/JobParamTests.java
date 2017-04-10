@@ -1,7 +1,7 @@
-package com.blogcode;
+package com.blogcode.example1;
 
-import com.blogcode.batch.JobParamConfiguration;
-import com.blogcode.domain.PersonRepository;
+import com.blogcode.example1.batch.JobParamConfiguration;
+import com.blogcode.example1.domain.PersonRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.*;

@@ -1,7 +1,7 @@
-package com.blogcode.batch;
+package com.blogcode.example1.batch;
 
-import com.blogcode.domain.Person;
-import com.blogcode.domain.PersonCopy;
+import com.blogcode.example1.domain.Person;
+import com.blogcode.example1.domain.PersonCopy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;

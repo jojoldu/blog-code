@@ -1,4 +1,4 @@
-package com.blogcode.domain;
+package com.blogcode.example1.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
