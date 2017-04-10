@@ -27,7 +27,8 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 - [Spring Validation 공통모듈 만들기](https://github.com/jojoldu/blog-code/tree/master/spring-validation)
 - [Spring Boot Batch](https://github.com/jojoldu/blog-code/tree/master/springboot-batch)
   - [@StepScope 사용시 주의사항](https://github.com/jojoldu/blog-code/tree/master/springboot-batch/stepscope%EA%B2%BD%EA%B3%A0)
-
+  - [ItemWriter에 List전달하기](https://github.com/jojoldu/blog-code/tree/master/springboot-batch/writer_list%EC%A0%84%EB%8B%AC)
+  
 ### Gradle
 
 -	[Gradle 적응하기](https://github.com/jojoldu/blog-code/tree/master/gradle-task)
