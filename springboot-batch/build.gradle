@@ -29,6 +29,8 @@ task wrapper(type: Wrapper) {
 	gradleVersion = '3.3'
 }
 
+ext['hibernate.version'] = '5.2.8.Final'
+
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
