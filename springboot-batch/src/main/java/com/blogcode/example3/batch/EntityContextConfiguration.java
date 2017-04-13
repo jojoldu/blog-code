@@ -47,7 +47,8 @@ public class EntityContextConfiguration {
     private Step step() {
         return stepBuilderFactory.get(STEP_NAME)
                 .<PurchaseOrder, History>chunk(100)
-                .reader(reader())
+//                .reader(reader())
+                .reader(fixReader())
                 .processor(processor())
                 .writer(writer())
                 .build();
@@ -58,6 +59,14 @@ public class EntityContextConfiguration {
         reader.setQueryString("select o from PurchaseOrder o");
         reader.setEntityManagerFactory(entityManagerFactory);
 
+        return reader;
+    }
+
+    private JpaPagingItemReader<? extends PurchaseOrder> fixReader() {
+        JpaPagingItemReader<PurchaseOrder> reader = new JpaPagingItemReader<>();
+        reader.setQueryString("select o from PurchaseOrder o");
+        reader.setEntityManagerFactory(entityManagerFactory);
+        reader.setPageSize(100);
         return reader;
     }
 
