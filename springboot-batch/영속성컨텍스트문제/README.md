@@ -54,7 +54,12 @@ org.hibernate.LazyInitializationException: failed to lazily initialize a collect
 
 ### 해결
 
-발생한 에러로그를 자세히 보면 이상한 점이 발견됩니다.  
+에러가 발생한 코드에서 디버깅 모드로 데이터를 확인하니,
+
+![레이지에러](./images/레이지에러.png)
+
+이렇게 ```productList```가 이미 레이지 이셉션이 발생한 상태입니다.  
+이상하다 싶어서 발생한 에러로그를 자세히 보면 특이한 점이 발견됩니다.  
 
 ![조회쿼리](./images/조회쿼리.png)
 
@@ -65,4 +70,35 @@ org.hibernate.LazyInitializationException: failed to lazily initialize a collect
 
 ![문제 코드](./images/문제코드.png)
 
-여길 보시면 ```chunk```는 199
+여길 보시면 ```chunk```는 100으로 지정되어 있습니다.  
+헌데, ```JpaPagingItemReader```의 상위 클래스인 ```AbstractPagingItemReader``` 코드를 보시면,  
+
+![reader 계층구조](./images/reader계층구조.png)
+
+(reader의 클래스 계층)
+
+![기본 페이지 수](./images/추상reader.png)
+
+**기본 페이지 수가 10** 으로 잡혀있습니다.  
+즉, 기본 페이지로 지정된 수 만큼 ```select``` 를 해오지만, **chunck가 100으로 잡혀있기에 10개씩 총 10번을 조회**한것입니다.  
+(chunk 단위로 ```reader```에서 ```processor```로 전달되기에 100개를 채워야만 ```processor```로 데이터가 전달됩니다.)  
+
+10번을 조회해서 문제가 아니라, ```JpaPagingItemReader```는 페이지를 읽을때, 이전 **트랜잭션 초기화**를 시키기 때문입니다.
+
+![reader](./images/reader.png)
+
+(```JpaPagingItemReader```의 메소드)  
+  
+그러다보니 마지막 조회를 제외한 9번의 조회결과들의 트랜잭션 세션이 전부 종료되어 오류가 발생한 것입니다.  
+  
+이를 해결하는 방법은 간단합니다.  
+**chunk와 pageSize 갯수를 똑같이 맞춰주는 것**입니다.  
+
+![수정된 배치설정](./images/수정된reader.png)
+
+이렇게 수정 후 테스트를 실행해보면!
+
+![테스트 통과](./images/테스트통과.png)
+
+1번의 조회와 테스트 통과를 확인할 수 있습니다.
+

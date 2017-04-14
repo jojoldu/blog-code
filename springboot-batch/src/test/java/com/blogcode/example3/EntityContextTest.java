@@ -54,7 +54,6 @@ public class EntityContextTest {
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 
         //then
-        assertThat(purchaseOrderRepository.findAll().size(), is(100));
         assertThat(jobExecution.getStatus(), is(org.springframework.batch.core.BatchStatus.COMPLETED));
     }
 }
