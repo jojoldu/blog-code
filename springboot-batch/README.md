@@ -6,4 +6,7 @@
 ## 목록
 
 * [@StepScope 사용시 주의사항](https://github.com/jojoldu/blog-code/tree/master/springboot-batch/stepscope%EA%B2%BD%EA%B3%A0)
+
 * [ItemWriter에 List전달하기](https://github.com/jojoldu/blog-code/tree/master/springboot-batch/writer_list%EC%A0%84%EB%8B%AC)
+
+* [영속성 컨텍스트 문제(processor에서 lazyException 발생할때)](https://github.com/jojoldu/blog-code/tree/master/springboot-batch/%EC%98%81%EC%86%8D%EC%84%B1%EC%BB%A8%ED%85%8D%EC%8A%A4%ED%8A%B8%EB%AC%B8%EC%A0%9C)
