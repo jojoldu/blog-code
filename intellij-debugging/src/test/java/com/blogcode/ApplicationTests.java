@@ -33,14 +33,20 @@ public class ApplicationTests {
 	public void 주문하기() {
 		//given
 		Long buyerId = 10L;
-		Long productId = productRepository.save(Product.builder()
+		Long productId1 = productRepository.save(Product.builder()
 				.amount(10000L)
 				.name("손수건")
 				.build())
 				.getId();
 
+		Long productId2 = productRepository.save(Product.builder()
+				.amount(20000L)
+				.name("목도리")
+				.build())
+				.getId();
+
 		//then
-		Long ownerId = purchaseOrderService.order(buyerId, Arrays.asList(productId));
+		Long ownerId = purchaseOrderService.order(buyerId, Arrays.asList(productId1, productId2));
 
 		assertThat(ownerId, is(1L));
 	}
