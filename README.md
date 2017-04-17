@@ -58,6 +58,8 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
 - [IntelliJ에서 프로젝트별 자동생성 주석 포멧 다르게하기](https://github.com/jojoldu/blog-code/tree/master/intellij-tip/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%8B%A8%EC%9C%84_%EC%A3%BC%EC%84%9D%ED%8F%AC%EB%A9%A7)
 
+- [IntelliJ에서 디버깅하기](https://github.com/jojoldu/blog-code/tree/master/intellij-debugging)
+
 ### 번역
 
 - [서블릿동작방식](https://github.com/jojoldu/blog-code/blob/master/%EB%B2%88%EC%97%AD/%EC%84%9C%EB%B8%94%EB%A6%BF%EB%8F%99%EC%9E%91%EB%B0%A9%EC%8B%9D.md)
