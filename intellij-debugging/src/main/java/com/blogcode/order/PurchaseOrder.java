@@ -16,7 +16,6 @@ import java.util.List;
  */
 
 @Entity
-@Getter
 @NoArgsConstructor
 public class PurchaseOrder {
 
@@ -69,5 +68,21 @@ public class PurchaseOrder {
         public String getViewName() {
             return viewName;
         }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getBuyerId() {
+        return buyerId;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 }

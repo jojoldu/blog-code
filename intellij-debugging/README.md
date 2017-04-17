@@ -1,6 +1,6 @@
 # Intellij-debugging
 
-안녕하세요? 이번 시간엔 intellij-debugging 예제를 진행해보려고 합니다.  
+안녕하세요? 이번 시간엔 intellij의 debugging 을 간단하게 진행해보려고 합니다.  
 모든 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/intellij-debugging)에 있기 때문에 함께 보시면 더 이해하기 쉬우실 것 같습니다.  
 (공부한 내용을 정리하는 [Github](https://github.com/jojoldu/blog-code)와 세미나+책 후기를 정리하는 [Github](https://github.com/jojoldu/review), 이 모든 내용을 담고 있는 [블로그](http://jojoldu.tistory.com/)가 있습니다. )<br/>
   
@@ -35,7 +35,7 @@
 
 ![단축키](./images/플러그인.png)
 
-설치하면 내가 클릭한 기능의 단축키를 바로 보여준다.  
+설치하면 **내가 클릭한 기능의 단축키**를 바로 보여준다.  
 
 ![keypromoter](./images/keypromoter.png)
 
@@ -55,7 +55,7 @@
 
 ![Break Point](./images/브레이크포인트.png)
 
-어플리케이션이 ```debug``` 모드일때, 해당 Break Point가 실행되는 시점에서 멈추게 된다.  
+어플리케이션이 ```debug``` 모드일때, 해당 Break Point가 지정된 라인이 실행되는 시점에서 멈추게 된다.  
 이때 여러 값을 확인하고, 명령어를 실행하면서 디버깅을 시작하면 된다.   
 추가로 여기서 **Break Point를 우클릭** 하면 **조건으로 break**를 걸 수가 있다.  
 (굉장히 중요함)
@@ -75,8 +75,6 @@
 
 (break가 된 상태에서만 사용 가능하다)  
 
-가장 좌측에 있는 resume 버튼은 이클립스의 resume(```F8```)과 동일한 기능이다.
-
 ### resume
 
 * 단축키 : ```option+command+r```
@@ -84,8 +82,14 @@
 
 ![step over1](./images/stepover1.png)
 
+첫번째 break point에서
+
 ![resume2](./images/resume2.png)
 
+다음 break point로 이동한다.  
+  
+이클립스의 resume(```F8```)과 동일한 기능이다.  
+  
 step 버튼들은 왼쪽에서 오른쪽 순으로 하겠다.
 
 ### step over
@@ -104,7 +108,7 @@ break 걸린 라인을 전부 실행 후, 다음라인으로 이동한다.
 ### step into
 
 * 단축키 : ```F7```
-* 기능 : 현재 break 된 라인에서 **다음 실행되는 라인**으로 이동
+* 기능 : 현재 break 된 라인에서 **실행하고 있는 라인**으로 이동한다.
 
 ![step into1](./images/stepinto1.png)
 
@@ -118,12 +122,63 @@ break 걸린 라인에서 다음 실행될 코드는 ```PurchaseOrder.createOrde
 ### Force step into
 
 * 단축키 : ```option+shift+F7```
-* 기능 : 다음 실행되는 라인으로 이동하나, ```step into```와 달리 직접 생성한 클래스 외에 JDK 라이브러리, lombok 라이브러리 등의 내부까지 이동한다.
+* 기능 : 다음 실행되는 라인으로 이동하나, ```step into```와 달리 ```Stepping```을 무시하고 진행한다.  
+  
+예를 들어, ```command+shift+a``` -> ```stepping```으로 설정창을 오픈후,
+
+![step 설정](./images/step설정.png)
+
+아래처럼 ```skip simple getters```를 **체크** 하자.
+
+![step 설정2](./images/step설정2.png)
+
+이렇게 한 뒤, ```getter``` 메소드를 호출하는 곳에 break point를 지정한 후,
+
+![force step into](./images/force1.png)
+
+번갈아가며 step into와 force step into를 입력해보자.  
+  
+**step into**(```F7```)
+
+![force2](./images/force2.png)
+
+이렇게 메소드 invoke 영역으로 바로 이동한다.  
+  
+반면에  
+  
+**force step into**(```option+shift+F7```)  
+
+![force3](./images/force3.png)
+
+설정과 무관하게 ```getter``` 메소드까지 이동한다.  
+굳이 확인이 불필요한 ```getter```, ```생성자``` 등에 skip 옵션을 설정한 뒤, **skip이 필요할때는 step into**로, **전부 확인이 필요하다면 force step into**로 이동하면서 디버깅 하면 된다.
 
 ### Step out
 
 * 단축키 : ```shift+F8```
-* 기능 : 
+* 기능 : 현재 break 된 라인에서 **호출한 곳으로 이동**한다.
+
+![step over1](./images/stepover1.png)
+
+step into 로 ```createOrder``` 메소드로 이동 후, 
+
+![step into2](./images/stepinto2.png)
+
+step out의 단축키인 ```shift+F8```을 입력하면,
+
+![step out3](./images/stepout3.png)
+
+메소드를 빠져나오게 된다.  
+  
+보통은 ```step into```로 **파고들어간 라인을 빠져나오려할때** 많이 사용한다.
+
+### Drop Frame
+
+* 단축키 : 없음
+* 기능 : **call stack을 거슬러 올라간다**.
+
+이것만 보면 step out과 별차이 없어 보이는데, 큰 차이점은 step out은 해당 라인이 **실행된 후 돌아**가지만, drop frame은 해당 라인이 **실행되기 전에** 돌아간다.
+
 
 ### Run to Cursor
 
@@ -146,8 +201,60 @@ break 걸린 라인에서 다음 실행될 코드는 ```PurchaseOrder.createOrde
   
 보통 break point로 지정하지 않고, **단발성으로 break를 걸고 싶을때** 사용한다. 
 
-## Watch와 콜스택
- 
-기본적으로 IntelliJ는 break된 상태에서 **break 라인에서 사용할 수 있는 모든 코드를 사용**할 수 있다.  
+## Watch와 Call Stack
+
+break point와 디버그 버튼들로 break line을 사용하는 법과 이동하는 법을 배웠다.  
+이제는 break된 라인에서 어떤 일이 가능한지 확인하겠다.
 
 ### Watch
+
+intelliJ는 break된 상태에서 **해당 라인에서 사용할 수 있는 모든 코드를 사용**할 수 있다.  
+사용법은 간단하다.  
+먼저 디버그 모드에서 아래처럼 watch를 활성화 시키자.
+
+![watch1](./images/watch1.png)
+
+![watch2](./images/watch2.png)
+
+위 클릭을 따라가면 아래와 같은 형태가 된다.
+
+![watch3](./images/watch3.png)
+
+우측 하단에 있는 ```watches```에서 우리는 마음껏 디버깅 코드를 작성해보면 된다.  
+예를 들어, ```purchaseOrderRepository.save``` 기능이 잘 수행되었는지 확인하기 위해, 아래와 같이 확인해볼 수 있다.
+
+![watch4](./images/watch4.png)
+
+**해당 라인에서 가능한 모든 값, 메소드를 사용**할 수 있다.  
+단순한 변수값부터 시작해서 ```Autowired```된 코드까지 전부 사용가능하다.  
+
+### Call Stack
+
+디버깅 화면의 좌측 하단에는 해당 **break line에 오기까지의 call stack 이 출력**된다.  
+이를 통해 이전에 어떤 값들이 넘어 온것인지, 이전에 다른 연산을 했으면 어떻게 값이 바뀔지를 모두 확인할 수 있다.  
+  
+예를 들어, ```order``` 메소드를 호출한 ```test``` 코드의 값을 확인하고 몇가지 연산식을 사용한다고 하자.  
+  
+좌측 하단의 Call Stack에서 찾고자 하는 코드라인을 클릭하면 해당 라인으로 이동하게 된다.
+
+![call1](./images/call1.png)
+
+이동후에는, break line에서 했던것 처럼 ```Variables```와 ```Watches```를 이용해 확인하고자 하는 값과 코드를 확인하면 된다.
+  
+특히 Spring과 같은 **프레임워크에서 어떻게 코드가 실행되고 값이 변경되는지 확인**할때 굉장히 유용하게 사용된다.  
+
+
+## 후기
+
+이미 많은 분들이 아실 수 있겠지만, 적지 않은 분들이 **break point와 resume 버튼만 사용**하는 것을 보게 되었습니다.  
+조금이나마 IntelliJ로 디버깅하시는데 도움이 되셨으면 하는 바램입니다.  
+
+IntelliJ는 정말 좋은 툴입니다.  
+이외에도 많은 기능들이 담겨 있기에 공유할만한 내용들이 발견될때마다 꼭 정리해서 남기도록 하겠습니다.  
+  
+끝까지 읽어주셔서 감사합니다^^ 
+
+
+
+
+
