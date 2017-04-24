@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>프론트 유효성체크의 문제점</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+</head>
+<body>
+<div class="row">
+    <div class="col-md-6">
+        <h1> 회원가입 </h1>
+        <form>
+            <div class="form-group">
+                <label for="name">이름</label>
+                <input type="text" class="form-control" id="name" placeholder="이름을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber"> 휴대폰번호 </label>
+                <input type="text" class="form-control" id="phoneNumber" placeholder="휴대폰 번호를 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <input type="text" class="form-control" id="email" placeholder="이메일을 입력하세요">
+            </div>
+            <button type="button" class="btn btn-primary" id="btnSave">등록</button>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <h1> 회원 리스트 </h1>
+        <table class="table table-horizontal table-bordered">
+            <thead class="thead-strong">
+            <tr>
+                <th>ID</th>
+                <th>이름</th>
+                <th>휴대폰번호</th>
+                <th>Email</th>
+            </tr>
+            </thead>
+            <tbody id="tbody">
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.min.js"></script>
+
+<script id="table-template" type="text/x-handlebars-template">
+    {{#each members}}
+    <tr>
+        <td>{{id}}</td>
+        <td>{{name}}</td>
+        <td>{{phoneNumber}}</td>
+        <td>{{email}}</td>
+    </tr>
+    {{/each}}
+</script>
+
+<script src="/js/index.js"></script>
+</body>
+</html>
