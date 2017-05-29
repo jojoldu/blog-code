@@ -19,7 +19,10 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
 ### Spring
 
--	[Spring Boot의 깨알같은 팁](https://github.com/jojoldu/blog-code/tree/master/compareboot)
+- [SpringBoot 팁 모음](https://github.com/jojoldu/blog-code/tree/master/springboot-tips)
+  - [SpringBoot에서 JPA 쿼리 파라미터 확인하기](https://github.com/jojoldu/blog-code/tree/master/springboot-tips/show-jpa-parameters)
+
+-	[Spring Boot 간단 정리](https://github.com/jojoldu/blog-code/tree/master/compareboot)
 -	[Spring Boot 1.4.0으로 진행하는 TDD](https://github.com/jojoldu/blog-code/tree/master/springboot-test)
 -	[Swagger를 이용한 API문서 자동화](https://github.com/jojoldu/blog-code/tree/master/swagger)
 - [Ehcache 기본](https://github.com/jojoldu/blog-code/tree/master/spring-cache)
