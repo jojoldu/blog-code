@@ -11,6 +11,18 @@ public class PayAmount {
     private long supplyAmount;
     private long vat;
 
+    public long getOriginAmount() {
+        return originAmount;
+    }
+
+    public long getSupplyAmount() {
+        return supplyAmount;
+    }
+
+    public long getVat() {
+        return vat;
+    }
+
     public static final class Builder {
         private long originAmount;
         private long supplyAmount;
