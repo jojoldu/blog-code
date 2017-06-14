@@ -115,7 +115,8 @@ bintray 업로드 외 설정은 생략하였으니, 본인의 취향에 맞게 �
 
     <groupId>com.github.jojoldu</groupId>
     <artifactId>enum-mapper</artifactId>
-    <version>0.0.1</version>
+    <version>0.1.8</version>
+    <packaging>jar</packaging>
 
     <name>Enum Mapper</name>
     <description>A Java enum mapper library for UI Layer(Select box, Radio Box, etc..) </description>
@@ -123,11 +124,18 @@ bintray 업로드 외 설정은 생략하였으니, 본인의 취향에 맞게 �
 
     <licenses>
         <license>
-            <name>apache-2.0</name>
+            <name>The Apache Software License, Version 2.0</name>
             <url>https://opensource.org/licenses/Apache-2.0</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <developers>
+        <developer>
+            <name>jojoldu</name>
+            <email>jojoldu@gmail.com</email>
+        </developer>
+    </developers>
 
     <scm>
         <url>https://github.com/jojoldu/enum-mapper</url>
@@ -148,41 +156,65 @@ bintray 업로드 외 설정은 생략하였으니, 본인의 취향에 맞게 �
     </properties>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.3.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>2.1.2</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.9.1</version>
-                    <executions>
-                        <execution>
-                            <id>attach-javadocs</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- GPG sign -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencies>
@@ -287,7 +319,7 @@ bintray의 패키지 페이지로 가보시면!
 
 성공적으로 등록된 것을 확인할 수 있습니다.  
 여기까지는 maven 라이브러리 관리 대행인 **bintray에 업로드** 하는 과정이였습니다.  
-이걸 직접 [maven repository](https://mvnrepository.com)에서 검색하거나 패키지 다운로드를 진행하려면 jcenter 혹은 maven central에 등록이 되어야 합니다.  
+이걸 maven이나 gradle에서 받으려면 jcenter 혹은 maven central에 등록이 되어야 합니다.  
 직접 업로드 할 필요 없이 bintray의 링크를 이용하여 아주 쉽게 진행하겠습니다.
 
 ### 6. jcenter link
@@ -302,12 +334,39 @@ bintray의 패키지 페이지로 가보시면!
 
 관리자 승인이 필요한데, 보통 시차때문에 밤 12시쯤 승인이 되니 느긋한 마음으로 기다립니다.  
 (JetBrains도 그렇고 밤 12시에 승인되는 곳이 많아 밤잠 설칠일이 많네요ㅠ)  
+  
+조건을 다 맞추셨다면 다음과 같은 jcenter link 승인 메일이 올것입니다.
 
+![승인메일](./images/승인메일.png)
+
+그리고 bintray로 가보시면 link된 것을 확인할 수 있습니다.
+
+![jcenter성공](./images/jcenter성공.png)
+
+jcenter에 jar가 업로드 되었습니다!  
+여기까지 진행할 경우에 빌드 파일에서 의존성을 받아 사용할수는 있습니다.
+
+![gradle](./images/gradle.png)
+
+하지만 [mvnrepository.com](https://mvnrepository.com)에 검색이 되도록 하고, repositories가 mavencentral일 경우에도 받을 수 있도록 추가 작업을 진행하겠습니다.
 
 ### 7. maven central link
 
-maven central과 link 하는 것은 패키지가 link 되는 것이 아니라, **jcenter와 maven central이 링크**되는 것입니다.  
-그래서 패키지가 jcenter와 링크되기 전까지는 maven central과 링크가 되지 않으니 유의해주세요.  
+마지막으로 maven central과 sync 작업(link)을 진행하겠습니다.  
+  
+(link 하는 것은 패키지가 link 되는 것이 아니라, **jcenter와 maven central이 링크**되는 것입니다.  
+그래서 패키지가 jcenter와 링크되기 전까지는 maven central과 링크가 되지 않으니 유의해주세요.)  
+  
+먼저 [sonatype OSS](https://issues.sonatype.org/secure/Dashboard.jspa)에 접속하여 회원 가입을 합니다.
+여기서 가입한 정보를 입력합니다.
+
+![maven central](./images/mavencentral.png)
+
+(sonatype OSS의 ID와 패스워드를 입력합니다.)  
+
+![maven central 성공](./images/mavencentral_성공.png)
+
+이렇게 우측 **Sync Status**가 Successfully 로 업데이트되면 sync가 성공된 것입니다.  
 
 
 ## 참고
