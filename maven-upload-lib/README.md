@@ -247,49 +247,49 @@ settings.xml에 아래 내용을 추가하시면 됩니다.
 (아래는 전체 settings.xml 내용입니다. 이미 있으신 분들은 ```<servers>```, ```<profiles>```, ```<activeProfiles>``` 만 붙여넣으시면 됩니다.)
 
 ```
- 1 <?xml version='1.0' encoding='UTF-8'?>
-  2 <settings xsi:schemaLocation='http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd'
-  3           xmlns='http://maven.apache.org/SETTINGS/1.0.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
-  4     <servers>
-  5         <server>
-  6             <id>enum-mapper</id>
-  7             <username>{bintray 계정명}</username>
-  8             <password>{bintray API Key}</password>
-  9         </server>
- 10     </servers>
- 11     <profiles>
- 12         <profile>
- 13             <repositories>
- 14                 <repository>
- 15                     <snapshots>
- 16                         <enabled>false</enabled>
- 17                     </snapshots>
- 18                     <id>central</id>
- 19                     <name>bintray</name>
- 20                     <url>http://jcenter.bintray.com</url>
- 21                 </repository>
- 22             </repositories>
- 23             <pluginRepositories>
- 24                 <pluginRepository>
- 25                     <snapshots>
- 26                         <enabled>false</enabled>
- 27                     </snapshots>
- 28                     <id>central</id>
- 29                     <name>bintray-plugins</name>
- 30                     <url>http://jcenter.bintray.com</url>
- 31                 </pluginRepository>
- 32             </pluginRepositories>
- 33             <id>bintray</id>
- 34         </profile>
- 35     </profiles>
- 36     <activeProfiles>
- 37         <activeProfile>bintray</activeProfile>
- 38     </activeProfiles>
- 39 </settings>
+ <?xml version='1.0' encoding='UTF-8'?>
+  <settings xsi:schemaLocation='http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd'
+             xmlns='http://maven.apache.org/SETTINGS/1.0.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+       <servers>
+           <server>
+               <id>{라이브러리명}</id>
+               <username>{bintray 계정명}</username>
+               <password>{bintray API Key}</password>
+           </server>
+      </servers>
+      <profiles>
+          <profile>
+              <repositories>
+                  <repository>
+                      <snapshots>
+                          <enabled>false</enabled>
+                      </snapshots>
+                      <id>central</id>
+                      <name>bintray</name>
+                      <url>http://jcenter.bintray.com</url>
+                  </repository>
+              </repositories>
+              <pluginRepositories>
+                  <pluginRepository>
+                      <snapshots>
+                          <enabled>false</enabled>
+                      </snapshots>
+                      <id>central</id>
+                      <name>bintray-plugins</name>
+                      <url>http://jcenter.bintray.com</url>
+                  </pluginRepository>
+              </pluginRepositories>
+              <id>bintray</id>
+          </profile>
+      </profiles>
+      <activeProfiles>
+          <activeProfile>bintray</activeProfile>
+      </activeProfiles>
+  </settings>
 ```
 
 이 코드에서 변경하실 내용은 ```<servers>``` 입니다.  
-id는 pom.xml에서 등록한 id를 사용하셔야 합니다.
+**id는 pom.xml에서 등록한 id**를 사용하셔야 합니다.
 
 ![id](./images/id.png)
 
@@ -319,7 +319,7 @@ bintray의 패키지 페이지로 가보시면!
 
 성공적으로 등록된 것을 확인할 수 있습니다.  
 여기까지는 maven 라이브러리 관리 대행인 **bintray에 업로드** 하는 과정이였습니다.  
-이걸 maven이나 gradle에서 받으려면 jcenter 혹은 maven central에 등록이 되어야 합니다.  
+이걸 maven이나 gradle에서 받으려면 **jcenter 혹은 maven central에 등록**이 되어야 합니다.  
 직접 업로드 할 필요 없이 bintray의 링크를 이용하여 아주 쉽게 진행하겠습니다.
 
 ### 6. jcenter link
@@ -348,32 +348,56 @@ jcenter에 jar가 업로드 되었습니다!
 
 ![gradle](./images/gradle.png)
 
-하지만 [mvnrepository.com](https://mvnrepository.com)에 검색이 되도록 하고, repositories가 mavencentral일 경우에도 받을 수 있도록 추가 작업을 진행하겠습니다.
+하지만 [search.maven.org](https://search.maven.org)에 검색이 되도록 하고, repositories가 mavencentral일 경우에도 받을 수 있도록 추가 작업을 진행하겠습니다.
 
 ### 7. maven central link
+  
+참고로 link 하는 것은 패키지가 link 되는 것이 아니라, **jcenter와 maven central이 링크**되는 것입니다.  
+그래서 패키지가 jcenter와 링크되기 전까지는 maven central과 링크가 되지 않으니 유의해주세요.  
+  
+먼저 [issues.sonatype.org/projects/OSSRH ](https://issues.sonatype.org/projects/OSSRH)에 가입하고 이슈를 **CREATE**합니다.  
 
-마지막으로 maven central과 sync 작업(link)을 진행하겠습니다.  
-  
-(link 하는 것은 패키지가 link 되는 것이 아니라, **jcenter와 maven central이 링크**되는 것입니다.  
-그래서 패키지가 jcenter와 링크되기 전까지는 maven central과 링크가 되지 않으니 유의해주세요.)  
-  
-먼저 [sonatype OSS](https://issues.sonatype.org/secure/Dashboard.jspa)에 접속하여 회원 가입을 합니다.
-여기서 가입한 정보를 입력합니다.
+제가 등록한 [이슈](https://issues.sonatype.org/browse/OSSRH-32202)를 참고하셔서 **프로젝트의 이름과 groupId, URL 등의 정보**를 입력하면 이슈가 생성되고 **며칠이 지나서** 프로젝트 운영자가 해당 이슈의 상태를 Resolved 로 바꾸고 댓글을 달아주면 배포 사전 준비가 끝납니다.  
+
+![oss](./images/oss.png)
+
+자 그럼 issues.sonatype.org에서 가입한 정보를 bintray에 등록하겠습니다.  
+먼저 Edit Profile에 들어가서 Accounts 정보에 OSSRH의 id를 등록합니다.
+
+![account](./images/account.png)
+
+그리고 패키지 페이지로 돌아가 **Maven Central** 탭으로 이동합니다.  
+여기서 token password는 OSSRH의 패스워드를 입력하시면 됩니다.  
 
 ![maven central](./images/mavencentral.png)
 
-(sonatype OSS의 ID와 패스워드를 입력합니다.)  
+입력후 **SYNC** 버튼을 클릭하시면, 
 
 ![maven central 성공](./images/mavencentral_성공.png)
 
 이렇게 우측 **Sync Status**가 Successfully 로 업데이트되면 sync가 성공된 것입니다.  
+  
+그리고 [repo2.maven.org/maven2/](http://repo2.maven.org/maven2/)에 접속하셔서 본인의 프로젝트가 성공적으로 등록되어있는지 확인합니다.  
 
+![repo](./images/repo.png)
+
+마지막으로 [search.maven.org](https://search.maven.org)에 본인의 라이브러리가 검색 되는지 확인합니다.  
+
+![search maven](./images/search_maven.png)
+
+(mvnrepository.com은 공식 maven 검색 사이트가 아닙니다.    maven central의 공식사이트는 search.maven.org 때문에 사용하는 것을 권장드립니다.)  
+  
+어떠셨나요?  
+최대한 쉽게 풀어쓰려고 했는데 어떠실지 모르겠습니다.  
+혹시나 제가 정리하는 과정에서 누락된 내용이 있을 수 있으니, 틀린 내용이 있으시면 가감없는 댓글 부탁드리겠습니다.  
+  
+감사합니다!  
 
 ## 참고
 
 * [lesstif님의 위키](https://www.lesstif.com/pages/viewpage.action?pageId=30277671#id-메이븐중앙저장소에아티팩트업로딩-maven-uploadingartifacttocentralrepository-deploy.1)
 
-* [stunstun님의 블로그](http://stunstun.tistory.com/230)
+* [inthecheesefactory.com](https://inthecheesefactory.com/blog/how-to-upload-library-to-jcenter-maven-central-as-dependency/en)
 
 * [bintray blog](https://blog.bintray.com/2015/09/17/publishing-your-maven-project-to-bintray/)
 
