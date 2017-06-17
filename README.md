@@ -37,6 +37,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
 -	[Gradle 적응하기](https://github.com/jojoldu/blog-code/tree/master/gradle-task)
 - [Gradle Multi Module](https://github.com/jojoldu/blog-code/tree/master/gradle-multi-modules)
+- [나만의 라이브러리 JCenter/MavenCentral에 등록하기](https://github.com/jojoldu/blog-code/tree/master/maven-upload-lib)
 
 ### Javascript
 
