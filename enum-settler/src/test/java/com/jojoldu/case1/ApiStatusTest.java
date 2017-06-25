@@ -23,14 +23,12 @@ public class ApiStatusTest {
         ApiStatus aResult = requestApi();
 
         //then
-        String bResult = aResult.getbValue();
-        boolean cResult = aResult.iscValue();
+        String bResult = aResult.getBapiValue();
+        boolean cResult = aResult.isCapiValue();
 
         assertThat(aResult, is(ApiStatus.Y));
         assertThat(bResult, is("1"));
         assertThat(cResult, is(true));
-
-
     }
 
 

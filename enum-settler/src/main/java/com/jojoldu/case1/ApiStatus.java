@@ -7,22 +7,23 @@ package com.jojoldu.case1;
  */
 
 public enum ApiStatus {
+
     Y("1", true),
     N("0", false);
 
-    private String bValue;
-    private boolean cValue;
+    private String bapiValue;
+    private boolean capiValue;
 
-    ApiStatus(String bValue, boolean cValue) {
-        this.bValue = bValue;
-        this.cValue = cValue;
+    ApiStatus(String bapiValue, boolean capiValue) {
+        this.bapiValue = bapiValue;
+        this.capiValue = capiValue;
     }
 
-    public String getbValue() {
-        return bValue;
+    public String getBapiValue() {
+        return bapiValue;
     }
 
-    public boolean iscValue() {
-        return cValue;
+    public boolean isCapiValue() {
+        return capiValue;
     }
 }
