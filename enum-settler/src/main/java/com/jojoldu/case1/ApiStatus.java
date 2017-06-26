@@ -26,4 +26,5 @@ public enum ApiStatus {
     public boolean isCapiValue() {
         return capiValue;
     }
+
 }
