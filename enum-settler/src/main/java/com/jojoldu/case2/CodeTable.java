@@ -1,5 +1,9 @@
 package com.jojoldu.case2;
 
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 /**
  * Created by jojoldu@gmail.com on 2017. 6. 26.
  * Blog : http://jojoldu.tistory.com
@@ -15,7 +19,9 @@ public class CodeTable {
     private String code;
 
 
-    private Calculator calculator;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private CalculatorType calculatorType;
 
 
     public CodeTable() {}
@@ -24,15 +30,15 @@ public class CodeTable {
         this.code = code;
     }
 
-    public CodeTable(Calculator calculator) {
-        this.calculator = calculator;
+    public CodeTable(CalculatorType calculatorType) {
+        this.calculatorType = calculatorType;
     }
 
     public String getCode() {
         return code;
     }
 
-    public Calculator getCalculator() {
-        return calculator;
+    public CalculatorType getCalculatorType() {
+        return calculatorType;
     }
 }

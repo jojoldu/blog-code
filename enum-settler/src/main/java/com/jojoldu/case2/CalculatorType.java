@@ -8,7 +8,7 @@ import java.util.function.Function;
  * Github : https://github.com/jojoldu
  */
 
-public enum Calculator {
+public enum CalculatorType {
 
     CALC_A(value -> value),
     CALC_B(value -> value * 10),
@@ -17,7 +17,7 @@ public enum Calculator {
 
     private Function<Long, Long> expression;
 
-    Calculator(Function<Long, Long> expression) {
+    CalculatorType(Function<Long, Long> expression) {
         this.expression = expression;
     }
 
