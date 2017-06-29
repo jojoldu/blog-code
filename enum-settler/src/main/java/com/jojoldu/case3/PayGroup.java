@@ -41,7 +41,4 @@ public enum PayGroup {
         return title;
     }
 
-    public List<String> getPayList() {
-        return payList;
-    }
 }
