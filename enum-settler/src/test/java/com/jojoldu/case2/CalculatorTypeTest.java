@@ -47,6 +47,12 @@ public class CalculatorTypeTest {
     }
 
 
+    @Test
+    public void Java7이하_버전에서_사용하기 () throws Exception {
+        CalculatorTypeJava7 enum7 = CalculatorTypeJava7.CALC_A;
+
+        assertThat(enum7.calculate(10), is(10L));
+    }
 
 
 }
