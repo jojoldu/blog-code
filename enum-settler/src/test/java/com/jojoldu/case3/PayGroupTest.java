@@ -38,7 +38,7 @@ public class PayGroupTest {
         assertThat(payGroupAdvanced.getTitle(), is("배민페이"));
     }
 
-    
+
 
     private PayType selectPayType(){
         return PayType.BAEMIN_PAY;

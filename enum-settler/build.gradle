@@ -25,7 +25,9 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-web')
+	compile 'com.github.jojoldu:enum-mapper:0.1.8'
 	runtime('org.springframework.boot:spring-boot-devtools')
 	runtime('com.h2database:h2')
+
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
