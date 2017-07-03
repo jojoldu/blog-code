@@ -8,19 +8,20 @@ package com.jojoldu.case1;
 
 public class LegacyCase {
 
-    public String toBApiValue(String AApiValue) {
-        if("Y".equals(AApiValue)){
+    public String toTable1Value(String originValue) {
+        if("Y".equals(originValue)){
             return "1";
         } else {
             return "0";
         }
     }
 
-    public boolean toCApiValue(String AApiValue){
-        if("Y".equals(AApiValue)){
+    public boolean toTable2Value(String originValue){
+        if("Y".equals(originValue)){
             return true;
         } else {
             return false;
         }
     }
 }
+

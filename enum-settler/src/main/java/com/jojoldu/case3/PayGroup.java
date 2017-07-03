@@ -15,7 +15,7 @@ public enum PayGroup {
     CASH("현금", Arrays.asList("ACCOUNT_TRANSFER", "REMITTANCE", "ON_SITE_PAYMENT", "TOSS")),
     CARD("카드", Arrays.asList("PAYCO", "CARD", "KAKAO_PAY", "BAEMIN_PAY")),
     ETC("기타", Arrays.asList("POINT", "COUPON")),
-    EMPTY("없음", Collections.singletonList(""));
+    EMPTY("없음", Collections.EMPTY_LIST);
 
     private String title;
     private List<String> payList;

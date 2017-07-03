@@ -17,8 +17,7 @@ public enum PayType {
     KAKAO_PAY("카카오페이"),
     BAEMIN_PAY("배민페이"),
     POINT("포인트"),
-    COUPON("쿠폰"),
-    EMPTY("없음");
+    COUPON("쿠폰");
 
     private String title;
 
