@@ -43,4 +43,13 @@ public class PayGroupTest {
     private PayType selectPayType(){
         return PayType.BAEMIN_PAY;
     }
+
+
+    @Test
+    public void PayGroup으로_여러번_메소드_실행시켜야함_Legacy버전 () throws Exception {
+
+        /*
+            여러 비지니스 로직이 수행될 영역
+         */
+    }
 }
