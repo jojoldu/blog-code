@@ -21,4 +21,10 @@ public class Teacher {
     @Id
     @GeneratedValue
     private Long id;
+
+    private String name;
+
+    public Teacher(String name) {
+        this.name = name;
+    }
 }
