@@ -8,17 +8,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 7. 21.
@@ -51,6 +49,7 @@ public class AcademyServiceTest {
                     .build();
 
             academy.addSubject(Subject.builder().name("자바웹개발" + i).build());
+            academy.addSubject(Subject.builder().name("파이썬자동화" + i).build());
             academies.add(academy);
         }
 
@@ -66,4 +65,35 @@ public class AcademyServiceTest {
         assertThat(subjectNames.size(), is(10));
     }
 
+
+    @Test
+    public void Academy여러개를_joinFetch로_가져온다() throws Exception {
+        //given
+        List<Academy> academies = academyRepository.findAllJoinFetch();
+        List<String> subjectNames = academyService.findAllSubjectNamesByJoinFetch();
+
+        //then
+        assertThat(academies.size(), is(20)); // 20개가 조회!?
+        assertThat(subjectNames.size(), is(20)); // 20개가 조회!?
+    }
+
+    @Test
+    public void Academy여러개를_EntityGraph로_가져온다() throws Exception {
+        //given
+        List<Academy> academies = academyRepository.findAllEntityGraph();
+        List<String> subjectNames = academyService.findAllSubjectNamesByEntityGraph();
+
+        //then
+        assertThat(academies.size(), is(20));
+        assertThat(subjectNames.size(), is(20));
+    }
+
+    @Test
+    public void Academy여러개를_distinct해서_가져온다 () throws Exception {
+        //given
+        List<Academy> academies = academyRepository.findAllJoinFetchDistinct();
+
+        //then
+        assertThat(academies.size(), is(10));
+    }
 }
