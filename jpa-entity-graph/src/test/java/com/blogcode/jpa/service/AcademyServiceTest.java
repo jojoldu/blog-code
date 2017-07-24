@@ -1,8 +1,6 @@
 package com.blogcode.jpa.service;
 
-import com.blogcode.jpa.domain.Academy;
-import com.blogcode.jpa.domain.AcademyRepository;
-import com.blogcode.jpa.domain.Subject;
+import com.blogcode.jpa.domain.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -32,24 +31,29 @@ public class AcademyServiceTest {
     private AcademyRepository academyRepository;
 
     @Autowired
+    private TeacherRepository teacherRepository;
+
+    @Autowired
     private AcademyService academyService;
 
     @After
     public void cleanAll() {
         academyRepository.deleteAll();
+        teacherRepository.deleteAll();
     }
 
     @Before
     public void setup() {
         List<Academy> academies = new ArrayList<>();
+        Teacher teacher = teacherRepository.save(new Teacher("선생님"));
 
         for(int i=0;i<10;i++){
             Academy academy = Academy.builder()
                     .name("강남스쿨"+i)
                     .build();
 
-            academy.addSubject(Subject.builder().name("자바웹개발" + i).build());
-            academy.addSubject(Subject.builder().name("파이썬자동화" + i).build());
+            academy.addSubject(Subject.builder().name("자바웹개발" + i).teacher(teacher).build());
+            academy.addSubject(Subject.builder().name("파이썬자동화" + i).teacher(teacher).build()); // Subject를 추가
             academies.add(academy);
         }
 
@@ -64,7 +68,6 @@ public class AcademyServiceTest {
         //then
         assertThat(subjectNames.size(), is(10));
     }
-
 
     @Test
     public void Academy여러개를_joinFetch로_가져온다() throws Exception {
@@ -91,9 +94,39 @@ public class AcademyServiceTest {
     @Test
     public void Academy여러개를_distinct해서_가져온다 () throws Exception {
         //given
+        System.out.println("조회 시작");
         List<Academy> academies = academyRepository.findAllJoinFetchDistinct();
 
         //then
+        System.out.println("조회 끝");
         assertThat(academies.size(), is(10));
+    }
+
+    @Test
+    public void Academy_Subject_Teacher를_한번에_가져온다() throws Exception {
+        //given
+        System.out.println("조회 시작");
+        List<Teacher> teachers = academyRepository.findAllWithTeacher().stream()
+                .map(a -> a.getSubjects().get(0).getTeacher())
+                .collect(Collectors.toList());
+
+        //then
+        System.out.println("조회 끝");
+        assertThat(teachers.size(), is(10));
+    }
+
+    @Test
+    public void Academy_Subject_Teacher를_EntityGraph한번에_가져온다() throws Exception {
+        //given
+        System.out.println("조회 시작");
+        List<Teacher> teachers = academyRepository.findAllEntityGraphWithTeacher().stream()
+                .map(a -> a.getSubjects().get(0).getTeacher())
+                .collect(Collectors.toList());
+
+        //then
+        System.out.println("조회 끝");
+        assertThat(teachers.size(), is(10));
+        assertThat(teachers.get(0).getName(), is("선생님"));
+
     }
 }

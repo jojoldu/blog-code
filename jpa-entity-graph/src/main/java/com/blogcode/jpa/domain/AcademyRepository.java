@@ -23,7 +23,6 @@ public interface AcademyRepository extends JpaRepository<Academy, Long>{
     /**
      * 2. @EntityGraph
      */
-
     @EntityGraph(attributePaths = "subjects")
     @Query("select a from Academy a")
     List<Academy> findAllEntityGraph();
@@ -41,5 +40,20 @@ public interface AcademyRepository extends JpaRepository<Academy, Long>{
     @EntityGraph(attributePaths = "subjects")
     @Query("select DISTINCT a from Academy a")
     List<Academy> findAllEntityGraphDistinct();
+
+
+    /**
+     * 5. Academy+Subject+Teacher를 join fetch로 조회
+     */
+    @Query("select distinct a from Academy a join fetch a.subjects s join fetch s.teacher")
+    List<Academy> findAllWithTeacher();
+
+    /**
+     * 6. Academy+Subject+Teacher를 @EntityGraph 로 조회
+     */
+    @EntityGraph(attributePaths = {"subjects", "subjects.teacher"})
+    @Query("select DISTINCT a from Academy a")
+    List<Academy> findAllEntityGraphWithTeacher();
+
 
 }
