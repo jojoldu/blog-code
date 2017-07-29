@@ -51,7 +51,7 @@ public class PagingBatchJobConfigurationTest {
             customers.add(customerRepository.save(new Customer("고객"+i)));
         }
 
-        for(int i=0; i<10000000;i++){
+        for(int i=0; i<100000;i++){
             int customerIndex = i%100;
             Customer customer = customers.get(customerIndex);
             shopOrderRepository.save(new ShopOrder(LocalDate.now(), customer));

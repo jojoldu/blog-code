@@ -27,6 +27,7 @@ import javax.persistence.EntityManagerFactory;
 public class PagingBatchJobConfiguration {
     public static final String JOB_NAME = "pagingJob";
     private static final String STEP_NAME = "pagingStep";
+    private static final int CHUNK_SIZE = 1000;
 
     private EntityManagerFactory entityManagerFactory;
     private JobBuilderFactory jobBuilderFactory;
@@ -46,10 +47,9 @@ public class PagingBatchJobConfiguration {
     }
 
     private Step step() {
-        final int chunkSize = 10000;
 
         return stepBuilderFactory.get(STEP_NAME)
-                .<ShopOrder, OrderHistory>chunk(chunkSize)
+                .<ShopOrder, OrderHistory>chunk(CHUNK_SIZE)
                 .reader(reader())
                 .processor(processor())
                 .writer(writer())
@@ -60,10 +60,11 @@ public class PagingBatchJobConfiguration {
         JpaPagingItemReader<ShopOrder> reader = new JpaPagingItemReader<>();
         reader.setEntityManagerFactory(entityManagerFactory);
         reader.setQueryString("select o from ShopOrder o join fetch o.customer c where c.id=1");
-        reader.setPageSize(10000);
+        reader.setPageSize(CHUNK_SIZE);
 
         return reader;
     }
+
 
     private ItemProcessor<ShopOrder,OrderHistory> processor() {
         return item -> new OrderHistory(item.getId(), item.getCustomer().getName());

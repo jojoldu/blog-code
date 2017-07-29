@@ -5,8 +5,8 @@ spring:
   jpa:
     show-sql: true
 
-#logging:
-#  level:
-#    org.hibernate.type: trace
+logging:
+  level:
+    org.hibernate.type: trace
 
 spring.batch.job.names: ${job.name:NONE}
