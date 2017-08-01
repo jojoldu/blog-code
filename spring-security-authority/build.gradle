@@ -29,8 +29,12 @@ dependencies {
 	compile('org.springframework.security.oauth:spring-security-oauth2')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+
+	runtime('org.springframework.boot:spring-boot-devtools') // hot reload
 	runtime('com.h2database:h2')
 	compileOnly('org.projectlombok:lombok')
+
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.security:spring-security-test')
+	testCompile('io.rest-assured:rest-assured:3.0.3') // Rest API Test
 }
