@@ -8,9 +8,9 @@ spring:
   devtools:
     livereload:
       enabled: true # 정적파일들의 실시간 갱신
-security:
-  basic:
-    enabled: false # security 기본 인증 옵션 제거
+#security:
+#  basic:
+#    enabled: false # security 기본 인증 옵션 제거
 logging:
   level:
     org.hibernate.type: trace  # JPA로 생성되는 쿼리의 파라미터 값 확인
