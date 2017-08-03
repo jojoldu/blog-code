@@ -404,11 +404,12 @@ public class OAuthConfig {
 
     @Bean
     public Filter ssoFilter() {
-        OAuth2ClientAuthenticationProcessingFilter githubFilter = new OAuth2ClientAuthenticationProcessingFilter("/login");
-        OAuth2RestTemplate githubTemplate = new OAuth2RestTemplate(googleClient(), oauth2ClientContext);
-        githubFilter.setRestTemplate(githubTemplate);
-        githubFilter.setTokenServices(new UserInfoTokenServices(googleResource().getUserInfoUri(), googleClient().getClientId()));
-        return githubFilter;
+        OAuth2ClientAuthenticationProcessingFilter oauth2Filter = new OAuth2ClientAuthenticationProcessingFilter("/login");
+        OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(googleClient(), oauth2ClientContext);
+        oauth2Filter.setRestTemplate(oAuth2RestTemplate);
+        oauth2Filter.setTokenServices(new UserInfoTokenServices(googleResource().getUserInfoUri(), googleClient().getClientId()));
+
+        return oauth2Filter;
     }
 
     @Bean
@@ -495,5 +496,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 ![로그인1](./images/로그인1.png)
 
 로그인 화면이 등장하면 로그인을 진행하시면 되며, 저처럼 계정 선택 화면이 등장하면 계정을 선택하시면 됩니다.  
+최종적으로 리다이렉트 URL로 등록된 ```/oauth/authorize``` 페이지로 이동된 것을 확인할 수 있습니다.
 
+![리다이렉트페이지](./images/리다이렉트페이지.png)
+
+```/oauth/authorize``` 를 처리하는 Controller가 없기 때문에 404가 등장한 것을 확인할 수 있습니다.  
+이 문제를 해결하는 방법은 2가지가 있습니다.  
+1) ```/oauth/authorize``` Controller를 생성해서 처리
+2) OAuth Success Handler를 생성해서 처리
 

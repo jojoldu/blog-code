@@ -1,6 +1,5 @@
 package com.blogcode.security.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
@@ -31,18 +30,21 @@ import javax.servlet.Filter;
 public class OAuthConfig {
 
     private final OAuth2ClientContext oauth2ClientContext;
+    private final GoogleAuthenticationSuccessHandler authenticationSuccessHandler;
 
-    public OAuthConfig(OAuth2ClientContext oauth2ClientContext) {
+    public OAuthConfig(OAuth2ClientContext oauth2ClientContext, GoogleAuthenticationSuccessHandler authenticationSuccessHandler) {
         this.oauth2ClientContext = oauth2ClientContext;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
     }
 
     @Bean
     public Filter ssoFilter() {
-        OAuth2ClientAuthenticationProcessingFilter githubFilter = new OAuth2ClientAuthenticationProcessingFilter("/login");
-        OAuth2RestTemplate githubTemplate = new OAuth2RestTemplate(googleClient(), oauth2ClientContext);
-        githubFilter.setRestTemplate(githubTemplate);
-        githubFilter.setTokenServices(new UserInfoTokenServices(googleResource().getUserInfoUri(), googleClient().getClientId()));
-        return githubFilter;
+        OAuth2ClientAuthenticationProcessingFilter oauth2Filter = new OAuth2ClientAuthenticationProcessingFilter("/login");
+        OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(googleClient(), oauth2ClientContext);
+        oauth2Filter.setRestTemplate(oAuth2RestTemplate);
+        oauth2Filter.setTokenServices(new UserInfoTokenServices(googleResource().getUserInfoUri(), googleClient().getClientId()));
+        oauth2Filter.setAuthenticationSuccessHandler(authenticationSuccessHandler); // 인증 성공시 진행될 Handler 등록
+        return oauth2Filter;
     }
 
     @Bean
