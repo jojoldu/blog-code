@@ -201,7 +201,7 @@ OAuth2 인증정보를 받기 위해 좌측 상단에 프로젝트 select box를
 
 ![구글생성](./images/구글생성6.png)
 
-(저같은 경우 원본 URL은 ```http://localhost:8080```, 리디렉션 URI는 ```http://localhost:8080/oauth/authorize```로 등록하였습니다.)  
+(저같은 경우 원본 URL은 ```http://localhost:8080```, 리디렉션 URI는 ```http://localhost:8080/login```로 등록하였습니다.)  
   
 최종 생성이 되시면 인증정보가 화면에 노출됩니다.  
 거기서 클라이언트 ID와 보안비밀(security)를 앞으로 OAuth2에서 사용할 예정입니다. 
@@ -223,15 +223,10 @@ google :
     accessTokenUri: https://accounts.google.com/o/oauth2/token
     userAuthorizationUri: https://accounts.google.com/o/oauth2/auth
     clientAuthenticationScheme: form
-    preEstablishedRedirectUri: http://localhost:8080/oauth/authorize # redirect_uri는 구글 사이트에 등록한 주소와 동일해야합니다.
-    useCurrentUri: false # 현재 URL을 redirect_uri로 사용하지 않도록 설정
     scope: email, profile
   resource:
     userInfoUri: https://www.googleapis.com/oauth2/v2/userinfo
 ```
-
-(캡쳐 시점이 코드를 전부 작성하기 전에 캡쳐한거라 누락된 값들이 있습니다.  
-코드로 된게 맞습니다.)  
 
 혹시나 헷갈리실수 있으신데, ClientId는 뒷자리가 ```.apps.googleusercontent.com``` 형태로 되어있습니다.  
   
@@ -355,7 +350,6 @@ OAuth2 로그인의 경우 인증코드(```code```)를 발급 받고, 발급 받
 401 에러가 발생했습니다!  
 왜냐하면 seurity 옵션에서 **```/login``` URL 권한이 없기** 때문입니다.  
 비 로그인시에 로그인이 진행되니 로그인 URL도 권한 체크를 제외하도록 security 옵션을 변경하겠습니다.  
-추가하는김에 리다이렉트 URL로 지정된 ```/oauth/authorize```도 등록하겠습니다.
 
 ```java
 
@@ -367,7 +361,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.antMatcher("/**")
                 .authorizeRequests()
-                .antMatchers("/", "/h2-console/**", "/favicon.ico", "/oauth/authorize**", "/login**").permitAll() // "/login**" 옵션 추가
+                .antMatchers("/", "/h2-console/**", "/favicon.ico", "/login**").permitAll() // "/login**" 옵션 추가
                 .anyRequest().authenticated()
                 .and().logout().logoutSuccessUrl("/").permitAll()
                 .and().headers().frameOptions().sameOrigin()
@@ -377,7 +371,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 ```
 
-변경 된 것은 ```.antMatchers("/", "/h2-console/**", "/favicon.ico").permitAll()```에 ```/oauth/authorize**```와 ```"/login**"```이 추가된 것 뿐입니다.  
+변경 된 것은 ```.antMatchers("/", "/h2-console/**", "/favicon.ico").permitAll()```에  ```"/login**"```이 추가된 것 뿐입니다.  
 자 그럼 수정 후에 다시 테스트를 수행해보겠습니다.  
 
 ![security 테스트3](./images/security테스트3.png)
@@ -470,7 +464,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.antMatcher("/**")
                 .authorizeRequests()
-                .antMatchers("/", "/h2-console/**", "/favicon.ico", "/oauth/authorize**", "/login**").permitAll() // "/login**" 옵션 추가
+                .antMatchers("/", "/h2-console/**", "/favicon.ico", "/login**").permitAll() // "/login**" 옵션 추가
                 .anyRequest().authenticated()
                 .and().logout().logoutSuccessUrl("/").permitAll()
                 .and().headers().frameOptions().sameOrigin()
@@ -496,12 +490,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 ![로그인1](./images/로그인1.png)
 
 로그인 화면이 등장하면 로그인을 진행하시면 되며, 저처럼 계정 선택 화면이 등장하면 계정을 선택하시면 됩니다.  
-최종적으로 리다이렉트 URL로 등록된 ```/oauth/authorize``` 페이지로 이동된 것을 확인할 수 있습니다.
+그럼 리다이렉트가 계속 진행되어 최종적으로 원래의 localhost:8080/ 으로 이동하게 됩니다.
 
-![리다이렉트페이지](./images/리다이렉트페이지.png)
+![메인페이지](./images/메인페이지.png)
 
-```/oauth/authorize``` 를 처리하는 Controller가 없기 때문에 404가 등장한 것을 확인할 수 있습니다.  
-이 문제를 해결하는 방법은 2가지가 있습니다.  
-1) ```/oauth/authorize``` Controller를 생성해서 처리
-2) OAuth Success Handler를 생성해서 처리
+음 이게 끝인가? 라고 생각드실것 같습니다.  
+[구글계정으로 가입된 서비스를 확인할 수 있는 페이지](https://myaccount.google.com/permissions) 으로 접속하시면 방금까지 만든 OAuth 서비스에 구글 계정이 가입된 것을 확인할 수 있습니다.
+
+![구글계정앱](./images/구글계정앱.png)
+
+구글 OAuth를 사용한 것은 확인되었으니, 이제 이렇게 인증 정보를 통해 로그인 세션을 비롯한 여러 기능들을 하나씩 추가해보겠습니다.  
+
+### 1-4. 로그인 세션 관리
+
+OAuth2를 사용한다고해서 기존과 다른 마법같은 일이 펼쳐지는것은 아닙니다.  
+OAuth2는 사용자 인증 및 허가된 정보를 가져오는 것외에는 사용하지 않습니다.  
+인증된 정보를 통해 로그인 세션을 관리하고, 사용자는 저희가 만든 서비스의 세션을 통해 서비스를 이용해야만 합니다.  
+  
+세션을 사용하는 방법은 크게 3가지가 있습니다.  
+
+1. 톰캣 세션을 사용한다.
+  * 일반적으로 별다른 설정을 하지 않으시고 HttpSession을 사용할 경우입니다.
+  * 이렇게 될 경우 톰캣(WAS)에 세션이 저장되기 때문에 2대이상의 WAS가 구동되는 환경에서는 톰캣들간의 세션 공유를 위한 추가설정이 필요합니다.
+2. Database를 세션저장소로 사용한다.
+  * 여러 WAS들간의 공용 세션을 사용할 수 있는 가장 쉬운 방법입니다.
+  * 많은 설정이 필요없지만, 결국 로그인 요청마다 DB IO가 발생하여 성능상 이슈가 발생할 수 있습니다.
+  * 보통 로그인이 요청이 많이 없는 백오피스, 사내시스템 용도에서 사용합니다.
+3. Redis, Memcached와 같은 메모리 DB를 세션 저장소로 사용한다.
+  * 사용자 서비스에서 가장 많이 사용되는 방식입니다.
+  * 실제 서비스로 사용하기 위해서는 Embedded Redis와 같은 방식이 아닌 외부 메모리 서버가 필요합니다.
+
+여기선 2번째 방식인 Database를 세션 저장소로 사용되는 방식을 선택하여 진행할 예정입니다.  
+
 
