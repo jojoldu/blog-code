@@ -1,4 +1,7 @@
 spring:
+  session:
+    store-type: jdbc # Session 저장소 타입을 JDBC로 설정
+
   jpa:
     show-sql: true # JPA로 생성되는 쿼리 확인
   h2:

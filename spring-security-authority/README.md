@@ -523,3 +523,4 @@ OAuth2는 사용자 인증 및 허가된 정보를 가져오는 것외에는 사
 여기선 2번째 방식인 Database를 세션 저장소로 사용되는 방식을 선택하여 진행할 예정입니다.  
 
 
+[spring session jdbc 가이드](https://docs.spring.io/spring-session/docs/current-SNAPSHOT/reference/html5/guides/boot-jdbc.html)
