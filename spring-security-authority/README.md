@@ -479,7 +479,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 이제 OAuth의 기본 설정이 끝났습니다.  
 자 다시 테스트를 실행해보겠습니다.  
 
-![security테스트4](./images/security테스트4.png)
+![security테스트4](./images/security테스트4.png)
 
 짠! 드디어 테스트가 통과되었습니다.  
 그럼 실제로 OAuth 로그인이 되는지 확인해볼까요?  
