@@ -1,10 +1,12 @@
 spring:
   session:
     store-type: jdbc
-    jdbc:
-      schema: classpath:schema-h2.sql
+  datasource:
+    data: classpath:schema-h2.sql # Spring Session 테이블 스키마 적용
   jpa:
     show-sql: true # JPA로 생성되는 쿼리 확인
+    hibernate:
+      ddl-auto: create # 프로젝트 시작시 테이블 생성
   h2:
     console:
       enabled: true
