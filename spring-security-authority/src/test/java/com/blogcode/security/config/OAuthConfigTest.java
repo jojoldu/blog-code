@@ -35,4 +35,10 @@ public class OAuthConfigTest {
                     .statusCode(302)
                     .header("Location", containsString("https://accounts.google.com/o/oauth2/auth"));
     }
+
+    @Test
+    public void oauth로그인하면_SPRING_SESSION_저장된다 () throws Exception {
+
+        System.out.println();
+    }
 }
