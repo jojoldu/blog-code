@@ -32,7 +32,7 @@ dependencies {
 	compile('org.springframework.security.oauth:spring-security-oauth2')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
-	compile 'org.springframework.session:spring-session-jdbc:1.3.1.RELEASE'
+	compile('org.springframework.session:spring-session')
 	compile('org.springframework.boot:spring-boot-starter-jdbc')
 
 	runtime('org.springframework.boot:spring-boot-devtools') // hot reload
