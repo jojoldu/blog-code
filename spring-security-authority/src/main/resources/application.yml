@@ -1,7 +1,6 @@
 spring:
-  session:
-    store-type: jdbc
   datasource:
+    url: jdbc:h2:mem:testdb
     data: classpath:schema-h2.sql # Spring Session 테이블 스키마 적용
   jpa:
     show-sql: true # JPA로 생성되는 쿼리 확인
