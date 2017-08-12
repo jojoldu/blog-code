@@ -40,5 +40,4 @@ public class OAuthConfigTest {
                     .statusCode(302)
                     .header("Location", containsString("https://accounts.google.com/o/oauth2/auth"));
     }
-
 }

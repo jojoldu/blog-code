@@ -50,7 +50,6 @@ ext['hibernate.version'] = '5.2.10.Final' //Spring Boot Overriding
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	compile('org.springframework.boot:spring-boot-starter-security')
 	compile('org.springframework.security.oauth:spring-security-oauth2')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
@@ -239,6 +238,23 @@ google :
 
 application.yml은 그대로 사용하고, google.yml은 별도로 관리하도록 설정하였습니다.  
   
+자 그리고 이 yml을 프로젝트 실행시 호출할 수 있도록 ```Application.java```의 코드를 수정하겠습니다.
+
+```java
+@SpringBootApplication
+public class Application {
+
+	private static final String PROPERTIES = "spring.config.location=classpath:/google.yml";
+
+	public static void main(String[] args) {
+		new SpringApplicationBuilder(Application.class)
+				.properties(PROPERTIES)
+				.run(args);
+	}
+}
+```
+
+추가된 것은 ```spring.config.location=classpath:/google.yml```을 스프링부트의 properties에 등록한 것입니다.  
 이렇게 하면 구글의 OAuth 등록은 끝이났습니다.  
 다음은 Spring Security 설정입니다. 
 
@@ -311,11 +327,14 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.containsString;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@TestPropertySource(
+        properties = "spring.config.location=classpath:/google.yml")
 public class OAuthConfigTest {
 
     @Before
     public void setup() {
+        RestAssured.baseURI = "http://localhost";
         RestAssured.port = 8080;
     }
 
@@ -333,6 +352,9 @@ public class OAuthConfigTest {
 
 ```
 
+고정된 포트(8080)으로 사용할 것이기에 ```SpringBootTest.WebEnvironment.DEFINED_PORT``` 옵션을 추가하였습니다.  
+추가로 google.yml을 Junit 테스트시에도 설정으로 적용할 수 있게 ```@TestPropertySource```으로 옵션을 추가하였습니다.  
+(이게 없으면 google.yml을 테스트시에는 누락된채로 진행됩니다.)  
 로그인 URL은 ```/login```으로 할 예정입니다.  
 
 ```then()```이후 옵션들은 OAuth 로그인 검증 코드입니다.  
@@ -425,16 +447,6 @@ public class OAuthConfig {
         registration.setOrder(-100);
         return registration;
     }
-
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer properties() {
-        YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
-        yaml.setResources(new ClassPathResource("google.yml"));
-
-        PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
-        propertySourcesPlaceholderConfigurer.setProperties(yaml.getObject());
-        return propertySourcesPlaceholderConfigurer;
-    }
 }
 
 ```
@@ -443,8 +455,8 @@ public class OAuthConfig {
 
 ```/login```으로 등록했기 때문에 해당 URL에 get 요청을 할 경우 자동으로 OAuth 로그인이 진행됩니다.  
   
-가장 하단에 보시면 ```PropertySourcesPlaceholderConfigurer``` 메소드에선 처음에 등록한 google.yml을 불러오도록 지정하였습니다.  
-불러온 yml의 값들은 ```@ConfigurationProperties("google.client")``` 을 통해 인증에 필요한 여러 설정값들을 자동으로 할당하도록 하였습니다.  
+```ConfigurationProperties```을 통해 google.yml에 포함된 google 관련 설정값들은 이름에 맞춰 ```AuthorizationCodeResourceDetails.java```와 ```ResourceServerProperties.java```의 인스턴스 필드에 할당됩니다.  
+즉, 저희는 별도로 google.yml에 있는 값들을 set할 필요가 없게 됩니다.  
   
 자 그럼 여기서 생성한 ssoFilter가 Security를 거치도록 설정을 추가하겠습니다.
 
