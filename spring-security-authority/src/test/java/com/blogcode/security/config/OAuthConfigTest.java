@@ -21,7 +21,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestPropertySource(
-        locations = "classpath:google.yml")
+        properties = "spring.config.location=classpath:/google.yml")
 public class OAuthConfigTest {
 
     @Before
@@ -41,9 +41,4 @@ public class OAuthConfigTest {
                     .header("Location", containsString("https://accounts.google.com/o/oauth2/auth"));
     }
 
-    @Test
-    public void oauth로그인하면_SPRING_SESSION_저장된다 () throws Exception {
-
-        System.out.println();
-    }
 }
