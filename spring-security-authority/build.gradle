@@ -27,14 +27,12 @@ repositories {
 ext['hibernate.version'] = '5.2.10.Final' //Spring Boot Overriding
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	compile('org.springframework.boot:spring-boot-starter-security')
-	compile('org.springframework.security.oauth:spring-security-oauth2')
 	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+	compile('org.springframework.security.oauth:spring-security-oauth2')
 	compile('org.springframework.session:spring-session')
-	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
-	compile("com.github.kstyrc:embedded-redis:0.6")
+	compile('org.springframework.boot:spring-boot-starter-jdbc')
 
 	runtime('org.springframework.boot:spring-boot-devtools') // hot reload
 	runtime('com.h2database:h2')

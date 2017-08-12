@@ -11,11 +11,12 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.containsString;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class ApplicationTest {
 
     @Before
     public void setup() {
+        RestAssured.baseURI = "http://localhost";
         RestAssured.port = 8080;
     }
 
