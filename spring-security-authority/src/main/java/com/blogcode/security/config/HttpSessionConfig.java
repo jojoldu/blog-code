@@ -12,5 +12,4 @@ import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHtt
 @Configuration
 @EnableJdbcHttpSession
 public class HttpSessionConfig {
-
 }
