@@ -456,7 +456,7 @@ public class OAuthConfig {
 ```/login```으로 등록했기 때문에 해당 URL에 get 요청을 할 경우 자동으로 OAuth 로그인이 진행됩니다.  
   
 ```ConfigurationProperties```을 통해 google.yml에 포함된 google 관련 설정값들은 이름에 맞춰 ```AuthorizationCodeResourceDetails.java```와 ```ResourceServerProperties.java```의 인스턴스 필드에 할당됩니다.  
-즉, 저희는 별도로 google.yml에 있는 값들을 set할 필요가 없게 됩니다.  
+즉, 저희는 **별도로 google.yml에 있는 값들을 set할 필요가 없게** 됩니다.  
   
 자 그럼 여기서 생성한 ssoFilter가 Security를 거치도록 설정을 추가하겠습니다.
 
@@ -533,6 +533,227 @@ OAuth2는 사용자 인증 및 허가된 정보를 가져오는 것외에는 사
   * 실제 서비스로 사용하기 위해서는 Embedded Redis와 같은 방식이 아닌 외부 메모리 서버가 필요합니다.
 
 여기선 2번째 방식인 Database를 세션 저장소로 사용되는 방식을 선택하여 진행할 예정입니다.  
+(Redis 세션을 사용하는 방법은 이미 [Havi님께서 정리](http://haviyj.tistory.com/38)해주셨습니다^^; )  
+  
+최근 Spring에서는 JdbcSession 사용이 1개의 어노테이션만으로 가능합니다.  
+아주 간단하게 적용가능한데요, 이를 OAuth2와 연계하는 과정은 코드가 조금 필요합니다.  
+  
+먼저 JdbcSession을 적용하겠습니다.  
+관련된 의존성을 build.gradle 등록합니다.
 
+```
+compile('org.springframework.session:spring-session')
+compile('org.springframework.boot:spring-boot-starter-jdbc')
+```
+
+그리고 세션의 저장을 Database에 하기 때문에 미리 세션 테이블이 생성되어있어야 합니다.  
+보통 ORM을 사용하면 Entity 클래스를 생성하여 사용하는데, 세션의 경우 Repository, Entity 가 모두 별도로 관리 되기 때문에 저희가 직접 Java 코드를 작성할 필요는 없습니다.  
+단, 세션 테이블은 미리 생성되어야만 해당 테이블에 저장/조회가 가능하겠죠?  
+어떤 형태로 생성되는지는 친절하게 SpringSession에서 알려주고 있으니, 이를 그대로 복사하시면 됩니다.  
+Command+Shift+o (InteliiJ기준으로 전체 파일 탐색)으로 ```schema```를 검색해보시면 아래와 같이 각 DBMS에 맞춰 스키마 쿼리를 확인할 수 있습니다.  
+
+![세션스키마](./images/세션스키마.png)
+
+여기서는 개발환경 DB인 H2 스키마를 사용하겠습니다.  
+src/main/resources에 sehema-h2.sql을 생성하시고 아래 코드를 추가하겠습니다.
+
+```sql
+CREATE TABLE SPRING_SESSION (
+	SESSION_ID CHAR(36) NOT NULL,
+	CREATION_TIME BIGINT NOT NULL,
+	LAST_ACCESS_TIME BIGINT NOT NULL,
+	MAX_INACTIVE_INTERVAL INT NOT NULL,
+	PRINCIPAL_NAME VARCHAR(100),
+	CONSTRAINT SPRING_SESSION_PK PRIMARY KEY (SESSION_ID)
+);
+
+CREATE INDEX SPRING_SESSION_IX1 ON SPRING_SESSION (LAST_ACCESS_TIME);
+
+CREATE TABLE SPRING_SESSION_ATTRIBUTES (
+	SESSION_ID CHAR(36) NOT NULL,
+	ATTRIBUTE_NAME VARCHAR(200) NOT NULL,
+	ATTRIBUTE_BYTES LONGVARBINARY NOT NULL,
+	CONSTRAINT SPRING_SESSION_ATTRIBUTES_PK PRIMARY KEY (SESSION_ID, ATTRIBUTE_NAME),
+	CONSTRAINT SPRING_SESSION_ATTRIBUTES_FK FOREIGN KEY (SESSION_ID) REFERENCES SPRING_SESSION(SESSION_ID) ON DELETE CASCADE
+);
+
+CREATE INDEX SPRING_SESSION_ATTRIBUTES_IX1 ON SPRING_SESSION_ATTRIBUTES (SESSION_ID);
+
+```
+
+그리고 이 스키마를 읽어가도록 application.yml을 수정하겠습니다.
+
+```yml
+spring:
+  datasource:
+    data: classpath:schema-h2.sql # Spring Session 테이블 스키마 적용
+  jpa:
+    show-sql: true # JPA로 생성되는 쿼리 확인
+    hibernate:
+      ddl-auto: create # 프로젝트 시작시 테이블 생성
+  h2:
+    console:
+      enabled: true
+      path: /h2-console # h2 db 웹 클라이언트 접속 url
+  devtools:
+    livereload:
+      enabled: true # 정적파일들의 실시간 갱신
+
+
+#security:
+#  basic:
+#    enabled: false # security 기본 인증 옵션 제거
+logging:
+  level:
+    org.hibernate.type: trace  # JPA로 생성되는 쿼리의 파라미터 값 확인
+```
+
+자 이제 스키마가 적용되었으니 JdbcSession 옵션을 활성화시키겠습니다.  
+config 패키지 아래에 ```HttpSessionConfig.java```를 생성하고 아래의 코드를 추가하겠습니다.
+
+```java
+
+@EnableJdbcHttpSession
+public class HttpSessionConfig {
+}
+
+```
+
+JdbcSession 적용하는 코드는 이게 끝입니다.  
+```@EnableJdbcHttpSession```하나로 적용된 것입니다.  
+이렇게 적용하신후, Application.java를 다시 실행시켜보시면 로그로 잘 적용된 것을 확인할 수 있습니다.
+
+![세선적용](./images/세션적용.png)
+
+자 근데 여기서 세션의 기능을 확인할 수는 없습니다.  
+OAuth 로그인 성공시 세션을 저장하는 기능을 추가하지 않았기 때문입니다.  
+해당 기능을 추가해보겠습니다.  
+SuccessHandler를 생성하여, OAuth2 로그인시 필요한 처리를 SuccessHandler에서 처리하도록 하겠습니다.  
+```GoogleAuthenticationSuccessHandler.java```를 생성하여 아래와 같이 코드를 작성하겠습니다.  
+
+```java
+@Component
+public class GoogleAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
+    private HttpSession httpSession;
+    private ObjectMapper objectMapper;
+
+    public GoogleAuthenticationSuccessHandler(HttpSession httpSession, ObjectMapper objectMapper) {
+        this.httpSession = httpSession;
+        this.objectMapper = objectMapper;
+    }
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        httpSession.setAttribute(SessionConstants.LOGIN_USER, getGoogleUser(authentication)); // 간단한 구글계정 정보를 세션에 저장
+        response.sendRedirect("/me");
+    }
+
+    private GoogleUser getGoogleUser(Authentication authentication) { // OAuth 인증정보를 통해 GoogleUser 인스턴스 생성
+        OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) authentication;
+        return objectMapper.convertValue(oAuth2Authentication.getUserAuthentication().getDetails(), GoogleUser.class);
+    }
+}
+
+```
+
+```AuthenticationSuccessHandler```를 구현하도록 하여, ```onAuthenticationSuccess``` 를 오버라이딩 합니다.  
+이때, 구글 계정 정보는 ```Authentication authentication```를 통해 얻을 수 있습니다.  
+단, Map으로 전부 되어있기 때문에 ObjectMapper를 통해 ```GoogleUser```클래스의 인스턴스로 반환되도록 하였습니다.  
+성공적으로 세션에 로그인 정보가 저장되면 ```/me``` 로 리다이렉트 됩니다.  
+  
+여기서 기존에 작성하지 않은 코드들을 사용하는게 보이실텐데요
+
+1. ObjectMapper DI
+2. 리다이렉트 되는 ```/me``` 처리
+3. GoogleUser.class
+
+이 부분들을 하나씩 추가하겠습니다.  
+먼저 ObjectMapper Bean을 등록하겠습니다.  
+AppConfig.java를 하나 생성하겠습니다.  
+
+```java
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+}
+
+```
+
+SpringBoot에선 기본적으로 jackson을 지원하고 있어 별도로 의존성은 필요없습니다.  
+바로 Bean으로 등록하였습니다.  
+  
+두번째로는 MainController를 작성해서 리다이렉트 처리를 하겠습니다.  
+
+```java
+@RestController
+public class MainController {
+
+    private HttpSession httpSession;
+
+    public MainController(HttpSession httpSession) {
+        this.httpSession = httpSession;
+    }
+
+    @GetMapping("/me")
+    public Map<String, Object> me(){
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("profile", httpSession.getAttribute(SessionConstants.LOGIN_USER));
+        return response;
+    }
+}
+```
+
+```/me```요청시 세션에 저장된 정보를 그대로 Map에 담아 JSON으로 리턴하도록 하였습니다.  
+마지막으로 ```GoogleUser.java```를 생성하겠습니다.  
+
+```java
+
+@NoArgsConstructor
+@Getter
+@Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class GoogleUser implements Serializable {
+
+    @JsonProperty("email")
+    private String email;
+    @JsonProperty("name")
+    private String name;
+    @JsonProperty("picture")
+    private String picture;
+
+}
+```
+
+롬복 코드가 있지만, 이해하시는데 큰 어려움은 없으실것 같습니다.
+ObjectMapper가 필드를 명확히 인식하기 위해 ```@JsonProperty```로 필드명을 지정하고, 멤버변수로 지정되지 않은 필드는 무시하도록 옵션(```@JsonIgnoreProperties(ignoreUnknown = true)```)을 추가하였습니다.  
+  
+자 그럼 모든 설정이 완료되었습니다.  
+실제 테스트를 진행해보겠습니다.  
+브라우저를 열어 ```localhost:8080/me```로 이동하겠습니다.
+
+![me403](./images/me403.png)
+
+요렇게 403 에러가 발생합니다.  
+정상적으로 인증필터가 적용된걸 확인했습니다.  
+바로 ```localhost:8080/login``` 으로 이동해보겠습니다.
+
+![me200](./images/me200.png)
+
+짠! 로그인이 성공하고 로그인한 유저의 정보를 보여주는 ```/me```로 자동 리다이렉트 되는것까지 확인되었습니다.  
+  
+여기까지가! OAuth2 + Session을 적용한 기본 설정이였습니다.  
+이제부터 본격적으로 처음에 논의 되었던 비지니스 문제를 다뤄보겠습니다.  
+  
+감사합니다^_^
+
+
+### 참고 2.
 
 [spring session jdbc 가이드](https://docs.spring.io/spring-session/docs/current-SNAPSHOT/reference/html5/guides/boot-jdbc.html)

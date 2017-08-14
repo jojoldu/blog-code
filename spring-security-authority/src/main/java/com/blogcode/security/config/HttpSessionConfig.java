@@ -1,6 +1,5 @@
 package com.blogcode.security.config;
 
-import org.springframework.context.annotation.Configuration;
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 
 /**
@@ -9,7 +8,6 @@ import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHtt
  * Github : https://github.com/jojoldu
  */
 
-@Configuration
 @EnableJdbcHttpSession
 public class HttpSessionConfig {
 }

@@ -33,11 +33,11 @@ public class GoogleAuthenticationSuccessHandler implements AuthenticationSuccess
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        httpSession.setAttribute(SessionConstants.LOGIN_USER, getGoogleUser(authentication));
+        httpSession.setAttribute(SessionConstants.LOGIN_USER, getGoogleUser(authentication)); // 간단한 구글계정 정보를 세션에 저장
         response.sendRedirect("/me");
     }
 
-    private GoogleUser getGoogleUser(Authentication authentication) {
+    private GoogleUser getGoogleUser(Authentication authentication) { // OAuth 인증정보를 통해 GoogleUser 인스턴스 생성
         OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) authentication;
         return objectMapper.convertValue(oAuth2Authentication.getUserAuthentication().getDetails(), GoogleUser.class);
     }
