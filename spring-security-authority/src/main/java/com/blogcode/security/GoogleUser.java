@@ -1,5 +1,6 @@
 package com.blogcode.security;
 
+import com.blogcode.security.domain.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -27,4 +28,11 @@ public class GoogleUser implements Serializable {
     @JsonProperty("picture")
     private String picture;
 
+    public User toEntity(){
+        return User.builder()
+                .email(email)
+                .name(name)
+                .imageUrl(picture)
+                .build();
+    }
 }

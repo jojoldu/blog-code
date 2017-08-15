@@ -39,12 +39,6 @@ public class User {
         this.userRoles = userRoles;
     }
 
-    public User(GoogleUser google) {
-        name = google.getName();
-        email = google.getEmail();
-        imageUrl = google.getPicture();
-    }
-
     public void addRole(UserRole userRole){
         if(userRoles == null){
             userRoles = new ArrayList<>();
