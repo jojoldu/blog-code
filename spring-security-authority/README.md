@@ -764,3 +764,7 @@ ObjectMapper가 필드를 명확히 인식하기 위해 ```@JsonProperty```로 �
 ### 참고 2.
 
 [spring session jdbc 가이드](https://docs.spring.io/spring-session/docs/current-SNAPSHOT/reference/html5/guides/boot-jdbc.html)
+
+### 1-5. 사용자별 권한 등록
+
+![트랜잭션테스트실패](./images/트랜잭션테스트실패.png)
