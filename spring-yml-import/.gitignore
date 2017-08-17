@@ -4,6 +4,8 @@
 
 src/main/resources/google.yml
 
+out
+
 ### STS ###
 .apt_generated
 .classpath
