@@ -1,6 +1,7 @@
 package com.blogcode.yml;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
@@ -31,10 +32,12 @@ import javax.servlet.Filter;
 @EnableOAuth2Client
 public class OAuthConfig {
 
-    private final OAuth2ClientContext oauth2ClientContext;
+    private OAuth2ClientContext oauth2ClientContext;
+    private BeanFactory beanFactory;
 
-    public OAuthConfig(OAuth2ClientContext oauth2ClientContext) {
+    public OAuthConfig(OAuth2ClientContext oauth2ClientContext, BeanFactory beanFactory) {
         this.oauth2ClientContext = oauth2ClientContext;
+        this.beanFactory = beanFactory;
     }
 
     @Bean
