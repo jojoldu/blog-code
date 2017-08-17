@@ -1,6 +1,6 @@
 package com.blogcode.yml;
 
-//import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
+import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 8. 8.
@@ -8,6 +8,6 @@ package com.blogcode.yml;
  * Github : https://github.com/jojoldu
  */
 
-//@EnableJdbcHttpSession
+@EnableJdbcHttpSession
 public class HttpSessionConfig {
 }
