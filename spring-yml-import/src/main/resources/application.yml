@@ -1,4 +1,6 @@
 spring:
+  session:
+    store-type: jdbc
   datasource:
     platform: h2
   h2:
