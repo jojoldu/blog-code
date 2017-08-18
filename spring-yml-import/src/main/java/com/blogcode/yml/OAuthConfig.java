@@ -1,6 +1,5 @@
 package com.blogcode.yml;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
