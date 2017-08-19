@@ -3,6 +3,7 @@ spring:
     store-type: jdbc
   datasource:
     platform: h2
+    schema: classpath:schema-h2.sql
   h2:
     console:
       enabled: true

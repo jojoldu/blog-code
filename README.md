@@ -21,6 +21,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
 - [SpringBoot 팁 모음](https://github.com/jojoldu/blog-code/tree/master/springboot-tips)
   - [SpringBoot에서 JPA 쿼리 파라미터 확인하기](https://github.com/jojoldu/blog-code/tree/master/springboot-tips/show-jpa-parameters)
+  - [Spring OAuth + Spring Session시 HTTP URL must not be null 발생 원인 및 해결](https://github.com/jojoldu/blog-code/tree/master/spring-yml-import)
 
 -	[Spring Boot 간단 정리](https://github.com/jojoldu/blog-code/tree/master/compareboot)
 -	[Spring Boot 1.4.0으로 진행하는 TDD](https://github.com/jojoldu/blog-code/tree/master/springboot-test)

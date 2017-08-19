@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
@@ -80,7 +81,8 @@ public class OAuthConfig {
     }
 
     @Bean
-    public static PropertySourcesPlaceholderConfigurer properties() {
+    @Primary
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 
         System.out.println("google yml Call");
 
