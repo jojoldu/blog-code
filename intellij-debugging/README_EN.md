@@ -1,8 +1,7 @@
 # Intellij-debugging
 
 Good morning? This time I'm going to do a simple debugging of intellij.
-All code is in [Github] (https://github.com/jojoldu/blog-code/tree/master/intellij-debugging), so it's easier to understand if you look at it together.
-([Github] (https://github.com/jojoldu/blog-code) to organize your studies and [Github] (https://github.com/jojoldu/review) to organize seminars + book reviews, There is [blog] (http://jojoldu.tistory.com/) which contains all of these contents. <br/>
+All code is in [Github] (https://github.com/jojoldu/blog-code/edit/master/intellij-debugging/README_EN.md), so it's easier to understand if you look at it together.
   
 It is a very basic level, but it seems to be helpful for those who debugged with ```System.out.println```.  
 
