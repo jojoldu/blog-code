@@ -237,7 +237,7 @@ First, let's turn on watch in debug mode as below.
 
 If you follow the above click, you will get the following shape.
 
-![watch3](./images/watch3_en.png)
+![watch3](./images/watch3.png)
 
 In the ```watches``` at the bottom right, we can write our debugging code.  
   
@@ -270,7 +270,7 @@ For example, you can check the value of the ```test``` code that called ```the o
   
 In the Call Stack at the bottom left, click on the line of code you want to find.
 
-![call1](./images/call1.png)
+![call1](./images/call1_en.png)
 
 After the move, check the values and code you want to check using ```Variables``` and ```Watches``` as you did on the break line.  
   
