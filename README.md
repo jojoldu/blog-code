@@ -72,7 +72,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
   - [정규표현식으로 텍스트 교체하기](https://github.com/jojoldu/blog-code/tree/master/intellij-tip-regex-replacement)
 
-  - [2017.2에 추가된 Spring 관련 기능]()
+  - [2017.2에 추가된 Spring 관련 기능](https://github.com/jojoldu/blog-code/tree/master/intellij-tip/2017_2_%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8_%EA%B8%B0%EB%8A%A5%EA%B0%95%ED%99%94)
 
 ### 번역
 
