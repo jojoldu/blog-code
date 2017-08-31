@@ -19,4 +19,5 @@ spring:
 #    enabled: false # security 기본 인증 옵션 제거
 logging:
   level:
-    org.hibernate.type: trace  # JPA로 생성되는 쿼리의 파라미터 값 확인
+    org.hibernate.type: trace # JPA로 생성되는 쿼리의 파라미터 값 확인
+

@@ -29,4 +29,5 @@ public class MainController {
         response.put("profile", httpSession.getAttribute(SessionConstants.LOGIN_USER));
         return response;
     }
+
 }
