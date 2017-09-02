@@ -74,8 +74,8 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
   - [2017.2에 추가된 Spring 관련 기능](https://github.com/jojoldu/blog-code/tree/master/intellij-tip/2017_2_%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8_%EA%B8%B0%EB%8A%A5%EA%B0%95%ED%99%94)
 
-  - [IntelliJ로 악취나는 코드 개선하기 시리즈]()
-    * [Code Smells: Null]() 
+  - [IntelliJ로 악취나는 코드 개선하기 시리즈](https://github.com/jojoldu/blog-code/blob/master/intellij-tip/%EC%95%85%EC%B7%A8%EB%82%98%EB%8A%94_%EC%BD%94%EB%93%9C_%EA%B0%9C%EC%84%A0%ED%95%98%EA%B8%B0_%EC%8B%9C%EB%A6%AC%EC%A6%88)
+    * [Code Smells: Null](https://github.com/jojoldu/blog-code/blob/master/intellij-tip/%EC%95%85%EC%B7%A8%EB%82%98%EB%8A%94_%EC%BD%94%EB%93%9C_%EA%B0%9C%EC%84%A0%ED%95%98%EA%B8%B0_%EC%8B%9C%EB%A6%AC%EC%A6%88/1_NULL.md) 
     * Code Smells: Deeply Nested Code (심하게 중첩 된 코드)
     * Code Smells: Iteration (반복)
     * Code Smells: Mutation (돌연변이)
