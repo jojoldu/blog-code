@@ -75,6 +75,11 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
   - [2017.2에 추가된 Spring 관련 기능](https://github.com/jojoldu/blog-code/tree/master/intellij-tip/2017_2_%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8_%EA%B8%B0%EB%8A%A5%EA%B0%95%ED%99%94)
 
   - [IntelliJ로 악취나는 코드 개선하기 시리즈]()
+    * [Code Smells: Null]() 
+    * Code Smells: Deeply Nested Code (심하게 중첩 된 코드)
+    * Code Smells: Iteration (반복)
+    * Code Smells: Mutation (돌연변이)
+    * Code Smells: Multi-Responsibility Methods (다중 책임 메소드들)
 
 ### 번역
 
