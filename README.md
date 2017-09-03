@@ -76,7 +76,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
   - [IntelliJ로 악취나는 코드 개선하기 시리즈](https://github.com/jojoldu/blog-code/blob/master/intellij-tip/%EC%95%85%EC%B7%A8%EB%82%98%EB%8A%94_%EC%BD%94%EB%93%9C_%EA%B0%9C%EC%84%A0%ED%95%98%EA%B8%B0_%EC%8B%9C%EB%A6%AC%EC%A6%88)
     * [Code Smells: Null](https://github.com/jojoldu/blog-code/blob/master/intellij-tip/%EC%95%85%EC%B7%A8%EB%82%98%EB%8A%94_%EC%BD%94%EB%93%9C_%EA%B0%9C%EC%84%A0%ED%95%98%EA%B8%B0_%EC%8B%9C%EB%A6%AC%EC%A6%88/1_NULL.md) 
-    * Code Smells: Deeply Nested Code (심하게 중첩 된 코드)
+    * [Code Smells: Deeply Nested Code (심하게 중첩 된 코드)](https://github.com/jojoldu/blog-code/blob/master/intellij-tip/%EC%95%85%EC%B7%A8%EB%82%98%EB%8A%94_%EC%BD%94%EB%93%9C_%EA%B0%9C%EC%84%A0%ED%95%98%EA%B8%B0_%EC%8B%9C%EB%A6%AC%EC%A6%88/2_NESTED_CODE.md)
     * Code Smells: Iteration (반복)
     * Code Smells: Mutation (돌연변이)
     * Code Smells: Multi-Responsibility Methods (다중 책임 메소드들)
