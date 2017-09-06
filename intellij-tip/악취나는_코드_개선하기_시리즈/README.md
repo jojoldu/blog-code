@@ -4,6 +4,6 @@
 
 * [Code Smells: Null](./1_NULL.md) 
 * [Code Smells: Deeply Nested Code (심하게 중첩 된 코드)](./2_NESTED_CODE.md)
-* Code Smells: Iteration (반복)
+* [Code Smells: Iteration (순회)](./3_ITERATION.md)
 * Code Smells: Mutation (돌연변이)
 * Code Smells: Multi-Responsibility Methods (다중 책임 메소드들)
