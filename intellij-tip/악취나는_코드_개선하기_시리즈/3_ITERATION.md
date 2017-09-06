@@ -159,7 +159,7 @@ getter의 사용법을 간단히 살펴보면 List를 순회하거나 collection
 조짐:
 
 * 어떤 값을 찾기 위해 collection을 반복 순회하는 경우
-* Streams API에서 ```findFirst```/```findAny```/````anyMatch```를 호출하는 경우
+* Streams API에서 ```findFirst```/```findAny```/```anyMatch```를 호출하는 경우
 
 가능한 해결책:
 
