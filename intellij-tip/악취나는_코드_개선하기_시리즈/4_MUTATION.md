@@ -1,4 +1,4 @@
-[IntelliJ 블로그](https://blog.jetbrains.com/idea/2017/08/code-smells-iteration/)에 올라온 시리즈물을 번역 & 재정리 하였습니다. 
+[IntelliJ 블로그](https://blog.jetbrains.com/idea/2017/08/code-smells-mutation/)에 올라온 시리즈물을 번역 & 재정리 하였습니다. 
 
 ![0_로고](./images/0_로고.png)
 
