@@ -187,6 +187,7 @@ public class OrderProductMap {
 
 ![mock테스트통과](./images/mock테스트통과.png)
 
+![exception mock테스트코드](./images/exception_mock테스트코드.png)
 
 
 ### @MockBean

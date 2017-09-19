@@ -24,13 +24,11 @@ public class CustomerService {
     private HttpSession httpSession;
     private CustomerRepository customerRepository;
     private CustomerOrderRepository customerOrderRepository;
-    private ProductRepository productRepository;
 
-    public CustomerService(HttpSession httpSession, CustomerRepository customerRepository, CustomerOrderRepository customerOrderRepository, ProductRepository productRepository) {
+    public CustomerService(HttpSession httpSession, CustomerRepository customerRepository, CustomerOrderRepository customerOrderRepository) {
         this.httpSession = httpSession;
         this.customerRepository = customerRepository;
         this.customerOrderRepository = customerOrderRepository;
-        this.productRepository = productRepository;
     }
 
     @Transactional(readOnly = true)

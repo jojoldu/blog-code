@@ -5,6 +5,7 @@ import com.jojoldu.springmockspybean.domain.customer.CustomerRepository;
 import com.jojoldu.springmockspybean.domain.order.CustomerOrder;
 import com.jojoldu.springmockspybean.domain.order.CustomerOrderRepository;
 import com.jojoldu.springmockspybean.domain.product.Product;
+import com.jojoldu.springmockspybean.exception.ResourceNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpSession;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,6 +40,9 @@ public class CustomerServiceMockTest {
 
     @MockBean(name = "customerOrderRepository")
     private CustomerOrderRepository customerOrderRepository;
+
+    @MockBean(name = "customerRepository")
+    private CustomerRepository customerRepository;
 
     @Test
     public void findMyOrderPriceSum_로그인사용자의_주문상품금액합계가_반환된다 () throws Exception {
@@ -65,5 +70,16 @@ public class CustomerServiceMockTest {
 
         //then
         assertThat(sum, is(25000L));
+    }
+
+    @Test(expected = ResourceNotFoundException.class)
+    public void findByName_찾는고객이없으면_ResourceNotFoundException발생 () throws Exception {
+        //given
+        final String NAME = "jojoldu";
+        given(customerRepository.findCustomerByName(NAME))
+                .willReturn(Optional.empty());
+
+        //when
+        customerService.findByName(NAME);
     }
 }
