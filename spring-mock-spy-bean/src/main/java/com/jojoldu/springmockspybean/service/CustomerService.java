@@ -1,15 +1,17 @@
 package com.jojoldu.springmockspybean.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jojoldu.springmockspybean.domain.customer.Customer;
 import com.jojoldu.springmockspybean.domain.customer.CustomerRepository;
+import com.jojoldu.springmockspybean.domain.order.CustomerOrder;
 import com.jojoldu.springmockspybean.domain.order.CustomerOrderRepository;
 import com.jojoldu.springmockspybean.domain.order.OrderProductMap;
-import com.jojoldu.springmockspybean.domain.product.ProductRepository;
 import com.jojoldu.springmockspybean.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -22,11 +24,13 @@ import java.util.List;
 public class CustomerService {
 
     private HttpSession httpSession;
+    private ObjectMapper objectMapper;
     private CustomerRepository customerRepository;
     private CustomerOrderRepository customerOrderRepository;
 
-    public CustomerService(HttpSession httpSession, CustomerRepository customerRepository, CustomerOrderRepository customerOrderRepository) {
+    public CustomerService(HttpSession httpSession, ObjectMapper objectMapper, CustomerRepository customerRepository, CustomerOrderRepository customerOrderRepository) {
         this.httpSession = httpSession;
+        this.objectMapper = objectMapper;
         this.customerRepository = customerRepository;
         this.customerOrderRepository = customerOrderRepository;
     }
@@ -50,6 +54,23 @@ public class CustomerService {
         return orderProducts.stream()
                 .mapToLong(m -> m.getProduct().getPrice())
                 .sum();
+    }
+
+    @Transactional(readOnly = true)
+    public void saveMyOrderProductCountInSession() {
+        Customer customer = (Customer)httpSession.getAttribute("loginUser");
+        int count = customerOrderRepository.findAllByCustomer(customer)
+                .mapToInt(co -> co.getProducts().size())
+                .sum();
+
+        httpSession.setAttribute("orderCount", count);
+    }
+
+    @Transactional(readOnly = true)
+    public String getCustomerJsonString(String requestBody) throws IOException {
+        Customer customer = objectMapper.readValue(requestBody, Customer.class);
+
+        return objectMapper.writeValueAsString(customer);
     }
 
 }

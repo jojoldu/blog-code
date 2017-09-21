@@ -6,7 +6,6 @@ import com.jojoldu.springmockspybean.domain.order.CustomerOrder;
 import com.jojoldu.springmockspybean.domain.order.CustomerOrderRepository;
 import com.jojoldu.springmockspybean.domain.product.Product;
 import com.jojoldu.springmockspybean.domain.product.ProductRepository;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

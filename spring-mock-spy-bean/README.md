@@ -207,6 +207,7 @@ public class OrderProductMap {
 
 위 테스트 코드의 가장 큰 문제는 무엇일까요?  
 하나의 테스트를 위해 **필요한 주변 코드가 너무 많다는 것**입니다.  
+
 1. DB에 저장하기 위해 각 Entity들은 필수값을 모두 채워야만 합니다.
 2. Repository에서 조회하기 위해 Entity간 연관관계를 모두 형성해야 합니다.
 3. HttpSession 저장등 외부 모듈에 대한 작업이 추가됩니다.
@@ -286,7 +287,7 @@ Mock은 껍데기만 있는 객체를 얘기합니다.
 테스트더블을 통해 테스트 코드 외에 다른 코드가 거의 사라진 것을 알 수 있습니다.  
 특히 **불필요한 필드를 채울 필요가 없게** 되었습니다.  
   
-개발자가 좀 더 어떤 기능에, 어떤 상황/결과에 집중해야하는지 확연하게 알 수 있습니다.
+어떤 기능에, 어떤 상황/결과에 개발자가 좀 더 집중해야하는지 확연하게 알 수 있습니다.
 
 > 여기서는 간단한 소개만 할 예정입니다.  
 좀 더 자세한 내용은 [Mockito 위키 - 한글버전](https://github.com/mockito/mockito/wiki/Mockito-features-in-Korean)를 참고하세요!  
@@ -300,15 +301,19 @@ Mock은 껍데기만 있는 객체를 얘기합니다.
 여기서 **스파이는 조직 전체에 퍼져있지 않고, 조직 구성원 중 1명 혹은 일부분**입니다.  
 스파이외에 **다른 조직원들은 모두 진짜 조직원**입니다.  
   
-마찬가지로 
+ ```@MockBean```은 ```given```에서 **선언한 코드 외에는 전부 사용할 수 없습니다**.  
+ 반면에 ```@SpyBean```은 ```given```에서 **선언한 코드 외에는 전부 실제 객체의 것을 사용**합니다.  
+
 
 현재(v1.5.7 / 2017.09.20) ```@SpyBean```은 SpringDataJpaRepository 인터페이스에서는 작동되지 않습니다.  
 (참고: [@SpyBean on Data Jpa Repository bean isn't working](https://github.com/spring-projects/spring-boot/issues/7033) )  
   
 > 아마도 ```JpaRepository```가 이미 프록시 객체로 구현하기 때문에 거기에 다시 프록시를 씌우는게 안되는게 아닐까 싶은데 개인적인 추측입니다^^;
 
-이 이슈는 해결할 예정이라고 답글이 있는데요, philwebb은 repository에서는 spy보다는 mock을 써야한다고 합니다.   
+이 이슈는 해결할 예정이라고 답글이 있는데요, philwebb은 ```repository```에서는 spy보다는 mock을 써야한다고 합니다.   
 ![github_issue](./images/github_issue.png)
 
-무슨말이냐 하면, 
+무슨 말이냐 하면, ```repository```를 ```@SpyBean```을 통해 테스트 하려면 해당 테스트 범위가 너무 커지고 통합테스트와 다름 없는 테스트가 될 수 있다는 것입니다.  
+ ```repository```만 테스트 한다면 ```repository```만 테스트를 하고, 그 외에 ```repository```를 호출하는 메소드들을 테스트할때는 ```repository```의 메소드들 중 사용하는 부분만 Mock으로 구현하는 것이 좀 더 올바른 방식이라고 얘기합니다.  
+
 

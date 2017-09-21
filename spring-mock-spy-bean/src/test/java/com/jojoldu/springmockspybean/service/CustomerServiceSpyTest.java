@@ -1,21 +1,24 @@
 package com.jojoldu.springmockspybean.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jojoldu.springmockspybean.domain.customer.Customer;
-import com.jojoldu.springmockspybean.domain.customer.CustomerRepository;
 import com.jojoldu.springmockspybean.domain.order.CustomerOrder;
 import com.jojoldu.springmockspybean.domain.order.CustomerOrderRepository;
 import com.jojoldu.springmockspybean.domain.product.Product;
-import com.jojoldu.springmockspybean.exception.ResourceNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpSession;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -23,29 +26,30 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Created by jojoldu@gmail.com on 2017. 9. 19.
+ * Created by jojoldu@gmail.com on 2017. 9. 21.
  * Blog : http://jojoldu.tistory.com
  * Github : https://github.com/jojoldu
  */
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class CustomerServiceMockTest {
+public class CustomerServiceSpyTest {
 
     @Autowired
     private CustomerService customerService;
 
-    @MockBean(name = "httpSession")
+    @SpyBean(name = "httpSession")
     private HttpSession httpSession;
+
+    @SpyBean(name = "objectMapper")
+    private ObjectMapper objectMapper;
 
     @MockBean(name = "customerOrderRepository")
     private CustomerOrderRepository customerOrderRepository;
 
-    @MockBean(name = "customerRepository")
-    private CustomerRepository customerRepository;
-
     @Test
-    public void findMyOrderPriceSum_로그인사용자의_주문상품금액합계가_반환된다 () throws Exception {
+    public void saveMyOrderProductCountInSession_로그인한사용자가_주문한제품수가_session에저장된다 () throws Exception {
+
         //given
         Customer customer = new Customer();
 
@@ -53,35 +57,24 @@ public class CustomerServiceMockTest {
                 .willReturn(customer);
 
         CustomerOrder order = new CustomerOrder();
-
-        order.addProduct(Product.builder()
-                .price(10000L)
-                .build());
-
-        order.addProduct(Product.builder()
-                .price(15000L)
-                .build());
+        order.addProduct(new Product());
+        order.addProduct(new Product());
 
         given(customerOrderRepository.findAllByCustomer(customer))
                 .willReturn(Stream.of(order));
 
         //when
-        long sum = customerService.findMyOrderPriceSum();
+        customerService.saveMyOrderProductCountInSession();
+        int count = (Integer)httpSession.getAttribute("orderCount");
 
         //then
-        assertThat(sum, is(25000L));
+        assertThat(count, is(2));
+
     }
 
-    @Test(expected = ResourceNotFoundException.class)
-    public void findByName_찾는고객이없으면_ResourceNotFoundException발생 () throws Exception {
-        //given
-        final String NAME = "jojoldu";
-        given(customerRepository.findCustomerByName(NAME))
-                .willReturn(Optional.empty());
-
-        //when
-        customerService.findByName(NAME);
+    @Test
+    public void getCustomerJsonString_JSON문자열반환 () throws Exception {
+        System.out.println(objectMapper.writeValueAsString(new Customer()));
     }
-
 
 }
