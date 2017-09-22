@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
@@ -44,6 +45,8 @@ public class CustomerServiceSpyTest {
                 .name("jojoldu")
                 .build();
 
+        final String REQUEST_PARAM = objectMapper.writeValueAsString(customer);
+
         CustomerOrder order = new CustomerOrder();
 
         order.addProduct(Product.builder()
@@ -54,13 +57,14 @@ public class CustomerServiceSpyTest {
                 .price(15000L)
                 .build());
 
-        given(customerOrderRepository.findAllByCustomer(customer))
-                .willReturn(Stream.of(order));
+        given(customerOrderRepository.findTopByCustomer(customer))
+                .willReturn(Optional.of(order));
 
-        doReturn(customer).when(objectMapper).readValue("", Customer.class);
-        
+        given(objectMapper.readValue(REQUEST_PARAM, Customer.class))
+                .willReturn(customer);
+
         //when
-        final String customerJsonString = customerService.getCustomerJsonString(objectMapper.writeValueAsString(""));
+        final String customerJsonString = customerService.getCustomerJsonString(REQUEST_PARAM);
 
         //then
         System.out.println(customerJsonString);
