@@ -8,22 +8,15 @@ import com.jojoldu.springmockspybean.domain.product.Product;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.servlet.http.HttpSession;
 
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 9. 21.
@@ -38,43 +31,39 @@ public class CustomerServiceSpyTest {
     @Autowired
     private CustomerService customerService;
 
-    @SpyBean(name = "httpSession")
-    private HttpSession httpSession;
+    @MockBean(name = "customerOrderRepository")
+    private CustomerOrderRepository customerOrderRepository;
 
     @SpyBean(name = "objectMapper")
     private ObjectMapper objectMapper;
 
-    @MockBean(name = "customerOrderRepository")
-    private CustomerOrderRepository customerOrderRepository;
-
     @Test
-    public void saveMyOrderProductCountInSession_로그인한사용자가_주문한제품수가_session에저장된다 () throws Exception {
-
+    public void getCustomerJsonString_JSON문자열반환 () throws Exception {
         //given
-        Customer customer = new Customer();
-
-        given(httpSession.getAttribute("loginUser"))
-                .willReturn(customer);
+        Customer customer = Customer.builder()
+                .name("jojoldu")
+                .build();
 
         CustomerOrder order = new CustomerOrder();
-        order.addProduct(new Product());
-        order.addProduct(new Product());
+
+        order.addProduct(Product.builder()
+                .price(10000L)
+                .build());
+
+        order.addProduct(Product.builder()
+                .price(15000L)
+                .build());
 
         given(customerOrderRepository.findAllByCustomer(customer))
                 .willReturn(Stream.of(order));
 
+        doReturn(customer).when(objectMapper).readValue("", Customer.class);
+        
         //when
-        customerService.saveMyOrderProductCountInSession();
-        int count = (Integer)httpSession.getAttribute("orderCount");
+        final String customerJsonString = customerService.getCustomerJsonString(objectMapper.writeValueAsString(""));
 
         //then
-        assertThat(count, is(2));
-
-    }
-
-    @Test
-    public void getCustomerJsonString_JSON문자열반환 () throws Exception {
-        System.out.println(objectMapper.writeValueAsString(new Customer()));
+        System.out.println(customerJsonString);
     }
 
 }

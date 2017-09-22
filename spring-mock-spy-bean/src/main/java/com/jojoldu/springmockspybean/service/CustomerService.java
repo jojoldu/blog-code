@@ -6,13 +6,17 @@ import com.jojoldu.springmockspybean.domain.customer.CustomerRepository;
 import com.jojoldu.springmockspybean.domain.order.CustomerOrder;
 import com.jojoldu.springmockspybean.domain.order.CustomerOrderRepository;
 import com.jojoldu.springmockspybean.domain.order.OrderProductMap;
+import com.jojoldu.springmockspybean.domain.product.Product;
+import com.jojoldu.springmockspybean.dto.OrderResponseDto;
 import com.jojoldu.springmockspybean.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 9. 18.
@@ -23,16 +27,16 @@ import java.util.List;
 @Service
 public class CustomerService {
 
-    private HttpSession httpSession;
-    private ObjectMapper objectMapper;
     private CustomerRepository customerRepository;
     private CustomerOrderRepository customerOrderRepository;
+    private HttpSession httpSession;
+    private ObjectMapper objectMapper;
 
-    public CustomerService(HttpSession httpSession, ObjectMapper objectMapper, CustomerRepository customerRepository, CustomerOrderRepository customerOrderRepository) {
-        this.httpSession = httpSession;
-        this.objectMapper = objectMapper;
+    public CustomerService(CustomerRepository customerRepository, CustomerOrderRepository customerOrderRepository, HttpSession httpSession, ObjectMapper objectMapper) {
         this.customerRepository = customerRepository;
         this.customerOrderRepository = customerOrderRepository;
+        this.httpSession = httpSession;
+        this.objectMapper = objectMapper;
     }
 
     @Transactional(readOnly = true)
@@ -68,9 +72,16 @@ public class CustomerService {
 
     @Transactional(readOnly = true)
     public String getCustomerJsonString(String requestBody) throws IOException {
+
         Customer customer = objectMapper.readValue(requestBody, Customer.class);
 
-        return objectMapper.writeValueAsString(customer);
+        List<Product> products = customerOrderRepository.findTopByCustomer(customer)
+                .map(o -> o.getProducts().stream()
+                        .map(OrderProductMap::getProduct)
+                        .collect(Collectors.toList()))
+                .orElse(new ArrayList<>());
+
+        return objectMapper.writeValueAsString(new OrderResponseDto(customer.getName(), products));
     }
 
 }
