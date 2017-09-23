@@ -273,7 +273,7 @@ Mock은 껍데기만 있는 객체를 얘기합니다.
 아주 잘 작동하는 것을 확인할 수 있습니다.  
 추가로 한가지 더 수행해보겠습니다.  
 
-![exception코드](./images/exception코드.png)
+![exception](./images/exception.png)
 
 위와 같은 메소드에서 **조회되는 값이 없으면 ```ResourceNotFoundException```이 발생**하는것을 테스트하고 싶다고 가정 하겠습니다.  
 이런 상황도 ```@MockBean```을 쓴다면 쉽게 해결됩니다.
