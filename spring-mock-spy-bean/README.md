@@ -243,7 +243,7 @@ public class OrderProductMap {
   
 Mock은 껍데기만 있는 객체를 얘기합니다.  
 인터페이스의 추상메소드가 메소드 바디는 없고 파라미터 타입과 리턴타입만 선언된 것처럼, Mock Bean은 **기존에 사용되던 Bean의 껍데기만 가져오고 내부의 구현 부분은 모두 사용자에게 위임**한 형태입니다.  
-즉, 해당 Bean의 어떤 메소드가 어떤 값이 입력 되면 어떤 값이 리턴 되어야 한다는 내용은 모두 **개발자 필요에 의해서 조작이 가능**합니다.  
+즉, 해당 Bean의 어떤 메소드가 어떤 값이 입력 되면 어떤 값이 리턴 되어야 한다는 내용 모두 **개발자 필요에 의해서 조작이 가능**합니다.  
   
 위에서 사용한 코드를 한번 변경해보겠습니다.
 
@@ -303,12 +303,19 @@ Mock은 껍데기만 있는 객체를 얘기합니다.
   
  ```@MockBean```은 ```given```에서 **선언한 코드 외에는 전부 사용할 수 없습니다**.  
  반면에 ```@SpyBean```은 ```given```에서 **선언한 코드 외에는 전부 실제 객체의 것을 사용**합니다.  
+이미 존재하는 Bean을 SpyBean으로 Wrapping한 형태라고 생각하시면 됩니다.  
+  
+기본적인 개념은 조금 다르나 사용법은 ```@MockBean```과 ```@SpyBean```은 동일합니다.  
 
 
-현재(v1.5.7 / 2017.09.20) ```@SpyBean```은 SpringDataJpaRepository 인터페이스에서는 작동되지 않습니다.  
+
+### @SpyBean 주의사항
+
+현재(v1.5.7 / 2017.09.20) ```@SpyBean```은 인터페이스 Bean (```JpaRepository```, ```HttpSession``` 등등)에서는 작동되지 않습니다.  
+  
 (참고: [@SpyBean on Data Jpa Repository bean isn't working](https://github.com/spring-projects/spring-boot/issues/7033) )  
   
-> 아마도 ```JpaRepository```가 이미 프록시 객체로 구현하기 때문에 거기에 다시 프록시를 씌우는게 안되는게 아닐까 싶은데 개인적인 추측입니다^^;
+> 아마도 프록시 객체로 구현하기 때문에 거기에 다시 프록시를 씌우는게 안되는게 아닐까 싶은데 개인적인 추측입니다^^;
 
 이 이슈는 해결할 예정이라고 답글이 있는데요, philwebb은 ```repository```에서는 spy보다는 mock을 써야한다고 합니다.   
 ![github_issue](./images/github_issue.png)

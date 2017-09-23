@@ -1,6 +1,5 @@
 package com.jojoldu.springmockspybean.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jojoldu.springmockspybean.domain.customer.Customer;
 import com.jojoldu.springmockspybean.domain.order.CustomerOrder;
 import com.jojoldu.springmockspybean.domain.order.CustomerOrderRepository;
@@ -13,11 +12,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Optional;
+import javax.servlet.http.HttpSession;
 import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 9. 21.
@@ -32,42 +32,34 @@ public class CustomerServiceSpyTest {
     @Autowired
     private CustomerService customerService;
 
-    @MockBean(name = "customerOrderRepository")
+    @MockBean (name = "customerOrderRepository")
     private CustomerOrderRepository customerOrderRepository;
 
-    @SpyBean(name = "objectMapper")
-    private ObjectMapper objectMapper;
+    @SpyBean (name = "httpSession")
+    private HttpSession httpSession;
 
     @Test
-    public void getCustomerJsonString_JSON문자열반환 () throws Exception {
-        //given
-        Customer customer = Customer.builder()
-                .name("jojoldu")
-                .build();
+    public void saveMyOrderProductCountInSession () throws Exception {
 
-        final String REQUEST_PARAM = objectMapper.writeValueAsString(customer);
+        // given
+        Customer customer = new Customer ();
 
-        CustomerOrder order = new CustomerOrder();
+        given (httpSession.getAttribute ("loginUser"))
+                .willReturn (customer);
 
-        order.addProduct(Product.builder()
-                .price(10000L)
-                .build());
+        CustomerOrder order = new CustomerOrder ();
+        order.addProduct (new Product ());
+        order.addProduct (new Product ());
 
-        order.addProduct(Product.builder()
-                .price(15000L)
-                .build());
+        given (customerOrderRepository.findAllByCustomer (customer))
+                .willReturn (Stream.of (order));
 
-        given(customerOrderRepository.findTopByCustomer(customer))
-                .willReturn(Optional.of(order));
+        // when
+        customerService.saveMyOrderProductCountInSession ();
+        int count = (Integer) httpSession.getAttribute ("orderCount");
 
-        given(objectMapper.readValue(REQUEST_PARAM, Customer.class))
-                .willReturn(customer);
-
-        //when
-        final String customerJsonString = customerService.getCustomerJsonString(REQUEST_PARAM);
-
-        //then
-        System.out.println(customerJsonString);
+        // then
+        assertThat (count, is (2));
     }
 
 }
