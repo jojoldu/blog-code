@@ -29,7 +29,6 @@ import static org.mockito.BDDMockito.given;
 @SpringBootTest
 public class CustomerServiceSpyMapperTest {
 
-
     @Autowired
     private CustomerService customerService;
 
