@@ -1,6 +1,8 @@
 package com.jojoldu.spock
 
+import com.jojoldu.spock.domain.FeeCalculateType
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import java.math.RoundingMode
 
@@ -21,5 +23,32 @@ class BasicUsageTest extends Specification {
 
         then:
         원단위_반올림 == 500
+    }
+
+    // 공식문서의 where feature 메소드 예제를 좀 더 가독성 있게 변경
+    def "computing the maximum of two numbers"() {
+        expect:
+        Math.max(a, b) == c
+
+        where:
+        a | b | c
+        5 | 1 | 5
+        3 | 9 | 9
+    }
+
+    @Unroll // 메소드이름에 지정된 템플릿에 따라 테스트 결과를 보여준다
+    def "금액이 주어지면 원단위 반올림 결과가 반환된다 [금액: #amount, 결과: #result]" () {
+        given:
+        def feeCalculator = FeeCalculateType.WON_UNIT_CUT
+
+        expect:
+        feeCalculator.calculate(amount) == result
+
+        where:
+        amount | result
+        500L   | 500L
+        495L   | 490L
+        -500L  | -500L
+        -495L  | -490L
     }
 }
