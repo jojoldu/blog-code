@@ -26,18 +26,19 @@ TDD프레임워크인 JUnit과 비슷한 점이 많으나, **기대하는 동작
 ![FeeCalculateType](./images/FeeCalculateType.png)
 
 위 ```Enum``` 타입이 계산을 올바르게 하는지 검증하기 위한 테스트 코드를 작성합니다.  
-테스트 코드를 작성하는 중, 
+테스트 코드를 작성하다보면 몇가지 문제점을 만나게 됩니다.
+
 ![assertThat](./images/assertThat.png)
 
-(이 중 어느 ```assertThat```을 써야할까요?)
+1. 이 중 어느 ```assertThat```을 써야할까요?
 
 ![is](./images/is.png)
 
-(```is```는 어떤걸 써야할까요?)
-
+2. ```is```는 어떤걸 써야할까요?
  
 ![junit테스트코드](./images/junit테스트코드.png)
 
+3. 파라미터만 변경되고 동일한 과정이 반복되는데 과정 자체를 재사용할순 없을까요?
 
 ### Spock 설치
 
@@ -67,12 +68,11 @@ apply plugin: 'groovy' // groovy 지원
 ![기본사용법](./images/기본사용법.png)
 
 * ```Specification```: ```extends``` 하면 ```Spock Test``` 클래스가 됩니다.  
-* ```def``` : groovy의 동적 타입 (메소드, 변수에 모두 사용할 수 있음. JS의 ```var``` 같은 존재)
+* ```def``` : groovy의 동적 타입 선언(메소드, 변수에 모두 사용할 수 있음. JS의 ```var``` 같은 존재)
 * ```given```, ```when```, ```then``` : Spock의 feature 메소드
 
 groovy 언어로 작성하기 때문에 **테스트 메소드 이름을 문자열로** 작성할 수 있게 되었습니다.  
-Java에서도 한글 메소드명은 되지 않냐고 반문하실수 있으실텐데요.  
-groovy는 문자열이 허용되기 때문에 띄어쓰기, 가장 앞에 특수문자 사용하기 등의 **메소드 네이밍 제약에서 전부 벗어날 수 있습니다**.  
+Java에서도 한글 메소드명이 가능하긴 했지만 띄어쓰기, 가장 앞에 특수문자 사용하기 등의 제약조건이 있는 반면 groovy는 이 모든 제약 조건에서 빠져나올수 있습니다.  
   
 
  ```given:```, ```when:```, ```then:```등과 같은 메소드를 Spock에선 **feature** 메소드라고 합니다.  
@@ -101,6 +101,19 @@ groovy는 문자열이 허용되기 때문에 띄어쓰기, 가장 앞에 특수
 ### Spock으로 전환한 테스트 코드
 
 ![junit2spock](./images/junit2spock.png)
+
+![unroll결과](./images/unroll결과.png)
+
+
+### Spock과 JUnit 비교
+
+
+Spock이 조금 생소한 용어를 사용하고 있지만, JUnit과 크게 다르지 않은 사용법을 제공하고 있습니다.  
+아래는 Spock과 JUnit의 대치되는 예약어를 비교한 것입니다.
+
+![spock vs junit](./images/spock_junit.png)
+
+(출처: [공식문서](http://spockframework.org/spock/docs/1.0/spock_primer.html))
 
 ## SpringBoot + Spock
 
