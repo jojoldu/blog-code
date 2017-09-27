@@ -1,6 +1,7 @@
 package com.jojoldu.spock;
 
 import com.jojoldu.spock.domain.FeeCalculateType;
+import com.jojoldu.spock.domain.NegativeNumberException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -31,6 +32,14 @@ public class BasicUsageJavaTest {
 
         final long case4 = feeCalculator.calculate(-495);
         assertThat(case4, is(-490L));
+    }
 
+    @Test(expected = NegativeNumberException.class)
+    public void calculate_음수가입력되면_throwNagativeNumberException () throws Exception {
+        //given
+        FeeCalculateType feeCalculator = FeeCalculateType.WON_UNIT_CUT;
+
+        //when & then
+        feeCalculator.calculate(-1);
     }
 }

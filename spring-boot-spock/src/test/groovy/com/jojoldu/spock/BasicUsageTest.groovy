@@ -1,6 +1,7 @@
 package com.jojoldu.spock
 
 import com.jojoldu.spock.domain.FeeCalculateType
+import com.jojoldu.spock.domain.NegativeNumberException
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -51,4 +52,20 @@ class BasicUsageTest extends Specification {
         -500L  | -500L
         -495L  | -490L
     }
+
+
+    def "음수가 입력되면 NagativeNumberException 발생한다" () {
+        given:
+        def feeCalculator = FeeCalculateType.WON_UNIT_CUT
+
+        when:
+        feeCalculator.calculate(-1)
+
+        then:
+        def e = thrown(NegativeNumberException.class)
+        e.message == "음수는 허용하지 않습니다."
+    }
+
+
+    
 }
