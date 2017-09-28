@@ -9,15 +9,18 @@
 
 > BDD는 한 TDD 실천자가 테스트의 의도를 더 명확하게 표현하기 위한 용어를 찾는 과정에서 탄생하였다.  
 사실 테스트라는 단어는 **원하는 동작을 정의한다는 정신을 잘 반영하지 못하며 의미가 너무 함축적**이다.  
-개발자 커뮤니티에서는 테스트와 테스트메소드보다는 **명세와 행위**라는 용어를 거론하기 시작했다.  
+개발자 커뮤니티에서는 테스트와 테스트 메소드보다는 **명세와 행위**라는 용어를 거론하기 시작했다.  
 더 적합한 용어를 찾는 노력의 부산물로, BDD 커뮤니티는 JUnit 등 기존 테스트 프레임워크의 대안도 다수 만들어낼 수 있었다.
 (Effective Unit Testing p.240)
 
 Spock을 소개하기전에 꼭 읽어보셨으면해서 책의 한 구절을 소개드렸습니다.  
-Spock은 **BDD 프레임워크**입니다.  
+Spock은 **BDD(Behaviour-Driven Development) 프레임워크**입니다.  
 TDD프레임워크인 JUnit과 비슷한 점이 많으나, **기대하는 동작과 테스트의 의도를 더 명확하게 드러내주고 산만한 코드는 뒤로 숨겨주는 등**의 큰 장점이 있습니다.  
 아직까지 JUnit을 많이 사용하시겠지만, Spock을 소개드리고 싶습니다.  
-(저도 최근까지 JUnit만 쓰다가 팀내 선임님의 적극적인 사용으로 조금씩 시작하게 되었습니다^^;)
+(저도 최근까지 JUnit만 쓰다가 팀내 선임님의 적극적인 사용으로 조금씩 시작하게 되었습니다^^;)  
+  
+제가 열심히 사용하고 이에 대해 소개드리기 보다는, 이제 시작하기 위해서 공부한 내용을 정리한 것이 이번 포스팅의 내용입니다.  
+그래서 보시면서 실전과는 
 
 ## 1. Java
 
@@ -133,7 +136,19 @@ Java에서도 한글 메소드명이 가능하긴 했지만 띄어쓰기, 가장
 
 ![groovy_exception_test](./images/groovy_exception_test.png)
 
-### 1-5. Spock과 JUnit 비교
+### 1-5. Mock 테스트
+
+![mockTest](./images/mockTest.png)
+
+![mocking_exception](./images/mocking_exception.png)
+
+
+```groovy
+
+testCompile('net.bytebuddy:byte-buddy:1.6.4')
+```
+
+### 1-6. Spock과 JUnit 비교
 
 Spock이 조금 생소한 용어를 사용하고 있지만, JUnit과 크게 다르지 않은 사용법을 제공하고 있습니다.  
 아래는 Spock과 JUnit의 대치되는 예약어를 비교한 것입니다.
@@ -142,17 +157,19 @@ Spock이 조금 생소한 용어를 사용하고 있지만, JUnit과 크게 다�
 
 (출처: [공식문서](http://spockframework.org/spock/docs/1.0/spock_primer.html))
 
+[[ad]]
 
 ## 2. SpringBoot + Spock
 
 이제는 실제 SpringBoot 환경에서 Spock을 어떻게 사용할지에 대해 소개드리겠습니다.  
 참고로 Spock은 모든 Spring 코드를 Java와 동일하게 사용할 수 있습니다.  
-
-참고로 ```@RunWith(SpringRunner.class)```는 Spock 테스트에서 사용하지 않습니다.  
+  
+(참고로 ```@RunWith(SpringRunner.class)```는 Spock 테스트에서 사용하지 않습니다.)  
 
 ![SpringRunner](./images/SpringRunner.png)
 
-보시는 것처럼 ```SpringRunner``` 클래스는 이전에 사용하던 ```SpringJUnit4ClassRunner```를 확장한 클래스이다보니 JUnit을 사용할때 필요한것이기 때문입니다.  
+보시는 것처럼 ```SpringRunner``` 클래스는 이전에 사용하던 ```SpringJUnit4ClassRunner```를 확장한 클래스이다보니 JUnit을 사용할때 필요하기 때문입니다.  
+  
 
 
 ### 2-1. 기본 사용법

@@ -34,5 +34,5 @@ dependencies {
 
 	testCompile('org.spockframework:spock-core:1.1-groovy-2.4') // Spock 의존성 추가
 	testCompile('org.spockframework:spock-spring:1.1-groovy-2.4') // Spock 의존성 추가
-
+	testCompile('net.bytebuddy:byte-buddy:1.6.4')
 }
