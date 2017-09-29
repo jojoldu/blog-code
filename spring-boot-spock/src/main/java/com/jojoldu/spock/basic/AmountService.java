@@ -1,4 +1,4 @@
-package com.jojoldu.spock.domain;
+package com.jojoldu.spock.basic;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 9. 28.

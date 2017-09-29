@@ -1,4 +1,6 @@
-package com.jojoldu.spock.domain;
+package com.jojoldu.spock.basic;
+
+import com.jojoldu.spock.exception.NegativeNumberException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

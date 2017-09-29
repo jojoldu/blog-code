@@ -1,7 +1,7 @@
 package com.jojoldu.spock
 
-import com.jojoldu.spock.domain.AmountService
-import com.jojoldu.spock.domain.FeeCalculateType
+import com.jojoldu.spock.basic.AmountService
+import com.jojoldu.spock.basic.FeeCalculateType
 import spock.lang.Specification
 
 /**

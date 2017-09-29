@@ -1,7 +1,7 @@
 package com.jojoldu.spock;
 
-import com.jojoldu.spock.domain.FeeCalculateType;
-import com.jojoldu.spock.domain.NegativeNumberException;
+import com.jojoldu.spock.basic.FeeCalculateType;
+import com.jojoldu.spock.exception.NegativeNumberException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
