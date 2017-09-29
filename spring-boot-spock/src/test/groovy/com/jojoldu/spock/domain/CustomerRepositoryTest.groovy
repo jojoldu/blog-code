@@ -16,11 +16,16 @@ class CustomerRepositoryTest extends Specification {
     @Autowired
     CustomerRepository customerRepository
 
-    //@Before
+    // @Before
     def setup() {
         customerRepository.save(new Customer("jojoldu", "jojoldu@gmail.com"))
         customerRepository.save(new Customer("jojoldu1", "jojoldu1@gmail.com"))
         customerRepository.save(new Customer("jojoldu2", "jojoldu2@gmail.com"))
+    }
+
+    // @After
+    def cleanup() {
+        customerRepository.deleteAll()
     }
 
     def "findAll 전체 Customer가 조회된다" () {
