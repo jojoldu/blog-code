@@ -1,4 +1,4 @@
-# spring-boot-spock
+# Spock
 
 안녕하세요? 이번 시간엔 spring-boot-spock 예제를 진행해보려고 합니다.  
 모든 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/spring-boot-spock)에 있기 때문에 함께 보시면 더 이해하기 쉬우실 것 같습니다.  
@@ -100,7 +100,7 @@ Java에서도 한글 메소드명이 가능하긴 했지만 띄어쓰기, 가장
   * ```def``` 대신에 Java처럼 실제 클래스 타입을 명시할 수도 있습니다.
 * ```given```, ```when```, ```then``` : Spock의 feature 메소드
 
- ```given:```, ```when:```, ```then:```등과 같은 메소드를 Spock에선 **feature** 메소드라고 합니다.  
+ 낯익은 ```given:```, ```when:```, ```then:```등과 같은 메소드를 Spock에선 **feature** 메소드라고 합니다.  
 이 3개외에 추가로 3개가 더 있어 총 6단계의 라이프사이클을 가지고 있습니다.  
 
 ![feature메소드_라이프사이클](./images/feature메소드_라이프사이클.png)
