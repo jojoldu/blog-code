@@ -127,6 +127,8 @@ Java에서도 한글 메소드명이 가능하긴 했지만 띄어쓰기, 가장
   
 자 그럼 이제 Spock을 통해 기존 JUnit 테스트 코드를 개편해보겠습니다.
 
+[[ad]]
+
 ### 1-4. Spock으로 전환한 기존 테스트 코드
 
 첫번째 테스트 케이스를 Spock으로 전환해보겠습니다.
@@ -144,21 +146,105 @@ Java에서도 한글 메소드명이 가능하긴 했지만 띄어쓰기, 가장
 
 ![unroll결과](./images/unroll결과.png)
 
-ㅁ
+짜잔!  
+JUnit으로는 수많은 부가 코드가 필요했던 테스트가 아주 심플하게 생성되었습니다.  
+  
 2번째 테스트 케이스(Exception 검증)을 Spock으로 전화해보겠습니다.
 
 ![groovy_exception_test](./images/groovy_exception_test.png)
 
+ ```when:``` 절을 실행했을때 발생할 예외를 ```thrown```으로 검증합니다.  
+여기선 ```NegativeNumberException```이 발생할 것이라 예상하고 작성하였습니다.  
+재밌는 것은 ````thrown```은 발생한 Exception을 검증하는 것 뿐만 아니라, **반환**까지 됩니다.  
+테스트 코드의 마지막줄엔 반환된 Exception의 message 값을 검증합니다.
+
 ### 1-5. Mock 테스트
+
+Spock의 강력한 기능 중 또 하나는 Mock 입니다.  
+아래 2가지 중 본인이 원하시는 방식을 선택하시면 됩니다.  
+
+```groovy
+def mockService = Mock(CustomerService)
+CustomerService mockService = Mock()
+```
+
+Spock에서 Mock 객체의 반환값은 ```>>```로 지정합니다.  
+예를 들어 일반적인 값의 반환을 Mocking 한다면 아래와 같이 표현 가능합니다.
+
+```groovy
+customerRepository.findName(1) >> "jojoldu"
+```
+
+만약 Exception을 반환해야한다면
+
+```groovy
+customerService.validate() >> { throw new ResourceNotFoundException}
+```
+
+와 같이 표현할 수 있습니다.  
+  
+실제로 한번 Mock 테스트 코드를 작성해보겠습니다.
 
 ![mockTest](./images/mockTest.png)
 
+ ```mockAmountService.getAmount```에서 999원을 반환하도록 Mocking 한 뒤, 이를 계산한 결과가 의도한것과 맞는지 검증하는코드입니다.  
+
+이를 바로 실행하면 다음과 같은 아래가 발생합니다.  
+
 ![mocking_exception](./images/mocking_exception.png)
 
+현재까지 발생하는 문제(2017.09.30)라 해결하기 위해 아래 의존성을 추가합니다.
 
 ```groovy
 
 testCompile('net.bytebuddy:byte-buddy:1.6.4')
+```
+
+그리고 이제 실행해보시면!
+
+![mock결과](./images/mock결과.png)
+
+잘 실행됨을 확인할 수 있습니다.  
+  
+
+여기까지만 보면 특별히 다를게 없는 Mock 기능으로 보입니다.  
+Spock의 Mock 기능은 이게 끝이 아닙니다.  
+Spock의 Mock은 **Mock의 호출 횟수를 검증**할 수 있습니다.  
+실제로 코드로 한번 어떤 기능인지 보겠습니다.
+
+![mock_service](./images/mock_service.png)
+
+이벤트에 참여한 고객이 vip면 포인트 적립을 2번하는 메소드입니다.  
+(실제로는 이렇게 작성하진 않습니다. Spock Mock의 기능을 소개하기 위함을 다시한번 말씀드립니다^^;)  
+  
+자 여기서 금액이 2배가 되는것이 아닌, **```customerRepository.savePoint()```가 2번 실행되는지를 테스트**해보고 싶다고 가정하겠습니다.  
+
+생각만해도 코드가 얼마나 복잡해질지 아찔하네요!  
+Spock은 아주 쉽게 해결할 수 있습니다.  
+테스트 코드를 한번 볼까요?
+
+![mock횟수검증](./images/mock횟수검증.png)
+
+ ```then```절에 검증하고 싶은 **Mock 메소드 앞에 숫자를 *하면 그게 바로 수행횟수 검증 코드**가 됩니다.  
+여기서는 ```2 * mockCustomerRepository.savePoint(customer, point)```를 통해 실제로 savePoint가 2번 발생했는지 검증하였습니다.  
+실제로 테스트를 수행해보면
+
+ ![mock횟수검증결과](./images/mock횟수검증결과.png)
+
+통과함을 알 수 있습니다.  
+  
+만약 횟수가 딱 고정된 것이 아니라면 아래와 같이 표현할 수 있습니다.
+
+```groovy
+(3.._) * mockCustomerRepository.savePoint(customer, point) // 최소 3번
+
+(_..3) * mockCustomerRepository.savePoint(customer, point) // 최대 3번
+```
+
+추가로 **파라미터 값에 무관하게 횟수 검증**도 할 수 있습니다.
+
+```groovy
+(_..2) * mockCustomerRepository.savePoint(_, _) // 어떤 파라미터값이 와도 최대 2번 수행된다.
 ```
 
 ### 1-6. Spock과 JUnit 비교
@@ -174,8 +260,9 @@ Spock이 조금 생소한 용어를 사용하고 있지만, JUnit과 크게 다�
 ## 마무리
 
 Spock을 이용한 기본적인 Java 어플리케이션을 테스트하는 방법을 알아보았습니다.  
-다음 시간엔 Spock을 이용한 SpringBoot 테스트 방법을 알아보겠습니다.
-
+다음 시간엔 Spock을 이용한 SpringBoot 테스트 방법을 알아보겠습니다.  
+  
+감사합니다!
 
 ## 출처
 

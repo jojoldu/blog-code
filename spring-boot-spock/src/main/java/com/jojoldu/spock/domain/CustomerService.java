@@ -20,4 +20,15 @@ public class CustomerService {
     public String getCustomerName(long id){
         return customerRepository.findOne(id).getName();
     }
+
+    public void joinEvent(long customerId, long point){
+        Customer customer = customerRepository.findOne(customerId);
+
+        customerRepository.savePoint(customer, point);
+
+        if(customer.isVip()){
+            customerRepository.savePoint(customer, point);
+        }
+    }
+
 }
