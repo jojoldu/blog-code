@@ -19,6 +19,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
 ### Spring
 
+- [SpringBoot & Spock](https://github.com/jojoldu/blog-code/tree/master/spring-boot-spock)
 - [SpringBoot @MockBean, @SpyBean 소개](https://github.com/jojoldu/blog-code/tree/master/spring-mock-spy-bean)
 - [SpringBoot 팁 모음](https://github.com/jojoldu/blog-code/tree/master/springboot-tips)
   - [SpringBoot에서 JPA 쿼리 파라미터 확인하기](https://github.com/jojoldu/blog-code/tree/master/springboot-tips/show-jpa-parameters)

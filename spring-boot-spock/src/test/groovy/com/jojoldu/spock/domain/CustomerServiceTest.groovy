@@ -33,6 +33,5 @@ class CustomerServiceTest extends Specification {
 
         then:
         name == "jojoldu"
-
     }
 }
