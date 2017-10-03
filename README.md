@@ -68,6 +68,8 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 ### Tools
 
 * [IntelliJ]()
+  - [Airbnb ESLint IntelliJ에 적용하기](https://github.com/jojoldu/blog-code/tree/master/airbnb-eslint-setting)
+
   - [프로젝트별 자동생성 주석 포멧 다르게하기](https://github.com/jojoldu/blog-code/tree/master/intellij-tip/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%8B%A8%EC%9C%84_%EC%A3%BC%EC%84%9D%ED%8F%AC%EB%A9%A7)
 
   - [디버깅하기](https://github.com/jojoldu/blog-code/tree/master/intellij-debugging)
