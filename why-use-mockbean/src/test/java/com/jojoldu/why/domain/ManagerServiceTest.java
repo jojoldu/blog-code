@@ -2,7 +2,6 @@ package com.jojoldu.why.domain;
 
 import com.jojoldu.why.domain.book.Book;
 import com.jojoldu.why.domain.book.BookRepository;
-import com.jojoldu.why.domain.book.BookService;
 import com.jojoldu.why.domain.manager.Manager;
 import com.jojoldu.why.domain.manager.ManagerRepository;
 import com.jojoldu.why.domain.manager.ManagerService;

@@ -2,6 +2,7 @@ package com.jojoldu.why.domain.manager;
 
 import com.jojoldu.why.domain.book.Book;
 import com.jojoldu.why.domain.book.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +19,16 @@ import java.util.stream.Collectors;
 @Service
 public class ManagerService {
 
+    @Autowired
     private ManagerRepository managerRepository;
+
+    @Autowired
     private BookRepository bookRepository;
 
-    public ManagerService(ManagerRepository managerRepository, BookRepository bookRepository) {
-        this.managerRepository = managerRepository;
-        this.bookRepository = bookRepository;
-    }
+//    public ManagerService(ManagerRepository managerRepository, BookRepository bookRepository) {
+//        this.managerRepository = managerRepository;
+//        this.bookRepository = bookRepository;
+//    }
 
     @Transactional(readOnly = true)
     public List<Book> findAllHasBook(Long managerId){
