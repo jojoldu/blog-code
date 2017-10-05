@@ -7,6 +7,9 @@
 
 ## 계기
 
+* [Collecting Parameter 패턴](http://www.javajigi.net/display/SWD/Move+Accumulation+to+Collecting+Parameter)
+* [Composite 패턴](https://ko.wikipedia.org/wiki/%EC%BB%B4%ED%8F%AC%EC%A7%80%ED%8A%B8_%ED%8C%A8%ED%84%B4)
+* [Template Method 패턴](http://jdm.kr/blog/116)
 
 ## 참고
 
