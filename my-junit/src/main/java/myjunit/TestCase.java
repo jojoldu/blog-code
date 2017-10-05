@@ -8,15 +8,24 @@ package myjunit;
 
 public abstract class TestCase {
 
+    protected String methodName;
+
+    public TestCase(String methodName) {
+        this.methodName = methodName;
+    }
+
     public void run(){
         before();
         runTest();
         after();
     }
 
-    protected void runTest() {}
+    protected void before() {
+    }
 
-    protected void before() {}
+    protected void runTest() {
+    }
 
-    protected void after() {}
+    protected void after() {
+    }
 }
