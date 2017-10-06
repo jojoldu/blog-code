@@ -181,7 +181,7 @@ public class TestCaseTest extends TestCase {
     @Override
     public void run() {
         try {
-            logger.info(super.testCaseName+ " execute "); // 테스트 케이스들 구별을 위해 name 출력 코드
+            logger.info("{} execute ", testCaseName); // 테스트 케이스들 구별을 위해 name 출력 코드
             Method method = this.getClass().getMethod(super.testCaseName, null);
             method.invoke(this, null);
         } catch (Exception e) {
@@ -229,7 +229,7 @@ public abstract class TestCase {
 
     public void run() {
         try {
-            logger.info(testCaseName+ " execute "); // 테스트 케이스들 구별을 위해 name 출력 코드
+            logger.info("{} execute ", testCaseName); // 테스트 케이스들 구별을 위해 name 출력 코드
             Method method = this.getClass().getMethod(testCaseName, null);
             method.invoke(this, null);
         } catch (Exception e) {
@@ -288,7 +288,7 @@ public abstract class TestCase {
 
     private void runTestCase() {
         try {
-            logger.info(testCaseName+ " execute "); // 테스트 케이스들 구별을 위해 name 출력 코드
+            logger.info("{} execute ", testCaseName); // 테스트 케이스들 구별을 위해 name 출력 코드
             Method method = this.getClass().getMethod(testCaseName, null);
             method.invoke(this, null);
         } catch (Exception e) {
@@ -320,6 +320,109 @@ public abstract class TestCase {
 
 ### 4. TestResult
 
+자 이제 이번에는 테스트 결과와 관련된 기능을 추가하겠습니다.  
+테스트 코드를 수행하면 전체 테스트 케이스 몇개가 수행되었으며, 이들중 몇개가 테스트가 실패하고 몇개가 성공했는지 등등의 기능이 제공됩니다.  
+  
+현재는 이런 테스트 결과에 대한 레포팅을 할 수 없기 때문에 이 기능을 추가해보겠습니다.  
+  
+여러 테스트 메소드들, Fixture 메소드등으로 결과와 관련된 데이터들을 다 수집하기에 적절한 패턴은 [Collecting Parameter 패턴](http://www.javajigi.net/display/SWD/Move+Accumulation+to+Collecting+Parameter) 입니다.  
+**메서드 파라미터에 결과를 수집할 객체를 전달**하는 방식으로 구현할 예정입니다.  
+수집할 테스트 결과 객체의 클래스명은 ```TestResult```로 하겠습니다.  
+현재 기능은 간단하게 수행된 테스트 개수만 담도록 하겠습니다.
+
+```java
+public class TestResult {
+    private static final Logger logger = LoggerFactory.getLogger(TestResult.class);
+    private int runTestCount;
+
+    public TestResult() {
+        this.runTestCount = 0;
+    }
+
+    /**
+     synchronized: 하나의 TestResult 인스턴스를 여러 테스트 케이스에서 사용하게 될 경우
+     쓰레드 동기화 문제가 발생하므로 여기선 synchronized로 간단하게 해결합니다.
+     (테스트 케이스에서만 사용하므로 실시간 성능 이슈를 고려하지 않아도 되기 때문입니다)
+     */
+    public synchronized void startTest() {
+        this.runTestCount++;
+    }
+
+    public void printCount(){
+        logger.info("Total Test Count: {}", runTestCount);
+    }
+}
+```
+
+ ```startTest``` 메소드엔 ```synchronized```를 사용하였습니다.  
+하나의 ```TestResult``` 인스턴스에 테스트 전체 결과에 대한 정보를 담으려면 여러 테스트 케이스가 사용하게되는데, 이때
+쓰레드 동기화 문제가 발생하므로 여기선 synchronized로 간단하게 해결하였습니다.
+(테스트 케이스에서만 사용하므로 실시간 성능 이슈를 고려하지 않아도 되기 때문입니다)  
+  
+자 그러면 이제 각 테스트 케이스마다 이 TestResult를 사용하도록 ```TestCase``` 클래스를 수정해보겠습니다.
+
+```java
+public abstract class TestCase {
+
+    ...
+
+    public TestResult run(){
+        TestResult testResult = createTestResult();
+        run(testResult);
+
+        return testResult;
+    }
+
+    public void run(TestResult testResult){
+        testResult.startTest();
+        before();
+        runTestCase();
+        after();
+    }
+
+    private TestResult createTestResult() {
+        return new TestResult();
+    }
+    ...
+}
+
+```
+
+기존에 있던 ```run()``` 메소드는 ```TestResult```를 파라미터로 받아, ```startTest()```를 실행하는 메소드로 수정하였습니다.  
+그리고 파라미터 없는 ```run()```를 다시 생성하여 ```TestResult```를 자체적으로 인스턴스 생성해서 파라미터 **있는** ```run``` 메소드를 호출하도록 하였습니다.  
+이렇게 되면 어느 테이스 케이스든 ```run```를 호출할 경우 테스트 count가 1씩 증가하는 것을 체크할 수 있게 됩니다.  
+  
+그럼 ```TestCaseTest``` 코드를 다시 수정해서 기능을 확인해보겠습니다!
+
+```java
+public class TestCaseTest extends TestCase {
+    ...
+    public static void main(String[] args) {
+        TestResult testResult = new TestResult();
+        new TestCaseTest("runTest").run(testResult);
+        new TestCaseTest("runTestMinus").run(testResult);
+        testResult.printCount();
+    }
+}
+```
+
+main 메소드에서 ```TestResult```를 생성해서 각각의 테스트케이스에 파라미터로 전달합니다.  
+이렇게 되면 테스트 케이스가 실행될때마다 카운트가 체크되니 전체 카운트를 확인할수 있습니다.  
+마지막 ```printCount```를 통해 미리 선언된 방식으로 레포팅합니다.
+
+![테스트성공6](./images/테스트성공6.png)
+
+> printCount를 assertTrue로 검증하지 않는 이유는, 이부분은 검증의 영역이 아닌 레포팅 영역이기 때문입니다.  
+차후에 본인이 원하는 방식으로 레포팅 형태롤 변경하면 됩니다.  
+(ex: HTML, JSON 등등)  
+지금은 간단하게 console로 표현하였습니다.
+
+테스트 결과를 담을 객체도 완성하였습니다!  
+여기까지를 다이어그램으로 표현하면 아래와 같습니다.
+
+![스냅샷3](./images/스냅샷3.png)
+
+### 5. Fail 처리
 
 ## 참고
 
@@ -331,6 +434,6 @@ public abstract class TestCase {
 ### 사용한 패턴
 
 * [Command 패턴](http://javacan.tistory.com/entry/6)
+* [Template Method 패턴](http://jdm.kr/blog/116)
 * [Collecting Parameter 패턴](http://www.javajigi.net/display/SWD/Move+Accumulation+to+Collecting+Parameter)
 * [Composite 패턴](https://ko.wikipedia.org/wiki/%EC%BB%B4%ED%8F%AC%EC%A7%80%ED%8A%B8_%ED%8C%A8%ED%84%B4)
-* [Template Method 패턴](http://jdm.kr/blog/116)

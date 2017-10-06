@@ -21,17 +21,29 @@ public abstract class TestCase {
         this.testCaseName = testCaseName;
     }
 
-    public void run(){
+    public TestResult run(){
+        TestResult testResult = createTestResult();
+        run(testResult);
+
+        return testResult;
+    }
+
+    public void run(TestResult testResult){
+        testResult.startTest();
         before();
         runTestCase();
         after();
+    }
+
+    private TestResult createTestResult() {
+        return new TestResult();
     }
 
     protected void before() {}
 
     private void runTestCase() {
         try {
-            logger.info(testCaseName+ " execute "); // 테스트 케이스들 구별을 위해 name 출력 코드
+            logger.info("{} execute ", testCaseName); // 테스트 케이스들 구별을 위해 name 출력 코드
             Method method = this.getClass().getMethod(testCaseName, null);
             method.invoke(this, null);
         } catch (Exception e) {
