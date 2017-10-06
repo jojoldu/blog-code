@@ -250,7 +250,76 @@ public abstract class TestCase {
 
 ![스냅샷1](./images/스냅샷1.png)
 
-### 3. TestCase
+### 3. Fixture 메소드
+
+현재까지 제작한 ```TestCase``` 클래스와 기존에 사용하던 JUnit 기능를 비교해서 빠진 기능이 뭐가 있을까요?  
+가장 먼저 떠오르는 기능은 ```Fixture``` 메소드인것 같습니다.  
+용어가 조금 어려운데 저희가 흔히 사용하는 ```@Before```, ```@After```와 같이 **각각의 테스트 케이스들에게 공통적으로 수행되는 메소드**를 얘기합니다.  
+  
+자 예를 들어 아래와 같이 ```TestCaseTest```를 수정해보겠습니다.
+
+![fixture문제](./images/fixture문제.png)
+
+JUnit이였다면 이렇게 테스트 코드를 작성하지 않겠죠?  
+각각의 테스트 케이스들 앞/뒤로 혹은 **특별한 시점에 공통적으로 코드를 수행**하고 싶다면 어떻게 해야할까요?  
+  
+[템플릿메소드 패턴](http://jdm.kr/blog/116)은 현재 상황에 적용할 수 있는 아주 적절한 디자인패턴입니다.  
+  
+템플릿 메소드 패턴을 적용하여 ```TestCase```를 수정해보겠습니다.
+
+```java
+public abstract class TestCase {
+
+    private static final Logger logger = LoggerFactory.getLogger(TestCase.class);
+
+    protected String testCaseName;
+
+    public TestCase(String testCaseName) {
+        this.testCaseName = testCaseName;
+    }
+
+    public void run(){
+        before();
+        runTestCase();
+        after();
+    }
+
+    protected void before() {}
+
+    private void runTestCase() {
+        try {
+            logger.info(testCaseName+ " execute "); // 테스트 케이스들 구별을 위해 name 출력 코드
+            Method method = this.getClass().getMethod(testCaseName, null);
+            method.invoke(this, null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void after() {}
+}
+```
+
+> JUnit A Cook’s Tour에서는 ```setup```, ```tearDown```이라고 표현하지만 여기선 좀더 친숙하게 before, after로 표현하겠습니다.
+
+기존의 ```run``` 메소드를 수정하여 ```before()``` -> ```runTestCase()``` -> ```after()``` 순으로 실행되도록 구조화시켰습니다.  
+  
+여기서 ```before()```와 ```after()```는 추상메소드가 아닙니다.  
+**일반메소드이지만 구현부분이 없이** 생성하였습니다.  
+추상메소드로 구현할 경우 상속받는 클래스들에선 무조건 오버라이딩 해야하는데, 이들은 **강제로 구현해야할 대상은 아니고 선택대상**이기 때문입니다.  
+  
+이제 이에 맞춰 테스트 클래스인 ```TestCaseTest``` 코드를 개선하고 다시 테스트를 실행해보겠습니다.
+
+![테스트성공5](./images/테스트성공5.png)
+
+ ```before``` 메소드가 각각의 테스트 케이스마다 수행되어 ```base``` 변수에 10이 할당되어 테스트가 성공됨을 확인할 수 있습니다.  
+  
+자 여기까지 상황을 다이어그램으로 표현하면 아래와 같습니다.
+
+![스냅샷2](./images/스냅샷2.png)  
+
+### 4. TestResult
+
 
 ## 참고
 
@@ -259,7 +328,7 @@ public abstract class TestCase {
 * [테스팅 프레임워크는 직접 만들어 써보자 - 토비님 블로그](http://toby.epril.com/?p=424)
 * [[번역]JUnit A Cook’s Tour](https://bluepoet.me/2016/12/03/%EB%B2%88%EC%97%ADjunit-a-cooks-tour/)
 
-### 사용한 패턴 설명
+### 사용한 패턴
 
 * [Command 패턴](http://javacan.tistory.com/entry/6)
 * [Collecting Parameter 패턴](http://www.javajigi.net/display/SWD/Move+Accumulation+to+Collecting+Parameter)

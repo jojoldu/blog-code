@@ -12,13 +12,20 @@ public class TestCaseTest extends TestCase {
         super(testCaseName);
     }
 
+    private static long base;
+
+    @Override
+    public void before() {
+        base = 10;
+    }
+
     public void runTest() {
-        long sum = 10+10;
+        long sum = 10 + base;
         Assert.assertTrue(sum == 20);
     }
 
     public void runTestMinus() {
-        long minus = 100-10;
+        long minus = 100 - base;
         Assert.assertTrue(minus == 90);
     }
 

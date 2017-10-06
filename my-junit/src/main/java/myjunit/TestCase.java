@@ -21,7 +21,15 @@ public abstract class TestCase {
         this.testCaseName = testCaseName;
     }
 
-    public void run() {
+    public void run(){
+        before();
+        runTestCase();
+        after();
+    }
+
+    protected void before() {}
+
+    private void runTestCase() {
         try {
             logger.info(testCaseName+ " execute "); // 테스트 케이스들 구별을 위해 name 출력 코드
             Method method = this.getClass().getMethod(testCaseName, null);
@@ -31,18 +39,5 @@ public abstract class TestCase {
         }
     }
 
-//    public void run(){
-//        before();
-//        runTest();
-//        after();
-//    }
-//
-//    protected void before() {
-//    }
-//
-//    protected void runTest() {
-//    }
-//
-//    protected void after() {
-//    }
+    protected void after() {}
 }
