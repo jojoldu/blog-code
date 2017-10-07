@@ -1,8 +1,11 @@
 package myjunit;
 
+import myjunit.assertion.AssertionFailedError;
+import myjunit.result.TestResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -31,8 +34,23 @@ public abstract class TestCase {
     public void run(TestResult testResult){
         testResult.startTest();
         before();
-        runTestCase();
-        after();
+        try{
+            runTestCase();
+        } catch (InvocationTargetException ite) {
+            if(isAssertionFailed(ite)){
+                testResult.addFailure(this);
+            } else {
+                testResult.addError(this, ite);
+            }
+        } catch (Exception e) {
+            testResult.addError(this, e);
+        } finally {
+            after();
+        }
+    }
+
+    private boolean isAssertionFailed(InvocationTargetException ite) {
+        return ite.getTargetException() instanceof AssertionFailedError;
     }
 
     private TestResult createTestResult() {
@@ -41,15 +59,15 @@ public abstract class TestCase {
 
     protected void before() {}
 
-    private void runTestCase() {
-        try {
-            logger.info("{} execute ", testCaseName); // 테스트 케이스들 구별을 위해 name 출력 코드
-            Method method = this.getClass().getMethod(testCaseName, null);
-            method.invoke(this, null);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    private void runTestCase() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        logger.info("{} execute ", testCaseName); // 테스트 케이스들 구별을 위해 name 출력 코드
+        Method method = this.getClass().getMethod(testCaseName, null);
+        method.invoke(this, null);
     }
 
     protected void after() {}
+
+    public String getTestCaseName() {
+        return testCaseName;
+    }
 }

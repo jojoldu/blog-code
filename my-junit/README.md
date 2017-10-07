@@ -424,6 +424,160 @@ main 메소드에서 ```TestResult```를 생성해서 각각의 테스트케이�
 
 ### 5. Fail 처리
 
+현재 TestResult에는 큰 단점이 하나 있습니다.  
+
+![틀린케이스](./images/틀린케이스.png)
+
+위와 같이 일부러 첫번째 테스트 케이스를 실패시켰습니다.  
+당연하게도 첫번째 테스트 케이스가 실패해서 ```AssertionFailedError```이 발생하고, **다른 모든 코드가 모두 작동이 중단**되었습니다.  
+  
+앞의 테스트가 실패하는것과 관계없이 다른 테스트케이스들은 모두 실행되어야 합니다.  
+추가로, **테스트가 실패한 것인지/오류가 발생한것인지도 구분**할수 있어야 합니다.  
+즉, ```AssertionFailedError```와 다른 Exception들 (ex: ```ArrayIndexOutOfBoundsException```)은 구분되어야 한다는 것입니다.
+  
+이 문제를 해결하기 위해 ```TestCase```에 ```try~catch```를 추가하겠습니다.
+
+```java
+public abstract class TestCase {
+    ...
+
+    public void run(TestResult testResult){
+        testResult.startTest();
+        before();
+        try{
+            runTestCase();
+        } catch (InvocationTargetException ite) {
+            if(isAssertionFailed(ite)){
+                testResult.addFailure(this);
+            } else {
+                testResult.addError(this, ite);
+            }
+        } catch (Exception e) {
+            testResult.addError(this, e);
+        } finally {
+            after();
+        }
+    }
+
+    private boolean isAssertionFailed(InvocationTargetException ite) {
+        return ite.getTargetException() instanceof AssertionFailedError;
+    }
+
+    ...
+
+    private void runTestCase() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        logger.info("{} execute ", testCaseName); // 테스트 케이스들 구별을 위해 name 출력 코드
+        Method method = this.getClass().getMethod(testCaseName, null);
+        method.invoke(this, null);
+    }
+
+    ...
+}
+```
+
+먼저 ```run``` 메소드에서 ```runTestCase()``` 실행부분을 ```try```~```catch```로 감싸고, ```catch```에서 ```InvocationTargetException```과 ```Exception```을 분리해서 제어합니다.  
+  
+여기서 ```InvocationTargetException```은 테스트가 실패했을때를 나타내는데, ```AssertionFailedError```로 바로 잡지 않은 이유는 ```method.invoke``` 때문입니다.  
+  
+저희가 만든 프레임워크에서 각각의 테스트 메소드 실행은 ```method.invoke```로 실행되는데 이것때문에 Exception이 발생할 경우 ```InvocationTargetException```로 랩핑되어 나가기 때문에 ```run()``` 메소드에선 진짜 ```InvocationTargetException``` 발생한것인지, ```AssertionFailedError```가 발생했는데 ```InvocationTargetException```로 랩핑된것인지 알수가 없습니다.  
+그래서 ```InvocationTargetException```이 발생했을 경우, 실제 그 안에 있는 Exception이 ```AssertionFailedError```인지 확인하는 메소드 (```isAssertionFailed```)를 추가한것입니다.  
+  
+그외 다른 Exception에선 모두 Error로 간주하고 처리합니다.  
+  
+ ```TestCase``` 코드는 여기까지이며, 이제 ```TestResult``` 코드를 수정하겠습니다.  
+
+```java
+public class TestResult {
+
+    ...
+
+    private List<TestFailure> failures;
+    private List<TestError> errors;
+
+    public TestResult() {
+        this.runTestCount = 0;
+        this.failures = new ArrayList<>();
+        this.errors = new ArrayList<>();
+    }
+    
+    ...
+
+    public synchronized void addFailure(TestCase testCase) {
+        this.failures.add(new TestFailure(testCase));
+    }
+
+    public synchronized void addError(TestCase testCase, Exception e){
+        this.errors.add(new TestError(testCase, e));
+    }
+
+    ...
+
+    public void printCount(){
+        logger.info("Total Test Count: {}", runTestCount);
+        logger.info("Total Test Success Count: {}", runTestCount - failures.size() - errors.size());
+        logger.info("Total Test Failure Count: {}", failures.size());
+        logger.info("Total Test Error Count: {}", errors.size());
+    }
+}
+```
+
+ ```TestResult```코드의 수정은 간단합니다.  
+테스트 실패와 오류발생에 대한 처리 메소드들만 추가된 것입니다.  
+마지막 레포팅 메소드인 ```printCount```에선 성공한 테스트 수, 실패한 테스트수, 오류가발생한 테스트수를 차례로 Console에 출력시켜줍니다.  
+  
+마지막으로 테스트 실패를 나타내는 ```TestFailure``` 클래스와 테스트 오류를 나타내는 ```TestError``` 클래스를 생성하겠습니다. 
+
+```java
+public class TestFailure {
+    private TestCase testCase;
+
+    public TestFailure(TestCase testCase) {
+        this.testCase = testCase;
+    }
+
+    public String getTestCaseName() {
+        return testCase.getTestCaseName();
+    }
+}
+
+public class TestError {
+    private TestCase testCase;
+    private Exception exception;
+
+    public TestError(TestCase testCase, Exception exception) {
+        this.testCase = testCase;
+        this.exception = exception;
+    }
+
+    public String getTestCaseName() {
+        return testCase.getTestCaseName();
+    }
+
+    public Exception getException() {
+        return exception;
+    }
+}
+```
+
+ ```TestFailure```는 실패한 테스트케이스만 저장하지만, ```TestError```는 어떤 Exception이 발생했는지도 알 필요가 있다고 생각되어 필드에 추가하였습니다.  
+  
+자 그럼 이제 실제로 테스트가 잘 수행되는지 확인하겠습니다.  
+
+![테스트성공7](./images/테스트성공7.png)
+
+실패한 테스트인 ```runTest```는 ```Test Passed``` 메세지가 노출안되고, 최종 결과물에서 성공한 테스트 수와 실패한 테스트 수를 확인할 수 있습니다.  
+  
+ ```TestResult``` 는 차후에 필요에 의하면 ```HtmlTestResult```, ```JsonTestResult``` 등으로 확장할 수도 있으며, 출력시킬 데이터 형태도 단순 count 외에도 여러 데이터를 출력시킬 수 있습니다.  
+
+### 6. Fail 처리
+
+
+## 후기
+
+모르는 패턴들이 많아서 처음에 코드와 패턴을 매칭시키는게 어려워 시간이 꽤 소모되었습니다.  
+계속 다시 읽어보니 의도가 이해되어서 그때부터는 주욱 제가 이해한대로 설명과 코드를 작성할수 있게 되었습니다.  
+
+
 ## 참고
 
 ### 계기

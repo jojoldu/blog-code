@@ -1,4 +1,4 @@
-package myjunit;
+package myjunit.assertion;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 10. 5.

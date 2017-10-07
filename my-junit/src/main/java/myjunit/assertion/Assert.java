@@ -1,4 +1,4 @@
-package myjunit;
+package myjunit.assertion;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

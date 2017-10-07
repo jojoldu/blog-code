@@ -1,5 +1,8 @@
 package myjunit;
 
+import myjunit.assertion.Assert;
+import myjunit.result.TestResult;
+
 /**
  * Created by jojoldu@gmail.com on 2017. 10. 5.
  * Blog : http://jojoldu.tistory.com
@@ -21,12 +24,12 @@ public class TestCaseTest extends TestCase {
 
     public void runTest() {
         long sum = 10 + base;
-        Assert.assertTrue(sum == 20);
+        Assert.assertTrue(sum == 30); // 틀린 케이스
     }
 
     public void runTestMinus() {
         long minus = 100 - base;
-        Assert.assertTrue(minus != 90);
+        Assert.assertTrue(minus == 90);
     }
 
     public static void main(String[] args) {
