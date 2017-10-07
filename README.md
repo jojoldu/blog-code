@@ -8,6 +8,8 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
 ### Java
 
+- [JUnit 만들어보기](https://github.com/jojoldu/blog-code/tree/master/my-junit)
+
 - [제네릭 타입추론시 주의할 점](https://github.com/jojoldu/generic-guide)
 -	[Freemarker 안전하게 사용하기](https://github.com/jojoldu/freemarker-guide)
 - [Java SE 성능비교](https://github.com/jojoldu/blog-code/tree/master/java/performance)
