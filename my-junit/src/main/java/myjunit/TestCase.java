@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
  * Github : https://github.com/jojoldu
  */
 
-public abstract class TestCase {
+public abstract class TestCase implements Test {
 
     private static final Logger logger = LoggerFactory.getLogger(TestCase.class);
 
@@ -31,6 +31,7 @@ public abstract class TestCase {
         return testResult;
     }
 
+    @Override
     public void run(TestResult testResult){
         testResult.startTest();
         before();

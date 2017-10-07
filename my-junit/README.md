@@ -415,6 +415,7 @@ main 메소드에서 ```TestResult```를 생성해서 각각의 테스트케이�
 > printCount를 assertTrue로 검증하지 않는 이유는, 이부분은 검증의 영역이 아닌 레포팅 영역이기 때문입니다.  
 차후에 본인이 원하는 방식으로 레포팅 형태롤 변경하면 됩니다.  
 (ex: HTML, JSON 등등)  
+이 부분도 나는 테스트 코드로 작성하고 싶다! 하시는 분들은 getCount와 같은 메소드를 생성하여 검증코드를 추가하셔도 무방합니다.   
 지금은 간단하게 console로 표현하였습니다.
 
 테스트 결과를 담을 객체도 완성하였습니다!  
@@ -569,8 +570,103 @@ public class TestError {
   
  ```TestResult``` 는 차후에 필요에 의하면 ```HtmlTestResult```, ```JsonTestResult``` 등으로 확장할 수도 있으며, 출력시킬 데이터 형태도 단순 count 외에도 여러 데이터를 출력시킬 수 있습니다.  
 
-### 6. Fail 처리
+### 6. TestSuite
 
+지금까지 저희는 개별 테스트만 수행했습니다.  
+실제 Main 메소드에서는 각각의 ```TestCase```가 한묶음의 테스트인지, 개별 테스트인지 전혀 구분할 수 없습니다.  
+그냥 개별적으로 실행된것일 뿐입니다.  
+  
+하지만 좀 더 견고한 어플리케이션을 만들려면 테스트들을 그룹화 하고 그룹단위로 실행할 수 있어야만 합니다.  
+그래서 ```TestCase```를 그룹화하여 관리할 수 있도록 기능을 개선해볼 예정입니다.  
+  
+여기서 중요한 점은, **개별 테스트케이스 단위로도 테스트는 수행할 수 있어야하며 그룹 단위로도 수행될수 있어야 한다**는 점입니다.  
+그룹과 개별은 단위가 다른데 어떻게 하면 같은 인터페이스로 관리할 수 있을까요?  
+  
+바로 [Composite 패턴](https://ko.wikipedia.org/wiki/%EC%BB%B4%ED%8F%AC%EC%A7%80%ED%8A%B8_%ED%8C%A8%ED%84%B4)입니다.  
+  
+Composite 패턴의 구성요소는 아래와 같습니다.  
+
+* Component: 테스트와 상호작용하는데 사용할 인터페이스
+* Composite: Component 인터페이스를 구현하고 Leaf의 컬렉션을 관리
+* Leaf: Component 인터페이스를 따르는 자식 (여기선 ```TestCase```)
+
+자바에서 Composite을 적용할 때는 **추상 클래스가 아닌 인터페이스를 정의하는 것을 더 선호**합니다.  
+인터페이스를 사용하면 Composite와 Leaf는 특정 클래스를 따르지 않아도 되고 그저 인터페이스를 따르기만 하면 됩니다.  
+  
+자 그럼 Composite 패턴의 Component(인터페이스) 역할을 할 ```Test``` 인터페이스를 생성하겠습니다.  
+
+```java
+public interface Test {
+    void run(TestResult result);
+}
+```
+
+제일 처음 도입한 패턴이 기억나시나요?  
+Command 패턴을 도입하면서 이 프로젝트의 command는 ```run()```라고 얘기했습니다.  
+마찬가지로 Composite 패턴의 Component에서 가질 메소드도 오직 ```run()```만 있으면 됩니다.  
+이외 다른 메소드들은 인터페이스를 구분 지을 단위가 될만큼 중요한 요소가 아닙니다.  
+  
+자 그럼 이제 Composite 패턴의 Composite역할이자, 각각의 ```TestCase```를 관리할 클래스를 생성하겠습니다.  
+해당 클래스의 이름은 ```TestSuite```라 하겠습니다.
+
+```java
+public class TestSuite implements Test {
+    private List<TestCase> testCases = new ArrayList<>();
+
+    @Override
+    public void run(TestResult result) {
+        for (TestCase testCase : this.testCases) {
+            testCase.run(result);
+        }
+    }
+
+    public void addTestCase(TestCase testCase) {
+        this.testCases.add(testCase);
+    }
+}
+```
+
+간단한 코드이지만, ```Test``` 인터페이스를 구현하고, ```run(TestResult result)``` 메소드에선 Leaf 역할은 ```TestCase```에게 위임한 것입니다.  
+이렇게 하면 외부의 클라이언트는 ```Test``` 인터페이스 스펙만으로 ```TestCase```, ```TestSuite```를 모두 다룰수 있게 됩니다.  
+추가로 ```TestSuite```에서 ```TestCase```를 추가할 수 있도록 ```addTestCase```를 ```public```으로 생성하였습니다.  
+  
+동일한 인터페이스 스펙을 갖추기 위해 ```TestCase```도 ```Test``` 인터페이스를 구현(```implements```) 하도록 수정하겠습니다.
+
+```java
+public abstract class TestCase implements Test {
+    ....
+}
+```
+
+그럼 이제 테스트 코드를 ```TestSuite```단위로 변경해보겠습니다.  
+
+```java
+public class TestCaseTest extends TestCase {
+    
+    ...
+
+    public static void main(String[] args) {
+        TestSuite testSuite = new TestSuite();
+        testSuite.addTestCase(new TestCaseTest("runTest"));
+        testSuite.addTestCase(new TestCaseTest("runTestMinus"));
+
+        TestResult testResult = new TestResult();
+        testSuite.run(testResult);
+
+        testResult.printCount();
+    }
+}
+```
+
+기존에 따로놀던 ```TestCase``` 코드들이 ```TestSuite``` 안에 포함되어 관리되고 실행되는 것을 확인할 수 있습니다.  
+
+> 위 코드에선 동일한 테스트 클래스인 ```TestCaseTest```가 2번 호출되고 있습니다.  
+좀 더 개선한다면 TestCase 구현 클래스들 내부에서 테스트 메소드들을 자동으로 추출하고 실행하도록 할수도 있겠죠?  
+범위가 과하단 생각에 기존 코드를 살려두었습니다.
+
+여기까지를 다이어그램으로 표현하면 아래와 같습니다.
+
+![스냅샷6](./images/스냅샷6.png)
 
 ## 후기
 
