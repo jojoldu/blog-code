@@ -2,6 +2,7 @@ group 'com.jojoldu'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'groovy'
 
 sourceCompatibility = 1.8
 
@@ -10,5 +11,6 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compileOnly 'org.projectlombok:lombok:1.16.18'
+    testCompile('org.spockframework:spock-core:1.1-groovy-2.4') // Spock 의존성 추가
 }
