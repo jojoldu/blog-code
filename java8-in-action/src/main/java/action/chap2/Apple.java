@@ -1,6 +1,6 @@
 package action.chap2;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,8 +12,14 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Apple {
     private String color;
+    private int weight;
+
+    @Builder
+    public Apple(String color, int weight) {
+        this.color = color;
+        this.weight = weight;
+    }
 }
 

@@ -1,5 +1,8 @@
 package action.chap2;
 
+import action.chap2.java7.ApplePredicate;
+import action.chap2.java8.AppleOnePredicate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,4 +37,44 @@ public class FruitInventory {
 
         return result;
     }
+
+    public static List<Apple> filterApples(List<Apple> inventory, String color, int weight, boolean useColor){
+        List<Apple> result = new ArrayList<>();
+
+        for (Apple apple : inventory) {
+
+            if( (useColor && apple.getColor().equals(color))
+                    || (!useColor && apple.getWeight() > weight)) {
+
+                result.add(apple);
+            }
+        }
+
+        return result;
+    }
+
+    public static List<Apple> filterApples(List<Apple> inventory, ApplePredicate predicate, Apple compare){
+        List<Apple> result = new ArrayList<>();
+
+        for (Apple apple : inventory) {
+            if(predicate.test(apple, compare)) {
+                result.add(apple);
+            }
+        }
+
+        return result;
+    }
+
+    public static List<Apple> filterApples(List<Apple> inventory, AppleOnePredicate predicate){
+        List<Apple> result = new ArrayList<>();
+
+        for (Apple apple : inventory) {
+            if(predicate.test(apple)) {
+                result.add(apple);
+            }
+        }
+
+        return result;
+    }
+
 }
