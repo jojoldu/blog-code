@@ -30,7 +30,6 @@ public class Item {
     @ManyToOne
     private Shop shop;
 
-    @Builder
     public Item(String name, long price) {
         this.name = name;
         this.price = price;

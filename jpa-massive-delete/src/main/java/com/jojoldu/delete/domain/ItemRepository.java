@@ -14,14 +14,10 @@ import java.util.List;
  * Github : https://github.com/jojoldu
  */
 
-public interface ShopRepository extends JpaRepository<Shop, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Transactional
     @Modifying
-    long deleteAllByIdIn(List<Long> ids);
-
-    @Transactional
-    @Modifying
-    @Query("delete from Shop s where s.id in :ids")
+    @Query("delete from Item i where i.shop.id in :ids")
     void deleteAllByIdInQuery(@Param("ids") List<Long> ids);
 }
