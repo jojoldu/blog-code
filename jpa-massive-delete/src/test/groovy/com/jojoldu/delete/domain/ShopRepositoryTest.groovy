@@ -2,6 +2,7 @@ package com.jojoldu.delete.domain
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.dao.DataIntegrityViolationException
 import spock.lang.Specification
 
 /**
@@ -16,29 +17,27 @@ class ShopRepositoryTest extends Specification {
     @Autowired
     private ShopRepository shopRepository
 
+    @Autowired
+    private ItemRepository itemRepository
+
     private final List<Long> SHOP_ID_LIST = new ArrayList<>()
 
     def setup() {
-        for(int i=0;i<1000;i++){
-            Shop shop = new Shop("우아한서점"+i, "우아한 동네"+i)
-
-            for(int j=0;j<10;j++){
-                shop.addItem(new Item("IT책"+j, j*10000))
-            }
-
-            shopRepository.save(shop)
-        }
-
-        for(long i=100;i<200;i++){
+        for (long i = 100; i < 200; i++) {
             SHOP_ID_LIST.add(i)
         }
     }
 
     def cleanup() {
+        println "======== Clean All ========="
+        itemRepository.deleteAll()
         shopRepository.deleteAll()
     }
 
-    def "SpringDataJPA에서 제공하는 예약어를 통해 삭제한다" () {
+    def "SpringDataJPA에서 제공하는 예약어를 통해 삭제한다 - 부모만" () {
+        given:
+        createShop()
+
         when:
         shopRepository.deleteAllByIdIn(SHOP_ID_LIST)
 
@@ -46,11 +45,54 @@ class ShopRepositoryTest extends Specification {
         shopRepository.findAll().size() == 900
     }
 
-    def "@Query로 Id 리스트를 조건으로 삭제한다" () {
+    def "@Query로 Id 리스트를 조건으로 삭제한다 - 부모만" () {
+        given:
+        createShop()
+
         when:
         shopRepository.deleteAllByIdInQuery(SHOP_ID_LIST)
 
         then:
         shopRepository.findAll().size() == 900
+    }
+
+    def "SpringDataJPA에서 제공하는 예약어를 통해 삭제한다 - 부모&자식" () {
+        given:
+        createShopAndItem()
+
+        when:
+        shopRepository.deleteAllByIdIn(SHOP_ID_LIST)
+
+        then:
+        shopRepository.findAll().size() == 900
+    }
+
+    def "@Query로 Id 리스트를 조건으로 삭제한다 - 부모&자식" () {
+        given:
+        createShopAndItem()
+
+        when:
+        shopRepository.deleteAllByIdInQuery(SHOP_ID_LIST)
+
+        then:
+        thrown(DataIntegrityViolationException.class)
+    }
+
+    private void createShop() {
+        for (int i = 0; i < 1000; i++) {
+            shopRepository.save(new Shop("우아한서점" + i, "우아한 동네" + i))
+        }
+    }
+
+    private void createShopAndItem() {
+        for (int i = 0; i < 1000; i++) {
+            Shop shop = new Shop("우아한서점" + i, "우아한 동네" + i)
+
+            for (int j = 0; j < 10; j++) {
+                shop.addItem(new Item("IT책" + j, j * 10000))
+            }
+
+            shopRepository.save(shop)
+        }
     }
 }
