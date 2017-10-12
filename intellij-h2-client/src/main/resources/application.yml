@@ -1,0 +1,20 @@
+spring:
+  profiles:
+    active: local
+
+---
+spring:
+  profiles: local
+
+  datasource:
+    platform: h2
+    url: jdbc:h2:tcp://localhost:9092/mem:testdb;MVCC=TRUE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: H2
+    show-sql: false
+    hibernate:
+      ddl-auto: create-drop
+
