@@ -239,4 +239,86 @@ class ShopRepositoryTest extends Specification {
     }
 ```
 
-![delete2_1](./images/delete2_1.png)
+
+
+
+```java
+@Entity
+@Getter
+@NoArgsConstructor
+public class Customer {
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    private String name;
+
+    public Customer(String name) {
+        this.name = name;
+    }
+}
+
+public interface CustomerRepository extends JpaRepository<Customer, Long>{
+
+    @Modifying
+    @Transactional
+    long deleteByIdIn(List<Long> ids);
+}
+```
+
+다른 엔티티와 관계가 전혀 없는 ```Customer``` 엔티티를 생성해서 삭제 기능을 테스트해보겠습니다.  
+
+```groovy
+@SpringBootTest
+class CustomerRepositoryTest extends Specification {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    def "Customer in 삭제" () {
+        given:
+        for(int i=0;i<100;i++){
+            customerRepository.save(new Customer(i+"님"))
+        }
+        when:
+        customerRepository.deleteByIdIn(Arrays.asList(1L,2L,3L))
+
+        then:
+        customerRepository.findAll().size() == 97
+    }
+}
+```
+
+위 테스트를 실행해 콘솔을 확인해보시면!
+
+![관계가없을때](./images/관계가없을때.png)
+
+ ```in```쿼리로 조회하는 1개의 쿼리와 id별로 삭제하는 쿼리가 발생합니다.  
+여기서 재밌는 것은 처음 사례처럼 **1건씩 조회하는 쿼리는 발생하지 않았다**는 것입니다.  
+자 그럼 확인해야할 내용들을 정리해보겠습니다.
+ ```deleteByXXXIn```로 된 JpaRepository 메소드를 사용하면
+
+1. ```In```으로 이루어진 조회쿼리가 1회 무조건 발생한다.
+2. 삭제가 **in조건별로 1건씩** 진행된다.
+3. ```@OneToMany```와 같은 관계가 맺어졌다면 **in조건별로 1회씩 조회가 무조건 발생**한다.
+
+### 트레이스
+
+자 그럼 JpaRepository 코드를 쫓아가보겠습니다.
+
+![deleteExecution](./images/deleteExecution.png)
+
+![deleteExecution2](./images/deleteExecution2.png)
+
+
+ ```DefaultDeleteEventListener```
+
+![cascadeBeforeDelete1](./images/cascadeBeforeDelete1.png)
+
+
+### 해결책
+
+![해결책1](./images/해결책1.png)
+
+![삭제시레퍼런스오류발생](./images/삭제시레퍼런스오류발생.png)

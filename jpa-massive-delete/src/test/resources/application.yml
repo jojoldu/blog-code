@@ -3,3 +3,8 @@ spring:
     active: local
   jpa:
     show-sql: true
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        type: trace

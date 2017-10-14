@@ -23,7 +23,7 @@ class ShopRepositoryTest extends Specification {
     private final List<Long> SHOP_ID_LIST = new ArrayList<>()
 
     def setup() {
-        for (long i = 100; i < 200; i++) {
+        for (long i = 10; i < 20; i++) {
             SHOP_ID_LIST.add(i)
         }
     }
@@ -42,7 +42,7 @@ class ShopRepositoryTest extends Specification {
         shopRepository.deleteAllByIdIn(SHOP_ID_LIST)
 
         then:
-        shopRepository.findAll().size() == 900
+        shopRepository.findAll().size() == 90
     }
 
     def "@Query로 Id 리스트를 조건으로 삭제한다 - 부모만" () {
@@ -53,7 +53,7 @@ class ShopRepositoryTest extends Specification {
         shopRepository.deleteAllByIdInQuery(SHOP_ID_LIST)
 
         then:
-        shopRepository.findAll().size() == 900
+        shopRepository.findAll().size() == 90
     }
 
     def "SpringDataJPA에서 제공하는 예약어를 통해 삭제한다 - 부모&자식" () {
@@ -64,7 +64,7 @@ class ShopRepositoryTest extends Specification {
         shopRepository.deleteAllByIdIn(SHOP_ID_LIST)
 
         then:
-        shopRepository.findAll().size() == 900
+        shopRepository.findAll().size() == 90
     }
 
     def "@Query로 Id 리스트를 조건으로 삭제한다 - 부모&자식" () {
@@ -72,20 +72,23 @@ class ShopRepositoryTest extends Specification {
         createShopAndItem()
 
         when:
+        itemRepository.deleteAllByIdInQuery(SHOP_ID_LIST)
         shopRepository.deleteAllByIdInQuery(SHOP_ID_LIST)
 
         then:
-        thrown(DataIntegrityViolationException.class)
+        shopRepository.findAll().size() == 90
     }
 
     private void createShop() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
             shopRepository.save(new Shop("우아한서점" + i, "우아한 동네" + i))
         }
+
+        println "=======End Create Shop======="
     }
 
     private void createShopAndItem() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
             Shop shop = new Shop("우아한서점" + i, "우아한 동네" + i)
 
             for (int j = 0; j < 10; j++) {
@@ -94,5 +97,7 @@ class ShopRepositoryTest extends Specification {
 
             shopRepository.save(shop)
         }
+
+        println "=======End Create Shop & Item======="
     }
 }
