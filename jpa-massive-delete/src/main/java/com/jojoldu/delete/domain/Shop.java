@@ -25,7 +25,7 @@ public class Shop {
     private String name;
     private String address;
 
-    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     private List<Item> items = new ArrayList<>();
 
     public Shop(String name, String address) {

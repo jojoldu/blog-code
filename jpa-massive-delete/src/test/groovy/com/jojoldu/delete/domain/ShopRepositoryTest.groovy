@@ -23,7 +23,7 @@ class ShopRepositoryTest extends Specification {
     private final List<Long> SHOP_ID_LIST = new ArrayList<>()
 
     def setup() {
-        for (long i = 10; i < 20; i++) {
+        for (long i = 1; i <= 2; i++) {
             SHOP_ID_LIST.add(i)
         }
     }
@@ -42,7 +42,7 @@ class ShopRepositoryTest extends Specification {
         shopRepository.deleteAllByIdIn(SHOP_ID_LIST)
 
         then:
-        shopRepository.findAll().size() == 90
+        shopRepository.findAll().size() == 8
     }
 
     def "@Query로 Id 리스트를 조건으로 삭제한다 - 부모만" () {
@@ -53,7 +53,7 @@ class ShopRepositoryTest extends Specification {
         shopRepository.deleteAllByIdInQuery(SHOP_ID_LIST)
 
         then:
-        shopRepository.findAll().size() == 90
+        shopRepository.findAll().size() == 8
     }
 
     def "SpringDataJPA에서 제공하는 예약어를 통해 삭제한다 - 부모&자식" () {
@@ -64,7 +64,8 @@ class ShopRepositoryTest extends Specification {
         shopRepository.deleteAllByIdIn(SHOP_ID_LIST)
 
         then:
-        shopRepository.findAll().size() == 90
+        println "========== Then =========="
+        shopRepository.findAll().size() == 8
     }
 
     def "@Query로 Id 리스트를 조건으로 삭제한다 - 부모&자식" () {
@@ -76,11 +77,12 @@ class ShopRepositoryTest extends Specification {
         shopRepository.deleteAllByIdInQuery(SHOP_ID_LIST)
 
         then:
-        shopRepository.findAll().size() == 90
+        println "========== Then =========="
+        shopRepository.findAll().size() == 8
     }
 
     private void createShop() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             shopRepository.save(new Shop("우아한서점" + i, "우아한 동네" + i))
         }
 
@@ -88,10 +90,10 @@ class ShopRepositoryTest extends Specification {
     }
 
     private void createShopAndItem() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             Shop shop = new Shop("우아한서점" + i, "우아한 동네" + i)
 
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < 3; j++) {
                 shop.addItem(new Item("IT책" + j, j * 10000))
             }
 

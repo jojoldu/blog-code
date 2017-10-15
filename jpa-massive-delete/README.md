@@ -247,11 +247,12 @@ class CustomerRepositoryTest extends Specification {
 여기까지 결과로 알 수 있는 것은,  
  ```JpaRepository```에서 제공하는 ```deleteByXXX``` 등의 메소드를 이용하는 삭제는 단건이 아닌 여러건을 삭제하더라도 **먼저 조회를 하고 그 결과로 얻은 엔티티 데이터를 1건씩 삭제**한다는 것입니다.
 
-### 2. Shop 엔티티 삭제
+[[ad]]
 
+### 2-1. 관계가 있는 Entity 삭제
 
- ```Shop``` 클래스를 조건절 범위로 삭제해보는 것입니다.  
-Spock을 이용해서 간단한 테스트 코드를 작성하겠습니다.
+자 이번엔 다른 엔티티 클래스와 관계가 맺어진 엔티티를 삭제하는 테스트를 해보겠습니다.  
+테스트 코드는 아래와 같습니다.
 
 ```groovy
 @SpringBootTest
@@ -263,11 +264,10 @@ class ShopRepositoryTest extends Specification {
     @Autowired
     private ItemRepository itemRepository
 
-    private final List<Long> SHOP_ID_LIST = new ArrayList<>() //삭제할 ID List
+    private final List<Long> SHOP_ID_LIST = new ArrayList<>()
 
     def setup() {
-        //삭제할 ID List 생성
-        for (long i = 100; i < 200; i++) {
+        for (long i = 1; i <= 2; i++) {
             SHOP_ID_LIST.add(i)
         }
     }
@@ -278,44 +278,48 @@ class ShopRepositoryTest extends Specification {
         shopRepository.deleteAll()
     }
 
-    def "SpringDataJPA에서 제공하는 예약어를 통해 삭제한다 - 부모만" () {
+    def "SpringDataJPA에서 제공하는 예약어를 통해 삭제한다 - 부모&자식" () {
         given:
-        createShop()
+        createShopAndItem()
 
         when:
         shopRepository.deleteAllByIdIn(SHOP_ID_LIST)
 
         then:
-        shopRepository.findAll().size() == 900
+        shopRepository.findAll().size() == 8
     }
 
     private void createShop() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             shopRepository.save(new Shop("우아한서점" + i, "우아한 동네" + i))
         }
+
+        println "=======End Create Shop======="
     }
 
     private void createShopAndItem() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             Shop shop = new Shop("우아한서점" + i, "우아한 동네" + i)
 
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < 3; j++) {
                 shop.addItem(new Item("IT책" + j, j * 10000))
             }
 
             shopRepository.save(shop)
         }
+
+        println "=======End Create Shop & Item======="
     }
 }
 ```
 
 테스트 기능은 간단합니다.
 
-1. shop 테이블 데이터를 1000개 생성합니다.
-2. 100~200 사이의 id list를 파라미터로 하여 ```deleteAllByIdIn``` 메소드로 삭제합니다.
-3. 900개가 남았는지 검증합니다.
+1. shop 테이블 데이터를 10개 생성합니다.
+2. 1,2 id list를 파라미터로 하여 ```deleteAllByIdIn``` 메소드로 삭제합니다.
+3. 8개가 남았는지 검증합니다.
 
-자 여기서 저희가 사용한 삭제 메소드는 ```deleteAllByIdIn```입니다.  
+처음 테스트와 마찬가지로 여기서 사용할 메소드는 ```deleteAllByIdIn```입니다.  
 
 ```java
     @Transactional
@@ -333,101 +337,6 @@ class ShopRepositoryTest extends Specification {
 쿼리를 보면 저희가 조건절로 넘긴 id들을 매건마다 조회하는 것임을 추측할 수 있습니다.  
 그리고 그 아래에는
 
-![delete1_2](./images/delete1_2.png)
-
-이렇게 id로 **매건마다 삭제하는 쿼리가 발생**합니다.  
-  
-
-
-```groovy
-    def "@Query로 Id 리스트를 조건으로 삭제한다 - 부모만" () {
-        given:
-        createShop()
-
-        when:
-        shopRepository.deleteAllByIdInQuery(SHOP_ID_LIST)
-
-        then:
-        shopRepository.findAll().size() == 900
-    }
-```
-
-
-
-
-```java
-@Entity
-@Getter
-@NoArgsConstructor
-public class Customer {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    private String name;
-
-    public Customer(String name) {
-        this.name = name;
-    }
-}
-
-public interface CustomerRepository extends JpaRepository<Customer, Long>{
-
-    @Modifying
-    @Transactional
-    long deleteByIdIn(List<Long> ids);
-}
-```
-
-다른 엔티티와 관계가 전혀 없는 ```Customer``` 엔티티를 생성해서 삭제 기능을 테스트해보겠습니다.  
-
-```groovy
-@SpringBootTest
-class CustomerRepositoryTest extends Specification {
-
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    def "Customer in 삭제" () {
-        given:
-        for(int i=0;i<100;i++){
-            customerRepository.save(new Customer(i+"님"))
-        }
-        when:
-        customerRepository.deleteByIdIn(Arrays.asList(1L,2L,3L))
-
-        then:
-        customerRepository.findAll().size() == 97
-    }
-}
-```
-
-위 테스트를 실행해 콘솔을 확인해보시면!
-
-![관계가없을때](./images/관계가없을때.png)
-
- ```in```쿼리로 조회하는 1개의 쿼리와 id별로 삭제하는 쿼리가 발생합니다.  
-여기서 재밌는 것은 처음 사례처럼 **1건씩 조회하는 쿼리는 발생하지 않았다**는 것입니다.  
-자 그럼 확인해야할 내용들을 정리해보겠습니다.
- ```deleteByXXXIn```로 된 JpaRepository 메소드를 사용하면
-
-1. ```In```으로 이루어진 조회쿼리가 1회 무조건 발생한다.
-2. 삭제가 **in조건별로 1건씩** 진행된다.
-3. ```@OneToMany```와 같은 관계가 맺어졌다면 **in조건별로 1회씩 조회가 무조건 발생**한다.
-
-### 트레이스
-
-자 그럼 JpaRepository 코드를 쫓아가보겠습니다.
-
-![deleteExecution](./images/deleteExecution.png)
-
-![deleteExecution2](./images/deleteExecution2.png)
-
-
- ```DefaultDeleteEventListener```
-
-![cascadeBeforeDelete1](./images/cascadeBeforeDelete1.png)
 
 
 ### 해결책
