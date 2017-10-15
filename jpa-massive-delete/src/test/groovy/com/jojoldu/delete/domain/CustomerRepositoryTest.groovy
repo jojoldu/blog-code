@@ -25,6 +25,7 @@ class CustomerRepositoryTest extends Specification {
         customerRepository.deleteByIdIn(Arrays.asList(1L,2L,3L))
 
         then:
+        println "======= Then ======="
         customerRepository.findAll().size() == 97
     }
 
@@ -37,6 +38,7 @@ class CustomerRepositoryTest extends Specification {
         customerRepository.deleteAllByIdInQuery(Arrays.asList(1L,2L,3L))
 
         then:
+        println "======= Then ======="
         customerRepository.findAll().size() == 97
     }
 }

@@ -7,7 +7,7 @@
 ## 발단
 
 업무중에 배치로 일괄 데이터 삭제 기능을 작업하였습니다.  
-테스트 코드로 기능 검증이 끝난후, 개발서버에서 테스트를 진행하는데 **삭제 성능이 너무나 안나오는 것**이였습니다.  
+테스트를 진행하는데 **삭제 성능이 너무나 안나오는 것**이였습니다.  
 단순 삭제에서 왜이렇게 성능이 안나오나 slow query를 확인해보는데 이상한 점을 발견하였습니다.  
 새로 알게된 내용이 있어 샘플 예제로 소개드리려고 합니다.
 
@@ -43,9 +43,25 @@ spring:
     show-sql: true
 ```
 
-사용할 엔티티 클래스는 ```Shop```과 ```Item```입니다.
+사용할 엔티티 클래스는 ```Customer```, ```Shop```, ```Item```입니다.
 
 ```java
+@Entity
+@Getter
+@NoArgsConstructor
+public class Customer {
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    private String name;
+
+    public Customer(String name) {
+        this.name = name;
+    }
+}
+
 @Getter
 @NoArgsConstructor
 @Entity
@@ -103,9 +119,21 @@ public class Item {
 
 ```
 
-이 두 엔티티 클래스들을 다룰 ```JpaRepository```를 생성하겠습니다.
+이 엔티티 클래스들을 다룰 ```JpaRepository```를 생성하겠습니다.
 
 ```java
+public interface CustomerRepository extends JpaRepository<Customer, Long>{
+
+    @Modifying
+    @Transactional
+    long deleteByIdIn(List<Long> ids);
+
+    @Transactional
+    @Modifying
+    @Query("delete from Customer c where c.id in :ids")
+    void deleteAllByIdInQuery(@Param("ids") List<Long> ids);
+}
+
 public interface ShopRepository extends JpaRepository<Shop, Long> {
 
     @Transactional
@@ -128,16 +156,101 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 ```
 
-위에서 눈여겨 보실것은 ```ShopRepository```가 2개의 메소드로 구성된 점입니다.
-첫번째 메소드인 ```deleteAllByIdIn```는 ```JpaRepository```에서 제공하는 delete메소드를 사용한 것이며,  
-두번째 메소드인 ```deleteAllByIdInQuery```는 ```@Query```를 사용하여 직접 delete 쿼리를 사용한 것입니다.  
-
+위에서 눈여겨 보실것은 삭제 기능의 메소드가 2종류로 나누어져있는 것입니다.  
+첫번째 메소드인 ```deleteAllByIdIn```는 ```JpaRepository```에서 제공하는 delete메소드를 사용한 것이며, 두번째 메소드인 ```deleteAllByIdInQuery```는 ```@Query```를 사용하여 직접 delete 쿼리를 사용한 것입니다.  
+  
 자 테스트해볼 환경은 모두 구축되었습니다.  
 하나씩 실험해보겠습니다.
 
-### 1. Shop 클래스 범위 삭제
+### 1-1. 관계가 없는 Entity 삭제
 
-제일 먼저 할 것은 ```Shop``` 클래스를 조건절 범위로 삭제해보는 것입니다.  
+**다른 엔티티와 관계가 전혀 없는** ```Customer``` 엔티티 삭제 기능을 테스트해보겠습니다.  
+Spock으로 짠 테스트 코드는 아래와 같습니다.
+
+```groovy
+@SpringBootTest
+class CustomerRepositoryTest extends Specification {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    def "Customer in 삭제" () {
+        given:
+        for(int i=0;i<100;i++){
+            customerRepository.save(new Customer(i+"님"))
+        }
+        when:
+        customerRepository.deleteByIdIn(Arrays.asList(1L,2L,3L))
+
+        then:
+        println "======= Then ======="
+        customerRepository.findAll().size() == 97
+    }
+}
+```
+
+100개의 데이터를 DB에 insert한 후에 JpaRepository 예약어로 만든```deleteByIdIn```를 사용하여 **3개의 Id**를 조건으로 삭제하였습니다.  
+이를 실행하면 콘솔에 다음과 같이 출력됩니다.
+
+![delete0_1](./images/delete0_1.png)
+
+예상과는 다른 결과가 나왔습니다.
+
+* ```in```쿼리로 조회하는 쿼리가 처음 실행됩니다.
+* id별로 하나씩 delete됩니다.
+
+처음엔 당연히 ```in```을 조건으로 한 delete쿼리가 발생할것이라고 예상했지만 단건으로 삭제되고 있습니다.  
+왜 이런것인지 한번 JpaRepository 코드를 살펴보겠습니다.
+
+### 1-2. delete 메소드 쫓아가기
+
+제일 먼저 찾아본 클래스는 ```RepositoryQuery```입니다.  
+
+![repositoryQuery](./images/repositoryQuery.png)
+
+해당 인터페이스에는 별다른 단서가 보이지 않습니다.  
+이를 구현한 다른 클래스를 한번 찾아보겠습니다.  
+
+![AbstractJpaQuery](./images/AbstractJpaQuery.png)
+
+ ```AbstractJpaQuery``` 추상 클래스의 코드들을 보면 쿼리를 실행하는 듯한? 메소드를 볼 수 있습니다.  
+
+![doExecute](./images/doExecute.png)
+
+삭제 쿼리가 담겨져있을것 같은!? ```JpaQueryExecution``` 타입이 보입니다.  
+해당 클래스로 이동해보겠습니다.  
+해당 클래스는 예상대로 수많은 타입의 쿼리 실행 타입들이 존재했습니다.  
+여기서 알아볼 타입은 삭제형이기 때문에 delete로 찾아보시면!
+
+![deleteExecution코드](./images/deleteExecution코드.png)
+
+실제 JpaRepository에서 delete 메소드가 실행될때 어떤 일이 벌어지는지 명확히 확인할 수 있습니다.  
+딱 코드만 봐도 쉽게 추측할 수 있지만, 확실한 확인을 위해 Break Point를 걸어 테스트 코드를 실행해보겠습니다.  
+
+![deleteExecution1_1](./images/deleteExecution1_1.png)
+
+ ```jpaQuery.createQuery(values)```의 결과로 ```select ~~~~ from Customer where ~~```가 생성되었습니다.  
+콘솔에 실행된 쿼리들을 확인해보겠습니다.
+
+![deleteExecution1_2](./images/deleteExecution1_2.png)
+
+아직까지는 insert 쿼리만 실행된 상태 그대로입니다.  
+여기서 다음줄로 이동하면
+
+![deleteExecution1_3](./images/deleteExecution1_3.png)
+
+이렇게 select 쿼리가 실행된 것을 확인할 수 있습니다.  
+실제로 이 쿼리의 실행결과는 조회 결과인 ```Customer```를 갖고 있습니다.
+
+![deleteExecution1_4](./images/deleteExecution1_4.png)
+
+여기까지 결과로 알 수 있는 것은,  
+ ```JpaRepository```에서 제공하는 ```deleteByXXX``` 등의 메소드를 이용하는 삭제는 단건이 아닌 여러건을 삭제하더라도 **먼저 조회를 하고 그 결과로 얻은 엔티티 데이터를 1건씩 삭제**한다는 것입니다.
+
+### 2. Shop 엔티티 삭제
+
+
+ ```Shop``` 클래스를 조건절 범위로 삭제해보는 것입니다.  
 Spock을 이용해서 간단한 테스트 코드를 작성하겠습니다.
 
 ```groovy
@@ -319,6 +432,23 @@ class CustomerRepositoryTest extends Specification {
 
 ### 해결책
 
+```groovy
+    def "Customer in 삭제-@Query" () {
+        given:
+        for(int i=0;i<100;i++){
+            customerRepository.save(new Customer(i+"님"))
+        }
+        when:
+        customerRepository.deleteAllByIdInQuery(Arrays.asList(1L,2L,3L))
+
+        then:
+        println "======= Then ======="
+        customerRepository.findAll().size() == 97
+    }
+```
+
+
 ![해결책1](./images/해결책1.png)
 
 ![삭제시레퍼런스오류발생](./images/삭제시레퍼런스오류발생.png)
+
