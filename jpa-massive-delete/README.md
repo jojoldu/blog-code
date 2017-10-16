@@ -9,7 +9,7 @@
 업무중에 배치로 일괄 데이터 삭제 기능을 작업하였습니다.  
 테스트를 진행하는데 **삭제 성능이 너무나 안나오는 것**이였습니다.  
 단순 삭제에서 왜이렇게 성능이 안나오나 slow query를 확인해보는데 이상한 점을 발견하였습니다.  
-새로 알게된 내용이 있어 샘플 예제로 소개드리려고 합니다.
+이를 샘플예제로 소개드리겠습니다.
 
 ## 예제
 
@@ -189,11 +189,12 @@ class CustomerRepositoryTest extends Specification {
 }
 ```
 
-100개의 데이터를 DB에 insert한 후에 JpaRepository 예약어로 만든```deleteByIdIn```를 사용하여 **3개의 Id**를 조건으로 삭제하였습니다.  
+100개의 데이터를 DB에 insert한 후에 JpaRepository 예약어로 만든 ```deleteByIdIn```를 사용하여 **3개의 Id**를 조건으로 삭제하였습니다.  
 이를 실행하면 콘솔에 다음과 같이 출력됩니다.
 
 ![delete0_1](./images/delete0_1.png)
 
+음..?  
 예상과는 다른 결과가 나왔습니다.
 
 * ```in```쿼리로 조회하는 쿼리가 처음 실행됩니다.
@@ -244,8 +245,8 @@ class CustomerRepositoryTest extends Specification {
 
 ![deleteExecution1_4](./images/deleteExecution1_4.png)
 
-여기까지 결과로 알 수 있는 것은,  
- ```JpaRepository```에서 제공하는 ```deleteByXXX``` 등의 메소드를 이용하는 삭제는 단건이 아닌 여러건을 삭제하더라도 **먼저 조회를 하고 그 결과로 얻은 엔티티 데이터를 1건씩 삭제**한다는 것입니다.
+여기까지 결과로 알 수 있는 것은 ```JpaRepository```에서 제공하는 ```deleteByXXX``` 등의 메소드를 이용하는 삭제는 단건이 아닌 여러건을 삭제하더라도 **먼저 조회를 하고 그 결과로 얻은 엔티티 데이터를 1건씩 삭제**한다는 것입니다.  
+즉, 제가 만약 1억건 중 50만건을 삭제한다고 하면 **50만건을 먼저 조회후 건건으로 삭제**한다는 것입니다.
 
 [[ad]]
 
@@ -333,13 +334,74 @@ class ShopRepositoryTest extends Specification {
 
 ![delete1_1](./images/delete1_1.png)
 
-예상치 못한 select 쿼리가 다수 발생하였습니다.  
-쿼리를 보면 저희가 조건절로 넘긴 id들을 매건마다 조회하는 것임을 추측할 수 있습니다.  
-그리고 그 아래에는
+Customer 때와는 또 다른 예상치 못한 select 쿼리가 다수 발생하였습니다.  
 
+* ```in```쿼리로 조회하는 쿼리가 처음 실행됩니다.
+* ```Shop``` Id별로 ```Item```을 조회한다.
+* 조회된 ```Item```을 1건씩 삭제한다.
+* 조회된 ```Shop```을 1건씩 삭제한다.
 
+왜 **Customer를 지울때는 발생하지 않았던 Shop조회가 여기서는 발생했는지** ```em.remove```메소드를 좀 더 파고들어 확인해보겠습니다.  
+  
+ ```em.remove```를 파고들어보면 ```DefaultDeleteEventListener```의 ```deleteEntity``` 메소드를 만나게 됩니다.  
+
+![deleteEntity](./images/deleteEntity.png)
+
+Break Point를 걸어 하나씩 쫓아가다보면 ```cascadeBeforeDelete``` 메소드를 다시 파고들어야함을 알수 있습니다.  
+그리고 그 안에선 다시 ```Cascade.cascade```가 수행됩니다.
+
+![cascadeBeforeDelete](./images/cascadeBeforeDelete.png)
+
+슬슬 냄새가 나기 시작합니다.  
+ ```Cascade.cascade```코드를 확인하고 의심스러운 부분에 Break Point를 걸어 다시 테스트 메소드를 실행해보겠습니다.
+
+![cascade](./images/cascade.png)
+
+Break Point를 지나 ```persister.getPropertyValue( parent, i )``` 메소드가 수행되면!
+
+![getPropertyValue](./images/getPropertyValue.png)
+
+이렇게 ```~~~ from item items0_ where items0_.shop_id=?```쿼리가 한줄 수행되었음을 확인할 수 있습니다.  
+이 코드와 결과로 쉽게 추측할 수 있는 것은 ```cascade = CascadeType.ALL```로 인해 (ALL은 Delete까지 포함된 상태입니다.) **부모인 Shop을 지울때, 자식인 Shop도 같이 지워야하니 Shop 키를 기준으로 Item을 모두 가져와서 1건씩 삭제**하는 것이였습니다.
+
+![cascadeAll](./images/cascadeAll.png)
+
+그럼 ```cascade = CascadeType.ALL```이나 ```cascade = CascadeType.DELETE```가 아니면 부모 조회 쿼리가 발생하지 않는지 확인해볼까요?
+
+![cascadePersist](./images/cascadePersist.png)
+
+이렇게 ```cascade = CascadeType.PERSIST```로 변경후에 다시 테스트 코드를 실행해보겠습니다.
+
+![cascadePersist_테스트](./images/cascadePersist_테스트.png)
+
+삭제 대상인 ```Shop```을 전체 조회하는 1번의 쿼리 이후 **```Shop``` Id별로 ```Item```을 조회하는것 없이 바로 ```Shop```을 삭제하는 쿼리**로 넘어갑니다.  
+(에러는 FK를 맺고 있는 Item들로 인해 Shop 삭제가 안되는 것을 보여줍니다.)  
+  
+자! 그렇다면 결론은 간단합니다.  
+SpringDataJpa에서 ```deleteByXXX``` 등의 메소드 사용시 
+
+* 삭제 대상들을 전부 조회하는 쿼리가 1번 발생한다.
+* 삭제 대상들은 1건씩 삭제 된다.
+* ```cascade = CascadeType.DELETE```으로 하위 엔티티와 관계가 맺어진 경우 하위 엔티티들도 1건씩 삭제가 진행된다.
+
+단순히 코드 작성하기가 편해서 만든 삭제 메소드이지만 성능 저하 요소가 굉장히 많은 것을 알 수 있습니다.  
+이 문제점을 해결하려면 어떻게 해야할까요?
 
 ### 해결책
+
+이 문제의 해결책은 간단합니다.  
+**직접 범위 조건의 삭제 쿼리를 생성**하면 됩니다.  
+예를 들어 ```Customer```의 경우입니다.  
+
+```java
+    @Transactional
+    @Modifying
+    @Query("delete from Customer c where c.id in :ids")
+    void deleteAllByIdInQuery(@Param("ids") List<Long> ids);
+```
+
+이렇게 직접 범위조건의 삭제 쿼리를 생성하여 사용하는 것입니다.  
+테스트 코드를 작성합니다.
 
 ```groovy
     def "Customer in 삭제-@Query" () {
@@ -356,8 +418,34 @@ class ShopRepositoryTest extends Specification {
     }
 ```
 
+그리고 이를 실행해보면!
 
 ![해결책1](./images/해결책1.png)
 
+삭제쿼리만 발생하는 것을 확인할 수 있습니다.  
+  
+만약 ```Shop```과 ```Item``` 같이 서로 연관관계가 있는 경우에는 ```Shop```만 삭제시 에러가 발생할 수 있습니다.  
+
 ![삭제시레퍼런스오류발생](./images/삭제시레퍼런스오류발생.png)
+
+그럴땐 ```Item```을 먼저 삭제후, ```Shop```을 삭제하시면 됩니다.
+
+![부모자식같이삭제](./images/부모자식같이삭제.png)
+
+테스트 코드를 실행해보시면!
+
+![해결책2](./images/해결책2.png)
+
+깔끔하게 ```delete from item ~~```, ```delete from shop ~~``` 2건의 쿼리 수행만 이루어진 것을 확인할 수 있습니다.  
+(마지막 select는 ```then``` 비교를 위해 날린 검증 쿼리입니다.)  
+  
+  
+## 마무리
+
+제가 쫓아간 방법이나 해석한 코드가 잘못된 것일 수도 있습니다.  
+보시면서 이상하다 싶은 내용이 있으면 언제든지 댓글 부탁드리겠습니다.  
+블로그에 글 남기는 것이 지식을 뽐내기 위함이 아니라, 개인공간에만 남겨놓으면 실제로 틀린 지식인데 고치지 못하고 계속 그렇게 알고 있는 것이 무섭기 때문입니다.  
+오픈된 공간에 올려놓고 틀린건 틀렸다고 지적 받아 고치기 위함이니 가감없이 댓글 부탁드리겠습니다.  
+  
+긴 글 끝까지 읽어주셔서 고맙습니다.
 

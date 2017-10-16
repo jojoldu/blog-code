@@ -41,6 +41,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
 ### JPA
 - [JPA N+1 문제](https://github.com/jojoldu/blog-code/tree/master/jpa-entity-graph)
+- [JPA에서 대량의 데이터를 삭제할때 주의해야할 점](https://github.com/jojoldu/blog-code/tree/master/jpa-massive-delete)
 
 ### Gradle
 
