@@ -21,6 +21,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
 ### Spring
 
+- [SpringBatch에서 ItemReader를 Mock객체로 교체하기](https://github.com/jojoldu/blog-code/tree/master/spring-batch-mock-reader)
 - [SpringBoot & Spock](https://github.com/jojoldu/blog-code/tree/master/spring-boot-spock)
 - [SpringBoot @MockBean, @SpyBean 소개](https://github.com/jojoldu/blog-code/tree/master/spring-mock-spy-bean)
 - [SpringBoot 팁 모음](https://github.com/jojoldu/blog-code/tree/master/springboot-tips)
