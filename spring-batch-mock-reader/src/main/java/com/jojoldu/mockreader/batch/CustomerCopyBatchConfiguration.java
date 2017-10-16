@@ -45,13 +45,6 @@ public class CustomerCopyBatchConfiguration {
      */
     private JpaPagingItemReader<Customer> itemReader;
 
-    /**
-     * setter 인잭션
-     */
-    public void setItemReader(JpaPagingItemReader<Customer> itemReader){
-        this.itemReader = itemReader;
-    }
-
     @Bean
     public Job job() {
         return jobBuilderFactory.get(JOB_NAME)
