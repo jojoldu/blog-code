@@ -1,4 +1,4 @@
-package com.jojoldu.mockitospyusages;
+package com.jojoldu.spy;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
