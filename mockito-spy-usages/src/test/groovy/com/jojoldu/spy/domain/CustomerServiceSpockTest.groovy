@@ -11,9 +11,11 @@ import spock.lang.Specification
  * Blog : http://jojoldu.tistory.com
  * Github : https://github.com/jojoldu
  */
+
+
 class CustomerServiceSpockTest extends Specification {
 
-    def "customerService를 Mocking 하면 실패한다"() {
+    def "결제가 실패하면 PayFailException이 발생한다"() {
         given:
         RequestDto requestDto = new RequestDto()
         def restTemplate = Stub(RestTemplate)
