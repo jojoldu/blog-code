@@ -15,7 +15,7 @@ import spock.lang.Specification
 
 class CustomerServiceSpockTest extends Specification {
 
-    def "결제가 실패하면 PayFailException이 발생한다"() {
+    def "[Spock] 결제가 실패하면 PayFailException이 발생한다"() {
         given:
         RequestDto requestDto = new RequestDto()
         def restTemplate = Stub(RestTemplate)
@@ -29,5 +29,4 @@ class CustomerServiceSpockTest extends Specification {
         customerService.alarm(_) >> { }
         thrown(PayFailException.class)
     }
-
 }

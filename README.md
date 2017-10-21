@@ -21,6 +21,8 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
 ### Spring
 
+- [Spy 활용 사례](https://github.com/jojoldu/blog-code/tree/master/mockito-spy-usages)
+  - [테스트 대상 Mocking](https://github.com/jojoldu/blog-code/blob/master/mockito-spy-usages/1_%EC%A3%BC%EC%9E%85%EB%B0%9B%EB%8A%94%EB%8C%80%EC%83%81_Mocking.md)
 - [SpringBatch에서 ItemReader를 Mock객체로 교체하기](https://github.com/jojoldu/blog-code/tree/master/spring-batch-mock-reader)
 - [SpringBoot & Spock](https://github.com/jojoldu/blog-code/tree/master/spring-boot-spock)
 - [SpringBoot @MockBean, @SpyBean 소개](https://github.com/jojoldu/blog-code/tree/master/spring-mock-spy-bean)

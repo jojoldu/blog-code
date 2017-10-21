@@ -30,7 +30,7 @@ class CustomerServiceBootTest extends Specification {
     @SpyBean
     CustomerService customerService
 
-    def "결제가 실패하면 PayFailException이 발생한다"() {
+    def "[Spock+SpringBoot] 결제가 실패하면 PayFailException이 발생한다"() {
         given:
         RequestDto requestDto = new RequestDto()
 
