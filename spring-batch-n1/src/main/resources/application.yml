@@ -1,0 +1,4 @@
+spring:
+  jpa:
+    properties:
+      hibernate.default_batch_fetch_size: ${chunkSize:1000}
