@@ -4,9 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 /**
- * Created by jojoldu@gmail.com on 2017. 10. 26.
+ * Created by jojoldu@gmail.com on 2017. 10. 27.
  * Blog : http://jojoldu.tistory.com
  * Github : https://github.com/jojoldu
  */
@@ -14,22 +15,22 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Entity
-public class Product {
+public class Employee {
 
     @Id
     @GeneratedValue
     private Long id;
 
     private String name;
-    private long price;
+    private LocalDate hireDate;
 
     @ManyToOne
-    @JoinColumn(name = "store_id", foreignKey = @ForeignKey(name = "FK_PRODUCT_STORE"))
+    @JoinColumn(name = "store_id", foreignKey = @ForeignKey(name = "FK_EMPLOYEE_STORE"))
     private Store store;
 
-    public Product(String name, long price) {
+    public Employee(String name, LocalDate hireDate) {
         this.name = name;
-        this.price = price;
+        this.hireDate = hireDate;
     }
 
     public void updateStore(Store store){

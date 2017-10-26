@@ -18,8 +18,8 @@ import static javax.persistence.CascadeType.ALL;
  * Github : https://github.com/jojoldu
  */
 
-@Getter
 @NoArgsConstructor
+@Getter
 @Entity
 public class Store {
 
@@ -33,9 +33,22 @@ public class Store {
     @OneToMany(mappedBy = "store", cascade = ALL)
     private List<Product> products = new ArrayList<>();
 
+    @OneToMany(mappedBy = "store", cascade = ALL)
+    private List<Employee> employees = new ArrayList<>();
+
+    public Store(String name, String address) {
+        this.name = name;
+        this.address = address;
+    }
+
     public void addProduct(Product product){
         this.products.add(product);
         product.updateStore(this);
+    }
+
+    public void addEmployee(Employee employee){
+        this.employees.add(employee);
+        employee.updateStore(this);
     }
 
 }
