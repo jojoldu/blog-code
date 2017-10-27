@@ -43,6 +43,8 @@ public class StoreBackupBatchConfiguration {
     @Value("${chunkSize:1000}")
     private int chunkSize;
 
+    private static String ADDRESS_PARAM = null;
+
     @Bean
     @JobScope
     public Job job() {
@@ -53,9 +55,9 @@ public class StoreBackupBatchConfiguration {
 
     public Step step() {
         return stepBuilderFactory.get(STEP_NAME)
-                .chunk(chunkSize)
-                .reader()
-                .processor()
+                .<Store, StoreHistory>chunk(chunkSize)
+                .reader(reader(ADDRESS_PARAM))
+                .processor(processor())
                 .writer(writer())
                 .build();
     }
@@ -64,13 +66,13 @@ public class StoreBackupBatchConfiguration {
     @StepScope
     public JpaPagingItemReader<Store> reader (
             @Value("#{jobParameters[address]}") String address) {
-        
+
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("address", address);
 
         JpaPagingItemReader<Store> reader = new JpaPagingItemReader<>();
         reader.setEntityManagerFactory(entityManagerFactory);
-        reader.setQueryString("select p From Person p where p.firstName=:firstName");
+        reader.setQueryString("select s From Store s join fetch s.produces join fetch s.employees where s.address like :address");
         reader.setParameterValues(parameters);
         reader.setPageSize(chunkSize);
 
