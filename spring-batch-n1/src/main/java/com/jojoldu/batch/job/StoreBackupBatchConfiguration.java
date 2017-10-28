@@ -1,5 +1,7 @@
 package com.jojoldu.batch.job;
 
+import com.jojoldu.batch.job.domain.Store;
+import com.jojoldu.batch.job.domain.StoreHistory;
 import lombok.AllArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -28,7 +30,6 @@ import static com.jojoldu.batch.job.StoreBackupBatchConfiguration.JOB_NAME;
  * Github : https://github.com/jojoldu
  */
 
-@AllArgsConstructor
 @Configuration
 @ConditionalOnProperty(name = "job.name", havingValue = JOB_NAME)
 public class StoreBackupBatchConfiguration {
@@ -40,19 +41,26 @@ public class StoreBackupBatchConfiguration {
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
 
+    public StoreBackupBatchConfiguration(EntityManagerFactory entityManagerFactory, JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
+        this.entityManagerFactory = entityManagerFactory;
+        this.jobBuilderFactory = jobBuilderFactory;
+        this.stepBuilderFactory = stepBuilderFactory;
+    }
+
     @Value("${chunkSize:1000}")
     private int chunkSize;
 
     private static String ADDRESS_PARAM = null;
 
     @Bean
-    @JobScope
     public Job job() {
         return jobBuilderFactory.get(JOB_NAME)
                 .start(step())
                 .build();
     }
 
+    @Bean
+    @JobScope
     public Step step() {
         return stepBuilderFactory.get(STEP_NAME)
                 .<Store, StoreHistory>chunk(chunkSize)
@@ -68,19 +76,20 @@ public class StoreBackupBatchConfiguration {
             @Value("#{jobParameters[address]}") String address) {
 
         Map<String, Object> parameters = new LinkedHashMap<>();
-        parameters.put("address", address);
+        parameters.put("address", address+"%");
 
         JpaPagingItemReader<Store> reader = new JpaPagingItemReader<>();
         reader.setEntityManagerFactory(entityManagerFactory);
-        reader.setQueryString("select s From Store s join fetch s.produces join fetch s.employees where s.address like :address");
+        reader.setQueryString("SELECT s FROM Store s WHERE s.address LIKE :address");
         reader.setParameterValues(parameters);
         reader.setPageSize(chunkSize);
 
         return reader;
     }
 
+    @Bean
     public ItemProcessor<Store, StoreHistory> processor() {
-        return item -> new StoreHistory(item, item.getProducts());
+        return item -> new StoreHistory(item, item.getProducts(), item.getEmployees());
     }
 
     public JpaItemWriter<StoreHistory> writer() {

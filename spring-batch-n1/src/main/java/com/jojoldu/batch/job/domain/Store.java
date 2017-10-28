@@ -1,4 +1,4 @@
-package com.jojoldu.batch.job;
+package com.jojoldu.batch.job.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,5 +50,4 @@ public class Store {
         this.employees.add(employee);
         employee.updateStore(this);
     }
-
 }

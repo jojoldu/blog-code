@@ -1,13 +1,12 @@
-package com.jojoldu.batch.job;
+package com.jojoldu.batch.job.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 /**
- * Created by jojoldu@gmail.com on 2017. 10. 27.
+ * Created by jojoldu@gmail.com on 2017. 10. 26.
  * Blog : http://jojoldu.tistory.com
  * Github : https://github.com/jojoldu
  */
@@ -15,22 +14,22 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Entity
-public class Employee {
+public class Product {
 
     @Id
     @GeneratedValue
     private Long id;
 
     private String name;
-    private LocalDate hireDate;
+    private long price;
 
     @ManyToOne
-    @JoinColumn(name = "store_id", foreignKey = @ForeignKey(name = "FK_EMPLOYEE_STORE"))
+    @JoinColumn(name = "store_id", foreignKey = @ForeignKey(name = "FK_PRODUCT_STORE"))
     private Store store;
 
-    public Employee(String name, LocalDate hireDate) {
+    public Product(String name, long price) {
         this.name = name;
-        this.hireDate = hireDate;
+        this.price = price;
     }
 
     public void updateStore(Store store){
