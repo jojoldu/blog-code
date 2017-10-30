@@ -3,6 +3,8 @@ package com.jojoldu.batch.job;
 import com.jojoldu.batch.job.domain.Store;
 import com.jojoldu.batch.job.domain.StoreHistory;
 import lombok.AllArgsConstructor;
+import org.hibernate.Hibernate;
+import org.hibernate.SessionFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -10,6 +12,7 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.database.HibernateCursorItemReader;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,12 +41,12 @@ public class StoreBackupBatchConfiguration {
     public static final String JOB_NAME = "storeBackupBatch";
     private static final String STEP_NAME = JOB_NAME+"Step";
 
+    @PersistenceUnit
     private EntityManagerFactory entityManagerFactory;
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
 
-    public StoreBackupBatchConfiguration(EntityManagerFactory entityManagerFactory, JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
-        this.entityManagerFactory = entityManagerFactory;
+    public StoreBackupBatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
     }
@@ -80,14 +84,29 @@ public class StoreBackupBatchConfiguration {
 
         JpaPagingItemReader<Store> reader = new JpaPagingItemReader<>();
         reader.setEntityManagerFactory(entityManagerFactory);
-        reader.setQueryString("SELECT s FROM Store s WHERE s.address LIKE :address");
+        reader.setQueryString("SELECT s FROM Store s WHERE s.address LIKE :address order by s.id");
         reader.setParameterValues(parameters);
         reader.setPageSize(chunkSize);
-
         return reader;
     }
 
-    @Bean
+//    @Bean
+//    @StepScope
+//    public HibernateCursorItemReader<Store> reader(
+//            @Value("#{jobParameters[address]}") String address) {
+//
+//        Map<String, Object> parameters = new LinkedHashMap<>();
+//        parameters.put("address", address+"%");
+//        final SessionFactory sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
+//
+//        HibernateCursorItemReader<Store> itemReader = new HibernateCursorItemReader<>();
+//        itemReader.setQueryString("FROM Store s WHERE s.address LIKE :address");
+//        itemReader.setParameterValues(parameters);
+//        itemReader.setSessionFactory(sessionFactory);
+//
+//        return itemReader;
+//    }
+
     public ItemProcessor<Store, StoreHistory> processor() {
         return item -> new StoreHistory(item, item.getProducts(), item.getEmployees());
     }
