@@ -18,6 +18,8 @@ Homebrew 업데이트
 brew update
 ```
 
+[starting-and-stopping-background-services-with-homebrew](https://robots.thoughtbot.com/starting-and-stopping-background-services-with-homebrew)
+
 [mysql root 계정 비밀번호 변경](http://withcoding.com/27)
 
 > 참고로 root 계정의 기본 비밀번호는 없습니다.  
