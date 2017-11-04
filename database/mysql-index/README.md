@@ -96,12 +96,30 @@ CREATE TABLE `salaries` (
 ```
 
 ```sql
-CREATE INDEX IDX_SALARIES_INCREASE ON salaries ( is_bonus, from_date, group_no);
+CREATE INDEX IDX_SALARIES_INCREASE ON salaries 
+( is_bonus, from_date, group_no);
 
-CREATE INDEX IDX_SALARIES_DECREASE ON salaries (group_no, from_date, is_bonus);
+CREATE INDEX IDX_SALARIES_DECREASE ON salaries 
+(group_no, from_date, is_bonus);
 
 ```
 
+|      | IDX_SALARIES_INCREASE | IDX_SALARIES_DECREASE |
+|------|-----------------------|-----------------------|
+|  1   | 110ms                 | 46.9ms                |
+|  2   | 89.5ms                | 24.6ms                |
+|  3   | 95.4ms                | 38.1ms                |
+|  4   | 85.6ms                | 29.3ms                |
+|  5   | 83.6ms                | 29.3ms                |
+|  6   | 85.2ms                | 38.2ms                |
+|  7   | 59.4ms                | 26.1ms                |
+|  8   | 64.2ms                | 29.4ms                |
+|  9   | 93.7ms                | 25.7ms                |
+|  10  | 102ms                 | 35.4ms                |
+|  평균 | 86.86ms               | 32.3ms                |
+
+> 정확한 성능비교를 위해서는 MySQL 캐시 이외에 **OS 캐시까지 비워야만** 했습니다.  
+그래서 쿼리의 조건에 group_no in () 에 포함되는 값들을 하나씩 추가하면서 캐시되지 않은 쿼리들로 비교하였습니다.
 
 ### 4. 인덱스 컬럼을 조회조건으로 사용시 주의 사항
 
