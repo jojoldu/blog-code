@@ -67,6 +67,10 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
   - [원격접속 및 root권한 받기 자동화](https://github.com/jojoldu/blog-code/tree/master/linux/go)
 - [도커로 CI 구축 연습하기 (젠킨스, slack)](https://github.com/jojoldu/springboot-jenkins-docker-slack)
 
+### Database
+
+- [MySQL 인덱스 간략 소개](github.com/jojoldu/blog-code/tree/master/database/mysql-index)
+
 ### Git
 
 - [이미 커밋된 내용에서 author(작성자) 수정하기](https://github.com/jojoldu/blog-code/tree/master/git/author%EC%88%98%EC%A0%95%ED%95%98%EA%B8%B0)
