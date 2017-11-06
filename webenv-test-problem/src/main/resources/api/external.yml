@@ -1,0 +1,4 @@
+api.external:
+  host: http://localhost:8080
+  url: /pay
+  type: cash
