@@ -69,6 +69,7 @@ http://jojoldu.tistory.com/ 에서 제공하는 예제 code
 
 ### Database
 
+- [MySQL 대용량 테이블 스키마 변경하기](https://github.com/jojoldu/blog-code/tree/master/database/mysql-massive-alter)
 - [MySQL 인덱스 간략 소개](github.com/jojoldu/blog-code/tree/master/database/mysql-index)
 
 ### Git
