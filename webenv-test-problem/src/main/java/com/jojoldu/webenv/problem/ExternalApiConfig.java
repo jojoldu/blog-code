@@ -21,10 +21,10 @@ import javax.validation.constraints.NotNull;
 @ConfigurationProperties(prefix="api.external")
 public class ExternalApiConfig {
 
-    @NotNull
+//    @NotNull
     private String host;
-    @NotNull
+//    @NotNull
     private String url;
-    @NotNull
+//    @NotNull
     private String type;
 }

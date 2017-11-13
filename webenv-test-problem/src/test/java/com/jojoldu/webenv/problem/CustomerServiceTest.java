@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
  */
 
 @RunWith(SpringRunner.class)
-@TestPropertySource(properties = CONFIG_LOCATIONS)
+//@TestPropertySource(properties = CONFIG_LOCATIONS)
 @SpringBootTest
 public class CustomerServiceTest {
 

@@ -17,7 +17,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 
 @RunWith(SpringRunner.class)
-@TestPropertySource(properties = CONFIG_LOCATIONS)
+//@TestPropertySource(properties = CONFIG_LOCATIONS)
 @SpringBootTest(webEnvironment = DEFINED_PORT)
 public abstract class WebIntegrationTest {
 
