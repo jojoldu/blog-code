@@ -3,6 +3,32 @@
  ```AmazonS3FullAccess```, ```AWSCodeDeployFullAccess```
 
 
+### Step 1: Image
+
+![](./images/travis/travis3.png)
+![](./images/travis/travis4.png)
+![](./images/travis/travis5.png)
+![](./images/travis/travis6_1.png)
+![](./images/travis/travis6_2.png)
+![](./images/travis/travis7.png)
+![](./images/travis/travis8.png)
+![](./images/travis/travis9.png)
+![](./images/travis/travis10.png)
+![](./images/travis/travis11.png)
+![](./images/travis/travis12.png)
+![](./images/travis/travis13.png)
+![](./images/travis/travis14.png)
+![](./images/travis/travis15.png)
+![](./images/travis/travis16.png)
+![](./images/travis/travis17.png)
+![](./images/travis/travis18.png)
+![](./images/travis/travis19.png)
+![](./images/travis/travis20.png)
+![](./images/travis/travis20_2.png)
+![](./images/travis/travis20_3.png)
+![](./images/travis/travis21.png)
+![](./images/travis/travis22.png)
+
 ### Step 3: Create roles in IAM for CodeDeploy
 
 ### Step 5:
