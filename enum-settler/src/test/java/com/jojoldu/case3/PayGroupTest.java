@@ -19,8 +19,8 @@ public class PayGroupTest {
         String payCode = selectPayCode();
         PayGroup payGroup = PayGroup.findByPayCode(payCode);
 
-        assertThat(payGroup.name(), is("BAEMIN_PAY"));
-        assertThat(payGroup.getTitle(), is("배민페이"));
+        assertThat(payGroup.name(), is("CARD"));
+        assertThat(payGroup.getTitle(), is("카드"));
     }
 
 
@@ -34,8 +34,8 @@ public class PayGroupTest {
         PayType payType = selectPayType();
         PayGroupAdvanced payGroupAdvanced = PayGroupAdvanced.findByPayType(payType);
 
-        assertThat(payGroupAdvanced.name(), is("BAEMIN_PAY"));
-        assertThat(payGroupAdvanced.getTitle(), is("배민페이"));
+        assertThat(payGroupAdvanced.name(), is("CARD"));
+        assertThat(payGroupAdvanced.getTitle(), is("카드"));
     }
 
 
