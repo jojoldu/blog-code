@@ -26,7 +26,7 @@ public class ApplicationTests {
     }
 
     @Test
-    public void name() {
+    public void auto_increment_테스트() {
         //given
         bookRepository.save(new Book("book1"));
         memberRepository.save(new Member("member1"));
