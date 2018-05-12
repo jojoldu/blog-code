@@ -78,6 +78,9 @@ spring:
 ### 두번째
 
 이번에 Spring Boot 2.0의 [migration guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0-Migration-Guide#id-generator)를 찾아보았습니다.  
+
+> 2.0의 migration guide는 1.5 -> 2.0 마이그레이션시 주의사항이 기록되있습니다.
+
 그리고 아주 큰! 힌트를 찾았습니다.
 
 ![추적3](./images/추적3.png)
@@ -101,7 +104,7 @@ Javadoc 내용만 봐도 이 값이 Hibernate의 Id 생성 규칙을 결정하�
 ![추적6](./images/추적6.png)
 
 1.5의 설정에서는 **false**가 기본값인게 확인 됩니다!  
-Javadoc에 재밌는 이야기가 있는데요 **false일 경우 Hibernate 5와 호환되지 않는다**고 합니다.
+Javadoc에 재밌는 이야기가 있는데요 **false일 경우 Hibernate 5 설정을 따라가지 않는다**고 합니다.
 
 ![추적7](./images/추적7.png)
 
@@ -117,16 +120,36 @@ Hibernate 5에서 어떤일이 있었는지 좀 더 찾아보겠습니다.
 
 ![추적8](./images/추적9.png)
 
-즉, **Hibernate 5부터 MySQL에서의 AUTO는 IDENTITY가 아닌 TABLE을 기본 시퀀스 전략**으로 가져간다는 것입니다.  
+즉, **Hibernate 5부터 MySQL에서의 GenerationType.AUTO는 IDENTITY가 아닌 TABLE을 기본 시퀀스 전략**으로 가져간다는 것입니다.  
 
 ## 정리
 
 결론은 다음과 같습니다.
 
-* Spring Boot는 Hibernate id 생성 전략을 그대로 따라갈지 말지를 결정하는 ```useNewIdGeneratorMappings``` 설정이 있다.
-* Hibernate 5.0에서 MySQL의 AUTO는 IDENTITY가 아닌 TABLE을 기본 시퀀스 전략으로 선택된다.
+* Spring Boot는 Hibernate의 id 생성 전략을 그대로 따라갈지 말지를 결정하는 ```useNewIdGeneratorMappings``` 설정이 있다.
+* **1.5에선 기본값이 false**, **2.0부터는 true**
+* Hibernate 5.0부터 MySQL의 AUTO는 IDENTITY가 아닌 **TABLE을 기본 시퀀스 전략**으로 선택된다.
+* 즉, 1.5에선 Hibernate 5를 쓰더라도 AUTO를 따라가지 않기 때문에 IDENTITY가 선택
+* 2.0에선 true이므로 Hibernate 5를 그대로 따라가기 때문에 TABLE이 선택
 
-그리고 Spring Boot 2.0에서는 
+으로 정리가 됩니다.
 
 ## 해결
+
+해결책은 크게 2가지가 있습니다.
+
+1. application.properties/yml의 ```use-new-id-generator-mappings```을 **false**로 설정한다
+
+![해결1](./images/해결1.png)
+
+2. ```@GeneratedValue```의 전략을 ```GenerationType.IDENTITY```로 지정한다
+
+![해결2](./images/해결2.png)
+
+둘 중 어느것을 하더라도 아래처럼 의도했던대로 잘 수행되는 것을 확인할 수 있습니다.
+
+![해결3](./images/해결3.png)
+
+> 저는 일단 2번째 방법인 ```GenerationType.IDENTITY```을 사용하고 있습니다.  
+Spring Data Jpa와 Hibernate을 똑같이 가져가는게 이후 문제 해결에 도움이 될것 같아서요 :)
 
