@@ -1,0 +1,11 @@
+### 목록
+GET http://localhost:8080/list
+
+### 방문1
+
+GET http://localhost:8080/visit?id=1&name=jojoldu
+
+### 방문2
+GET http://localhost:8080/visit?id=2&name=jojold2
+
+###
