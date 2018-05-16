@@ -1,0 +1,25 @@
+spring:
+  profiles:
+    active: version1
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+---
+spring:
+  profiles: version1
+  datasource:
+    jdbc-url: jdbc:h2:mem://localhost/~/jojoldu;MVCC=TRUE
+    username: jojoldu
+    password: 1234
+    driver-class-name: org.h2.Driver
+
+---
+spring:
+  profiles: version2
+  datasource:
+    hikari:
+      jdbc-url: jdbc:h2:mem://localhost/~/jojoldu;MVCC=TRUE
+      username: jojoldu
+      password: 1234
+      driver-class-name: org.h2.Driver
