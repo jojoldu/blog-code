@@ -9,11 +9,19 @@ spring:
 spring:
   profiles: version1
   datasource:
-    jdbc-url: jdbc:h2:mem://localhost/~/jojoldu;MVCC=TRUE
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:h2:mem://localhost/~/jojoldu;MVCC=TRUE
     username: jojoldu
     password: 1234
     driver-class-name: org.h2.Driver
 
+second:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    jdbc-url: jdbc:h2:mem://localhost/~/jojoldu-pg;MVCC=TRUE
+    username: jojoldu
+    password: 1234
+    driver-class-name: org.h2.Driver
 ---
 spring:
   profiles: version2
