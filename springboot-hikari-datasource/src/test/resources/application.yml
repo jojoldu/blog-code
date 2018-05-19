@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: version1
+    active: version2
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -8,6 +8,30 @@ spring:
 ---
 spring:
   profiles: version1
+  datasource:
+    url: jdbc:h2:mem://localhost/~/jojoldu;MVCC=TRUE
+    username: jojoldu
+    password: 1234
+    driver-class-name: org.h2.Driver
+---
+spring:
+  profiles: version2
+  datasource:
+    url: jdbc:h2:mem://localhost/~/jojoldu;MVCC=TRUE
+    username: jojoldu
+    password: 1234
+    driver-class-name: org.h2.Driver
+---
+spring:
+  profiles: version3
+  datasource:
+    jdbc-url: jdbc:h2:mem://localhost/~/jojoldu;MVCC=TRUE
+    username: jojoldu
+    password: 1234
+    driver-class-name: org.h2.Driver
+---
+spring:
+  profiles: version4
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:h2:mem://localhost/~/jojoldu;MVCC=TRUE
@@ -24,7 +48,7 @@ second:
     driver-class-name: org.h2.Driver
 ---
 spring:
-  profiles: version2
+  profiles: version5
   datasource:
     hikari:
       jdbc-url: jdbc:h2:mem://localhost/~/jojoldu;MVCC=TRUE

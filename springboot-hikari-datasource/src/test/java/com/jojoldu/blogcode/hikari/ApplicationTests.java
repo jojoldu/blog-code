@@ -16,8 +16,10 @@ public class ApplicationTests {
     DataSource dataSource;
 
     @Test
-    public void contextLoads() {
-        System.out.println(dataSource);
+    public void contextLoads() throws Exception{
+        System.out.println("============================================================");
+        System.out.println(">>>>>>> Hikari Datasource: "+dataSource.getConnection().getMetaData());
+        System.out.println("============================================================");
     }
 
 }
