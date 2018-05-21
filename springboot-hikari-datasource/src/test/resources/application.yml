@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: version4
+    active: version5
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -45,6 +45,7 @@ second:
     username: jojoldu
     password: 1234
     driver-class-name: org.h2.Driver
+
 ---
 spring:
   profiles: version5

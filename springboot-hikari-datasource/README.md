@@ -47,11 +47,35 @@ HikariCP의 Database URL 설정은 **url이 아닌 jdbcUrl**을 사용하기 때
 ![4](./images/4.png)
 
 이렇게 할 경우 Java Config로 만드는 HikariCP의 Datasource url 문제는 해결되는데요.  
-
-더군다나 로컬에선 이 문제를 발견 못할 확률이 굉장히 높습니다.  
+이것 때문에 오해하시는 분들이 제법 계십니다.  
+HikariCP를 쓸때는 무조건 jdbc-url로 값을 설정해야하는건 아닙니다.  
+자동설정의 경우엔 **datasource.jdbc-url이 아닌 datasource.url이 Datasource의 url이 됩니다**.  
+datasource.jdbc-url로 설정된 값은 자동설정에선 인식하지 못합니다.  
+  
+근데 이 문제가 로컬에선 발견 못할 확률이 높습니다.  
+H2에선 **값이 없을 경우 기본값을 세팅해서 실행**시키기 때문인데요.
+  
+예를 들어 아래와 같이 설정하고, Java Config를 쓰지않고, 자동설정 방법을 쓰게 되면
 
 ![5](./images/5.png)
 
-실제로 사용된 Datasource값이 H2에선 기본값이 설정되어 **실행은 되기**때문입니다.  
+보시는것처럼 설정된 url인 ```localhost/jojoldu```이 아닌 H2 기본값인 ```localhost/testdb``` 가 적용된채로 실행됩니다.  
+이러다보니 자세하게 확인하지 않고, 단순 실행 & 테스트 코드만 실행해보면 정상작동하기 때문에 그냥 지나칠때가 많습니다.  
+즉, 정리하면
 
+* 자동 설정
+  * ```spring.datasource.url```이 모든 Datasource의 url이 된다.
+* 수동 설정 (Java Config)
+  * ```spring.datasource.jdbc-url```로 해야 HikariCP가 인식한다. 
 
+상황에 따라 application.properties, application.yml 값을 변경하는건 불편하고 오해가 생길 여지가 있습니다.  
+그래서 SpringBoot에선 HikariCP의 설정이 추가로 있습니다.  
+application.properties, application.yml에 ```spring.datasource.hikari```로 값을 세팅하시면 됩니다.
+
+![6](./images/6.png)
+
+만약 Java Config로 설정한다고 해도 아래처럼 ```spring.datasource.hikari```를 지정하시면 똑같이 작동합니다.
+
+![7](./images/7.png)
+
+즉, HikariCP를 사용할경우 ```spring.datasource```로 값을 설정하기 보다는 ```spring.datasource.hikari```로 하시면 수동/자동 구분없이, 오해없이 설정할 수 있습니다.

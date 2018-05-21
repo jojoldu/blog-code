@@ -14,17 +14,17 @@ import javax.sql.DataSource;
 @SpringBootApplication
 public class Application {
 
-    @Profile(value = {"version2", "version3", "version5"})
+    @Profile(value = {"version2", "version3"})
     @Bean(name = "dataSource")
     @Primary
-    @ConfigurationProperties("spring.datasource")
+    @ConfigurationProperties("spring.datasource.hikari")
     public DataSource dataSource() {
         return DataSourceBuilder.create()
                 .type(HikariDataSource.class)
                 .build();
     }
 
-    @Profile(value = {"version2", "version3", "version5"})
+    @Profile(value = {"version2", "version3"})
     @Bean(name = "secondDataSource")
     @ConfigurationProperties("second.datasource.hikari")
     public DataSource secondDataSource() {
