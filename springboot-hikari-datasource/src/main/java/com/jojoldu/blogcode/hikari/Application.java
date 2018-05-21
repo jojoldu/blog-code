@@ -14,7 +14,7 @@ import javax.sql.DataSource;
 @SpringBootApplication
 public class Application {
 
-    @Profile(value = {"version2", "version3", "version4", "version5"})
+    @Profile(value = {"version2", "version3", "version5"})
     @Bean(name = "dataSource")
     @Primary
     @ConfigurationProperties("spring.datasource")
@@ -24,7 +24,7 @@ public class Application {
                 .build();
     }
 
-    @Profile(value = {"version2", "version3", "version4", "version5"})
+    @Profile(value = {"version2", "version3", "version5"})
     @Bean(name = "secondDataSource")
     @ConfigurationProperties("second.datasource.hikari")
     public DataSource secondDataSource() {
