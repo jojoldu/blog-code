@@ -39,8 +39,7 @@ public class AdvancedEmbeddedRedisConfig {
      * Embedded Redis가 현재 실행중인지 확인
      */
     private boolean isRedisRunning() throws IOException {
-        Process process = Runtime.getRuntime().exec("pgrep -f redis-server");
-        return isRunning(process);
+        return isRunning(executeGrepProcessCommand(redisPort));
     }
 
     /**
