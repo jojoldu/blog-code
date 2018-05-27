@@ -30,6 +30,8 @@ dependencies {
     //embedded-redis
     compile group: 'it.ozimov', name: 'embedded-redis', version: '0.7.1'
 
+// https://mvnrepository.com/artifact/ch.qos.logback/logback-core
+    compile group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
 
     compile('org.springframework.boot:spring-boot-starter-web')
     compileOnly('org.projectlombok:lombok')

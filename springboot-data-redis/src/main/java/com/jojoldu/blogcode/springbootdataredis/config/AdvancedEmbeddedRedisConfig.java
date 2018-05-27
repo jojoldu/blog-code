@@ -1,5 +1,6 @@
 package com.jojoldu.blogcode.springbootdataredis.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -12,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+@Slf4j
 @Profile("local2")
 @Configuration
 public class AdvancedEmbeddedRedisConfig {
@@ -52,6 +54,7 @@ public class AdvancedEmbeddedRedisConfig {
             if (!isRunning(process)) {
                 return port;
             }
+            log.info(">>>>>>>> Fail Port: "+port);
         }
 
         throw new IllegalArgumentException("Not Found Available port: 10000 ~ 65535");
