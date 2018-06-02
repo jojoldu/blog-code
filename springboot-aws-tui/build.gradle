@@ -21,7 +21,6 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
-    maven { url "https://repo.spring.io/milestone" }
     maven { url 'https://repo.spring.io/libs-milestone'}
 }
 
@@ -29,6 +28,10 @@ repositories {
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.cloud:spring-cloud-starter-aws')
+
+    // handlebars
+    compile 'pl.allegro.tech.boot:handlebars-spring-boot-starter:0.3.0'
+
     compileOnly('org.projectlombok:lombok')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }

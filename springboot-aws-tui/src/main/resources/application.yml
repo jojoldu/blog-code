@@ -4,3 +4,4 @@ spring:
       ddl-auto: update
   profiles:
     active: local
+

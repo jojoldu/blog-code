@@ -1,6 +1,9 @@
 .gradle
 /build/
 !gradle/wrapper/gradle-wrapper.jar
+/node_modules
+
+aws.yml
 
 ### STS ###
 .apt_generated
@@ -20,7 +23,6 @@
 
 ### NetBeans ###
 /nbproject/private/
-/build/
 /nbbuild/
 /dist/
 /nbdist/
