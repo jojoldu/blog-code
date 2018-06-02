@@ -5,3 +5,10 @@ spring:
   profiles:
     active: local
 
+cloud:
+  aws:
+    s3:
+      bucket: jojoldu
+    region:
+      static: ap-northeast-2
+      auto: false
