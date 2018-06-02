@@ -10,8 +10,56 @@
     <title> SpringBoot & AWS & Tui Editor </title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 </head>
 <body>
-<script src="/dist/js/build.js"></script>
+<h1>
+    S3 이미지 업로더
+</h1>
+<div class="col-md-12">
+    <div class="col-md-2">
+        <form>
+            <div class="form-group">
+                <label for="img">파일 업로드</label>
+                <input type="file" id="img">
+            </div>
+            <button type="button" class="btn btn-primary" id="btn-save">저장</button>
+        </form>
+    </div>
+    <div class="col-md-10">
+        <p><strong>결과 이미지입니다.</strong></p>
+        <img src="" id="result-image">
+    </div>
+</div>
+
+
+<script>
+    $('#btn-save').on('click', uploadImage);
+
+    function uploadImage() {
+        var file = $('#img')[0].files[0];
+        var formData = new FormData();
+        formData.append('data', file);
+
+        $.ajax({
+            type: 'POST',
+            url: '/upload',
+            data: formData,
+            processData: false,
+            contentType: false
+        }).done(function (data) {
+            var imageUrl = data;
+            $('#result-image').attr("src", imageUrl);
+        }).fail(function (error) {
+            alert(error);
+        })
+    }
+</script>
 </body>
 </html>

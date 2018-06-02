@@ -1,6 +1,7 @@
 package com.jojoldu.blogcode.tui;
 
-import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ import java.util.Optional;
 @Component
 public class S3Uploader {
 
-    private final AmazonS3 amazonS3;
+    private final AmazonS3Client amazonS3Client;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -37,15 +38,15 @@ public class S3Uploader {
     }
 
     private String upload(File uploadFile, String dirName) {
-        String uploadImageUrl = putS3(uploadFile, dirName, uploadFile.getName());
+        String fileName = dirName + "/" + uploadFile.getName();
+        String uploadImageUrl = putS3(uploadFile, fileName);
         removeNewFile(uploadFile);
         return uploadImageUrl;
     }
 
-    private String putS3(File uploadFile, String dirName, String fileName) {
-        String bucketName = bucket + "/" + dirName;
-        amazonS3.putObject(new PutObjectRequest(bucketName, fileName, uploadFile));
-        return amazonS3.getUrl(bucket, fileName).toString();
+    private String putS3(File uploadFile, String fileName) {
+        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
+        return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 
     private void removeNewFile(File targetFile) {
