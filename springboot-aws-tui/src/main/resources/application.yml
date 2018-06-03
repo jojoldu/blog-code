@@ -12,12 +12,6 @@ cloud:
     region:
       static: ap-northeast-2
       auto: false
-
----
-spring:
-  profiles: prod
-
-cloud:
-  aws:
     credentials:
       instanceProfile: true
+
