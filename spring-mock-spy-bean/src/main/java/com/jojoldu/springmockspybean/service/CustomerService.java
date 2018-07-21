@@ -9,6 +9,8 @@ import com.jojoldu.springmockspybean.domain.order.OrderProductMap;
 import com.jojoldu.springmockspybean.domain.product.Product;
 import com.jojoldu.springmockspybean.dto.OrderResponseDto;
 import com.jojoldu.springmockspybean.exception.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,20 +26,16 @@ import java.util.stream.Collectors;
  * Github : https://github.com/jojoldu
  */
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class CustomerService {
 
-    private CustomerRepository customerRepository;
-    private CustomerOrderRepository customerOrderRepository;
-    private HttpSession httpSession;
-    private ObjectMapper objectMapper;
-
-    public CustomerService(CustomerRepository customerRepository, CustomerOrderRepository customerOrderRepository, HttpSession httpSession, ObjectMapper objectMapper) {
-        this.customerRepository = customerRepository;
-        this.customerOrderRepository = customerOrderRepository;
-        this.httpSession = httpSession;
-        this.objectMapper = objectMapper;
-    }
+    private final CustomerRepository customerRepository;
+    private final CustomerOrderRepository customerOrderRepository;
+    private final HttpSession httpSession;
+    private final ObjectMapper objectMapper;
+    private final QueueMessagingTemplate queueMessagingTemplate;
 
     @Transactional(readOnly = true)
     public Customer findByName(String name){
