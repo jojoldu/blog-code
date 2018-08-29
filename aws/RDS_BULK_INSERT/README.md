@@ -9,6 +9,10 @@
 RDS간 데이터 복사에 가장 흔한 방법이 스냅샷을 이용하는 것입니다.  
 여기선 좀 더 현실감 있고, 이해하기 쉽게 **운영 RDS의 데이터를 개발 RDS로 복사**하는 과정이라고 하겠습니다.  
   
+> 다만 스냅샷은 **새로운 DB를 생성할때만 사용**할 수 있습니다.  
+기존 DB에 데이터를 넣을때는 사용할 수 없습니다.  
+만약 전체 데이터와 스키마를 이미 생성된 DB에 넣고 싶다면 DB Dump를 사용해보세요.
+
 먼저 운영 RDS의 Snapshots 페이지로 가보겠습니다.
 
 ![snapshot1](./images/snapshot1.png)
@@ -95,8 +99,8 @@ ID를 확인하셨다면 Share Snapshot 화면에서 Input 화면에 ID를 등�
 * 기존 데이터는 그대로 둔채 일부분만 복사하고 싶은 경우
 * 복사 대상이 RDS가 아닌 경우
 
-등등 여러 경우에 스냅샷을 못쓸수 있습니다.  
-이럴 경우 직접 Insert SQL 파일을 생성해서 진행합니다.  
+등등 다양한 경우에 스냅샷을 못쓸수 있습니다.  
+이럴 경우 **직접 Insert SQL 파일을 생성해서 진행**합니다.  
 이걸 위해선 2개가 필요한데요.
 
 * RDS에 접근할 수 있는 EC2
@@ -104,45 +108,75 @@ ID를 확인하셨다면 Share Snapshot 화면에서 Input 화면에 ID를 등�
 
 위 2개가 갖춰지시면 진행하실수 있습니다.
 
-> 아시겠지만 RDS는 서버에 직접 ssh 접속이 불가능합니다.  
+> 아시겠지만 **RDS는 직접 ssh 접속이 불가능**합니다.  
 그래서 EC2에서 원격으로 붙어야만 합니다.
 
 ### 2-1. Insert SQL 파일 생성하기
 
+가장 먼저 Insert SQL 파일을 만들어야 합니다.  
 이건 각자의 DB Client를 통해서 진행합니다.  
 예를 들어 IntelliJ나 DataGrip을 사용하시는 분들이라면 아래와 같이 생성할 수 있습니다.  
 (파일로 만들 조회 데이터를 조회한 상태에서 사용하셔야 합니다.)
 
 ![tool](./images/tool.png)
 
+내려 받을 데이터 전체를 조회후 받으시면 됩니다.  
+  
+```sql
+ex)
+
+select * from point_event;
+```
+
 ### 2-2. S3 에서 주고 받기
 
 위에서 만든 Insert SQL파일을 복사 받을 RDS와 같은 계정의 S3에 업로드 합니다.  
-그리고 업로드한 S3 파일을 
+
+![s3](./images/s3.png)
+
+그리고 업로드한 S3 파일을 RDS에 접속 가능한 EC2로 접속해 다운 받습니다.
+
 ```bash
 aws s3 cp s3://버킷명/파일위치 저장하고싶은 로컬 위치
 ```
 
-### Foreign Key 제약조건 해제
+### 2-3. Foreign Key 제약조건 해제
+
+다운 받은 Insert SQL의 제약 조건을 한번 확인해봅니다.  
+혹시나 FK가 물려있다면 Insert 가 안될수 있으니 Insert SQL **파일 최상단에 제약 조건을 푸는 쿼리** 한줄 (```set foreign_key_checks = 0```)과 **파일 최하단에 다시 제약 조건을 원래대로 돌리는 쿼리** 한줄 (```set foreign_key_checks = 1;```) 을 추가합니다.
 
 ```bash
 sed -i '1i set foreign_key_checks = 0;' sql파일위치
 ```
 
+![sed](./images/sed.png)
+
 ```bash
 echo 'set foreign_key_checks = 1;' >> sql파일위치
 ```
 
+![echo](./images/echo.png)
 
-### SQL 파일 실행
+### 2-4. SQL 파일 실행
 
-mysql client 설치
+준비가 다 되셨다면 EC2에서 MySQL에 명령어를 실행합니다.  
+EC2에 mysql client 가 설치되어 있지 않으시다면 아래 명령어로 설치합니다.
 
 ```bash
 sudo yum install mysql
 ```
 
+설치가 되셨으면 아래 명령어로 Insert SQL을 실행합니다.
+
 ```bash
 mysql -u DB사용자명 -p 패스워드 -h DB주소 < sql파일위치
 ```
+
+![mysql](./images/mysql.png)
+
+이렇게 하시면 Insert SQL 파일을 통한 데이터 입력은 끝납니다!  
+  
+  
+대략 제 기준으로는 150만 Row를 넣는데 1시간정도 걸렸습니다.  
+테이블의 크기나 잡혀있는 인덱스에 따라 다를수 있기 때문에 참고만 부탁드립니다 :)
 
