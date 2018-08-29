@@ -1,4 +1,4 @@
-# 서로 다른 계정의 RDS에 대량 데이터 등록하기
+# 서로 다른 계정의 RDS에 대량 데이터 복사하기
 
 다른 계정의 RDS 데이터를 대량으로 복사해야할 때가 있습니다.  
 예를 들어 테스트를 위해 운영 DB의 데이터를 개발 DB로 복사해야하는 등의 일이 될수 있겠죠?  
@@ -7,33 +7,86 @@
 ## 1. 스냅샷으로 전체 백업하기
 
 RDS간 데이터 복사에 가장 흔한 방법이 스냅샷을 이용하는 것입니다.  
-여기선 좀 더 현실감있고, 이해하기 쉽게 **운영 RDS의 데이터를 개발 RDS로 복사**하는 과정이라고 하겠습니다.  
+여기선 좀 더 현실감 있고, 이해하기 쉽게 **운영 RDS의 데이터를 개발 RDS로 복사**하는 과정이라고 하겠습니다.  
   
-먼저 운영 RDS의 
+먼저 운영 RDS의 Snapshots 페이지로 가보겠습니다.
 
 ![snapshot1](./images/snapshot1.png)
 
+대부분의 RDS는 기본설정에 따라 Snapshots을 남기고 있는데요.  
+여기서 **수동 생성한 Snapshots만 공유가 가능합니다**.  
+  
+예를 들어 RDS 옵션으로 자동 생성한 Snapshot의 경우 아래 그림처럼 Share Snapshot 버튼이 비활성화 되어있습니다.
+
 ![snapshot2](./images/snapshot2.png)
+
+하지만 수동으로 생성한 Snapshot은 Share Snapshot이 활성화 되어있는 것을 알 수 있습니다.  
 
 ![snapshot3](./images/snapshot3.png)
 
+그래서 저희는 수동 Snapshot을 하나 생성하겠습니다.  
+원하시는 날짜의 Snapshot을 선택하시고, Copy Snapshot을 선택합니다.
+
 ![snapshot4](./images/snapshot4.png)
+
+그럼 아래와 같은 설정 화면이 나올텐데요.  
+원하시는 값으로 설정하신후 생성 버튼을 클릭합니다.
 
 ![snapshot5](./images/snapshot5.png)
 
+그럼 아래처럼 Snapshot이 복사되고 있는 것을 확인할 수 있습니다.
+
 ![snapshot6](./images/snapshot6.png)
 
-복사할 계정의 RDS 스냅샷 페이지로 갑니다.
+Status가 available이 될때까지 기다리신뒤, 생성이 완료 되면 복사 Snapshot을 선택하고 Share Snapshot을 선택합니다.
 
 ![snapshot7](./images/snapshot7.png)
 
+공유 설정 페이지로 가셔서 아래와 같이 설정합니다.
+
 ![snapshot8](./images/snapshot8.png)
 
+* Snapshot visibility는 **Private**로 설정
+* Account ID에는 개발 AWS 계정 (복사 받을) 의 Account ID를 등록
+
+여기서 AccountID는 **로그인할때 사용하는 계정은 아닙니다**.  
+이걸 확인하시려면 복사 받을 계정으로 가셔서 우측 상단의 지원 (Support) -> 지원 센터 -> Account number를 보시면 됩니다.  
+**Account number가 Account ID**입니다.  
+  
 ![snapshot9](./images/snapshot9.png)
+
+ID를 확인하셨다면 Share Snapshot 화면에서 Input 화면에 ID를 등록 하신후 ADD 버튼을 클릭합니다.  
+그러면 아래와 같이 해당 ID가 추가된 것을 확인할 수 있습니다.
 
 ![snapshot10](./images/snapshot10.png)
 
+추가가 완료 되시면 개발 AWS 계정 (복사 받을) 계정의 RDS Snapshot 페이지로 가셔서 **Shared with Me(나와 공유 상태)** 버튼을 클릭해서 공유 된 것을 확인합니다.
+
 ![snapshot11](./images/snapshot11.png)
+
+그럼 이 Snapshot을 통해 **복원**을 진행합니다.
+
+![snapshot12](./images/snapshot12.png)
+
+
+![snapshot13](./images/snapshot13.png)
+
+이외 다른 설정들은 복원 되어 생성된 RDS에서 수정할 수 있습니다.
+
+* DB Parameter Group
+* Security Group
+* 계정 비밀번호
+
+등등은 생성후 수정해서 진행하시면 됩니다.  
+  
+자 그럼 생성되는걸 기다립니다.
+
+![snapshot14](./images/snapshot14.png)
+
+아래와 같이 사용가능한게 확인이 되면 완전히 복사된 것입니다!
+
+![snapshot15](./images/snapshot15.png)
+
 
 ## 2. SQL 파일로 부분 복사하기
 
