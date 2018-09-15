@@ -1,0 +1,1 @@
+* https://stackoverflow.com/questions/26509971/spring-batch-jpapagingitemreader-why-some-rows-are-not-read

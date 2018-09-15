@@ -7,9 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Created by younghankim on 2016. 10. 17..
- */
 @EnableBatchProcessing
 @Configuration
 public class TestJobConfiguration {

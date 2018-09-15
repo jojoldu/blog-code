@@ -41,7 +41,7 @@ public class ItemListWriterTest {
     @Test
     public void processor에서_writer로_list를_넘긴다() throws Exception {
         //given
-        salesRepository.save(Arrays.asList(
+        salesRepository.saveAll(Arrays.asList(
                 new Sales(10000L, 1L),
                 new Sales(20000L, 2L),
                 new Sales(30000L, 3L)));
