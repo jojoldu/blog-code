@@ -1,0 +1,14 @@
+spring:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+logging:
+  level:
+    org.hibernate.type: trace
+
+spring.batch.job.names: ${job.name:NONE}
