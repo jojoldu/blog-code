@@ -1,5 +1,6 @@
 package com.jojoldu.spock.domain;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -9,20 +10,17 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
+@RequiredArgsConstructor
 public class CustomerService {
 
-    private CustomerRepository customerRepository;
-
-    public CustomerService(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }
+    private final CustomerRepository customerRepository;
 
     public String getCustomerName(long id){
-        return customerRepository.findOne(id).getName();
+        return customerRepository.findById(id).get().getName();
     }
 
     public void joinEvent(long customerId, long point){
-        Customer customer = customerRepository.findOne(customerId);
+        Customer customer = customerRepository.findById(customerId).get();
 
         customerRepository.savePoint(customer, point);
 

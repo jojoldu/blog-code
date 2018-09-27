@@ -105,7 +105,7 @@ class TestJobConfiguration {
 public class CustomerBackup {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;

@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '1.5.7.RELEASE'
+		springBootVersion = '2.0.4.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -11,18 +11,22 @@ buildscript {
 }
 
 apply plugin: 'java'
-apply plugin: 'groovy' // groovy 지원
+apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
-group = 'com.jojoldu'
+group = 'com.jojoldu.spring'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '4.5.1'
+}
 
 repositories {
 	mavenCentral()
 }
-
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
@@ -39,5 +43,4 @@ dependencies {
 
 	testCompile('org.spockframework:spock-core:1.1-groovy-2.4') // Spock 의존성 추가
 	testCompile('org.spockframework:spock-spring:1.1-groovy-2.4') // Spock 의존성 추가
-	testCompile('net.bytebuddy:byte-buddy:1.6.4')
 }

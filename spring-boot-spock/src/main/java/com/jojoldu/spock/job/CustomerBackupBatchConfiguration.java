@@ -68,7 +68,7 @@ public class CustomerBackupBatchConfiguration {
                     .map(CustomerBackup::new)
                     .collect(Collectors.toList());
 
-            customerBackupRepository.save(customerBackups);
+            customerBackupRepository.saveAll(customerBackups);
 
             return RepeatStatus.FINISHED;
         };
