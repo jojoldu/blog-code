@@ -6,13 +6,9 @@ import com.jojoldu.spock.domain.CustomerService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Import
 import spock.lang.Specification
 import spock.mock.DetachedMockFactory
-
-import static org.mockito.BDDMockito.given
 
 /**
  * Created by jojoldu@gmail.com on 2018. 9. 27.

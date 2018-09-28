@@ -26,7 +26,10 @@ task wrapper(type: Wrapper) {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://jitpack.io' }
 }
+
+ext['groovy.version'] = '2.5.0'
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
@@ -39,8 +42,6 @@ dependencies {
 	runtime('org.springframework.boot:spring-boot-devtools')
 	compileOnly('org.projectlombok:lombok')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
-
-
-	testCompile('org.spockframework:spock-core:1.1-groovy-2.4') // Spock 의존성 추가
-	testCompile('org.spockframework:spock-spring:1.1-groovy-2.4') // Spock 의존성 추가
+	testCompile('org.spockframework:spock-core:1.2-groovy-2.5')
+	testCompile('org.spockframework:spock-spring:1.2-groovy-2.5')
 }
