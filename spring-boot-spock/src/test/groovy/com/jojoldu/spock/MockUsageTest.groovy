@@ -4,7 +4,7 @@ import com.jojoldu.spock.basic.AmountService
 import com.jojoldu.spock.basic.FeeCalculateType
 import com.jojoldu.spock.domain.Customer
 import com.jojoldu.spock.domain.CustomerRepository
-import com.jojoldu.spock.domain.CustomerService
+import com.jojoldu.spock.service.CustomerService
 import spock.lang.Specification
 
 /**

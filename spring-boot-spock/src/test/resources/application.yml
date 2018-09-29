@@ -1,0 +1,21 @@
+spring:
+  profiles:
+    active: local
+
+---
+spring:
+  profiles: local
+
+order:
+  api:
+    url: http://localhost:8090/order
+
+
+---
+spring:
+  profiles: real
+
+order:
+  api:
+    url: https://jojoldu.tistory.com/order
+

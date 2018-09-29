@@ -2,7 +2,7 @@ package com.jojoldu.spock
 
 import com.jojoldu.spock.domain.Customer
 import com.jojoldu.spock.domain.CustomerRepository
-import com.jojoldu.spock.domain.CustomerService
+import com.jojoldu.spock.service.CustomerService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration

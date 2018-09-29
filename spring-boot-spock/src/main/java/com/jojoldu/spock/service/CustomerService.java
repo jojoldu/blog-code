@@ -1,9 +1,14 @@
-package com.jojoldu.spock.domain;
+package com.jojoldu.spock.service;
 
+import com.jojoldu.spock.domain.Customer;
+import com.jojoldu.spock.domain.CustomerRepository;
+import com.jojoldu.spock.service.dto.OrderDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -14,11 +19,17 @@ import java.util.List;
  */
 
 @Service
-@RequiredArgsConstructor
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final JdbcTemplate jdbcTemplate;
+    private final RestTemplate restTemplate;
+
+    public CustomerService(CustomerRepository customerRepository, JdbcTemplate jdbcTemplate, RestTemplateBuilder restTemplateBuilder) {
+        this.customerRepository = customerRepository;
+        this.jdbcTemplate = jdbcTemplate;
+        this.restTemplate = restTemplateBuilder.build();
+    }
 
     public String getCustomerName(long id){
         return customerRepository.findById(id)

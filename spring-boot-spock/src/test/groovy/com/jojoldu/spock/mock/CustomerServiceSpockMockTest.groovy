@@ -1,9 +1,6 @@
 package com.jojoldu.spock.mock
 
-import com.jojoldu.spock.domain.CustomerService
-import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
-import org.junit.Test
+import com.jojoldu.spock.service.CustomerService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -11,11 +8,8 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
 import spock.lang.Specification
 
-import static org.hamcrest.CoreMatchers.is
-import static org.junit.Assert.assertThat
 import static org.mockito.ArgumentMatchers.any
 import static org.mockito.ArgumentMatchers.anyString
-import static org.mockito.ArgumentMatchers.eq
 import static org.mockito.BDDMockito.given
 
 /**
