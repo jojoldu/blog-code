@@ -96,6 +96,4 @@ class UserServiceTest extends Specification {
             return orderDateTime
         }
     }
-
-
 }

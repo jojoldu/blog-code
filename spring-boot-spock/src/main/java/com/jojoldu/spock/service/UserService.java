@@ -47,5 +47,4 @@ public class UserService {
         HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
         return restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, OrderDto.class).getBody();
     }
-
 }

@@ -4,6 +4,7 @@ import com.jojoldu.spock.domain.Customer;
 import com.jojoldu.spock.domain.CustomerRepository;
 import com.jojoldu.spock.service.dto.OrderDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,18 +19,13 @@ import java.util.List;
  * Github : https://github.com/jojoldu
  */
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final JdbcTemplate jdbcTemplate;
-    private final RestTemplate restTemplate;
-
-    public CustomerService(CustomerRepository customerRepository, JdbcTemplate jdbcTemplate, RestTemplateBuilder restTemplateBuilder) {
-        this.customerRepository = customerRepository;
-        this.jdbcTemplate = jdbcTemplate;
-        this.restTemplate = restTemplateBuilder.build();
-    }
 
     public String getCustomerName(long id){
         return customerRepository.findById(id)
