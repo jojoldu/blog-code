@@ -39,13 +39,13 @@ public class ParentRepositoryImpl implements ParentRepositoryCustom {
 
     @Override
     public List<Family> findFamily() {
-        Map<String, List<Child>> transform = queryFactory
+        Map<Parent, List<Child>> transform = queryFactory
                 .from(parent)
                 .leftJoin(parent.children, child)
-                .transform(groupBy(parent.name).as(list(child)));
+                .transform(groupBy(parent).as(list(child)));
 
         return transform.entrySet().stream()
-                .map(entry -> new Family(entry.getKey(), entry.getValue()))
+                .map(entry -> new Family(entry.getKey().getName(), entry.getValue()))
                 .collect(Collectors.toList());
     }
 
