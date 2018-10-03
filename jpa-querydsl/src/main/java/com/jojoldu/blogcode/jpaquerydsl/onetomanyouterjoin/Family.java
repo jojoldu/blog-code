@@ -1,5 +1,7 @@
 package com.jojoldu.blogcode.jpaquerydsl.onetomanyouterjoin;
 
+import lombok.AllArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +11,7 @@ import java.util.List;
  * Github : https://github.com/jojoldu
  */
 
-
+@AllArgsConstructor
 public class Family {
 
     private String parentName;

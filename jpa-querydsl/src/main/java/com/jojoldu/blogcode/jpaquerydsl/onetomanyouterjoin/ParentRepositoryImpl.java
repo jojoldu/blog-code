@@ -27,10 +27,22 @@ public class ParentRepositoryImpl implements ParentRepositoryCustom {
         return queryFactory
                 .select(Projections.fields(Family.class,
                         parent.name,
-                        child
+                        parent.children
                 ))
                 .from(parent)
                 .leftJoin(parent.children, child)
                 .fetch();
     }
+
+//    @Override
+//    public List<Family> findFamily() {
+//        List<Parent> parents = queryFactory
+//                .selectFrom(parent)
+//                .leftJoin(parent.children, child)
+//                .fetch();
+//
+//        return parents.stream()
+//                .map(p -> new Family(p.getName(), p.getChildren()))
+//                .collect(Collectors.toList());
+//    }
 }
