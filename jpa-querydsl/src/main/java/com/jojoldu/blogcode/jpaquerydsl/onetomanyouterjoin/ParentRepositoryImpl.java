@@ -1,5 +1,6 @@
 package com.jojoldu.blogcode.jpaquerydsl.onetomanyouterjoin;
 
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,7 @@ public class ParentRepositoryImpl implements ParentRepositoryCustom {
     /**
      * 실패 케이스
      */
+
 //    @Override
 //    public List<Family> findFamily() {
 //        return queryFactory
@@ -37,6 +39,24 @@ public class ParentRepositoryImpl implements ParentRepositoryCustom {
 //                .fetch();
 //    }
 
+    /**
+     * 성공 케이스1
+     */
+//    @Override
+//    public List<Family> findFamily() {
+//        List<Parent> parents = queryFactory
+//                .selectFrom(parent)
+//                .leftJoin(parent.children, child).fetchJoin()
+//                .fetch();
+//
+//        return parents.stream()
+//                .map(p -> new Family(p.getName(), p.getChildren()))
+//                .collect(Collectors.toList());
+//    }
+
+    /**
+    * 성공 케이스2
+    */
     @Override
     public List<Family> findFamily() {
         Map<Parent, List<Child>> transform = queryFactory
@@ -49,15 +69,16 @@ public class ParentRepositoryImpl implements ParentRepositoryCustom {
                 .collect(Collectors.toList());
     }
 
+
 //    @Override
 //    public List<Family> findFamily() {
-//        List<Parent> parents = queryFactory
-//                .selectFrom(parent)
-//                .leftJoin(parent.children, child).fetchJoin()
-//                .fetch();
+//        Map<String, List<Child>> transform = queryFactory
+//                .from(parent)
+//                .leftJoin(parent.children, child)
+//                .transform(groupBy(parent.name).as(list(child)));
 //
-//        return parents.stream()
-//                .map(p -> new Family(p.getName(), p.getChildren()))
+//        return transform.entrySet().stream()
+//                .map(entry -> new Family(entry.getKey(), entry.getValue()))
 //                .collect(Collectors.toList());
 //    }
 }
