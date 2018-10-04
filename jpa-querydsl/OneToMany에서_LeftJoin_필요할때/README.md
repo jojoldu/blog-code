@@ -123,9 +123,9 @@ public class Family {
 
 문제를 해결할 수 있는 방법은 크게 2가지입니다.
 
-### 1. Entity 직접 조회 + Left Join
+### 1. Entity 직접 조회 + Left Outer Join
 
-첫번째는 Parent Entity 를 직접 조회 하되, Child는 Left Join을 하고, 조회된 결과로 Family를 생성하는 것입니다.
+첫번째는 Parent Entity 를 직접 조회 하되, Child는 Left Outer Join을 하고, 조회된 결과로 Family를 생성하는 것입니다.
 
 ```java
     public List<Family> findFamily() {
@@ -146,7 +146,7 @@ Parent와 Child의 관계를 ```leftJoin```으로 맺고, 그외 다른 코드 �
 
 ![성공1_2](./images/성공1_2.png)
 
-실패했을때처럼 ```parent.child```를 Projection에서 사용하지 않고 Entity 그대로 사용할 경우에는 위와 같은 문제가 발생하지 않습니다.
+Projection을 사용하지 않고 Entity 그대로 사용할 경우에는 위와 같은 문제가 발생하지 않습니다.
 
 ### 2. Result Aggregation
 
@@ -185,11 +185,13 @@ import static com.querydsl.core.group.GroupBy.list;
 
 ![성공3_2](./images/성공3_2.png)   
 
+이 부분 주의 해서 진행하시면 좋을것 같습니다.  
+  
+이 외에도 공식 문서에서 제공하지 않는 다양한 Aggregation 예제가 있습니다.  
 
+* [Aggregation 예제](https://github.com/querydsl/querydsl/tree/master/querydsl-collections/src/test/java/com/querydsl/collections)
 
-
-
-[Aggregation 예제](https://github.com/querydsl/querydsl/tree/master/querydsl-collections/src/test/java/com/querydsl/collections)
+위 Github에서 아래와 같이 ```GroupByTest``` 시리즈들을 보시면 됩니다.
 
 ![예제](./images/예제.png)  
 
