@@ -52,8 +52,13 @@ Karabiner-elements를 다시 열어 Devices 탭으로 이동하여 **No product 
 
 ## 리얼포스 연결시
 
-리얼 포스의 경우 키배열이 맥과 다르게 되어 있어 마찬가지로 Karabiner-elements를 통해 변경 합니다.
-Target Device를 Real Force로 선택하고 아래와 같은 키 매핑을 추가합니다.
+리얼 포스의 경우 키배열이 맥과 다르게 되어 있어 마찬가지로 Karabiner-elements를 통해 변경 합니다.  
+먼저 **본인의 맥북과 리얼 포스를 연결**합니다.  
+(연결하지 않으면 Device 목록에 나오지 않습니다.)  
+  
+그리고 Karabiner-elements의 설정을 열어 Target Device를 Realforce로 선택하고 아래와 같은 키 매핑을 추가합니다.
+
+![설정5](./images/설정5.png)
 
 * left_command -> left_option
 * left_option -> left_command
