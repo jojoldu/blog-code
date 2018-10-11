@@ -62,7 +62,7 @@ AWS Beanstalk의 경우 한대 서버에 배포하는 시간이 5분이 필요�
 배포 대수를 30% 혹은 50%로 선택하기엔 무리가 있었습니다.  
 배포하는 순간에 남은 서버들에 크게 부하가 증가하기 때문입니다.  
   
-그래서 이 문제를 회피하기 위해 같은 설정의 Beanstalk를 하나더 생성해 반대편 환경에 100%로 배포하고 ELB를 스위칭 하는 방법 등을 고려했습니다.  
+그래서 이 문제를 회피하기 위해 **같은 설정의 Beanstalk를 하나더 생성해 반대편 환경에 100%로 배포하고 ELB를 스위칭 하는 방법** 등을 고려했습니다.  
 하지만 **배포하는게 이렇게 번거로워야하나?** 라는 아주 근본적인 생각이 들었습니다.  
   
 또한 특정 서버만 다른 환경 설정이 어렵다는 것도 큰 문제였습니다.  
@@ -88,7 +88,7 @@ Spring과 Beanstalk을 쓰고 있는 상황에서 AWS SQS에서 메세지를 수
 
 Beanstalk Worker에 대해 간단하게 소개드리면 **Beanstalk 내부에 SQS 메세지 리스너 데몬을 두고 해당 데모이 어플리케이션으로 SQS 메세지를 담아 HTTP API 요청**을 보내는 환경을 얘기합니다.
 
-![빈스톡워커](./images/빈스톡워커.png)
+![beanstalk_worker](./images/beanstalk_worker.png)
 
 (좀 더 자세한 내용은 AWS의 [공식 문서](https://docs.aws.amazon.com/ko_kr/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html)를 참고하시면 더욱 좋습니다.)  
   
@@ -432,7 +432,7 @@ Spring Rest Docs 사용 방법은 블로그에 정리했으니 참고하시면 �
 
 특히 각자 진행해야할 모듈을 명확히 분리해서 구현하고 있었고, 테스트 대상도 분리되어 있어 굳리 Branch로 분리 할 필요가 없던 상태였습니다.  
 
-![프로젝트 모듈](./images/프로젝트모듈.png)
+![프로젝트 모듈](./images/modules.png)
 
 (프로젝트 모듈 구성)  
   
