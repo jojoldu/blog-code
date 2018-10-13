@@ -1,13 +1,40 @@
-# # 포인트 시스템 개편기 #2 - 오픈 준비
+# 포인트 시스템 개편기 #2 - 오픈 준비
 
-개발을 시작할때부터 어떻게 오픈할 것인지에 대해 계속 고민하고 있었습니다.  
+기존에 프로시저만 수행되던 시스템을 API와 메세징 기반으로 전환하기 위해서 **모든 API는 2개씩** 준비해야만 했습니다.  
+
+1. 레거시 프로시저를 랩핑한 API
+2. 신규 도메인 모델 API
+
+이렇게 구성한 이유는 다음과 같습니다.
+
+* **롤백의 위험 부담 최소화**
+
+만약 프로시저 API가 없다면 다음과 같은 큰 위험이 있습니다.  
+
+* 기존에 포인트를 쓰던 다른 서비스에서 프로시저 -> API로 전환
+* 신규 API에 문제가 있어서 **롤백해야하는 상황** 발생
+* 포인트 뿐만 아니라 **다른 서비스들도 모두 기존 프로시저 형태로 롤백**해야만함.
+
+이건 너무나 큰 위험입니다.  
+그래서 레거시 프로시저를 랩핑한 API가 선 오픈하고 운영 환경에서 충분히 테스트 한 뒤,
+다른 서비스들이 하나씩 프로시저를 호출하는 코드를 API를 호출하도록 전환하도록 진행되었습니다.  
+  
+그래서 모든 준비와 검증을 2번씩 수행했습니다.
 
 ## 7. 성능 테스트
 
 성능 테스트의 경우 네이버에서 만든 [Ngrinder](http://naver.github.io/ngrinder/)와 [Pinpoint](https://d2.naver.com/helloworld/1194202)를 사용했습니다.  
+
+![ngrinder](./images//ngrinder.png)
+
+(Ngrinder)
+
+![pinpoint](./images/pinpoint.png)
+
+(pinpoint)  
   
 여러 좋은 툴이 있지만, 이 2개를 선택한 이유는 **익숙해서**입니다.  
-Pinpoint는 이미 팀내에서 공식 모니터링툴로 계속해서 사용해오던 상태였으며, Ngrinder는 Spock, Gradle 등으로 Groovy 문법이 크게 어렵지 않은 상태에서 좋은 선택지였습니다.  
+Pinpoint는 이미 팀내에서 공식 모니터링툴로 계속해서 사용해오던 상태였으며, Ngrinder는 Spock, Gradle 등으로 Groovy 문법이 눈에 익은 상태여서 좋은 선택지였습니다.  
 
 > 이미 개인 프로젝트로 이 둘을 계속해서 사용해오던 상태였어서 다른 선택지를 굳이 찾을 필요가 없었습니다.
 
@@ -16,14 +43,7 @@ Pinpoint는 이미 팀내에서 공식 모니터링툴로 계속해서 사용해
 1. 레거시 프로시저를 랩핑한 API의 성능 테스트
 2. 신규 도메인 모델 API의 성능 테스트
   
-같은 기능을 가진 API가 무조건 2개씩 만들어져야만 했습니다.  
-이렇게 구성한 이유는 다음과 같습니다.
 
-* **롤백의 위험 부담 최소화**
-
-기존에 포인트를 쓰던 다른 팀과 서비스에서
-레거시 프로시저를 랩핑한 API가 선 오픈되고, **이 API가 문제만 없다면 이후 신규 도메인과 API에 문제가 있어도 언제든 롤백**할 수 있기 때문입니다.  
-  
 
   
 특히 1번 테스트가 중요했습니다.  
@@ -49,14 +69,26 @@ Pinpoint는 이미 팀내에서 공식 모니터링툴로 계속해서 사용해
 ### 7-1. SQS 환경에서 Pintpoint 사용하기
 
 기본적으로 Pintpoint는 HTTP Request가 올때 추적을 시작합니다.  
-하지만 SQS와 같은 메세징 큐 서비스를 사용할때는 HTTP Request가 아닌, 메세징 수신으로 시작합니다.  
-그러다보니 Pintpoint의 기본 설정으로는 추적이 안됩니다.  
+하지만 SQS와 같은 메세징 큐 서비스를 사용할때는 HTTP Request가 아닙니다.  
+그러다보니 **Pintpoint의 기본 설정으로는 추적이 안됩니다**.  
   
-Pinpoint에서는 이처럼 
+Pinpoint에서는 이런 상황을 대비해서 **EntryPoint 설정**이 가능합니다.  
+
+![entrypoint](./images/entrypoint.png)
+
+(pinpoint.config)  
+  
+> entrypoint에는 패키지명을 포함해서 Full Path로 메소드명을 기입해야합니다.  
+여러 메소드를 지정해야할 경우 ```,```로 구분해서 등록하시면 됩니다.
+
+위와 같이 설정할 경우 **지정된 메소드가 호출되면 추적**이 시작됩니다.  
+저는 ```@SqsListener```가 지정된 메소드들을 모두 entrypoint로 지정했습니다.
 
 ```bash
 profiler.entrypoint=com.woowabros.point.worker.listener.CommandListener.receiveCommand,com.woowabros.point.worker.listener.CommandListener.receiveCommand.receiveCommandCancel,com.woowabros.point.worker.listener.RefreshListener.receiveRefresh,com.woowabros.point.worker.listener.ExpireListener.receiveExpire
 ```
+
+![listener](./images/listener.png)
 
 > 더 많은 설정 방법은 Pinpoint의 공식 [Document](https://naver.github.io/pinpoint/1.8.0/main.html)를 참고해보세요!
  
@@ -104,20 +136,85 @@ R3.8xlarge로 평균 3 ~ 5초 정도 수행되는 Application이 R4.8xlarge로 �
 
 ## 8. QA
 
-성능테스트와 마찬가지로 QA 역시 2번을 수행했습니다.  
+QA 역시 성능 테스트와 마찬가지로 레거시 프로시저 API 버전과 신규 도메인 API 버전 2가지를 모두 테스트했습니다.
+
+![tc](./images/tc.png)
+
+(TC 목록)  
+  
+QA 분들께 정말 죄송했던 것이, 구 API와 신 API를 각각 테스트해야한다는 것을 미리 얘기해드리지 못해 안그래도 부족했던 QA 일정을 더 촉박하게 만들었던 점입니다.  
 
 
-같은 TC (Test Case)로 2번 QA를 진행했습니다.  
-이렇게 진행한 이유는 프로시저를 랩핑한 API와 신규 API 2개 모두가 테스트 되어야만 했기 때문입니다.  
-기존 레거시 프로시저를 API로 랩핑한 경우에도 저희가 놓친 프로시저가 있는게 아닐지, 다른 서비스와의 연동이 제대로 되는지 등에 대한 검증이 필수였습니다.
+### 8-1. Redis 캐시 갱신 문제
+
+QA 기간 중에, **가끔 가용 포인트가 적립 내역과 다르다**는 내용이 나왔습니다.  
+주문을 했는데 해당 내용이 가용 포인트 계산에 포함되지 않는다는 
+
+```java
+public class CommandWorkerService {
+    @Transactional
+    public Optional<PointEvent> earn(CommandMessage message) {
+        
+        ...
+        /**
+            point event, detail 등록
+        **/
+
+        ...
+
+        redisSender.sendAvailablePoint(message.getUserId());
+        
+        ...
+
+        return Optional.of(pointEvent);
+    }
+}
+```
+
+```java
+public class CommandWorkerService {
+    @Transactional
+    public Optional<PointEvent> earn(CommandMessage message) {
+        ...
+
+        /**
+            point event, detail 등록
+        **/
+
+        ...
+
+        return Optional.of(pointEvent);
+    }
+}
+
+public class CommandListener extends LatchListener {
+
+    @SqsListener(value = SqsConstant.COMMAND, deletionPolicy = SqsMessageDeletionPolicy.NEVER)
+    public void receiveCommand(@Payload CommandMessage message, Acknowledgment ack) {
+        
+        ...
+
+        /**
+            Service Method 실행 완료
+        **/
+
+        redisSender.sendAvailablePoint(message.getUserId());
+
+        ...
+    }
+}
+```
 
 ## 9. 오픈
 
-신규 포인트 시스템의 오픈 단계에서 큰 요구 사항이 있었습니다.  
-**서비스의 정기 점검 없이 오픈** 되어야 한다는 것이였습니다.  
+
 즉, 사용자 분들은 **정상적으로 배달의 민족 서비스를 이용하는 과정에서 포인트 시스템이 완전히 교체** 되어야 한다는 것이였습니다.  
   
-물론 저희는 이 요구사항을 진작에 들었기 때문에 
+물론 저희는 이 요구사항을 진작에 들었기 때문에 다음과 같은 오픈 전략을 세웠습니다.
+
+1. 레거시 프로시저를 랩핑한 API 선 오픈
+2. 상품권, 회원, 프론트, 주문, 빌링 서비스에서 차례로 프로시저 호출 코드를 API 코드로 전환해서 배포
+3. 
 
 총 3단계로 진행했습니다.
 
@@ -125,7 +222,14 @@ R3.8xlarge로 평균 3 ~ 5초 정도 수행되는 Application이 R4.8xlarge로 �
 2. 레거시 API를 우선순위로 두고, 구 & 신 API 동시에 이벤트 발송하는 API로 전환
 3. 신규 API를 우선순위로 두고, 구 & 신 API 동시에 이벤트 발송하는 API로 전환
 
+![deploy1](./images/deploy1.png)
+
+(전체 구조)  
+  
+
 ### 9-1. 레거시 프로시저를 랩핑한 API 오픈
+
+![deploy2](./images/deploy2.png)
 
 7월 17일 레거시 프로시저를 랩핑한 API를 선 오픈했습니다.  
 이때는 저희가 만든 신규 시스템에서 모든 비지니스 로직은 기존에 사용되던 포인트 시스템의 프로시저를 통해서 처리 되기 때문에 비지니스상 오류는 
@@ -135,7 +239,9 @@ R3.8xlarge로 평균 3 ~ 5초 정도 수행되는 Application이 R4.8xlarge로 �
 1차 버전은 신규 API로 메시지가 발행되지 않는 버전이였습니다.  
 실제 저
 
-### 9-2. 레거시 API 우선순위 API로 전환
+### 9-2. 레거시 API 우선 순위로 전환
+
+![deploy3](./images/deploy3.png)
 
 모든 Endpoint가 프로시저가 아닌 저희가 랩핑한 API로 전환된 것을 확인하고, 일주일간 모니터링을 진행했습니다.  
 그리고 7월 25일 2차 버전인 **레거시 API 우선순위 API로 전환**했습니다.  
@@ -148,8 +254,31 @@ R3.8xlarge로 평균 3 ~ 5초 정도 수행되는 Application이 R4.8xlarge로 �
 대신 실패한 메세지는 로그로 Json 형태 그대로 남기게 하여, **어떤 문제가 있어 실패했는지 확인 후**  다시 SQS로 재전송 하였습니다.  
 
 
-### 9-3. 신규 API 우선순위 API로 전환
+### 9-3. 신규 API 우선순위로 전환
+
+![deploy4](./images/deploy4.png)
+
+### 9-4. 레거시 API 삭제
+
+![deploy5](./images/deploy5.png)
 
 ## 마무리
 
+
+신규 포인트 시스템은 3명이서 3개월만에 프로시저 기반의 시스템을 도메인부터 아키텍처까지 완전히 전환시켰습니다.  
+
+그 과정에서 개편을 하면서 가장 큰 역할을 하는게 무엇일까 생각해보면 다음과 같은 답이 나왔습니다.  
+  
+**다른 팀의 전폭적인 지지와 지원**이 있어야만 빠른 시간내에 개편이 가능하다는 것을 배웠습니다.  
+  
+* 2주만에 레거시 API와 신규 API를 모두 QA 해주신 QA팀
+* 짧은 기간임에도 프로시저 호출 코드를 모두 API코드로 전환해주신 프론트, 상품권, 회원, 주문팀
+
+
+
 오픈 뒤에 아주 좋은 타이밍에 월드컵이 있었습니다.  
+
+* [멕시코전으로 배달의민족 역대 최대 주문수 돌파 - 블로터](https://www.bloter.net/archives/313238)
+
+주문수가 역대 최대치가 발생한 만큼 포인트 적립, 사용수 역대 최대치가 발생했는데요.  
+
