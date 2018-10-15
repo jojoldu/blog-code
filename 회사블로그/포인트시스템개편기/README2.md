@@ -107,11 +107,11 @@ JVM 어플리케이션의 경우 Warm up Time이 존재합니다.
 
 
 
-### 7-2. SQS 환경에서 Pintpoint 사용하기
+### 7-2. SQS 환경에서 Pinpoint 사용하기
 
-기본적으로 Pintpoint는 HTTP Request가 올때 추적을 시작합니다.  
+기본적으로 Pinpoint는 HTTP Request가 올때 추적을 시작합니다.  
 하지만 SQS와 같은 메세징 큐 서비스를 사용할때는 HTTP Request가 아닙니다.  
-그러다보니 **Pintpoint의 기본 설정으로는 추적이 안됩니다**.  
+그러다보니 **Pinpoint의 기본 설정으로는 추적이 안됩니다**.  
   
 Pinpoint에서는 이런 상황을 대비해서 **EntryPoint 설정**이 가능합니다.  
 
@@ -168,7 +168,7 @@ RDS 사양의 문제인가 싶어 잠깐 최고 사양인 **8xlarge로 올려서
 물론 R4의 사양은 R3보다 훨씬 더 좋습니다.  
 (위 그림에서 보신것처럼 CPU Processor가 차이 납니다.)  
   
-아래는 성능 테스트 중에 두 RDS간의 성능을 비교한 Pintpoint 결과표입니다.
+아래는 성능 테스트 중에 두 RDS간의 성능을 비교한 Pinpoint 결과표입니다.
 
 ![rds3](./images/rds3.png)
 
