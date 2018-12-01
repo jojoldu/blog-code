@@ -137,7 +137,34 @@ pt-online-schema-change --alter "변경할 Alter 정보" D=데이터베이스,t=
 --max-load="Threads_running=100" \
 --critical-load="Threads_running=1000" \
 --chunk-index=PRIMARY \
---retries=20 \
 --charset=UTF8 \
+--alter-foreign-keys-method=auto \
 --execute
 ```
+
+예를 들어 실제 데모로 진행해본다면 다음과 같이 실행해볼 수 있습니다.
+
+```bash
+pt-online-schema-change --alter "add column test varchar(255) default null" D=point,t=point_event \
+--no-drop-old-table \
+--no-drop-new-table \
+--chunk-size=10000 \
+--chunk-size-limit=600 \
+--host=point-pt-online-schema-20181129.cbopabdh50kn.ap-northeast-2.rds.amazonaws.com \
+--port=3306 \
+--user=point \
+--ask-pass \
+--progress=time,30 \
+--max-load="Threads_running=100" \
+--critical-load="Threads_running=1000" \
+--chunk-index=PRIMARY \
+--charset=UTF8 \
+--alter-foreign-keys-method=auto \
+--execute 
+```
+
+![execute1](./images/execute1.png)
+
+요렇게 %가 올라가는 로그를 보실 수 있습니다.
+
+![execute2](./images/execute2.png)
