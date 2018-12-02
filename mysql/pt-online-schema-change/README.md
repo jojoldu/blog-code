@@ -1,5 +1,6 @@
 # Mysql Percona pt-online-schema-change
 
+Mysql 대량 테이블 업데이트를 위한 pt-online-schema-change 정리
 
 ## 1. 설치
 
@@ -168,3 +169,7 @@ pt-online-schema-change --alter "add column test varchar(255) default null" D=po
 요렇게 %가 올라가는 로그를 보실 수 있습니다.
 
 ![execute2](./images/execute2.png)
+
+## 참고
+
+
