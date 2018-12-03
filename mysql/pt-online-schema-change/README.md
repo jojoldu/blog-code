@@ -1,6 +1,7 @@
 # Mysql Percona pt-online-schema-change
 
-Mysql 대량 테이블 업데이트를 위한 pt-online-schema-change 정리
+Mysql 대량 테이블 업데이트를 위한 pt-online-schema-change 사용법을 정리하였습니다.  
+
 
 ## 1. 설치
 
@@ -143,6 +144,21 @@ pt-online-schema-change --alter "변경할 Alter 정보" D=데이터베이스,t=
 --execute
 ```
 
+```bash
+pt-online-schema-change --alter "add column test varchar(255) default null" D=point,t=point_detail \
+--no-drop-old-table \
+--no-drop-new-table \
+--host=point-pt-online-schema-20181129.cbopabdh50kn.ap-northeast-2.rds.amazonaws.com \
+--port=3306 \
+--user=point \
+--ask-pass \
+--progress=time,30 \
+--charset=UTF8 \
+--alter-foreign-keys-method=auto \
+--execute 
+```
+
+
 예를 들어 실제 데모로 진행해본다면 다음과 같이 실행해볼 수 있습니다.
 
 ```bash
@@ -170,6 +186,17 @@ pt-online-schema-change --alter "add column test varchar(255) default null" D=po
 
 ![execute2](./images/execute2.png)
 
+## 삭제 및 재시작
+
+위에서 사용한 ```--no-drop-new-table \``` 으로 인해 작업 도중 중지시킨다면 다음과 같이 새 테이블이 그대로 남게 됩니다.
+
+
+![remove1](./images/remove1.png)
+
+![remove2](./images/remove2.png)
+
+
 ## 참고
 
 
+* [소소한 데이터 이야기 – pt-online-schema-change 편](http://gywn.net/2017/08/small-talk-pt-osc/)
