@@ -1,9 +1,27 @@
 # Mysql Percona pt-online-schema-change
 
-Mysql 대량 테이블 업데이트를 위한 pt-online-schema-change 사용법을 정리하였습니다.  
+Mysql에서 몇억건 이상의 대량의 데이터를 갖고 있는 테이블을 ```update``` 하는것은 쉬운일이 아닙니다.  
+단순히 ```alter table```을 해버리면 4시간, 5시간 이상 수행되기 떄문인데요.  
+이를 해결 하기 위해 ```create select``` 방법을 사용하곤 합니다.  
+
+> 참고: [MySQL 대용량 테이블 스키마 변경하기](https://jojoldu.tistory.com/244)
+
+하지만 이 방법에는 큰 문제가 있는데요.  
+FK (Foreign Key) 변경이 어렵습니다.  
+**FK는 기존에 맺어져있던 테이블에 계속 유지**되기 떄문입니다.  
+  
+이외에도 여러 문제들이 있는데, 이를 해결하기 위해 percona의 pt-online-schema-change을 사용할때가 많습니다.  
+이번 시간에는 이 pt-online-schema-change 사용법을 정리하겠습니다.
+
+> percona는 XtraBackup 등 Mysql 을 운영하기 위한 여러 툴을 제공하는 회사입니다.  
+[사이트](https://www.percona.com)
 
 
 ## 1. 설치
+
+pt-online-schema-change 스크립트는 공식 사이트에서 rpm 파일을 제공합니다.  
+rpm 파
+
 
 pt-online-schema-change의 스크립트는 perl 기반입니다.  
 그래서 perl에 관련된 패키지들을 설치하겠습니다.  
@@ -146,8 +164,10 @@ pt-online-schema-change --alter "변경할 Alter 정보" D=데이터베이스,t=
 
 ```bash
 pt-online-schema-change --alter "add column test varchar(255) default null" D=point,t=point_detail \
+--preserve-trigger \
 --no-drop-old-table \
---no-drop-new-table \
+--chunk-size=10000 \
+--chunk-size-limit=11000 \
 --host=point-pt-online-schema-20181129.cbopabdh50kn.ap-northeast-2.rds.amazonaws.com \
 --port=3306 \
 --user=point \
@@ -194,6 +214,12 @@ pt-online-schema-change --alter "add column test varchar(255) default null" D=po
 ![remove1](./images/remove1.png)
 
 ![remove2](./images/remove2.png)
+
+
+
+설정에 관한 자세한 내용은 이미 다른분께서 모든 옵션을 번역해주셨기 때문에 이를 참고하시는걸 추천드립니다.
+
+* [percona toolkit - pt-online-schema-change 옵션 정리](http://notemusic.tistory.com/44)
 
 
 ## 참고
