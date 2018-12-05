@@ -20,10 +20,10 @@ FK (Foreign Key) 변경이 어렵습니다.
 ## 1. 설치
 
 pt-online-schema-change 스크립트는 공식 사이트에서 rpm 파일을 제공합니다.  
-rpm 파
-
-
-pt-online-schema-change의 스크립트는 perl 기반입니다.  
+rpm 파일이 간혹 설치가 안될때가 있습니다.  
+그럴때를 대비해 여기서는 ```tar.gz```로 설치하는 방법을 소개드리겠습니다.  
+  
+pt-online-schema-change의 스크립트는 **perl 기반**입니다.  
 그래서 perl에 관련된 패키지들을 설치하겠습니다.  
 아래 스크립트들을 차례로 실행시켜주세요.
 
@@ -142,6 +142,8 @@ alias pt-online-schema-change="/home/ec2-user/percona-toolkit-3.0.12/bin/pt-onli
 
 ## 2. 사용
 
+아래의 명령어로 사용할 수 있습니다.
+
 ```bash
 pt-online-schema-change --alter "변경할 Alter 정보" D=데이터베이스,t=테이블명 \
 --no-drop-old-table \
@@ -159,46 +161,31 @@ pt-online-schema-change --alter "변경할 Alter 정보" D=데이터베이스,t=
 --chunk-index=PRIMARY \
 --charset=UTF8 \
 --alter-foreign-keys-method=auto \
+--preserve-triggers
 --execute
 ```
 
-```bash
-pt-online-schema-change --alter "add column test varchar(255) default null" D=point,t=point_detail \
---preserve-trigger \
---no-drop-old-table \
---chunk-size=10000 \
---chunk-size-limit=11000 \
---host=point-pt-online-schema-20181129.cbopabdh50kn.ap-northeast-2.rds.amazonaws.com \
---port=3306 \
---user=point \
---ask-pass \
---progress=time,30 \
---charset=UTF8 \
---alter-foreign-keys-method=auto \
---execute 
-```
-
-
+옵션의 대부분은 이름만 보셔도 알 수 있는데요.  
+좀 더 자세한 설명을 원하시면 [percona toolkit - pt-online-schema-change 옵션 정리](http://notemusic.tistory.com/44)을 참고해보시면 됩니다.  
+  
 예를 들어 실제 데모로 진행해본다면 다음과 같이 실행해볼 수 있습니다.
 
 ```bash
-pt-online-schema-change --alter "add column test varchar(255) default null" D=point,t=point_event \
+pt-online-schema-change --alter "add column test varchar(255) default null" D=point,t=point_detail \
 --no-drop-old-table \
---no-drop-new-table \
---chunk-size=10000 \
+--chunk-size=500 \
 --chunk-size-limit=600 \
 --host=point-pt-online-schema-20181129.cbopabdh50kn.ap-northeast-2.rds.amazonaws.com \
 --port=3306 \
 --user=point \
 --ask-pass \
 --progress=time,30 \
---max-load="Threads_running=100" \
---critical-load="Threads_running=1000" \
---chunk-index=PRIMARY \
 --charset=UTF8 \
 --alter-foreign-keys-method=auto \
+--preserve-triggers
 --execute 
 ```
+
 
 ![execute1](./images/execute1.png)
 
@@ -210,19 +197,36 @@ pt-online-schema-change --alter "add column test varchar(255) default null" D=po
 
 위에서 사용한 ```--no-drop-new-table \``` 으로 인해 작업 도중 중지시킨다면 다음과 같이 새 테이블이 그대로 남게 됩니다.
 
+아래처럼 새롭게 생성된 테이블들을 삭제합니다.
 
 ![remove1](./images/remove1.png)
 
+추가로 트리거도 이미 생성되셨다면 아래와 같이 오류가 발생하면서 재실행이 안될것입니다.
+
+
 ![remove2](./images/remove2.png)
 
+이럴 경우 pt-online-schema-change로 생성된 트리거를 확인하고 **강제로 삭제**하면 됩니다.  
+아래와 같이 트리거 목록을 확인하신 뒤,
 
+![remove3](./images/remove3.png)
 
-설정에 관한 자세한 내용은 이미 다른분께서 모든 옵션을 번역해주셨기 때문에 이를 참고하시는걸 추천드립니다.
+```sql
+show triggers like 'table이름'\G
+```
 
-* [percona toolkit - pt-online-schema-change 옵션 정리](http://notemusic.tistory.com/44)
+prefix로 ```pt_```가 붙은 트리거들을 모두 삭제합니다.
 
+![remove4](./images/remove4.png)
+
+```sql
+drop trigger trigger이름;
+```
+
+해당 테이블에 더이상 트리거가 보이지 않는다면 다 삭제가 되었으니 다시 실행해보시면 됩니다.
 
 ## 참고
 
+설정에 관한 자세한 내용은 이미 다른분께서 모든 옵션을 번역해주셨기 때문에 이를 참고하시는걸 추천드립니다.
 
 * [소소한 데이터 이야기 – pt-online-schema-change 편](http://gywn.net/2017/08/small-talk-pt-osc/)
