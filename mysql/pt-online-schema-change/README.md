@@ -52,27 +52,35 @@ sudo yum install perl-devel
 ### percona-toolkit 설치
 
 perl 관련 패키지들이 모두 설치되셨다면, percona-toolkit을 설치합니다.  
-실제로 pt-online-schema-change 을 실행할 스크립트를 설치한다고 보시면 됩니다.  
+pt-online-schema-change 을 실행할 스크립트를 설치한다고 보시면 됩니다.  
   
-보통 ```.rpm```, ```.deb``` 파일을 받아서 즉시 설치하면 되지만, 이 글을 쓰는 시점에서 ```.rpm``` 설치가 안되어 ```tar.gz``` 파일로 대체해서 진행하겠습니다.
+보통 ```.rpm```, ```.deb``` 파일을 받아서 즉시 설치하면 되지만, 이 글을 쓰는 시점에서 ```.rpm``` 설치가 안되어 ```tar.gz``` 파일로 대체해서 진행하겠습니다.  
+  
+먼저 tar 파일을 다운 받습니다.
 
 ```bash
 wget percona.com/get/percona-toolkit.tar.gz
 ```
 
+다은 받은 파일의 압축을 해제합니다.
+
 ```bash
 tar xzvf percona-toolkit.tar.gz
 ```
 
+압축이 해제된 폴더로 이동합니다.
+
+![install1](./images/install1.png)
+
+```bash
+cd percona-toolkit-3.0.12
+```
+
+그리고 아래 3개 스크립트로 install을 시작합니다.
+
 ```bash
 perl ./Makefile.PL
-```
-
-```bash
 make
-```
-
-```bash
 sudo make install
 ```
 
@@ -130,6 +138,8 @@ Installing /usr/local/bin/pt-show-grants
 Appending installation info to /usr/lib64/perl5/perllocal.pod
 ```
 
+설치가 다 되셨다면, 전역에서 실행할 수 있게 ```.bashrc```에 등록하겠습니다.
+
 ```bash
 # bashrc을 열어서
 vim ~/.bashrc
@@ -139,6 +149,8 @@ alias pt-online-schema-change="/home/ec2-user/percona-toolkit-3.0.12/bin/pt-onli
 ```
 
 ![bashrc](./images/bashrc.png)
+
+여기까지 하셨다면 모든 작업이 끝났습니다!
 
 ## 2. 사용
 
@@ -164,6 +176,13 @@ pt-online-schema-change --alter "변경할 Alter 정보" D=데이터베이스,t=
 --preserve-triggers
 --execute
 ```
+
+* ```--no-drop-old-table```
+    * 마이그레이션 후, 기존 테이블을 삭제 하지 않겠다는 옵션 입니다.
+* 
+* ```--charset=UTF8```
+    * 필수로 넣으셔야 합니다.
+    * 안넣을 경우 한글명 데이터들이 이관하면서 깨지는 경우가 생깁니다.
 
 옵션의 대부분은 이름만 보셔도 알 수 있는데요.  
 좀 더 자세한 설명을 원하시면 [percona toolkit - pt-online-schema-change 옵션 정리](http://notemusic.tistory.com/44)을 참고해보시면 됩니다.  
@@ -193,16 +212,15 @@ pt-online-schema-change --alter "add column test varchar(255) default null" D=po
 
 ![execute2](./images/execute2.png)
 
-## 삭제 및 재시작
+## 3. 삭제 및 재시작
 
-위에서 사용한 ```--no-drop-new-table \``` 으로 인해 작업 도중 중지시킨다면 다음과 같이 새 테이블이 그대로 남게 됩니다.
+위에서 사용한 ```--no-drop-new-table``` 으로 인해 작업 도중 중지시킨다면 다음과 같이 새 테이블이 그대로 남게 됩니다.
 
 아래처럼 새롭게 생성된 테이블들을 삭제합니다.
 
 ![remove1](./images/remove1.png)
 
-추가로 트리거도 이미 생성되셨다면 아래와 같이 오류가 발생하면서 재실행이 안될것입니다.
-
+추가로 트리거도 생성 되었기 때문에 아래와 같이 오류가 발생하면서 재실행이 안될것입니다.
 
 ![remove2](./images/remove2.png)
 
@@ -225,6 +243,24 @@ drop trigger trigger이름;
 
 해당 테이블에 더이상 트리거가 보이지 않는다면 다 삭제가 되었으니 다시 실행해보시면 됩니다.
 
+## 속도
+
+* EC2에서 RDS로 remote로 명령어 실행
+    * 네트워크 통신을 통해 진행
+    * MySQL **서버에서 직접 실행하는 것보다는 전반적으로 속도가 느림**
+* chunk-size=1000 기준
+* Replication 되어 있는 상태
+
+### 1600만건 / FK X
+
+* 약 12분 소요
+* RDS CPU 약 17% 유지
+  
+![result1](./images/result1.png)
+
+### 1600만건 / FK O
+
+* 
 ## 참고
 
 설정에 관한 자세한 내용은 이미 다른분께서 모든 옵션을 번역해주셨기 때문에 이를 참고하시는걸 추천드립니다.
