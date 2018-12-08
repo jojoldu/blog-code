@@ -17,6 +17,19 @@ FK (Foreign Key) 변경이 어렵습니다.
 [사이트](https://www.percona.com)
 
 
+## 0. 소개
+
+Percona의 pt-online-schema-change는 트리거를 활용하여 테이블을 수정하는 방법입니다.  
+pt-online-schema-change 스크립트를 실행할 경우 아래와 같이 스크립트가 진행됩니다.
+
+1. 대상 테이블을 복사하되, **변경할 스키마 내용이 적용된** 형태로 생성됩니다.
+2. 지정한 chunk-size만큼 혹은 unique key 기준으로 데이터를 끊어 
+
+
+먼저 변경할 스키마가 적용된 임시 테이블(TableA_new)을 생성하고, 트리거로 변경 내용을 "Replace Into" 구문으로 실시간으로 적용합니다. 
+그리고 지정한 Chunk Size씩 PK 혹은 Unique Key 기준으로 데이터를 끊어서, 원본 테이블(현재 서비스 중인) 데이터를 일괄 신규 테이블(TableA_new)로 복사합니다.
+데이터 복사가 끝나면 기존 테이블과 신규 테이블 이름을 변경하여 최종적으로 온라인 스키마 변경이 완료됩니다.
+
 ## 1. 설치
 
 pt-online-schema-change 스크립트는 공식 사이트에서 rpm 파일을 제공합니다.  
@@ -245,7 +258,10 @@ drop trigger trigger이름;
 
 ## 속도
 
-* EC2에서 RDS로 remote로 명령어 실행
+* RDS r3.2xlarge
+    * vCPU 8 core
+    * RAM 61 GB
+* EC2에서 RDS로 **remote**로 명령어 실행
     * 네트워크 통신을 통해 진행
     * MySQL **서버에서 직접 실행하는 것보다는 전반적으로 속도가 느림**
 * chunk-size=1000 기준
@@ -258,9 +274,16 @@ drop trigger trigger이름;
   
 ![result1](./images/result1.png)
 
-### 1600만건 / FK O
+### 1700만건 / FK O
 
-* 
+* 약 12분 소요
+* RDS CPU 약 20% 유지
+  
+![result2](./images/result2.png)
+
+### 1억건 / FK O
+
+
 ## 참고
 
 설정에 관한 자세한 내용은 이미 다른분께서 모든 옵션을 번역해주셨기 때문에 이를 참고하시는걸 추천드립니다.
