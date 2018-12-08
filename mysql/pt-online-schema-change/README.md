@@ -19,28 +19,27 @@ FK (Foreign Key) 변경이 어렵습니다.
 
 ## 0. 소개
 
-Percona의 pt-online-schema-change는 트리거를 활용하여 테이블을 수정하는 방법입니다.  
+Percona의 pt-online-schema-change는 **트리거를 활용하여 테이블을 수정**하는 방법입니다.  
 pt-online-schema-change 스크립트를 실행할 경우 아래와 같이 스크립트가 진행됩니다.
 
 1. 대상 테이블을 복사하되, **변경할 스키마 내용이 적용된** 형태로 생성됩니다.
-2. 지정한 chunk-size만큼 혹은 unique key 기준으로 데이터를 끊어 
+2. 지정한 chunk-size만큼 혹은 unique key 기준으로 데이터를 끊어 원본 테이블 데이터 전체를 신규 테이블로 복사합니다.
+3. 데이터 복사가 끝나면 기존 테이블과 신규 테이블 이름을 변경하여 최종적으로 온라인 스키마 변경이 완료됩니다.
 
-
-먼저 변경할 스키마가 적용된 임시 테이블(TableA_new)을 생성하고, 트리거로 변경 내용을 "Replace Into" 구문으로 실시간으로 적용합니다. 
-그리고 지정한 Chunk Size씩 PK 혹은 Unique Key 기준으로 데이터를 끊어서, 원본 테이블(현재 서비스 중인) 데이터를 일괄 신규 테이블(TableA_new)로 복사합니다.
-데이터 복사가 끝나면 기존 테이블과 신규 테이블 이름을 변경하여 최종적으로 온라인 스키마 변경이 완료됩니다.
+위 내용은 개발자가 직접 진행해도 됩니다만, Percona는 이미 이 모든 과정을 다 스크립트화 했으니 저희는 편하게 사용만 해보겠습니다.
 
 ## 1. 설치
 
 pt-online-schema-change 스크립트는 공식 사이트에서 rpm 파일을 제공합니다.  
-rpm 파일이 간혹 설치가 안될때가 있습니다.  
+rpm으로 설치하면 아주 간편하겠지만, 가끔 rpm 파일이 설치가 안될 때가 있습니다.  
 그럴때를 대비해 여기서는 ```tar.gz```로 설치하는 방법을 소개드리겠습니다.  
   
 pt-online-schema-change의 스크립트는 **perl 기반**입니다.  
 그래서 perl에 관련된 패키지들을 설치하겠습니다.  
-아래 스크립트들을 차례로 실행시켜주세요.
 
 ### Perl 패키지 설치
+
+아래 스크립트들을 차례로 실행하겠습니다.
 
 ```bash
 sudo yum install perl-DBI
@@ -65,7 +64,7 @@ sudo yum install perl-devel
 ### percona-toolkit 설치
 
 perl 관련 패키지들이 모두 설치되셨다면, percona-toolkit을 설치합니다.  
-pt-online-schema-change 을 실행할 스크립트를 설치한다고 보시면 됩니다.  
+여러가지 도움이 되는 툴들이 많지만, 여기서는 pt-online-schema-change 을 실행할 스크립트를 설치한다고 보시면 됩니다.  
   
 보통 ```.rpm```, ```.deb``` 파일을 받아서 즉시 설치하면 되지만, 이 글을 쓰는 시점에서 ```.rpm``` 설치가 안되어 ```tar.gz``` 파일로 대체해서 진행하겠습니다.  
   
@@ -167,7 +166,7 @@ alias pt-online-schema-change="/home/ec2-user/percona-toolkit-3.0.12/bin/pt-onli
 
 ## 2. 사용
 
-아래의 명령어로 사용할 수 있습니다.
+설치된 pt-online-schema-change은 아래의 명령어로 사용할 수 있습니다.
 
 ```bash
 pt-online-schema-change --alter "변경할 Alter 정보" D=데이터베이스,t=테이블명 \
@@ -192,15 +191,21 @@ pt-online-schema-change --alter "변경할 Alter 정보" D=데이터베이스,t=
 
 * ```--no-drop-old-table```
     * 마이그레이션 후, 기존 테이블을 삭제 하지 않겠다는 옵션 입니다.
-* 
+* ```host, port, user```
+    * 스크립트를 실행할 대상 DB 정보입니다.
+* ```chunk-size```
+    * 한번에 복사할 데이터양을 얘기합니다.
 * ```--charset=UTF8```
     * 필수로 넣으셔야 합니다.
     * 안넣을 경우 한글명 데이터들이 이관하면서 깨지는 경우가 생깁니다.
+* ```--alter-foreign-keys-method=auto```
+    * FK도 복사할것인지 여부입니다.
+    * 옵션값이 ```auto```일 경우 최적화된 방식으로 FK를 복사합니다.
 
 옵션의 대부분은 이름만 보셔도 알 수 있는데요.  
-좀 더 자세한 설명을 원하시면 [percona toolkit - pt-online-schema-change 옵션 정리](http://notemusic.tistory.com/44)을 참고해보시면 됩니다.  
+좀 더 자세한 설명을 원하시면 [번역 percona toolkit - pt-online-schema-change 옵션 정리](http://notemusic.tistory.com/44)을 참고해보시면 됩니다.  
   
-예를 들어 실제 데모로 진행해본다면 다음과 같이 실행해볼 수 있습니다.
+위 샘플을 토대로 진행해본다면 다음과 같이 실행해볼 수 있습니다.
 
 ```bash
 pt-online-schema-change --alter "add column test varchar(255) default null" D=point,t=point_detail \
@@ -218,21 +223,28 @@ pt-online-schema-change --alter "add column test varchar(255) default null" D=po
 --execute 
 ```
 
+point라는 DB의 ```point_detail```에 ```add column test varchar(255) default null```스키마를 적용해본다는 내용입니다.  
+  
+이 스크립트를 실행해봅니다.
 
 ![execute1](./images/execute1.png)
 
-요렇게 %가 올라가는 로그를 보실 수 있습니다.
+그러면 아래와 같이 % (진행율) 가 올라가는 로그를 보실 수 있습니다.
 
 ![execute2](./images/execute2.png)
 
 ## 3. 삭제 및 재시작
 
-위에서 사용한 ```--no-drop-new-table``` 으로 인해 작업 도중 중지시킨다면 다음과 같이 새 테이블이 그대로 남게 됩니다.
-
-아래처럼 새롭게 생성된 테이블들을 삭제합니다.
+스크립트 진행 도중 종료 되었다면, 재시작이 필욯바니다.  
+다만, 트리거와 복사 테이블을 만들어 놓은 상태라, 바로 재시작을 하면 실패합니다.  
+그래서 아래의 방법으로 재시작 환경을 만들어 놓습니다.  
+  
+먼저 새롭게 생성된 테이블들을 삭제합니다.  
 
 ![remove1](./images/remove1.png)
 
+(보통 ```_기존테이블명_new``` 형식으로 복사본 테이블이 생성됩니다.)  
+  
 추가로 트리거도 생성 되었기 때문에 아래와 같이 오류가 발생하면서 재실행이 안될것입니다.
 
 ![remove2](./images/remove2.png)
@@ -258,6 +270,9 @@ drop trigger trigger이름;
 
 ## 속도
 
+그럼 이 방식으로 진행할 경우 대략 얼만큼의 시간이 필요한지 한번 측정해봤습니다.  
+테스트 환경은 다음과 같습니다.
+
 * RDS r3.2xlarge
     * vCPU 8 core
     * RAM 61 GB
@@ -265,7 +280,7 @@ drop trigger trigger이름;
     * 네트워크 통신을 통해 진행
     * MySQL **서버에서 직접 실행하는 것보다는 전반적으로 속도가 느림**
 * chunk-size=1000 기준
-* Replication 되어 있는 상태
+* **Replication** 되어 있는 상태
 
 ### 1600만건 / FK X
 
@@ -283,6 +298,11 @@ drop trigger trigger이름;
 
 ### 1억건 / FK O
 
+* 약 1시간 
+* RDS CPU 약 20% 유지
+
+
+![result3](./images/result3.png)
 
 ## 참고
 
