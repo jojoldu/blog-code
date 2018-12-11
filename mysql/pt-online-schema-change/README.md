@@ -296,13 +296,21 @@ drop trigger trigger이름;
   
 ![result2](./images/result2.png)
 
-### 1억건 / FK O
+### 1억건 / FK X
 
-* 약 1시간 
+* 약 1시간 26분 소요
 * RDS CPU 약 20% 유지
 
-
 ![result3](./images/result3.png)
+
+### 1억건 / FK O
+
+* 약 2시간 소요
+* RDS CPU 약 20% 유지
+* ```--alter-foreign-keys-method=auto``` 옵션으로 인해 FK를 맺은 자식 테이블 건수가 1억건이 넘을 경우 **새로운 FK가 생성**
+    * ```drop_swap```이 발생한 건인데, 이렇게 되면 어플리케이션 레벨의 모든 코드가 변경되야함
+    * ```auto```가 아닌 다른 옵션을 줄 경우 ```alter FK```와 같은 효과라 시간이 굉장히 많이 소요
+
 
 ## 참고
 
