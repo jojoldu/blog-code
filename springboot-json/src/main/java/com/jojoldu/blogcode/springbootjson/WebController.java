@@ -29,6 +29,15 @@ public class WebController {
         return "get 성공";
     }
 
+    @GetMapping("/requestParameter")
+    public String requestParameter(
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+            @RequestParam("requestDateTime") LocalDateTime requestDateTime) {
+
+        log.info("requestParameter 요청 데이터 = {}", requestDateTime);
+
+        return "requestParameter 성공";
+    }
 
 
     @PostMapping("/post")

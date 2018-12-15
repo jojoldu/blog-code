@@ -37,5 +37,19 @@ public class ApplicationTest {
 
     }
 
+    @Test
+    public void requestParameter의_LocalDate는_변환된다() throws Exception {
+        //given
+        String url = "/requestParameter?requestDateTime=2018-12-15T10:00:00";
+
+        //when
+        ResultActions resultActions = this.mockMvc.perform(get(url));
+
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("requestParameter 성공")));
+
+    }
 }
 
