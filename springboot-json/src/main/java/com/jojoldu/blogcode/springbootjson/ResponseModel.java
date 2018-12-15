@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Created by jojoldu@gmail.com on 2018-12-14
@@ -15,5 +16,5 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class ResponseModel {
     private final String name;
-    private final LocalDate requestDate;
+    private final LocalDateTime requestDateTime;
 }
