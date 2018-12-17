@@ -42,13 +42,13 @@ public class WebController {
 
     @PostMapping("/post")
     public String post(@RequestBody JsonModel jsonModel) {
-        log.info("get 요청 데이터 = {}", jsonModel);
+        log.info("post 요청 데이터 = {}", jsonModel);
 
         return "post 성공";
     }
 
     @GetMapping("/response")
-    public ResponseModel responseModel(GetModel getModel) {
-        return new ResponseModel(getModel.getName(), getModel.getRequestDateTime());
+    public ResponseModel responseModel() {
+        return new ResponseModel("jojoldu", LocalDateTime.of(2018,12,15,10,0,0));
     }
 }
