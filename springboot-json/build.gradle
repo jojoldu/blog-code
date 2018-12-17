@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '1.5.17.RELEASE'
+        springBootVersion = '2.1.1.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -25,7 +25,6 @@ repositories {
 
 dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web')
-    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.7'
     compileOnly('org.projectlombok:lombok')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 }
