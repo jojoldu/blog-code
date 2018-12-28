@@ -19,13 +19,13 @@ Querydsl은 Jooq와 함게 **가장 유명한 조회 프레임워크**입니다.
 > 만약 Gradle Multi Module에서 어떻게 사용하는지 궁금하신 분들은 [제 개인프로젝트](https://github.com/jojoldu/bns/blob/master/build.gradle)를 참고해보세요
 
 
-전체 코드는 아래와 같습니다.
+플러그인 등록
 
 ```groovy
 buildscript {
     ext {
         ...
-        querydslPluginVersion = '1.0.10'
+        querydslPluginVersion = '1.0.10' // 플러그인 버전
     }
     repositories {
         ...
@@ -33,10 +33,44 @@ buildscript {
     }
     dependencies {
         ...
-        classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:${querydslPluginVersion}")
+        classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:${querydslPluginVersion}") // querydsl 의존성 등록
     }
 }
 ```
+
+의존성 등록
+
+```groovy
+dependencies {
+    compile("com.querydsl:querydsl-jpa") // querydsl
+    compile("com.querydsl:querydsl-apt") // querydsl
+    ...
+}
+```
+
+Gradle 설정
+
+```groovy
+// querydsl 적용
+apply plugin: "com.ewerk.gradle.plugins.querydsl"
+def querydslSrcDir = 'src/main/generated'
+
+querydsl {
+    library = "com.querydsl:querydsl-apt"
+    jpa = true
+    querydslSourcesDir = querydslSrcDir
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', querydslSrcDir]
+        }
+    }
+}
+```
+
+전체 코드는 아래와 같습니다.
 
 ```groovy
 buildscript {
@@ -97,7 +131,6 @@ sourceSets {
         }
     }
 }
-
 ```
 
 ## 2. 기본 사용법
