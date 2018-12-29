@@ -1,6 +1,6 @@
 package com.jojoldu.blogcode.querydsl.domain;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
 
 /**
  * Created by jojoldu@gmail.com on 2018-12-29
@@ -8,5 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Github : https://github.com/jojoldu
  */
 
-public interface AcademyRepository extends JpaRepository<Academy, Long>, AcademyRepositoryCustom {
+public interface AcademyRepositoryCustom {
+    List<Academy> findByName(String name);
 }
