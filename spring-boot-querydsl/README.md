@@ -3,23 +3,44 @@
 안녕하세요?  
 이번 시간에는 Spring Boot Data Jpa 프로젝트에 [Querydsl](http://www.querydsl.com/)을 적용하는 방법을 소개 드리겠습니다.  
   
-Spring Data Jpa를 써보신 분들은 아시겠지만, 기본으로 제공해주는 ```@Query```로는 다양한 조회 기능에서 사용하기에 한계가 있습니다.  
+> 모든 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/spring-boot-querydsl)에 있습니다.
+ 
+Spring Data Jpa를 써보신 분들은 아시겠지만, 기본으로 제공해주는 ```@Query```로는 **다양한 조회 기능을 사용하기에 한계**가 있습니다.  
   
-그래서 이 문제를 해결하기 위해 정적 체크가 가능한 조회 프레임워크를 사용하는데요.  
-  
+그래서 이 문제를 해결하기 위해 **정적 타입을 지원하는 조회 프레임워크**를 사용하는데요.  
 Querydsl은 Jooq와 함게 **가장 유명한 조회 프레임워크**입니다.  
-이번 포스팅에서는 Querydsl의 장점 혹은 왜 써야하는지 등의 내용은 담지 않습니다.  
+  
+이번 포스팅에서는 Spring Boot Data Jpa에서 Querydsl을 어떻게 설정하는지를 이야기합니다.  
+Querydsl의 장점 혹은 왜 써야하는지 등의 내용은 담지 않습니다.  
 
 > 이건 나중에 한번 각잡고 작성해서 공유드리겠습니다 :)
 
-어떻게 설정해서 사용하는지를 설명드리겠습니다.
+개발환경은 다음과 같습니다.
 
-## 1. 설정
+* IntelliJ
+* Spring Boot 2.1.1
+* Gradle
+* Lombok
+
+IntelliJ가 아닌 이클립스라도 크게 문제는 없습니다만, IntelliJ라면 더욱 편하게 진행하실 수 있습니다.  
+  
+그럼 이제 시작해보겠습니다.
+
+## 1. Gradle 설정
+
+[Gradle Multi Module](https://jojoldu.tistory.com/123)이 아닌 단일 모듈로 작업을 시작합니다.  
 
 > 만약 Gradle Multi Module에서 어떻게 사용하는지 궁금하신 분들은 [제 개인프로젝트](https://github.com/jojoldu/bns/blob/master/build.gradle)를 참고해보세요
 
+먼저 스프링부트와 Gradle로 프로젝트를 생성합니다.  
 
-플러그인 등록
+![gradle1](./images/gradle1.png)
+
+그리고 build.gradle을 열어 아래와 같이 Querydsl 관련 설정을 추가합니다.  
+  
+먼저 **Querydsl 플러그인 설정**을 먼저합니다.  
+
+![gradle2](./images/gradle2.png)
 
 ```groovy
 buildscript {
@@ -29,16 +50,24 @@ buildscript {
     }
     repositories {
         ...
-        maven { url "https://plugins.gradle.org/m2/" } // plugin 저장소
+        maven { url "https://plugins.gradle.org/m2/" } // 플러그인 저장소
     }
     dependencies {
         ...
-        classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:${querydslPluginVersion}") // querydsl 의존성 등록
+        classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:${querydslPluginVersion}") // querydsl 플러그인 의존성 등록
     }
 }
 ```
 
-의존성 등록
+위 플러그인이 있어야만 Querydsl의 도메인 모델인 ```QClass```들이 생성됩니다.  
+이 ```QClass``` 들이 Querydsl의 중심이기 때문에 꼭 있어야합니다.  
+
+> 자세한건 이후 실습때 경험해보실 수 있습니다.
+
+그리고 Querydsl을 사용할 수 있는 라이브러리를 추가합니다.  
+
+![gradle3](./images/gradle3.png)
+
 
 ```groovy
 dependencies {
@@ -48,12 +77,15 @@ dependencies {
 }
 ```
 
-Gradle 설정
+의존성까지 다 추가되셨다면 Gradle에 Querydsl의 도메인인 QClass 생성을 위한 Task를 추가합니다.
+
+> 즉, 위에서 설정한 Plugin을 사용하는 Task 추가입니다.
+
 
 ```groovy
 // querydsl 적용
-apply plugin: "com.ewerk.gradle.plugins.querydsl"
-def querydslSrcDir = 'src/main/generated'
+apply plugin: "com.ewerk.gradle.plugins.querydsl" // Plugin 적용
+def querydslSrcDir = 'src/main/generated' // QClass 생성 위치
 
 querydsl {
     library = "com.querydsl:querydsl-apt"
@@ -70,7 +102,7 @@ sourceSets {
 }
 ```
 
-전체 코드는 아래와 같습니다.
+위 설정값을 모두 합친 코드는 아래와 같습니다.
 
 ```groovy
 buildscript {
@@ -110,8 +142,8 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
 
     runtimeOnly('com.h2database:h2')
-    compileOnly('org.projectlombok:lombok')
-    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    compile('org.projectlombok:lombok')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
 // querydsl 적용
@@ -133,11 +165,204 @@ sourceSets {
 }
 ```
 
-## 2. 기본 사용법
+Gradle 설정이 다 되셨다면 이제 프로젝트에 설정을 진행하겠습니다.
+
+## 2. Java Config & 기본 사용법
+
+먼저 Java 설정을 진행합니다.
+
+### 2-1. Java Config
+
+설정값을 모아둔 패키지에 ```QuerydslConfiguration```을 생성합니다.  
+
+![config1](./images/config1.png)
+
+```java
+@Configuration
+public class QuerydslConfiguration {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Bean
+    public JPAQueryFactory jpaQueryFactory() {
+        return new JPAQueryFactory(entityManager);
+    }
+}
+```
+
+위 설정으로 이 프로젝트에서는 어느 곳에서나 ```JPAQueryFactory```를 주입 받아 Querydsl을 사용할 수 있게 됩니다.  
+  
+그럼 한번 간단하게 사용해볼까요?
+
+### 2-2. 기본적인 사용법
+
+먼저 테스트로 사용할 Entity를 하나 생성해보겠습니다.
+
+```java
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+public class Academy {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String address;
+
+    @Builder
+    public Academy(String name, String address) {
+        this.name = name;
+        this.address = address;
+    }
+}
+```
+
+그리고 테스트로 데이터를 넣고, 검증할 ```Repository```도 하나 생성합니다.  
+
+```java
+public interface AcademyRepository extends JpaRepository<Academy, Long> {
+}
+```
+
+자 그럼 여기서 Querydsl Repository를 하나 생성하겠습니다.  
+클래스명은 ```AcademyRepositorySupport```입니다.
+
+
+```java
+@Repository
+public class AcademyRepositorySupport extends QuerydslRepositorySupport {
+    private final JPAQueryFactory queryFactory;
+
+    public AcademyRepositorySupport(JPAQueryFactory queryFactory) {
+        super(Academy.class);
+        this.queryFactory = queryFactory;
+    }
+
+    public List<Academy> findByName(String name) {
+        return queryFactory
+                .selectFrom(academy)
+                .where(academy.name.eq(name))
+                .fetch();
+    }
+
+}
+```
+
+* 설정으로 **Bean 등록된 queryFactory를 생성자 인잭션**으로 주입 받아 사용합니다.
+
+이 코드를 생성하다보면 다음과 같은 오류 메세지가 나옵니다.
+
+![querydsl1](./images/querydsl1.png)
+
+이건 Querydsl의 QClass인 ```academy```를 사용하고 싶은데 아직 찾을수 없다는 뜻인데요.  
+QClass를 생성해보겠습니다.  
+
+IntelliJ의 Gradle View를 열어서 **Tasks -> other -> compileQuerydsl**를 더블클릭으로 실행합니다.  
+(이 Task가 위 Gradle 설정에서 등록한 Task입니다.)
+
+![querydsl2](./images/querydsl2.png)
+
+그럼 아래와 같이 Build가 진행되는데요.  
+성공으로 끝나면 **현재 프로젝트에 있는 모든 Entity의 QClass가 생성**됩니다.
+
+![querydsl3](./images/querydsl3.png)
+
+build.gradle에서 설정한 위치 (```src/main/generated/```) 을 보시면 아래와 같이 QClass가 생성된 것을 확인할 수 있습니다.
+
+![querydsl4](./images/querydsl4.png)
+
+자 그럼 이제 클래스가 생성되었으니 아까 전 코드의 ```academy```를 import 합니다.  
+해당 코드에서 ```option+enter```를 사용해 Import를 진행하시면 됩니다.
+
+![querydsl5](./images/querydsl5.png)
+
+그럼 아래와 같이 Import가 된 것을 확인할 수 있습니다.
+
+![querydsl6](./images/querydsl6.png)
+
+나머지 코드를 완성합니다.
+
+![querydsl7](./images/querydsl7.png)
+
+컴파일 에러가 나지 않는 상태가 되셨다면, 테스트 코드로 이 메소드가 정상작동하는지 테스트해보겠습니다.  
+
+### 2-3. 기본 사용법 테스트
+
+Querydsl이 정상작동했다면 ```findByName```이라는 메소드가 정상작동하겠죠?  
+  
+아래와 같이 테스트 코드를 작성해서 검증해보겠습니다.
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class BasicTest {
+    
+    @Autowired
+    private AcademyRepository academyRepository;
+    
+    @Autowired
+    private AcademyRepositorySupport academyRepositorySupport;
+
+    @After
+    public void tearDown() throws Exception {
+        academyRepository.deleteAllInBatch();
+    }
+
+    @Test
+    public void querydsl_기본_기능_확인() {
+        //given
+        String name = "jojoldu";
+        String address = "jojoldu@gmail.com";
+        academyRepository.save(new Academy(name, address));
+
+        //when
+        List<Academy> result = academyRepositorySupport.findByName(name);
+
+        //then
+        assertThat(result.size(), is(1));
+        assertThat(result.get(0).getAddress(), is(address));
+    }
+}
+```
+
+코드는 간단합니다.  
+1개의 Academy 데이터를 넣고, Querydsl로 만든 ```findByName```메소드로 조회시 정상적으로 결과가 나오는지 확인합니다.  
+  
+
+![test1](./images/test1.png)
+
+정상적으로 Queyrdsl이 설정된 것을 확인할 수 있습니다!  
+하지만!  
+여기서 끝이 아니라, 한 단계 더 나아가보겠습니다.
 
 ## 3. Spring Data Jpa Custom Repository 적용
 
-* [Spring Data 공식 문서](https://docs.spring.io/spring-data/jpa/docs/2.1.3.RELEASE/reference/html/#repositories.custom-implementations)
+위와 같은 방식으로도 Querydsl을 사용할 수 있지만, 한가지 단점이 있는데요.  
+  
+**항상 2개의 Repository를 의존성으로 받아야한다**는 것입니다.  
+  
+Querydsl의 Custom Repository와 JpaRepository를 상속한 Repository가 기능을 나눠가졌기 때문인데요.  
+  
+이를 해결하기 위해 Spring Data Jpa에서는 Custom Repository를 JpaRepository 상속 클래스에서 사용할 수 있도록 기능을 지원합니다.  
+  
+전체적인 그림은 아래와 같습니다.
 
+![diagram](./images/diagram.png)
+
+> [Spring Data 공식 문서](https://docs.spring.io/spring-data/jpa/docs/2.1.3.RELEASE/reference/html/#repositories.custom-implementations)
+
+> 현재 구글 검색에서 나오는 Querydsl이나 몇몇 책들을 보면 이 설정이 조금 과한데, 전혀 그럴 필요 없습니다.
+
+이 방식으로는 페이징이 지원 안됩니다.  
+(2018.12.29 기준)  
+
+## 4. 주의 사항
+
+Querydsl의 QClass를 담는 ```src/main/generated```는 자동생성되는 파일들의 디렉토리이니 무조건 ```.gitignore```에 추가하셔야 합니다.
+
+![gitignore](./images/gitignore.png)
 
 ## 참고
