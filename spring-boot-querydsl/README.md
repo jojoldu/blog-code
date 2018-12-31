@@ -167,6 +167,8 @@ sourceSets {
 
 Gradle 설정이 다 되셨다면 이제 프로젝트에 설정을 진행하겠습니다.
 
+> 현재 구글 검색에서 나오는 Querydsl이나 몇몇 책들을 보면 이 설정이 조금 과한데, 전혀 그럴 필요 없습니다.
+
 ## 2. Java Config & 기본 사용법
 
 먼저 Java 설정을 진행합니다.
@@ -331,7 +333,6 @@ public class BasicTest {
 코드는 간단합니다.  
 1개의 Academy 데이터를 넣고, Querydsl로 만든 ```findByName```메소드로 조회시 정상적으로 결과가 나오는지 확인합니다.  
   
-
 ![test1](./images/test1.png)
 
 정상적으로 Queyrdsl이 설정된 것을 확인할 수 있습니다!  
@@ -346,18 +347,100 @@ public class BasicTest {
   
 Querydsl의 Custom Repository와 JpaRepository를 상속한 Repository가 기능을 나눠가졌기 때문인데요.  
   
-이를 해결하기 위해 Spring Data Jpa에서는 Custom Repository를 JpaRepository 상속 클래스에서 사용할 수 있도록 기능을 지원합니다.  
+이를 해결하기 위해 Spring Data Jpa에서는 **Custom Repository를 JpaRepository 상속 클래스에서 사용**할 수 있도록 기능을 지원합니다.  
   
 전체적인 그림은 아래와 같습니다.
 
 ![diagram](./images/diagram.png)
 
-> [Spring Data 공식 문서](https://docs.spring.io/spring-data/jpa/docs/2.1.3.RELEASE/reference/html/#repositories.custom-implementations)
+> [Spring Data 공식 문서](https://docs.spring.io/spring-data/jpa/docs/2.1.3.RELEASE/reference/html/#repositories.custom-implementations)을 참고하시면 Custom Repository 내용이 나오니 자세히 읽어보시면 됩니다.
 
-> 현재 구글 검색에서 나오는 Querydsl이나 몇몇 책들을 보면 이 설정이 조금 과한데, 전혀 그럴 필요 없습니다.
+위와 같이 구성하면 ```AcademyRepository```에서 ```AcademyRepositoryImpl``` 의 코드도 사용할 수 있습니다.  
+  
+일종의 공식이라고 보시면 되는데요, ```Custom```이 붙은 인터페이스를 상속한 ```Impl``` 클래스의 코드는 ```Custom``` 인터페이스를 상속한 ```JpaRepository```에서도 사용할 수 있습니다.  
 
-이 방식으로는 페이징이 지원 안됩니다.  
-(2018.12.29 기준)  
+> ```Custom```과 ```Impl```만 외우셔두 됩니다.
+
+자 그럼 진행해보겠습니다.  
+먼저 ```AcademyRepository``` 와 같은 위치에 ```AcademyRepositoryCustom``` 인터페이스와 ```AcademyRepositoryImpl``` 클래스를 생성합니다.
+
+![custom1](./images/custom1.png)
+
+그리고 ```AcademyRepositoryCustom``` 인터페이스와 ```AcademyRepositoryImpl``` 클래스에 다음과 같은 코드를 추가합니다.
+
+```java
+public interface AcademyRepositoryCustom {
+    List<Academy> findByName(String name);
+}
+```
+
+클래스는 기존에 있던 ```Support``` 클래스 코드를 참고해서 구현합니다.
+
+```java
+@RequiredArgsConstructor
+public class AcademyRepositoryImpl implements AcademyRepositoryCustom {
+
+    private final JPAQueryFactory queryFactory;
+
+    @Override
+    public List<Academy> findByName(String name) {
+        return queryFactory.selectFrom(academy)
+                .where(academy.name.eq(name))
+                .fetch();
+    }
+}
+```
+
+> 다른 블로그를 보시면 QuerydslSupport 상속 코드도 추가하는데, **페이징이 필요한게 아니라면 안하셔도 됩니다**  
+결국 ```JPAQueryFactory```를 통해서 작동하는거라서요
+
+그리고 이 코드를 ```AcademyRepository```에서 쓸수 있게 상속 구조로 변경하겠습니다.
+
+```java
+public interface AcademyRepository extends JpaRepository<Academy, Long>, AcademyRepositoryCustom {
+}
+```
+
+그럼 이 코드가 정상작동하는지 테스트 해볼까요?
+
+![custom2](./images/custom2.png)
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class CustomTest {
+
+    @Autowired
+    private AcademyRepository academyRepository;
+
+    @After
+    public void tearDown() throws Exception {
+        academyRepository.deleteAllInBatch();
+    }
+
+    @Test
+    public void querydsl_Custom설정_기능_확인() {
+        //given
+        String name = "jojoldu";
+        String address = "jojoldu@gmail.com";
+        academyRepository.save(new Academy(name, address));
+
+        //when
+        List<Academy> result = academyRepository.findByName(name);
+
+        //then
+        assertThat(result.size(), is(1));
+        assertThat(result.get(0).getAddress(), is(address));
+    }
+}
+```
+
+테스트 코드를 실행해보면!
+
+![custom3](./images/custom3.png)
+
+이렇게 성공적으로 기능이 작동하는 것을 확인할 수 있습니다.  
+위 코드가 잘 적용된거죠?
 
 ## 4. 주의 사항
 
@@ -365,4 +448,3 @@ Querydsl의 QClass를 담는 ```src/main/generated```는 자동생성되는 파�
 
 ![gitignore](./images/gitignore.png)
 
-## 참고
