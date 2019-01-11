@@ -2,6 +2,7 @@ package com.jojoldu.blogcode.querydsl.domain.academy;
 
 import com.jojoldu.blogcode.querydsl.dto.StudentCount;
 import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -46,4 +47,16 @@ public class AcademyRepositoryImpl implements AcademyRepositoryCustom {
                 .from(academy)
                 .fetch();
     }
+
+    public List<Academy> findAllByStudentId(long studentId) {
+        return queryFactory
+                .selectFrom(academy)
+                .where(academy.id.in(
+                        JPAExpressions
+                                .select(student.academy.id)
+                                .from(student)
+                                .where(student.id.eq(studentId))))
+                .fetch();
+    }
+
 }
