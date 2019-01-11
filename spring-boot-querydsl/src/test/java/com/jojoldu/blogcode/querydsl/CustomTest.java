@@ -1,8 +1,7 @@
 package com.jojoldu.blogcode.querydsl;
 
-import com.jojoldu.blogcode.querydsl.domain.Academy;
-import com.jojoldu.blogcode.querydsl.domain.AcademyRepository;
-import com.jojoldu.blogcode.querydsl.domain.AcademyRepositorySupport;
+import com.jojoldu.blogcode.querydsl.domain.academy.Academy;
+import com.jojoldu.blogcode.querydsl.domain.academy.AcademyRepository;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;

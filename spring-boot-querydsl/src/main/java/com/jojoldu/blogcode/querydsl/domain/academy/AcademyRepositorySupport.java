@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.querydsl.domain;
+package com.jojoldu.blogcode.querydsl.domain.academy;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
