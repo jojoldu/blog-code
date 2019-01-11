@@ -8,6 +8,7 @@ package com.jojoldu.blogcode.querydsl.domain.student;
 
 import com.jojoldu.blogcode.querydsl.domain.academy.Academy;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,9 +30,19 @@ public class Student {
     private Long id;
 
     private String name;
-    private int no;
+    private int academyNo;
 
     @ManyToOne
     @JoinColumn(name = "academy_id", foreignKey = @ForeignKey(name = "fk_student_academy"))
     private Academy academy;
+
+    @Builder
+    public Student(String name, int academyNo) {
+        this.name = name;
+        this.academyNo = academyNo;
+    }
+
+    public void setAcademy(Academy academy) {
+        this.academy = academy;
+    }
 }

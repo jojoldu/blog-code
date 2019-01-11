@@ -41,4 +41,15 @@ public class Academy {
         this.name = name;
         this.address = address;
     }
+
+    public void addStudent(List<Student> students) {
+        for (Student student : students) {
+            addStudent(student);
+        }
+    }
+
+    public void addStudent(Student student) {
+        this.students.add(student);
+        student.setAcademy(this);
+    }
 }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.jojoldu.blogcode.querydsl.domain.QAcademy.academy;
+import static com.jojoldu.blogcode.querydsl.domain.academy.QAcademy.academy;
 
 /**
  * Created by jojoldu@gmail.com on 2018-12-29

@@ -1,5 +1,7 @@
 package com.jojoldu.blogcode.querydsl.domain.academy;
 
+import com.jojoldu.blogcode.querydsl.dto.StudentCount;
+
 import java.util.List;
 
 /**
@@ -10,4 +12,5 @@ import java.util.List;
 
 public interface AcademyRepositoryCustom {
     List<Academy> findByName(String name);
+    List<StudentCount> findAllStudentCount();
 }

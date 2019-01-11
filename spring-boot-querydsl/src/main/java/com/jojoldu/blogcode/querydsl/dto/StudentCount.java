@@ -13,7 +13,7 @@ import javax.validation.constraints.NegativeOrZero;
 
 @Getter
 @NoArgsConstructor
-public class SubQueryDto {
+public class StudentCount {
     private String academyName;
     private long studentCount;
 
