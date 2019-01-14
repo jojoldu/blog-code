@@ -1,7 +1,25 @@
-# Querydsl Sub Query
+# Querydsl Sub query (서브쿼리)
 
+안녕하세요!  
+이번 시간에는 Querydsl에서의 Subquery 기본 가이드를 진행합니다.  
+  
+개인적으로 ORM을 사용하며, 객체지향적으로 엔티티가 구성되어있으면 서브쿼리가 필요한 일은 거의 없다고 생각하는데요.  
+  
+혹시나 필요한 분들이 계시면 도움이 되셨으면 합니다.  
+  
+그럼 시작합니다!
+
+> 모든 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/spring-boot-querydsl)에 있으니 참고하세요 :)
 
 ## 1. select Sub Query
+
+첫번째는 ```select```절의 서브쿼리입니다.  
+도메인에 대한 설명보다는 Querydsl 코드가 좀 더 도움이 되실것 같아 코드로 바로 설명드리겠습니다.
+
+> Spring Data Jpa에서 Querydsl 적용을 어떻게 하는지는 [이전 포스팅](https://jojoldu.tistory.com/372)을 참고해보세요 :)
+
+Querydsl의 코드는 아래와 같습니다.  
+여기서 주의깊게 봐야할 코드는 ```ExpressionUtils.as()``` 입니다.
 
 ```java
 @Override
@@ -19,6 +37,8 @@
                 .fetch();
     }
 ```
+
+실제로 아래와 같이 테스트 코드를 작성해서 돌려보면!
 
 ```java
 @RunWith(SpringRunner.class)
@@ -77,7 +97,7 @@ public class SubQueryTest {
 
 ## 2. where Sub Query
 
-이번엔 ```where```절에 서브쿼리
+두번째로는 ```where```절의 서브쿼리입니다.  
 
 ```java
     @Override
@@ -130,6 +150,21 @@ public class SubQueryTest {
         assertThat(result.get(0).getName(), is(academyName2));
     }
 ```
+
+## Tip
+
+개인적으로 Subquery는 쿼리에서의 안티패턴이라고 생각합니다.  
+레거시 시스템을 (ex: mybatis 혹은 프로시져) Querydsl로 마이그레이션 해야하고, 개발일정이 너무나 빠듯하다면 한번 고려해봐도 될것 같습니다.  
+  
+하지만 개인적으로는 Subquery가 필요하다면
+
+* Join으로 해결할순 없는지
+* 어플리케이션에서 처리할순 없는지
+* 쿼리를 나눠서 실행할순 없는지
+
+등을 고려해봅니다.  
+  
+실제 성능상으로도 Subquery가 대부분의 경우에 더 느리니 한번 고려해보시길 추천합니다.  
 
 ## 참고
 
