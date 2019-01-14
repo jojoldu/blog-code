@@ -48,6 +48,7 @@ public class AcademyRepositoryImpl implements AcademyRepositoryCustom {
                 .fetch();
     }
 
+    @Override
     public List<Academy> findAllByStudentId(long studentId) {
         return queryFactory
                 .selectFrom(academy)
