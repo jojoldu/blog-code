@@ -41,9 +41,7 @@ Querydsl의 코드는 아래와 같습니다.
 ExpressionUtils은 **Querydsl 내부에서 새로운 Expression**을 사용할 수 있도록 지원합니다.  
 여기서 **as를 통해 서브쿼리의 결과물을 alias** 시킵니다.  
   
-
-
-실제로 아래와 같이 테스트 코드를 작성해서 돌려보면!
+실제로 아래와 같이 테스트 코드를 작성해서
 
 ```java
 @RunWith(SpringRunner.class)
@@ -100,9 +98,21 @@ public class SubQueryTest {
 }
 ```
 
+그리고 테스트를 수행해보면!
+
+![1](./images/1.png)
+
+아주 잘 수행되는 것을 확인할 수 있습니다.  
+select절의 서브쿼리가 잘 된거겠죠?
+
 ## 2. where Sub Query
 
 두번째로는 ```where```절의 서브쿼리입니다.  
+상당히 자주 쓰는 방식이라고 생각합니다.  
+
+> 실제로 레거시 코드를 까보면 쿼리매퍼들 (MyBatis 등) 에서 정말 많이들 사용하고 계셨더라구요
+
+사용하는 방법은 다음과 같습니다.
 
 ```java
     @Override
@@ -117,6 +127,8 @@ public class SubQueryTest {
                 .fetch();
     }
 ```
+
+앞서 ```select```와 달리 
 
 ```java
 @Test
@@ -156,9 +168,11 @@ public class SubQueryTest {
     }
 ```
 
+![2](./images/2.png)
+
 ## Tip
 
-개인적으로 Subquery는 쿼리에서의 안티패턴이라고 생각합니다.  
+개인적으로 Subquery는 쿼리에서의 **안티패턴**이라고 생각합니다.  
 레거시 시스템을 (ex: mybatis 혹은 프로시져) Querydsl로 마이그레이션 해야하고, 개발일정이 너무나 빠듯하다면 한번 고려해봐도 될것 같습니다.  
   
 하지만 개인적으로는 Subquery가 필요하다면
