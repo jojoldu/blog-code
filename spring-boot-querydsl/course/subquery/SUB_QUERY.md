@@ -38,6 +38,11 @@ Querydsl의 코드는 아래와 같습니다.
     }
 ```
 
+ExpressionUtils은 **Querydsl 내부에서 새로운 Expression**을 사용할 수 있도록 지원합니다.  
+여기서 **as를 통해 서브쿼리의 결과물을 alias** 시킵니다.  
+  
+
+
 실제로 아래와 같이 테스트 코드를 작성해서 돌려보면!
 
 ```java
