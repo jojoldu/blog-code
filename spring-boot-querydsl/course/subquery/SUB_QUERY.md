@@ -40,6 +40,8 @@ Querydsl의 코드는 아래와 같습니다.
 
 ExpressionUtils은 **Querydsl 내부에서 새로운 Expression**을 사용할 수 있도록 지원합니다.  
 여기서 **as를 통해 서브쿼리의 결과물을 alias** 시킵니다.  
+
+> 예전에는 ```JPASubQuery```를 통해 만들었지만, 버전업이 되어 현재는 ```JPAExpressions```를 통해 서브쿼리를 생성합니다.
   
 실제로 아래와 같이 테스트 코드를 작성해서
 
@@ -128,7 +130,10 @@ select절의 서브쿼리가 잘 된거겠죠?
     }
 ```
 
-앞서 ```select```와 달리 
+앞서 ```select```와 달리 ```ExpressionUtils```이 필요 없게 되었습니다.  
+JPAExpressions만으로 서브쿼리를 생성하시면 됩니다.  
+  
+테스트 코드를 작성해서 확인해보면!
 
 ```java
 @Test
@@ -168,6 +173,8 @@ select절의 서브쿼리가 잘 된거겠죠?
     }
 ```
 
+아래와 같이 성공되는 것을 확인할 수 있습니다.
+
 ![2](./images/2.png)
 
 ## Tip
@@ -189,4 +196,4 @@ select절의 서브쿼리가 잘 된거겠죠?
 
 Querydsl은 **From절에서의 Subquery를 지원하지 않습니다**.
 
-* [참고](https://github.com/querydsl/querydsl/issues/2185)
+* [Github Issue](https://github.com/querydsl/querydsl/issues/2185)
