@@ -32,14 +32,16 @@ public class Academy {
 
     private String name;
     private String address;
+    private String phoneNumber;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "academy")
     private List<Student> students = new ArrayList<>();
 
     @Builder
-    public Academy(String name, String address) {
+    public Academy(String name, String address, String phoneNumber) {
         this.name = name;
         this.address = address;
+        this.phoneNumber = phoneNumber;
     }
 
     public void addStudent(List<Student> students) {

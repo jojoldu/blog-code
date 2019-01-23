@@ -1,12 +1,14 @@
 package com.jojoldu.blogcode.querydsl.domain.academy;
 
 import com.jojoldu.blogcode.querydsl.dto.StudentCount;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -57,6 +59,27 @@ public class AcademyRepositoryImpl implements AcademyRepositoryCustom {
                                 .select(student.academy.id)
                                 .from(student)
                                 .where(student.id.eq(studentId))))
+                .fetch();
+    }
+
+    @Override
+    public List<Academy> findDynamicQuery(String name, String address, String phoneNumber) {
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if(!StringUtils.isEmpty(name)){
+            builder.and(academy.name.eq(name));
+        }
+        if(!StringUtils.isEmpty(address)){
+            builder.and(academy.name.eq(address));
+        }
+        if(!StringUtils.isEmpty(phoneNumber)){
+            builder.and(academy.name.eq(phoneNumber));
+        }
+
+        return queryFactory
+                .selectFrom(academy)
+                .where(builder)
                 .fetch();
     }
 
