@@ -8,7 +8,9 @@
 
 > 모든 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/spring-boot-querydsl)에 있으니 참고하세요 :)
 
- 
+## 1. 문제 상황
+
+
 ```java
 @Override
     public List<Settler> getSettlerList(Long ownerId, String startDate, String endDate) {
@@ -38,3 +40,5 @@
                 .fetch();
     }
 ```
+
+## 2. 해결

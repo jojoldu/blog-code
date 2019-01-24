@@ -37,6 +37,11 @@ public class Academy {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "academy")
     private List<Student> students = new ArrayList<>();
 
+    public Academy(String name, String address) {
+        this.name = name;
+        this.address = address;
+    }
+
     @Builder
     public Academy(String name, String address, String phoneNumber) {
         this.name = name;
