@@ -10,6 +10,8 @@
 
 ## 1. 문제 상황
 
+예를 들어 다음과 같이 **상황에 따라 조건문이 생성** 되어야 한다고 보겠습니다.  
+
 
 ```java
 @Override
@@ -42,3 +44,56 @@
 ```
 
 ## 2. 해결
+
+
+```java
+@Override
+    public List<Academy> findDynamicQueryAdvance(String name, String address, String phoneNumber) {
+        return queryFactory
+                .selectFrom(academy)
+                .where(eqName(name),
+                        eqAddress(address),
+                        eqPhoneNumber(phoneNumber))
+                .fetch();
+    }
+
+    private BooleanExpression eqName(String name) {
+        if (StringUtils.isEmpty(name)) {
+            return null;
+        }
+        return academy.name.eq(name);
+    }
+
+    private BooleanExpression eqAddress(String address) {
+        if (StringUtils.isEmpty(address)) {
+            return null;
+        }
+        return academy.address.eq(address);
+    }
+
+    private BooleanExpression eqPhoneNumber(String phoneNumber) {
+        if (StringUtils.isEmpty(phoneNumber)) {
+            return null;
+        }
+        return academy.phoneNumber.eq(phoneNumber);
+    }
+```
+
+```java
+@Test
+    public void 동적쿼리_개선_name() {
+        //given
+        String targetName = "name";
+        academyRepository.saveAll(Arrays.asList(
+                new Academy(targetName, targetName, ""),
+                new Academy("not target", "", "")
+        ));
+
+        //when
+        List<Academy> academies = academyRepository.findDynamicQueryAdvance(targetName, "", "");
+
+        //then
+        assertThat(academies.size(), is(1));
+        assertThat(academies.get(0).getAddress(), is(targetName));
+    }
+```

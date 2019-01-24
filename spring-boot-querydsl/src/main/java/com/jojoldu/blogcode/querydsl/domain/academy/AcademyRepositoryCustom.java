@@ -15,4 +15,5 @@ public interface AcademyRepositoryCustom {
     List<StudentCount> findAllStudentCount();
     List<Academy> findAllByStudentId(long studentId);
     List<Academy> findDynamicQuery(String name, String address, String phoneNumber);
+    List<Academy> findDynamicQueryAdvance(String name, String address, String phoneNumber);
 }

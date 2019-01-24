@@ -5,6 +5,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -67,14 +68,14 @@ public class AcademyRepositoryImpl implements AcademyRepositoryCustom {
 
         BooleanBuilder builder = new BooleanBuilder();
 
-        if(!StringUtils.isEmpty(name)){
+        if (!StringUtils.isEmpty(name)) {
             builder.and(academy.name.eq(name));
         }
-        if(!StringUtils.isEmpty(address)){
-            builder.and(academy.name.eq(address));
+        if (!StringUtils.isEmpty(address)) {
+            builder.and(academy.address.eq(address));
         }
-        if(!StringUtils.isEmpty(phoneNumber)){
-            builder.and(academy.name.eq(phoneNumber));
+        if (!StringUtils.isEmpty(phoneNumber)) {
+            builder.and(academy.phoneNumber.eq(phoneNumber));
         }
 
         return queryFactory
@@ -82,5 +83,37 @@ public class AcademyRepositoryImpl implements AcademyRepositoryCustom {
                 .where(builder)
                 .fetch();
     }
+
+    @Override
+    public List<Academy> findDynamicQueryAdvance(String name, String address, String phoneNumber) {
+        return queryFactory
+                .selectFrom(academy)
+                .where(eqName(name),
+                        eqAddress(address),
+                        eqPhoneNumber(phoneNumber))
+                .fetch();
+    }
+
+    private BooleanExpression eqName(String name) {
+        if (StringUtils.isEmpty(name)) {
+            return null;
+        }
+        return academy.name.eq(name);
+    }
+
+    private BooleanExpression eqAddress(String address) {
+        if (StringUtils.isEmpty(address)) {
+            return null;
+        }
+        return academy.address.eq(address);
+    }
+
+    private BooleanExpression eqPhoneNumber(String phoneNumber) {
+        if (StringUtils.isEmpty(phoneNumber)) {
+            return null;
+        }
+        return academy.phoneNumber.eq(phoneNumber);
+    }
+
 
 }
