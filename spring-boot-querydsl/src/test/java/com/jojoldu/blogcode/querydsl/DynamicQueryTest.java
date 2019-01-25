@@ -100,4 +100,23 @@ public class DynamicQueryTest {
         assertThat(academies.size(), is(1));
         assertThat(academies.get(0).getAddress(), is(targetAddress));
     }
+
+    @Test
+    public void 동적쿼리_개선_전체() {
+        //given
+        String targetName = "name";
+        String targetAddress = "address";
+        String targetPhoneNumber = "phoneNumber";
+        academyRepository.saveAll(Arrays.asList(
+                new Academy(targetName, targetAddress, targetPhoneNumber),
+                new Academy("", "not target", "")
+        ));
+
+        //when
+        List<Academy> academies = academyRepository.findDynamicQuery(targetName, targetAddress, targetPhoneNumber);
+
+        //then
+        assertThat(academies.size(), is(1));
+        assertThat(academies.get(0).getAddress(), is(targetAddress));
+    }
 }
