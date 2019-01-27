@@ -1,5 +1,6 @@
 package com.jojoldu.blogcode.querydsl.domain.academy;
 
+import com.jojoldu.blogcode.querydsl.dto.AcademyTeacher;
 import com.jojoldu.blogcode.querydsl.dto.StudentCount;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ExpressionUtils;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import static com.jojoldu.blogcode.querydsl.domain.academy.QAcademy.academy;
 import static com.jojoldu.blogcode.querydsl.domain.student.QStudent.student;
+import static com.jojoldu.blogcode.querydsl.domain.teacher.QTeacher.teacher;
 import static com.querydsl.core.types.ExpressionUtils.count;
 import static com.querydsl.jpa.JPAExpressions.select;
 
@@ -60,6 +62,18 @@ public class AcademyRepositoryImpl implements AcademyRepositoryCustom {
                                 .select(student.academy.id)
                                 .from(student)
                                 .where(student.id.eq(studentId))))
+                .fetch();
+    }
+
+    @Override
+    public List<AcademyTeacher> findAllAcademyTeacher() {
+        return queryFactory
+                .select(Projections.fields(AcademyTeacher.class,
+                        academy.name.as("academyName"),
+                        teacher.name.as("teacherName")
+                ))
+                .from(academy)
+                .join(teacher).on(academy.id.eq(teacher.academyId))
                 .fetch();
     }
 
