@@ -1,6 +1,7 @@
 package com.jojoldu.blogcode.querydsl.domain.academy;
 
 import com.jojoldu.blogcode.querydsl.dto.AcademyTeacher;
+import com.jojoldu.blogcode.querydsl.dto.PointCalculateAmount;
 import com.jojoldu.blogcode.querydsl.dto.StudentCount;
 
 import java.util.List;
@@ -17,6 +18,8 @@ public interface AcademyRepositoryCustom {
     List<Academy> findAllByStudentId(long studentId);
 
     List<AcademyTeacher> findAllAcademyTeacher();
+
+    List<PointCalculateAmount> calculateAmounts();
 
     List<Academy> findDynamicQuery(String name, String address, String phoneNumber);
     List<Academy> findDynamicQueryAdvance(String name, String address, String phoneNumber);
