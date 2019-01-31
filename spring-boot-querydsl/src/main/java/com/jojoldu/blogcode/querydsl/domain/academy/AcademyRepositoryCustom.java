@@ -19,8 +19,6 @@ public interface AcademyRepositoryCustom {
 
     List<AcademyTeacher> findAllAcademyTeacher();
 
-    List<PointCalculateAmount> calculateAmounts();
-
     List<Academy> findDynamicQuery(String name, String address, String phoneNumber);
     List<Academy> findDynamicQueryAdvance(String name, String address, String phoneNumber);
 }

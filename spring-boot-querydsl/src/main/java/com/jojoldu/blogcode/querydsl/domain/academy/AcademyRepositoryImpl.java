@@ -82,19 +82,6 @@ public class AcademyRepositoryImpl implements AcademyRepositoryCustom {
     }
 
     @Override
-    public List<PointCalculateAmount> calculateAmounts() {
-        return queryFactory
-                .select(Projections.fields(PointCalculateAmount.class,
-                        new CaseBuilder()
-                                .when(pointEvent.pointStatus.in(PointStatus.USE, PointStatus.USE_CANCEL))
-                                .then(pointEvent.pointAmount.multiply(-1))
-                                .otherwise(pointEvent.pointAmount).as("pointAmount")
-                ))
-                .from(pointEvent)
-                .fetch();
-    }
-
-    @Override
     public List<Academy> findDynamicQuery(String name, String address, String phoneNumber) {
 
         BooleanBuilder builder = new BooleanBuilder();

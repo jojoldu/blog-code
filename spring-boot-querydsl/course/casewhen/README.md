@@ -1,4 +1,4 @@
-# spring-boot-querydsl
+# [Querydsl] Case When 사용하기
 
 안녕하세요? 이번 시간엔 spring-boot-querydsl 예제를 진행해보려고 합니다.  
 모든 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/spring-boot-querydsl)에 있기 때문에 함께 보시면 더 이해하기 쉬우실 것 같습니다.  
