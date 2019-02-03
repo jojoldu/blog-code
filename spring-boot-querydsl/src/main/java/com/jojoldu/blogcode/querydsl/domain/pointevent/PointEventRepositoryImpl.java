@@ -40,7 +40,8 @@ public class PointEventRepositoryImpl implements PointEventRepositoryCustom {
                         new CaseBuilder()
                                 .when(pointEvent.pointStatus.in(PointStatus.USE, PointStatus.USE_CANCEL))
                                 .then(pointEvent.pointAmount.multiply(-1))
-                                .otherwise(pointEvent.pointAmount).as("pointAmount")
+                                .otherwise(pointEvent.pointAmount).as("pointAmount"),
+                        pointEvent.pointStatus
                 ))
                 .from(pointEvent)
                 .fetch();

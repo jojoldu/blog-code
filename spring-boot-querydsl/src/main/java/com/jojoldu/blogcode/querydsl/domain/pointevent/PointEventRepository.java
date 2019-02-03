@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Github : https://github.com/jojoldu
  */
 
-public interface PointEventRepository extends JpaRepository<PointEvent, Long> {
+public interface PointEventRepository extends JpaRepository<PointEvent, Long>, PointEventRepositoryCustom {
 }
