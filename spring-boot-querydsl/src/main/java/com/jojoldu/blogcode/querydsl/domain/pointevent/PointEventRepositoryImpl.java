@@ -46,7 +46,4 @@ public class PointEventRepositoryImpl implements PointEventRepositoryCustom {
                 .from(pointEvent)
                 .fetch();
     }
-
-
-
 }
