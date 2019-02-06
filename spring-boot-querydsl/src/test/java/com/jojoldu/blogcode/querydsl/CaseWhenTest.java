@@ -1,6 +1,5 @@
 package com.jojoldu.blogcode.querydsl;
 
-import com.jojoldu.blogcode.querydsl.domain.academy.AcademyRepository;
 import com.jojoldu.blogcode.querydsl.domain.pointevent.PointEvent;
 import com.jojoldu.blogcode.querydsl.domain.pointevent.PointEventRepository;
 import com.jojoldu.blogcode.querydsl.domain.pointevent.PointStatus;
