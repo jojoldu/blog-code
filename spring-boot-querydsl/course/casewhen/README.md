@@ -7,6 +7,8 @@
 
 ## 
 
+코드
+
 ```java
 @RequiredArgsConstructor
 public class PointEventRepositoryImpl implements PointEventRepositoryCustom {
@@ -25,6 +27,50 @@ public class PointEventRepositoryImpl implements PointEventRepositoryCustom {
                 ))
                 .from(pointEvent)
                 .fetch();
+    }
+}
+```
+
+테스트 코드
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class CaseWhenTest {
+
+    @Autowired
+    private PointEventRepository pointEventRepository;
+
+    @After
+    public void tearDown() throws Exception {
+        pointEventRepository.deleteAll();
+    }
+
+    @Test
+    public void 조건에따라_값이_변경된다() {
+        //given
+        long usePointAmount = 500;
+        long useCancelPointAmount = -900;
+        pointEventRepository.saveAll(
+                Arrays.asList(
+                        new PointEvent(PointStatus.EARN, 100),
+                        new PointEvent(PointStatus.USE, usePointAmount),
+                        new PointEvent(PointStatus.USE_CANCEL, useCancelPointAmount)
+                ));
+        //when
+        List<PointCalculateAmount> result = pointEventRepository.calculateAmounts();
+        result.sort(Comparator.comparingLong(PointCalculateAmount::getPointAmount));
+
+        //then
+        assertThat(result.get(0).getPointStatus(), is(PointStatus.USE));
+        assertThat(result.get(0).getPointAmount(), is(-usePointAmount)); // 500원이 -500원으로
+
+        assertThat(result.get(1).getPointStatus(), is(PointStatus.EARN));
+        assertThat(result.get(1).getPointAmount(), is(100L));
+
+        assertThat(result.get(2).getPointStatus(), is(PointStatus.USE_CANCEL));
+        assertThat(result.get(2).getPointAmount(), is(-useCancelPointAmount)); // -900 원이 900원으로
+
     }
 }
 ```
