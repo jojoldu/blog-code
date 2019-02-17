@@ -18,8 +18,23 @@
 
 * node 및 jest 설치
     * [아샬님의 JS 테스트 환경 구축](https://github.com/ahastudio/til/blob/master/javascript/20181212-setup-javascript-project.md)
-* TDD에서 제일 중요한건 Refactoring
-* 실습 코드 참고
+* TDD에서 제일 중요한건 **Refactoring**
+* [실습 코드](https://github.com/jojoldu/blog-code/blob/master/dal-lab-tdd/index.test.js) 참고
 * 테스트 코드를 짜면서 안전함을 보장 받을 수 있다.
-* TDD에서 가장 중요한것은 **Refactoring**
+* 짝 프로그래밍으로 TDD?
+    * 한 사람이 테스트를 작성하면, 다른 사람이 그 테스트를 통과하는 프로덕션 코드를 작성한다.
+
+## 3. Q & A
+
+* Jest의 특정 테스트만 실행하는 방법은?
+    * 안해봐서 잘 모르겠다.
+    * 항상 수정하면 모든 테스트를 실행해본다
+    * 고친 테스트만 수행하면 다른 기능에 대한 검증이 안되니 맘 편하게 전체 테스트를 수행한다
+* S3 파일 업로드/다운르도 등에 대한 기능도 테스트 코드로 해결하는지?
+    * 기본적으론 Mocking으로 처리
+    * Mocking으로는 한계가 있어 항상 손으로 직접 테스트도 해봄
+    * 손으로 직접 테스트 하는것이 검증의 의미도 있지만, 사용성을 검증하는 의미도 있음
+* UI 테스트는 어떻게 해야하나?
+    * 최대한 UI와 어플리케이션 영역을 분리한다.
+    * UI는 단순히 어플리케이션을 호출하는 수준에서 끝나고, 어플리케이션에서 처리하도록 한다.
   

@@ -20,9 +20,12 @@ const app = {
     }
 };
 
-test('welcome', () => {
-    app.get('/login');
-    const {status, body} = app.get('/');
-    expect(status).toBe(OK);
-    expect(body).toMatch(/Welcome/);
+describe('test', () => {
+    test('welcome', () => {
+        app.get('/login');
+        const {status, body} = app.get('/');
+        expect(status).toBe(OK);
+        expect(body).toMatch(/Welcome/);
+    });
+
 });

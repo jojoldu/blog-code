@@ -2,7 +2,7 @@
   "name": "dal-lab-tdd",
   "version": "1.0.0",
   "description": "",
-  "main": "index.test.js",
+  "main": "test/index.test.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "jest": "./node_modules/.bin/jest --watchAll"
@@ -20,5 +20,11 @@
   "devDependencies": {
     "eslint": "^5.13.0",
     "jest": "^24.1.0"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "roots": ["/test/"]
   }
 }
