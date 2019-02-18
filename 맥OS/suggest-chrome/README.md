@@ -1,7 +1,7 @@
 # 내가 추천하는 크롬 익스텐션 10선
 
 주변에서 자주 듣는 질문중 하나가 크롬 익스텐션 추천입니다.  
-제가 개인적으로 자주 사용하는 플러그인들 위주로 소개합니다.
+제가 개인적으로 주변 개발자분들께 추천하는 플러그인들을 정리해보았습니다.
 
 ## 1. Black Menu
 
@@ -112,16 +112,27 @@ Github에서 코드를 볼때 아주 유용하게 사용할 수 있는데요.
 
 ## 8. Octotree
 
-8번째는 [Octotree](https://chrome.google.com/webstore/detail/octotree/bkhaagjahfmjljalopjnoealnfndnagc?hl=en-US) 입니다.
+8번째는 [Octotree](https://chrome.google.com/webstore/detail/octotree/bkhaagjahfmjljalopjnoealnfndnagc?hl=en-US) 입니다.  
+  
+IDE의 프로젝트 탭처럼 Github 프로젝트를 볼때 전체 구조를 좌측 사이바에 노출시켜줍니다.
 
 ![8-1](./images/8-1.png)
 
+전체 구조를 확인할때나, 한번에 특정 파일로 이동할때 굉장이 유용합니다.
+7번 Sourcegraph와 함께 Github의 오픈소스 프로젝트를 분석할때 자주 사용하는 추천 플러그인 입니다.
+
 ## 9. JetBrains IDE Support
 
-젯 브레인으로 개발시 
-* [](https://www.youtube.com/watch?time_continue=21&v=kJh9lGbTSGI)
+9번째는 [JetBrains IDE Support](https://chrome.google.com/webstore/detail/jetbrains-ide-support/hmhgeddbohgjknpmjagkdomcpobmllji)) 입니다.
 
-* [](https://chrome.google.com/webstore/detail/jetbrains-ide-support/hmhgeddbohgjknpmjagkdomcpobmllji)
+젯브레인의 IDE (IntelliJ, WebStorm 등) 사용시 **웹 프론트엔드의 디버깅을 IDE내에서 가능하도록 지원**하는 플러그인입니다.
+
+아래는 젯브레인의 시연 영상입니다.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/kJh9lGbTSGI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+젯브레인의 IDE (IntelliJ, WebStorm 등)를 사용하시는 분들께는 정말 큰 도움이 될 플러그인입니다.
+저는 최근엔 웹 프론트엔드 작업을 할일이 없어 거의 사용하지 않지만, 이전에 JS 개발을 할때는 적극 사용한 플러그인입니다.
 
 ## 10. Momentum
 
@@ -132,3 +143,4 @@ Github에서 코드를 볼때 아주 유용하게 사용할 수 있는데요.
 ![10-1](./images/10-1.png)
 
 특별한 기능 보다는 일할때마다 리프레시 되는 느낌이 좋아 계속 사용중인 플러그인입니다.
+
