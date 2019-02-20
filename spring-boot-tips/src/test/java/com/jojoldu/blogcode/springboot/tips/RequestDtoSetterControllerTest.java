@@ -13,9 +13,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.times;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,9 +52,13 @@ public class RequestDtoSetterControllerTest {
     public void ModelAttribute에서는_setter가_없어도된다() throws Exception {
 
         String bookContent = objectMapper.writeValueAsString(new RequestSetterDto("jojoldu", 1000L));
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.put("name", Arrays.asList("jojoldu"));
+        params.put("amount", Arrays.asList("1000"));
+
         mvc
-                .perform(post("/request/setter")
-                        .content(bookContent)
+                .perform(get("/request/setter")
+                        .params(params)
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
