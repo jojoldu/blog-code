@@ -11,7 +11,6 @@ import javax.annotation.Nonnull;
 
 
 @Getter
-//@Setter
 @ToString
 @NoArgsConstructor
 public class RequestSetterDto {

@@ -37,21 +37,19 @@ public class RequestDtoSetterControllerTest {
 
     @Test
     public void RequestBody에서는_setter가_없어도된다() throws Exception {
-
-        String bookContent = objectMapper.writeValueAsString(new RequestSetterDto("jojoldu", 1000L));
+        String content = objectMapper.writeValueAsString(new RequestSetterDto("jojoldu", 1000L));
         mvc
                 .perform(post("/request/setter")
-                        .content(bookContent)
+                        .content(content)
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(content().json(bookContent));
+                .andExpect(content().json(content));
     }
 
     @Test
     public void ModelAttribute에서는_setter가_없어도된다() throws Exception {
-
-        String bookContent = objectMapper.writeValueAsString(new RequestSetterDto("jojoldu", 1000L));
+        String content = objectMapper.writeValueAsString(new RequestSetterDto("jojoldu", 1000L));
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.put("name", Arrays.asList("jojoldu"));
         params.put("amount", Arrays.asList("1000"));
@@ -62,7 +60,9 @@ public class RequestDtoSetterControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(content().json(bookContent));
+                .andExpect(content().json(content));
     }
+    
+    
 
 }
