@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
@@ -62,7 +63,22 @@ public class RequestDtoSetterControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().json(content));
     }
-    
-    
 
+    @Test
+    public void initBinder는_다양한타입도_허용한다() throws Exception{
+        String content = objectMapper.writeValueAsString(new RequestSetterDto("jojoldu", 1000L, LocalDate.of(2019,02,22), RequestSetterDto.RequestType.GET));
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.put("name", Arrays.asList("jojoldu"));
+        params.put("amount", Arrays.asList("1000"));
+        params.put("date", Arrays.asList("2019-02-22"));
+        params.put("requestType", Arrays.asList("GET"));
+
+        mvc
+                .perform(get("/request/setter")
+                        .params(params)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().json(content));
+    }
 }
