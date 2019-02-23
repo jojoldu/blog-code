@@ -9,7 +9,7 @@
 방법은 아주 간단합니다.  
 프로젝트의 application.yml/properties 에 ```logging.level.org.hibernate.type```을 추가하신후, 값을 ```trace```로 하시면 됩니다.  
 
-![설정](./images/설정.png)
+![설정](images/설정.png)
 
 ### 추가 팁
 
@@ -18,7 +18,7 @@ application.yml / properties를 하나로 사용하실텐데요,
 저 같은 경우 위에서 사용한 ```logging.level.org.hibernate.type```은 **테스트 코드 실행외에 크게 확인할 일이 없습니다**.  
 그래서 아래와 같이 ```src/main/resourcess```와 ```src/test/resourcess```에 각각의 ```application.yml```을 생성하여 각 환경에 맞게 설정값을 추가하여 사용하고 있습니다.  
 
-![분리](./images/분리.png)
+![분리](images/분리.png)
 
 아주 간단한 팁이였습니다!  
 감사합니다!

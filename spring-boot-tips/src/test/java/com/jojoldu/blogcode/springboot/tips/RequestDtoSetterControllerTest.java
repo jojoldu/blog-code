@@ -19,8 +19,6 @@ import org.springframework.util.MultiValueMap;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -65,7 +63,7 @@ public class RequestDtoSetterControllerTest {
     }
 
     @Test
-    public void initBinder는_다양한타입도_허용한다() throws Exception{
+    public void initBinder는_다양한_타입도_허용한다() throws Exception{
         String content = objectMapper.writeValueAsString(new RequestSetterDto("jojoldu", 1000L, LocalDate.of(2019,02,22), RequestSetterDto.RequestType.GET));
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.put("name", Arrays.asList("jojoldu"));
