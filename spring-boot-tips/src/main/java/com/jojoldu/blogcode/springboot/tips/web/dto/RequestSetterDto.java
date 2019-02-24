@@ -46,5 +46,4 @@ public class RequestSetterDto {
 
         private String method;
     }
-
 }

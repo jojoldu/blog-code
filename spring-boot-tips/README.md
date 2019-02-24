@@ -134,7 +134,16 @@ Setter없이 성공적으로 값이 들어가는 것을 확인할 수 있습니�
 ## 2. Get 요청 테스트
 
 두번째는 Get 메소드의 DTO에서도 Setter가 필요없는지 확인해보겠습니다.  
+DTO는 1번째와 같은 DTO를 사용하며, Controller는 아래와 같습니다.
 
+```java
+    @GetMapping("/request/setter")
+    public RequestSetterDto getRequestSetter (RequestSetterDto requestSetterDto) {
+        log.info(requestSetterDto.getName() + " : " + requestSetterDto.getAmount());
+
+        return requestSetterDto;
+    }
+```
 
 
 

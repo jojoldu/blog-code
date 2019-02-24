@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice
 public class WebControllerAdvice {
 
-    @InitBinder
+//    @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.initDirectFieldAccess();
     }

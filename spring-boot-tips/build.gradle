@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.2.RELEASE'
+        springBootVersion = '2.1.3.RELEASE'
         querydslPluginVersion = '1.0.10'
     }
     repositories {

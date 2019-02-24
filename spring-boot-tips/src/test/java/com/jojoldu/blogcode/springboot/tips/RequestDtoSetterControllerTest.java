@@ -48,10 +48,12 @@ public class RequestDtoSetterControllerTest {
 
     @Test
     public void ModelAttribute에서는_setter가_없어도된다() throws Exception {
-        String content = objectMapper.writeValueAsString(new RequestSetterDto("jojoldu", 1000L));
+        String content = objectMapper.writeValueAsString(new RequestSetterDto("jojoldu", 1000L,  LocalDate.of(2019,2,22), RequestSetterDto.RequestType.GET));
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.put("name", Arrays.asList("jojoldu"));
         params.put("amount", Arrays.asList("1000"));
+        params.put("date", Arrays.asList("2019-02-22"));
+        params.put("requestType", Arrays.asList("GET"));
 
         mvc
                 .perform(get("/request/setter")
@@ -64,7 +66,7 @@ public class RequestDtoSetterControllerTest {
 
     @Test
     public void initBinder는_다양한_타입도_허용한다() throws Exception{
-        String content = objectMapper.writeValueAsString(new RequestSetterDto("jojoldu", 1000L, LocalDate.of(2019,02,22), RequestSetterDto.RequestType.GET));
+        String content = objectMapper.writeValueAsString(new RequestSetterDto("jojoldu", 1000L, LocalDate.of(2019,2,22), RequestSetterDto.RequestType.GET));
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.put("name", Arrays.asList("jojoldu"));
         params.put("amount", Arrays.asList("1000"));
