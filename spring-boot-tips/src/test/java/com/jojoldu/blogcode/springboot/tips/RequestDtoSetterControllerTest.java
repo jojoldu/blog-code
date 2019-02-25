@@ -47,7 +47,7 @@ public class RequestDtoSetterControllerTest {
     }
 
     @Test
-    public void ModelAttribute에서는_setter가_없어도된다() throws Exception {
+    public void Get에서는_setter가_없어도된다() throws Exception {
         String content = objectMapper.writeValueAsString(new RequestSetterDto("jojoldu", 1000L,  LocalDate.of(2019,2,22), RequestSetterDto.RequestType.GET));
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.put("name", Arrays.asList("jojoldu"));

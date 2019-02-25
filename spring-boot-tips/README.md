@@ -145,5 +145,27 @@ DTO는 1번째와 같은 DTO를 사용하며, Controller는 아래와 같습니�
     }
 ```
 
+그리고 이를 테스트할 코드는 아래와 같습니다.
+
+```java
+    @Test
+    public void Get에서는_setter가_없어도된다() throws Exception {
+        String content = objectMapper.writeValueAsString(new RequestSetterDto("jojoldu", 1000L,  LocalDate.of(2019,2,22), RequestSetterDto.RequestType.GET));
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.put("name", Arrays.asList("jojoldu"));
+        params.put("amount", Arrays.asList("1000"));
+        params.put("date", Arrays.asList("2019-02-22"));
+        params.put("requestType", Arrays.asList("GET"));
+
+        mvc
+                .perform(get("/request/setter")
+                        .params(params)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().json(content));
+    }
+```
+
 
 
