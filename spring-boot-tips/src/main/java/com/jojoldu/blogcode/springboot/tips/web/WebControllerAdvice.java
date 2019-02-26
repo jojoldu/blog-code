@@ -1,17 +1,15 @@
 package com.jojoldu.blogcode.springboot.tips.web;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Slf4j
 @ControllerAdvice
 public class WebControllerAdvice {
 
-//    @InitBinder
+    @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.initDirectFieldAccess();
     }
