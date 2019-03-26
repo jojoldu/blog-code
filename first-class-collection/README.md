@@ -3,7 +3,7 @@
 안녕하세요?  
 이번 시간에는 일급 컬렉션 (First Class Collection) 에 대해 배워보겠습니다.  
   
-일급 컬렉션이란 단어는 [소트웍스 앤솔로지](https://wikibook.co.kr/thoughtworks-anthology/) 의 객체지향 생활체조 파트에서 언급이 되었습니다.  
+일급 컬렉션이란 단어는 [소트웍스 앤솔로지](https://coupa.ng/bgRZDf) 의 객체지향 생활체조 파트에서 언급이 되었습니다.  
 
 > 규칙 8: 일급 콜렉션 사용
 이 규칙의 적용은 간단하다. 
