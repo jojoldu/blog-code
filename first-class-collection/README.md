@@ -40,28 +40,84 @@ public class GameRanking {
 
 위와 같이 **Collection을 Wrapping**하면서, **그외 다른 멤버 변수가 없는 상태**를 일급 컬렉션이라 합니다.
 
-
-
 Wrapping 함으로써 다음과 같은 이점이 있습니다.
 
 * Collection과 Collection에 필요한 기능을 **함께 관리** 할 수 있다
 * Collection의 **불변성**을 보장
-* Collection에 이름을 붙일 수있다
+* Collection에 이름을 붙일 수 있다
 
 하나 하나 설명드리겠습니다.
 
+## 1. 상태와 행위를 한곳에서 관리
 
-## 값과 로직이 함께
+일급 컬렉션의 첫번째 장점은 **값과 로직이 함께 존재**한다는 것입니다.  
 
-이 부분은 예전에 소개 드린 [Enum](http://woowabros.github.io/tools/2017/07/10/java-enum-uses.html)의 장점과도 일맥상통합니다.  
+> 이 부분은 예전에 소개 드린 [Enum](http://woowabros.github.io/tools/2017/07/10/java-enum-uses.html)의 장점과도 일맥상통합니다.  
 
-## 불변
+예를 들어 
+
+## 2. 불변
 
 일급 컬렉션은 **컬렉션의 불변을 보장**합니다.  
 
 여기서 ```final```을 사용하면 안되나요?  라고 하시는 분들이 계신데요.  
-Java의 ```final```은 정확히는 불변을 만들어주는 것은 아니며, **재할당만 금지** 합니다.
+Java의 ```final```은 정확히는 불변을 만들어주는 것은 아니며, **재할당만 금지** 합니다.  
+  
+아래 테스트 코드를 참고해봅시다.
+
+```java
+    @Test
+    public void final도_값변경이_가능하다() {
+        //given
+        final Map<String, Boolean> collection = new HashMap<>();
+
+        //when
+        collection.put("1", true);
+        collection.put("2", true);
+        collection.put("3", true);
+        collection.put("4", true);
+
+        //then
+        assertThat(collection.size()).isEqualTo(4);
+    }
 
 ```
 
+이를 실행해보면!
+
+![immutable1](./images/immutable1.png)
+
+**값이 추가**되는걸을 확인할 수 있습니다.  
+이미 ```collection```은 **비어있는 HashMap**으로 선언되었음에도 값이 변경될수 있다는것이죠.  
+  
+추가로 테스트해볼까요?
+
+```java
+    @Test
+    public void final은_재할당이_불가능하다() {
+        //given
+        final Map<String, Boolean> collection = new HashMap<>();
+
+        //when
+        collection = new HashMap<>();
+
+        //then
+        assertThat(collection.size()).isEqualTo(4);
+    }
 ```
+
+이 코드는 바로 컴파일에러가 발생합니다.  
+
+![immutable2](./images/immutable2.png)
+
+**final로 할당된 코드에 재할당할순 없기 때문**이죠.  
+  
+보신것처럼 Java의 final은 **재할당만 금지**합니다.  
+이외에도 ```member.setAge(10)``` 과 같은 코드 역시 작동해버리니 **반쪽짜리 선언문**이라 할수 있겠습니다.  
+  
+요즘과 같이 소프트웨어 규모가 커지고 있는 상황에서 **불변 객체**는 아주 중요합니다.  
+각각의 객체들이 **절대 값이 바뀔일이 없다**는게 보장되면 그만큼 코드를 이해하고 수정하는데 **사이드 이펙트가 최소화**되기 때문입니다.  
+  
+Java에서는 final로 그 문제를 해결할 수 없어서 
+
+## 3. 
