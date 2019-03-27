@@ -33,7 +33,7 @@ public class ImmutableTest {
         final Map<String, Boolean> collection = new HashMap<>();
 
         //when
-        collection = new HashMap<>();
+//        collection = new HashMap<>();
 
         //then
         assertThat(collection.size()).isEqualTo(4);

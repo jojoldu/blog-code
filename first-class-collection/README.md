@@ -25,7 +25,7 @@ map.put("2", "B");
 map.put("3", "C");
 ```
 
-Wrapping 합니다.
+아래와 같이 **Wrapping** 하는 것을 얘기합니다.
 
 ```java
 public class GameRanking {
@@ -38,13 +38,12 @@ public class GameRanking {
 }
 ```
 
-위와 같이 **Collection을 Wrapping**하면서, **그외 다른 멤버 변수가 없는 상태**를 일급 컬렉션이라 합니다.
+위와 같이 **Collection을 Wrapping**하면서, **그 외 다른 멤버 변수가 없는 상태**를 일급 컬렉션이라 합니다.  
+Wrapping 함으로써 다음과 같은 이점을 가지게 됩니다.
 
-Wrapping 함으로써 다음과 같은 이점이 있습니다.
-
-* Collection과 Collection에 필요한 기능을 **함께 관리** 할 수 있다
+* Collection과 Collection에 필요한 기능을 **함께 관리** 할 수 있음
 * Collection의 **불변성**을 보장
-* Collection에 이름을 붙일 수 있다
+* Collection에 **고유한 이름**을 부여할 수 있음
 
 하나 하나 설명드리겠습니다.
 
@@ -54,7 +53,50 @@ Wrapping 함으로써 다음과 같은 이점이 있습니다.
 
 > 이 부분은 예전에 소개 드린 [Enum](http://woowabros.github.io/tools/2017/07/10/java-enum-uses.html)의 장점과도 일맥상통합니다.  
 
-예를 들어 
+예를 들어 여러 Pay들이 모여있고, 이 중 NaverPay 금액의 합이 필요하다고 가정해보겠습니다.  
+
+
+```java
+public class PayGroups {
+    private List<Pay> pays;
+
+    public PayGroups(List<Pay> pays) {
+        this.pays = pays;
+    }
+    
+    public Long getNaverPaySum() {
+        return pays.stream()
+                .filter(pay -> PayType.isNaverPay(pay.getPayType()))
+                .mapToLong(Pay::getAmount)
+                .sum();
+    }
+}
+```
+
+```java
+public class PayGroups {
+    private List<Pay> pays;
+
+    public PayGroups(List<Pay> pays) {
+        this.pays = pays;
+    }
+
+    public Long getNaverPaySum() {
+        return getFilteredPays(pay -> PayType.isNaverPay(pay.getPayType()));
+    }
+
+    public Long getKakaoPaySum() {
+        return getFilteredPays(pay -> PayType.isKakaoPay(pay.getPayType()));
+    }
+
+    private Long getFilteredPays(Predicate<Pay> predicate) {
+        return pays.stream()
+                .filter(predicate)
+                .mapToLong(Pay::getAmount)
+                .sum();
+    }
+}
+```
 
 ## 2. 불변
 
@@ -113,7 +155,7 @@ Java의 ```final```은 정확히는 불변을 만들어주는 것은 아니며, 
 **final로 할당된 코드에 재할당할순 없기 때문**이죠.  
   
 보신것처럼 Java의 final은 **재할당만 금지**합니다.  
-이외에도 ```member.setAge(10)``` 과 같은 코드 역시 작동해버리니 **반쪽짜리 선언문**이라 할수 있겠습니다.  
+이외에도 ```member.setAge(10)``` 과 같은 코드 역시 작동해버리니 **반쪽짜리 선언문**이라 할 수 있겠습니다.  
   
 요즘과 같이 소프트웨어 규모가 커지고 있는 상황에서 **불변 객체**는 아주 중요합니다.  
 각각의 객체들이 **절대 값이 바뀔일이 없다**는게 보장되면 그만큼 코드를 이해하고 수정하는데 **사이드 이펙트가 최소화**되기 때문입니다.  
