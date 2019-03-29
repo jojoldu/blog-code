@@ -43,7 +43,7 @@ Wrapping 함으로써 다음과 같은 이점을 가지게 됩니다.
 
 * Collection과 Collection에 필요한 기능을 **함께 관리** 할 수 있음
 * Collection의 **불변성**을 보장
-* Collection에 **고유한 이름**을 부여할 수 있음
+* 같은 타입의 Collection도 용도에 따라 분류 가능
 
 하나 하나 설명드리겠습니다.
 
@@ -53,7 +53,19 @@ Wrapping 함으로써 다음과 같은 이점을 가지게 됩니다.
 
 > 이 부분은 예전에 소개 드린 [Enum](http://woowabros.github.io/tools/2017/07/10/java-enum-uses.html)의 장점과도 일맥상통합니다.  
 
-예를 들어 여러 Pay들이 모여있고, 이 중 NaverPay 금액의 합이 필요하다고 가정해보겠습니다.  
+예를 들어 여러 Pay들이 모여있고, 이 중 **NaverPay 금액의 합**이 필요하다고 가정해보겠습니다.  
+일반적으로는 아래와 같이 작성합니다.
+
+![merge1](./images/merge1.png)
+
+* List에 데이터를 담고
+* Service 혹은 Util 클래스에서 필요한 로직 수행
+
+이 상황에서는 문제가 있습니다.
+결국 ```pays``` 라는 컬렉션과 계산로직은 **서로 관계**가 있는데, 이를 **코드로 표현이 안됩니다**.  
+  
+Pay타입의 
+
 
 
 ```java
