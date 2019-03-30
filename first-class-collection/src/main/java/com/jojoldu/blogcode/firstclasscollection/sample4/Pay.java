@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.firstclasscollection.sample1;
+package com.jojoldu.blogcode.firstclasscollection.sample4;
 
 
 import lombok.Builder;

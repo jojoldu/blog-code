@@ -1,17 +1,15 @@
 package com.jojoldu.blogcode.firstclasscollection;
 
-import com.jojoldu.blogcode.firstclasscollection.sample1.Pay;
-import com.jojoldu.blogcode.firstclasscollection.sample1.PayGroups;
-import com.jojoldu.blogcode.firstclasscollection.sample1.PayType;
+import com.jojoldu.blogcode.firstclasscollection.sample4.Pay;
+import com.jojoldu.blogcode.firstclasscollection.sample4.PayGroups;
 import org.junit.Test;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.jojoldu.blogcode.firstclasscollection.sample1.PayType.KAKAO_PAY;
-import static com.jojoldu.blogcode.firstclasscollection.sample1.PayType.NAVER_PAY;
-import static com.jojoldu.blogcode.firstclasscollection.sample1.PayType.TOSS;
+import static com.jojoldu.blogcode.firstclasscollection.sample4.PayType.KAKAO_PAY;
+import static com.jojoldu.blogcode.firstclasscollection.sample4.PayType.NAVER_PAY;
+import static com.jojoldu.blogcode.firstclasscollection.sample4.PayType.TOSS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PayCollectionTest {

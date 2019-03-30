@@ -1,8 +1,7 @@
-package com.jojoldu.blogcode.firstclasscollection.sample1;
+package com.jojoldu.blogcode.firstclasscollection.sample4;
 
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class PayGroups {
     private List<Pay> pays;
