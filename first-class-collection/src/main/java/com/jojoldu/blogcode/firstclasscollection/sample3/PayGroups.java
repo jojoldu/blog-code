@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.firstclasscollection.sample4;
+package com.jojoldu.blogcode.firstclasscollection.sample3;
 
 import java.util.List;
 import java.util.function.Predicate;

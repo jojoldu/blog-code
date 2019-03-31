@@ -9,7 +9,9 @@ public class Orders {
         this.orders = orders;
     }
 
-    public List<Order> getOrders() {
-        return orders;
+    public long getAmountSum() {
+        return orders.stream()
+                .mapToLong(Order::getAmount)
+                .sum();
     }
 }
