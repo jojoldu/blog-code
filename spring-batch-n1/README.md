@@ -340,7 +340,7 @@ where store0_.address like ?
 
 [vladmihalcea.com](https://vladmihalcea.com/2013/10/22/hibernate-facts-multi-level-fetching/)에서 ```EntityGraphBuilder```, ```EntityVisitor```로 이를 해결하는 방법이 소개되었지만 개인적으로는 복잡하단 생각에 좀 더 쉬운 방법이 필요했습니다.  
   
-다행히도 팀내 선임님의 조언으로 해결책을 찾을 수 있었습니다.  
+다행히도 해결책을 찾을 수 있었습니다.  
   
 application.yml에 다음과 같은 옵션을 추가합니다.  
 

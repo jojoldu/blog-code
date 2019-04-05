@@ -3,6 +3,7 @@ package com.jojoldu.batch.job;
 import com.jojoldu.batch.job.domain.Store;
 import com.jojoldu.batch.job.domain.StoreHistory;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 import org.springframework.batch.core.Job;
@@ -34,6 +35,7 @@ import static com.jojoldu.batch.job.StoreBackupBatchConfiguration.JOB_NAME;
  * Github : https://github.com/jojoldu
  */
 
+@RequiredArgsConstructor
 @Configuration
 @ConditionalOnProperty(name = "job.name", havingValue = JOB_NAME)
 public class StoreBackupBatchConfiguration {
@@ -41,15 +43,9 @@ public class StoreBackupBatchConfiguration {
     public static final String JOB_NAME = "storeBackupBatch";
     private static final String STEP_NAME = JOB_NAME+"Step";
 
-    @PersistenceUnit
-    private EntityManagerFactory entityManagerFactory;
-    private JobBuilderFactory jobBuilderFactory;
-    private StepBuilderFactory stepBuilderFactory;
-
-    public StoreBackupBatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
-        this.jobBuilderFactory = jobBuilderFactory;
-        this.stepBuilderFactory = stepBuilderFactory;
-    }
+    private final EntityManagerFactory entityManagerFactory;
+    private final JobBuilderFactory jobBuilderFactory;
+    private final StepBuilderFactory stepBuilderFactory;
 
     @Value("${chunkSize:1000}")
     private int chunkSize;

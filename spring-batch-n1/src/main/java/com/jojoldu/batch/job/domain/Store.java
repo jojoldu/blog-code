@@ -22,7 +22,7 @@ import static javax.persistence.CascadeType.ALL;
 public class Store {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -32,6 +32,7 @@ public class Store {
     private List<Product> products = new ArrayList<>();
 
     @OneToMany(mappedBy = "store", cascade = ALL)
+    @BatchSize(size = 10)
     private List<Employee> employees = new ArrayList<>();
 
     public Store(String name, String address) {

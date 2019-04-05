@@ -46,6 +46,12 @@ class StoreBackupBatchConfigurationTest extends Specification {
         store1.addEmployee(new Employee("직원2", LocalDate.now()))
         storeRepository.save(store2)
 
+        Store store3 = new Store("서점3", "서울시 강남구")
+        store1.addProduct(new Product("책3_1", 10000L))
+        store1.addProduct(new Product("책3_2", 20000L))
+        store1.addEmployee(new Employee("직원3", LocalDate.now()))
+        storeRepository.save(store3)
+
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("address", "서울")
                 .toJobParameters()
