@@ -1,5 +1,5 @@
 spring:
   jpa:
     show-sql: true
-    properties:
-      hibernate.default_batch_fetch_size: 1000
+#    properties:
+#      hibernate.default_batch_fetch_size: 1000
