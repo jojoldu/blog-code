@@ -29,11 +29,11 @@ public class Store {
     private String address;
 
     @OneToMany(mappedBy = "store", cascade = ALL)
-    @BatchSize(size = 10)
+//    @BatchSize(size = 10)
     private List<Product> products = new ArrayList<>();
 
     @OneToMany(mappedBy = "store", cascade = ALL)
-    @BatchSize(size = 10)
+//    @BatchSize(size = 10)
     private List<Employee> employees = new ArrayList<>();
 
     public Store(String name, String address) {

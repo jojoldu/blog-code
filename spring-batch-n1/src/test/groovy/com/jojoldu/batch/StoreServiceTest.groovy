@@ -14,7 +14,7 @@ import java.time.LocalDate
 
 
 @SpringBootTest
-class StoreRepositoryTest extends Specification{
+class StoreServiceTest extends Specification{
     @Autowired
     StoreRepository storeRepository
 
@@ -39,7 +39,7 @@ class StoreRepositoryTest extends Specification{
         storeRepository.save(store2)
 
         when:
-        long size = storeService.find(1)
+        long size = storeService.find()
 
         then:
         size == 60000L

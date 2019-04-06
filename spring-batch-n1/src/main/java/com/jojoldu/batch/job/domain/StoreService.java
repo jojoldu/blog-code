@@ -16,7 +16,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
 
     @Transactional(readOnly = true)
-    public long find(Long id) {
+    public long find() {
         List<Store> stores = storeRepository.findAll();
         long productSum = stores.stream()
                 .map(Store::getProducts)

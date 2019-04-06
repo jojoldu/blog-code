@@ -1,5 +1,3 @@
 spring:
   jpa:
     show-sql: true
-#    properties:
-#      hibernate.default_batch_fetch_size: ${chunkSize:1000}

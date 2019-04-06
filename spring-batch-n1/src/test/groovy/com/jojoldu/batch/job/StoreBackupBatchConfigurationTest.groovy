@@ -62,5 +62,4 @@ class StoreBackupBatchConfigurationTest extends Specification {
         then:
         jobExecution.status == BatchStatus.COMPLETED
     }
-
 }
