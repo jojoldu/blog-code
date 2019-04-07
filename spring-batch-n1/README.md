@@ -443,6 +443,8 @@ class StoreServiceTest extends Specification{
 정답은 [하이버네이트 공식 가이드](http://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#batch)에 있었습니다.  
 
 
+![jdbc1](./images/jdbc1.png)
+
 ## 4. 결론
 
 * ```join fetch```는 **하나의 자식에만 적용**가능

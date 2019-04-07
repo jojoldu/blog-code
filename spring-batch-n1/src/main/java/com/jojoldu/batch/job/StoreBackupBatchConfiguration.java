@@ -103,6 +103,8 @@ public class StoreBackupBatchConfiguration {
 //        return itemReader;
 //    }
 
+    @Bean
+    @StepScope
     public ItemProcessor<Store, StoreHistory> processor() {
         return item -> new StoreHistory(item, item.getProducts(), item.getEmployees());
     }
