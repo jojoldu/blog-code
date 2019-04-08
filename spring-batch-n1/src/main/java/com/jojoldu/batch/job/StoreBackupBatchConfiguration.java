@@ -83,24 +83,25 @@ public class StoreBackupBatchConfiguration {
         reader.setQueryString("SELECT s FROM Store s WHERE s.address LIKE :address order by s.id");
         reader.setParameterValues(parameters);
         reader.setPageSize(chunkSize);
+
         return reader;
     }
 
 //    @Bean
 //    @StepScope
-//    public HibernateCursorItemReader<Store> reader(
-//            @Value("#{jobParameters[address]}") String address) {
-//
+//    public HibernateCursorItemReader<Store> reader(@Value("#{jobParameters[address]}") String address) {
 //        Map<String, Object> parameters = new LinkedHashMap<>();
 //        parameters.put("address", address+"%");
-//        final SessionFactory sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
+//        SessionFactory sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
 //
-//        HibernateCursorItemReader<Store> itemReader = new HibernateCursorItemReader<>();
-//        itemReader.setQueryString("FROM Store s WHERE s.address LIKE :address");
-//        itemReader.setParameterValues(parameters);
-//        itemReader.setSessionFactory(sessionFactory);
+//        HibernateCursorItemReader<Store> reader = new HibernateCursorItemReader<>();
+//        reader.setQueryString("FROM Store s WHERE s.address LIKE :address");
+//        reader.setParameterValues(parameters);
+//        reader.setSessionFactory(sessionFactory);
+//        reader.setFetchSize(chunkSize);
+//        reader.setUseStatelessSession(false);
 //
-//        return itemReader;
+//        return reader;
 //    }
 
     @Bean
