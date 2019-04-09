@@ -1,11 +1,12 @@
 package com.jojoldu.batch.job;
 
+import com.jojoldu.batch.job.common.QuerydslCursorItemReader;
+import com.jojoldu.batch.job.common.QuerydslPagingItemReader;
+import com.jojoldu.batch.job.domain.QStore;
 import com.jojoldu.batch.job.domain.Store;
 import com.jojoldu.batch.job.domain.StoreHistory;
-import lombok.AllArgsConstructor;
+import com.querydsl.core.types.Projections;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
-import org.hibernate.SessionFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -13,7 +14,6 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.database.HibernateCursorItemReader;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,12 +22,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.jojoldu.batch.job.StoreBackupBatchConfiguration.JOB_NAME;
+import static com.jojoldu.batch.job.domain.QStore.store;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 10. 27.
@@ -86,6 +85,28 @@ public class StoreBackupBatchConfiguration {
 
         return reader;
     }
+
+//    @Bean
+//    @StepScope
+//    public QuerydslPagingItemReader<Store> reader(@Value("#{jobParameters[address]}") String address){
+//        return new QuerydslPagingItemReader<>(entityManagerFactory, chunkSize, queryFactory -> {
+//            // 요청 시간 기준으로 만료 기간이 지났지만, "적립" 포인트가 남아있는 경우 조회
+//            return queryFactory
+//                    .selectFrom(store)
+//                    .where(store.address.like(address+"%"));
+//        });
+//    }
+
+//    @Bean
+//    @StepScope
+//    public QuerydslCursorItemReader<Store> reader(@Value("#{jobParameters[address]}") String address){
+//        return new QuerydslCursorItemReader<>(entityManagerFactory, chunkSize, queryFactory -> {
+//            // 요청 시간 기준으로 만료 기간이 지났지만, "적립" 포인트가 남아있는 경우 조회
+//            return queryFactory
+//                    .selectFrom(store)
+//                    .where(store.address.like(address+"%"));
+//        });
+//    }
 
 //    @Bean
 //    @StepScope

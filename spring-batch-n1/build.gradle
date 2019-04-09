@@ -10,6 +10,7 @@ buildscript {
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 		classpath "io.spring.gradle:dependency-management-plugin:1.0.6.RELEASE"
+		classpath "gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:1.0.10"
 	}
 }
 
@@ -33,10 +34,30 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-batch')
 
 	runtime('com.h2database:h2')
-	compileOnly('org.projectlombok:lombok')
+	compile('org.projectlombok:lombok')
+
+	compile("com.querydsl:querydsl-jpa")
+	compile("com.querydsl:querydsl-apt")
 
 	testCompile('org.springframework.batch:spring-batch-test')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
 	testCompile('org.spockframework:spock-spring:1.1-groovy-2.4')
+}
+
+apply plugin: "com.ewerk.gradle.plugins.querydsl" // Plugin 적용
+def querydslSrcDir = 'src/main/generated' // QClass 생성 위치
+
+querydsl {
+	library = "com.querydsl:querydsl-apt"
+	jpa = true
+	querydslSourcesDir = querydslSrcDir
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs = ['src/main/java', querydslSrcDir]
+		}
+	}
 }
