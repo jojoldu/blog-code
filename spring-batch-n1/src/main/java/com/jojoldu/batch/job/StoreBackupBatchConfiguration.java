@@ -1,5 +1,6 @@
 package com.jojoldu.batch.job;
 
+import com.jojoldu.batch.job.common.JpaPagingFetchItemReader;
 import com.jojoldu.batch.job.common.QuerydslCursorItemReader;
 import com.jojoldu.batch.job.common.QuerydslPagingItemReader;
 import com.jojoldu.batch.job.domain.QStore;
@@ -69,15 +70,32 @@ public class StoreBackupBatchConfiguration {
                 .build();
     }
 
+//    @Bean
+//    @StepScope
+//    public JpaPagingItemReader<Store> reader (
+//            @Value("#{jobParameters[address]}") String address) {
+//
+//        Map<String, Object> parameters = new LinkedHashMap<>();
+//        parameters.put("address", address+"%");
+//
+//        JpaPagingItemReader<Store> reader = new JpaPagingItemReader<>();
+//        reader.setEntityManagerFactory(entityManagerFactory);
+//        reader.setQueryString("SELECT s FROM Store s WHERE s.address LIKE :address order by s.id");
+//        reader.setParameterValues(parameters);
+//        reader.setPageSize(chunkSize);
+//
+//        return reader;
+//    }
+
     @Bean
     @StepScope
-    public JpaPagingItemReader<Store> reader (
+    public JpaPagingFetchItemReader<Store> reader (
             @Value("#{jobParameters[address]}") String address) {
 
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("address", address+"%");
 
-        JpaPagingItemReader<Store> reader = new JpaPagingItemReader<>();
+        JpaPagingFetchItemReader<Store> reader = new JpaPagingFetchItemReader<>();
         reader.setEntityManagerFactory(entityManagerFactory);
         reader.setQueryString("SELECT s FROM Store s WHERE s.address LIKE :address order by s.id");
         reader.setParameterValues(parameters);
@@ -85,7 +103,6 @@ public class StoreBackupBatchConfiguration {
 
         return reader;
     }
-
 //    @Bean
 //    @StepScope
 //    public QuerydslPagingItemReader<Store> reader(@Value("#{jobParameters[address]}") String address){
