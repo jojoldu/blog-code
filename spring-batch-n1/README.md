@@ -435,24 +435,14 @@ class StoreServiceTest extends Specification{
 
 ![default3](./images/default3.png)
 
-여전히 N+1 문제가 발생합니다!  
-어떻게 하면 **Spring Batch Item Reader**에서도 N+1 문제를 해결할 수 있을까요?
 
-### 3-2. jdbc.fetch_size
-
-정답은 [하이버네이트 공식 가이드](http://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#batch)에 있었습니다.  
-
-
-![jdbc1](./images/jdbc1.png)
 
 ## 4. 결론
 
 * ```join fetch```는 **하나의 자식에만 적용**가능
-* Spring Data Jpa Repository에서는
+* Spring Data JpaRepository / Spring Batch JpaItemReader에서는
     * ```hibernate.default_batch_fetch_size```로 N+1 문제를 피할 수 있다.
     * ```@BatchSize```도 가능
-* Spring Batch Jpa Reader에서는
-    * ```hibernate.jdbc.batch_size```로 N+1 문제를 피할 수 있다.
 
 ## 참고
 
@@ -462,3 +452,4 @@ class StoreServiceTest extends Specification{
 
 * [권남 위키](http://kwonnam.pe.kr/wiki/java/hibernate/performance)
 
+* [beware-of-hibernate-batch-fetching](https://prasanthmathialagan.wordpress.com/2017/04/20/beware-of-hibernate-batch-fetching/)
