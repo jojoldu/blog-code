@@ -8,6 +8,7 @@ import com.jojoldu.batch.job.domain.Store;
 import com.jojoldu.batch.job.domain.StoreHistory;
 import com.querydsl.core.types.Projections;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.SessionFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -15,6 +16,8 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.database.HibernateCursorItemReader;
+import org.springframework.batch.item.database.HibernatePagingItemReader;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +44,7 @@ import static com.jojoldu.batch.job.domain.QStore.store;
 public class StoreBackupBatchConfiguration {
 
     public static final String JOB_NAME = "storeBackupBatch";
-    private static final String STEP_NAME = JOB_NAME+"Step";
+    private static final String STEP_NAME = JOB_NAME + "Step";
 
     private final EntityManagerFactory entityManagerFactory;
     private final JobBuilderFactory jobBuilderFactory;
@@ -87,22 +90,23 @@ public class StoreBackupBatchConfiguration {
 //        return reader;
 //    }
 
-    @Bean
-    @StepScope
-    public JpaPagingFetchItemReader<Store> reader (
-            @Value("#{jobParameters[address]}") String address) {
+//    @Bean
+//    @StepScope
+//    public JpaPagingFetchItemReader<Store> reader (
+//            @Value("#{jobParameters[address]}") String address) {
+//
+//        Map<String, Object> parameters = new LinkedHashMap<>();
+//        parameters.put("address", address+"%");
+//
+//        JpaPagingFetchItemReader<Store> reader = new JpaPagingFetchItemReader<>();
+//        reader.setEntityManagerFactory(entityManagerFactory);
+//        reader.setQueryString("SELECT s FROM Store s WHERE s.address LIKE :address order by s.id");
+//        reader.setParameterValues(parameters);
+//        reader.setPageSize(chunkSize);
+//
+//        return reader;
+//    }
 
-        Map<String, Object> parameters = new LinkedHashMap<>();
-        parameters.put("address", address+"%");
-
-        JpaPagingFetchItemReader<Store> reader = new JpaPagingFetchItemReader<>();
-        reader.setEntityManagerFactory(entityManagerFactory);
-        reader.setQueryString("SELECT s FROM Store s WHERE s.address LIKE :address order by s.id");
-        reader.setParameterValues(parameters);
-        reader.setPageSize(chunkSize);
-
-        return reader;
-    }
 //    @Bean
 //    @StepScope
 //    public QuerydslPagingItemReader<Store> reader(@Value("#{jobParameters[address]}") String address){
@@ -125,14 +129,31 @@ public class StoreBackupBatchConfiguration {
 //        });
 //    }
 
+    @Bean
+    @StepScope
+    public HibernateCursorItemReader<Store> reader(@Value("#{jobParameters[address]}") String address) {
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("address", address+"%");
+        SessionFactory sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
+
+        HibernateCursorItemReader<Store> reader = new HibernateCursorItemReader<>();
+        reader.setQueryString("FROM Store s WHERE s.address LIKE :address");
+        reader.setParameterValues(parameters);
+        reader.setSessionFactory(sessionFactory);
+        reader.setFetchSize(chunkSize);
+//        reader.setUseStatelessSession(false);
+
+        return reader;
+    }
+
 //    @Bean
 //    @StepScope
-//    public HibernateCursorItemReader<Store> reader(@Value("#{jobParameters[address]}") String address) {
+//    public HibernatePagingItemReader<Store> reader(@Value("#{jobParameters[address]}") String address) {
 //        Map<String, Object> parameters = new LinkedHashMap<>();
-//        parameters.put("address", address+"%");
+//        parameters.put("address", address + "%");
 //        SessionFactory sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
 //
-//        HibernateCursorItemReader<Store> reader = new HibernateCursorItemReader<>();
+//        HibernatePagingItemReader<Store> reader = new HibernatePagingItemReader<>();
 //        reader.setQueryString("FROM Store s WHERE s.address LIKE :address");
 //        reader.setParameterValues(parameters);
 //        reader.setSessionFactory(sessionFactory);
@@ -153,5 +174,4 @@ public class StoreBackupBatchConfiguration {
         writer.setEntityManagerFactory(entityManagerFactory);
         return writer;
     }
-
 }
