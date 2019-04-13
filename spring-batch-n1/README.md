@@ -442,9 +442,13 @@ class StoreServiceTest extends Specification{
 ## 4. 결론
 
 * ```join fetch```는 **하나의 자식에만 적용**가능
-* Spring Data JpaRepository / Spring Batch JpaItemReader에서는
+* Spring Data의 JpaRepository / Spring Batch의 HibernateItemReader에서는
     * ```hibernate.default_batch_fetch_size```로 N+1 문제를 피할 수 있다.
     * ```@BatchSize```도 가능
+* Spring Boot 2.1.3 (Spring Batch 4.1.1)까지는 ```hibernate.default_batch_fetch_size``` 옵션이 JpaPagingItemReader에서 작동하지 않는다.
+
+> 현재 해당 내용의 수정을 [PR](https://github.com/spring-projects/spring-batch/pull/713)로 보냈습니다.  
+Merge되면 이 블로그의 내용은 수정 될 수 있습니다.
 
 ## 참고
 
