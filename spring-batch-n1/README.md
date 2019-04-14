@@ -353,6 +353,7 @@ spring:
 설명한대로 옵션이 작동하는지 **JpaRepository**로 테스트해보겠습니다.  
   
 ```java
+
 @RequiredArgsConstructor
 @Service
 public class StoreService {
@@ -379,7 +380,7 @@ public class StoreService {
 }
 ```
 
-* Store의 Product와 Employee를 사용하여 **N+1이 발생하는지 체크**합니다.
+서비스 메소드에 트랜잭션을 걸고, Store의 Product와 Employee를 사용하여 **N+1이 발생하는지 체크**합니다.
 
 테스트 코드는 다음과 같습니다.
 
@@ -431,13 +432,86 @@ class StoreServiceTest extends Specification{
 ![default2](./images/default2.png)
 
 옵션을 제거하니 N+1이 다시 발생하는 것을 알 수 있습니다.  
+  
 자 그럼 **hibernate.default_batch_fetch_size가 JPA에서 정상 작동**하는 것을 확인했으니, Batch에서도 그런지 확인해보겠습니다.  
   
 옵션을 다시 추가한 뒤에 **Batch Test**를 진행해봅니다.
 
 ![default3](./images/default3.png)
 
+**배치에서는 작동하지 않습니다!**  
+  
+왜 그럴까요?  
+  
+혹시 JpaPagingItemReader만 안되는것일까요?
 
+### 3-2. Hibernate 테스트
+
+JpaPagingItemReader에서만 안되는지 Hibernate Item Reader에서 테스트해보겠습니다.  
+  
+Batch 코드에서 ItemReader 부분을 다음과 같이 변경합니다.
+
+```java
+@Bean
+@StepScope
+public HibernatePagingItemReader<Store> reader(@Value("#{jobParameters[address]}") String address) {
+    Map<String, Object> parameters = new LinkedHashMap<>();
+    parameters.put("address", address + "%");
+    SessionFactory sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
+
+    HibernatePagingItemReader<Store> reader = new HibernatePagingItemReader<>();
+    reader.setQueryString("FROM Store s WHERE s.address LIKE :address");
+    reader.setParameterValues(parameters);
+    reader.setSessionFactory(sessionFactory);
+    reader.setFetchSize(chunkSize);
+    reader.setUseStatelessSession(false);
+
+    return reader;
+}
+```
+
+그리고 다시 테스트를 돌려보겠습니다.  
+
+![hibernate1](./images/hibernate1.png)
+
+HibernatePaingItemReader에서는 **옵션이 잘 작동합니다**.  
+음.. HibernatePaingItemReader에서만 잘 작동하는걸까요?  
+  
+**HibernateCursorItemReader** 에서도 작동하는지 확인해봅니다.
+
+```java
+
+    @Bean
+    @StepScope
+    public HibernateCursorItemReader<Store> reader(@Value("#{jobParameters[address]}") String address) {
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("address", address+"%");
+        SessionFactory sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
+
+        HibernateCursorItemReader<Store> reader = new HibernateCursorItemReader<>();
+        reader.setQueryString("FROM Store s WHERE s.address LIKE :address");
+        reader.setParameterValues(parameters);
+        reader.setSessionFactory(sessionFactory);
+        reader.setFetchSize(chunkSize);
+        reader.setUseStatelessSession(false);
+
+        return reader;
+    }
+```
+
+![hibernate2](./images/hibernate2.png)
+
+HibernateCursorItemReader에서도 정상 작동합니다.  
+  
+즉, ORM Reader 중 **JpaPagingItemReader에서만 작동되지 않습니다**.  
+  
+JpaPagingItemReader에서는 해결이 안될까요?  
+
+### 3-3. Custom JpaPagingItemReader
+
+왜 JpaPagingItemReader에서만 안될까요?  
+
+![custom1](./images/custom1.png)
 
 ## 4. 결론
 
@@ -445,7 +519,7 @@ class StoreServiceTest extends Specification{
 * Spring Data의 JpaRepository / Spring Batch의 HibernateItemReader에서는
     * ```hibernate.default_batch_fetch_size```로 N+1 문제를 피할 수 있다.
     * ```@BatchSize```도 가능
-* Spring Boot 2.1.3 (Spring Batch 4.1.1)까지는 ```hibernate.default_batch_fetch_size``` 옵션이 JpaPagingItemReader에서 작동하지 않는다.
+* Spring Boot 2.1.3 (Spring Batch 4.1.1)까지는 ```hibernate.default_batch_fetch_size``` 옵션이 **JpaPagingItemReader에서 작동하지 않는다**.
 
 > 현재 해당 내용의 수정을 [PR](https://github.com/spring-projects/spring-batch/pull/713)로 보냈습니다.  
 Merge되면 이 블로그의 내용은 수정 될 수 있습니다.

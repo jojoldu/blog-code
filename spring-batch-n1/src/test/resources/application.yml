@@ -3,5 +3,5 @@ spring:
     show-sql: true
     open-in-view: false
     properties:
-#      hibernate.format_sql: true
+      hibernate.format_sql: true
       hibernate.default_batch_fetch_size: 1000
