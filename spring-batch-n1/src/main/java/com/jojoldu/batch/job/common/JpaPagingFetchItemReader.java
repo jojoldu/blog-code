@@ -1,7 +1,6 @@
 package com.jojoldu.batch.job.common;
 
 import org.springframework.batch.item.database.AbstractPagingItemReader;
-import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.orm.JpaQueryProvider;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
@@ -9,7 +8,6 @@ import org.springframework.util.ClassUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import java.util.HashMap;
 import java.util.List;

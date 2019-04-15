@@ -510,8 +510,179 @@ JpaPagingItemReader에서는 해결이 안될까요?
 ### 3-3. Custom JpaPagingItemReader
 
 왜 JpaPagingItemReader에서만 안될까요?  
+코드를 살펴보면 Hibernate Item Reader와는 차이가 나는 코드가 하나 있습니다.  
+다른 PagingItemReader의 경우 **트랜잭션을 Chunk에 맡깁니다**.  
+하지만 JpaPagingItemReader의 **트랜잭션을 Reader에서 진행**합니다.  
 
 ![custom1](./images/custom1.png)
+
+이러다보니 **트랜잭션 안에서만 작동하는 hibernate.default_batch_fetch_size**가 **단일 객체에서만** 발동하게 됩니다.  
+  
+스프링배치는 이미 **Chunk 단위로 트랜잭션** 을 보장하고 있기 때문에, JpaPagingItemReader 내부의 트랜잭션을 걷어내겠습니다.  
+  
+JpaPagingItemReader 코드를 고칠순 없기 때문에, 직접 Custom Reader를 생성합니다.
+
+```java
+public class JpaPagingFetchItemReader <T> extends AbstractPagingItemReader<T> {
+    private EntityManagerFactory entityManagerFactory;
+
+    private EntityManager entityManager;
+
+    private final Map<String, Object> jpaPropertyMap = new HashMap<>();
+
+    private String queryString;
+
+    private JpaQueryProvider queryProvider;
+
+    private Map<String, Object> parameterValues;
+
+    private boolean transacted = true;//default value
+
+    public JpaPagingFetchItemReader() {
+        setName(ClassUtils.getShortName(JpaPagingFetchItemReader.class));
+    }
+
+    /**
+     * Create a query using an appropriate query provider (entityManager OR
+     * queryProvider).
+     */
+    private Query createQuery() {
+        if (queryProvider == null) {
+            return entityManager.createQuery(queryString);
+        }
+        else {
+            return queryProvider.createQuery();
+        }
+    }
+
+    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
+    }
+
+    /**
+     * The parameter values to be used for the query execution.
+     *
+     * @param parameterValues the values keyed by the parameter named used in
+     * the query string.
+     */
+    public void setParameterValues(Map<String, Object> parameterValues) {
+        this.parameterValues = parameterValues;
+    }
+
+    /**
+     * By default (true) the EntityTransaction will be started and committed around the read.
+     * Can be overridden (false) in cases where the JPA implementation doesn't support a
+     * particular transaction.  (e.g. Hibernate with a JTA transaction).  NOTE: may cause
+     * problems in guaranteeing the object consistency in the EntityManagerFactory.
+     *
+     * @param transacted indicator
+     */
+    public void setTransacted(boolean transacted) {
+        this.transacted = transacted;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+
+        if (queryProvider == null) {
+            Assert.notNull(entityManagerFactory, "EntityManager is required when queryProvider is null");
+            Assert.hasLength(queryString, "Query string is required when queryProvider is null");
+        }
+    }
+
+    /**
+     * @param queryString JPQL query string
+     */
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
+
+    /**
+     * @param queryProvider JPA query provider
+     */
+    public void setQueryProvider(JpaQueryProvider queryProvider) {
+        this.queryProvider = queryProvider;
+    }
+
+    @Override
+    protected void doOpen() throws Exception {
+        super.doOpen();
+
+        entityManager = entityManagerFactory.createEntityManager(jpaPropertyMap);
+        if (entityManager == null) {
+            throw new DataAccessResourceFailureException("Unable to obtain an EntityManager");
+        }
+        // set entityManager to queryProvider, so it participates
+        // in JpaPagingItemReader's managed transaction
+        if (queryProvider != null) {
+            queryProvider.setEntityManager(entityManager);
+        }
+
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void doReadPage() {
+        if (transacted) {
+            entityManager.clear();
+        }//end if
+
+        Query query = createQuery().setFirstResult(getPage() * getPageSize()).setMaxResults(getPageSize());
+
+        if (parameterValues != null) {
+            for (Map.Entry<String, Object> me : parameterValues.entrySet()) {
+                query.setParameter(me.getKey(), me.getValue());
+            }
+        }
+
+        if (results == null) {
+            results = new CopyOnWriteArrayList<>();
+        }
+        else {
+            results.clear();
+        }
+
+        if (!transacted) {
+            List<T> queryResult = query.getResultList();
+            for (T entity : queryResult) {
+                entityManager.detach(entity);
+                results.add(entity);
+            }//end if
+        } else {
+            results.addAll(query.getResultList());
+        }//end if
+    }
+
+    @Override
+    protected void doJumpToPage(int itemIndex) {
+    }
+
+    @Override
+    protected void doClose() throws Exception {
+        entityManager.close();
+        super.doClose();
+    }
+}
+
+```
+
+![custom2](./images/custom2.png)
+
+
+TransactionManager를 사용하는 코드를 모두 제거한 ItemReader를 만들고, 이를 사용합니다.  
+
+![custom3](./images/custom3.png)
+
+다시 테스트 코드를 돌려보면!
+
+![custom4](./images/custom4.png)
+
+성공적으로 ```hibernate.default_batch_fetch_size``` 옵션이 적용된 것을 확인할 수 있습니다.  
+  
+이 방법으로 쓰면 될까요?  
+이 방법에 **어떤 사이드 이펙트가 있는지 알 수 없습니다**.
+그래서 아직까지 추천하기가 어렵습니다.
 
 ## 4. 결론
 
@@ -520,6 +691,7 @@ JpaPagingItemReader에서는 해결이 안될까요?
     * ```hibernate.default_batch_fetch_size```로 N+1 문제를 피할 수 있다.
     * ```@BatchSize```도 가능
 * Spring Boot 2.1.3 (Spring Batch 4.1.1)까지는 ```hibernate.default_batch_fetch_size``` 옵션이 **JpaPagingItemReader에서 작동하지 않는다**.
+* Custom하게 수정해서 쓸순 있지만, 검증되지 않은 방식
 
 > 현재 해당 내용의 수정을 [PR](https://github.com/spring-projects/spring-batch/pull/713)로 보냈습니다.  
 Merge되면 이 블로그의 내용은 수정 될 수 있습니다.
