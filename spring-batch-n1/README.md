@@ -328,8 +328,6 @@ where store0_.address like ?
 
 ## 3. 해결
 
-[vladmihalcea.com](https://vladmihalcea.com/2013/10/22/hibernate-facts-multi-level-fetching/)에서 ```EntityGraphBuilder```, ```EntityVisitor```로 이를 해결하는 방법이 소개되었지만 개인적으로는 복잡하단 생각에 좀 더 쉬운 방법이 필요했습니다.  
-  
 ### 3-1. default_batch_fetch_size
 
 Hibernate에서는 **여러 자식들이 있을때 N+1 문제를 회피**하기 위해  ```hibernate.default_batch_fetch_size``` 라는 옵션이 있습니다.  
@@ -681,7 +679,7 @@ TransactionManager를 사용하는 코드를 모두 제거한 ItemReader를 만�
 성공적으로 ```hibernate.default_batch_fetch_size``` 옵션이 적용된 것을 확인할 수 있습니다.  
   
 이 방법으로 쓰면 될까요?  
-이 방법에 **어떤 사이드 이펙트가 있는지 알 수 없습니다**.
+아쉽게도, 이 방법에는 **어떤 사이드 이펙트가 있는지 알 수 없습니다**.
 그래서 아직까지 추천하기가 어렵습니다.
 
 ## 4. 결론
@@ -691,7 +689,7 @@ TransactionManager를 사용하는 코드를 모두 제거한 ItemReader를 만�
     * ```hibernate.default_batch_fetch_size```로 N+1 문제를 피할 수 있다.
     * ```@BatchSize```도 가능
 * Spring Boot 2.1.3 (Spring Batch 4.1.1)까지는 ```hibernate.default_batch_fetch_size``` 옵션이 **JpaPagingItemReader에서 작동하지 않는다**.
-* Custom하게 수정해서 쓸순 있지만, 검증되지 않은 방식
+* Custom하게 수정해서 쓸 순 있지만, 검증되지 않은 방식
 
 > 현재 해당 내용의 수정을 [PR](https://github.com/spring-projects/spring-batch/pull/713)로 보냈습니다.  
 Merge되면 이 블로그의 내용은 수정 될 수 있습니다.
