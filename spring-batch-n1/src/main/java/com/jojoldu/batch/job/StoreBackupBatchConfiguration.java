@@ -50,7 +50,7 @@ public class StoreBackupBatchConfiguration {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
-    @Value("${chunkSize:1000}")
+    @Value("${chunkSize:2}")
     private int chunkSize;
 
     private static String ADDRESS_PARAM = null;
@@ -92,11 +92,11 @@ public class StoreBackupBatchConfiguration {
 
     @Bean
     @StepScope
-    public JpaPagingFetchItemReader<Store> reader (
+    public JpaPagingFetchItemReader<Store> reader(
             @Value("#{jobParameters[address]}") String address) {
 
         Map<String, Object> parameters = new LinkedHashMap<>();
-        parameters.put("address", address+"%");
+        parameters.put("address", address + "%");
 
         JpaPagingFetchItemReader<Store> reader = new JpaPagingFetchItemReader<>();
         reader.setEntityManagerFactory(entityManagerFactory);
@@ -146,7 +146,7 @@ public class StoreBackupBatchConfiguration {
 //        return reader;
 //    }
 
-//    @Bean
+    //    @Bean
 //    @StepScope
 //    public HibernatePagingItemReader<Store> reader(@Value("#{jobParameters[address]}") String address) {
 //        Map<String, Object> parameters = new LinkedHashMap<>();
@@ -162,11 +162,18 @@ public class StoreBackupBatchConfiguration {
 //
 //        return reader;
 //    }
+    private static int count = 0;
 
     @Bean
     @StepScope
     public ItemProcessor<Store, StoreHistory> processor() {
-        return item -> new StoreHistory(item, item.getProducts(), item.getEmployees());
+        return item -> {
+            count++;
+            if (count > 2) {
+                throw new IllegalStateException();
+            }
+            return new StoreHistory(item, item.getProducts(), item.getEmployees());
+        };
     }
 
     public JpaItemWriter<StoreHistory> writer() {

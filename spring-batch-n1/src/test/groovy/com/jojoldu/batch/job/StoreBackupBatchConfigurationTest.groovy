@@ -62,4 +62,35 @@ class StoreBackupBatchConfigurationTest extends Specification {
         then:
         jobExecution.status == BatchStatus.COMPLETED
     }
+
+    def "Chunk 단위로 롤백된다" () {
+        given:
+        Store store1 = new Store("서점", "서울시 강남구")
+        store1.addProduct(new Product("책1_1", 10000L))
+        store1.addProduct(new Product("책1_2", 20000L))
+        store1.addEmployee(new Employee("직원1", LocalDate.now()))
+        storeRepository.save(store1)
+
+        Store store2 = new Store("서점2", "서울시 강남구")
+        store2.addProduct(new Product("책2_1", 10000L))
+        store2.addProduct(new Product("책2_2", 20000L))
+        store2.addEmployee(new Employee("직원2", LocalDate.now()))
+        storeRepository.save(store2)
+
+        Store store3 = new Store("서점3", "서울시 강남구")
+        store3.addProduct(new Product("책3_1", 10000L))
+        store3.addProduct(new Product("책3_2", 20000L))
+        store3.addEmployee(new Employee("직원3", LocalDate.now()))
+        storeRepository.save(store3)
+
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("address", "서울")
+                .toJobParameters()
+        when:
+        JobExecution jobExecution = jobLauncherTestUtils.launchJob(jobParameters)
+
+        then:
+        jobExecution.status == BatchStatus.FAILED
+
+    }
 }
