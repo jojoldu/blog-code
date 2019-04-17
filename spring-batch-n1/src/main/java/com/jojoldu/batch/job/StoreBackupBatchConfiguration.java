@@ -50,9 +50,6 @@ public class StoreBackupBatchConfiguration {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
-    @Value("${chunkSize:2}")
-    private int chunkSize;
-
     private static String ADDRESS_PARAM = null;
 
     @Bean
@@ -162,6 +159,10 @@ public class StoreBackupBatchConfiguration {
 //
 //        return reader;
 //    }
+
+    @Value("${chunkSize:2}")
+    private int chunkSize;
+
     private static int count = 0;
 
     @Bean
@@ -175,6 +176,7 @@ public class StoreBackupBatchConfiguration {
             return new StoreHistory(item, item.getProducts(), item.getEmployees());
         };
     }
+
 
     public JpaItemWriter<StoreHistory> writer() {
         JpaItemWriter<StoreHistory> writer = new JpaItemWriter<>();

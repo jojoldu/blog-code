@@ -91,6 +91,10 @@ class StoreBackupBatchConfigurationTest extends Specification {
 
         then:
         jobExecution.status == BatchStatus.FAILED
+        
+        // 3개를 넣을때 Exception이 발생하고 2개만 저장
+        storeHistoryRepository.findAll().size() == 2
+
 
     }
 }
