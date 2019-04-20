@@ -37,4 +37,8 @@ public class Pay {
         this.details.add(detail);
         detail.setPay(this);
     }
+
+    public void changeTradeNo(String tradeNo) {
+        this.tradeNo = tradeNo;
+    }
 }
