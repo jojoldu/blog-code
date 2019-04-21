@@ -1,26 +1,63 @@
 # 더티 체킹이란?
 
-데이터베이스에서 간단한 Entity를로드하고 업데이트하는 아래 코드를 고려하십시오.
-public  static void testUpdate () {
-    세션 세션 = sessionFactory.openSession ();
-    트랜잭션 트랜잭션 = session.beginTransaction ();    
-    엔티티 엔티티 = (엔티티) session.load (엔티티 클래스, 1);
-    entity.setData ( "데이터 업데이트" );
-    transaction.commit ();
-    session.close ();
+Spring Data Jpa와 같은 ORM 구현체를 사용하다보면 **더티 체킹이란 단어를 종종 듣게 됩니다**.  
+
+> 모든 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/jpa-theory)에 있습니다.
+
+```java
+@Slf4j
+@RequiredArgsConstructor
+@Service
+public class PayService {
+
+    public void updateNative(Long id, String tradeNo) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        Pay pay = em.find(Pay.class, id);
+        tx.begin();
+        pay.changeTradeNo(tradeNo);
+        tx.commit();
+    }
 }
-session.update (entity) 호출을하지 않았지만 로그는 데이터베이스 레코드가 성공적으로 업데이트되었음을 ​​나타냅니다.
-3094 [main] DEBUG org.hibernate.persister.entity.AbstractEntityPersister - Upda
-ting entity : [com.model.Entity # 1]
-3094 [main] DEBUG org.hibernate.jdbc.AbstractBatcher - 약 PreparedSt를 열려고합니다.
-atement (열린 PreparedStatements : 0, 전역 적으로 : 0)
-3094 [main] DEBUG org.hibernate.SQL - 
-    최신 정보
-        실재 
-    세트
-        DATA =? 
-    어디에
-        id =?
+```
+
+테스트 코드는 아래와 같습니다.
+
+```java
+RunWith(SpringRunner.class)
+@SpringBootTest
+public class PayServiceTest {
+
+    @Autowired
+    PayRepository payRepository;
+
+    @Autowired
+    PayService payService;
+
+    @After
+    public void tearDown() throws Exception {
+        payRepository.deleteAll();
+    }
+
+    @Test
+    public void 엔티티매니저로_확인() {
+        //given
+        Pay pay = payRepository.save(new Pay("test1",  100));
+
+        //when
+        String updateTradeNo = "test2";
+        payService.updateNative(pay.getId(), updateTradeNo);
+
+        //then
+        Pay saved = payRepository.findAll().get(0);
+        assertThat(saved.getTradeNo()).isEqualTo(updateTradeNo);
+    }
+}
+
+```
+
+![update](./images/update.png)
+
 업데이트 호출이 수행되지 않은 경우 업데이트는 어떻게 수행 되었습니까? 성공적으로 저장되는 이유는 자동 더티 검사 입니다.
 모든 트랜잭션이 끝날 때, Hibernate는이 트랜잭션에서 변경된 모든 객체를 데이터베이스에 유지시키기 위해 그 자체를 취한다 . Hibernate는 변경되거나 더러운 모든 객체를 탐지 할 수있다 . 이것은 PersistenceContext 의 도움으로 수행 됩니다. PersistenceContext 내에서 Hibernate는 데이터베이스로부터로드 된 모든 영속 객체들의 복사본을 가지고 있다. 영구 오브젝트와이 오브젝트를 비교하여 수정 된 오브젝트를 감지합니다 . 이것은 기본 구현입니다. 
 

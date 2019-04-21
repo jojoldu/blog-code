@@ -38,7 +38,5 @@ public class PayServiceTest {
         //then
         Pay saved = payRepository.findAll().get(0);
         assertThat(saved.getTradeNo()).isEqualTo(updateTradeNo);
-
-
     }
 }
