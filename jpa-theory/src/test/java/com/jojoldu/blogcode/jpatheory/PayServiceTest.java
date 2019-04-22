@@ -39,4 +39,18 @@ public class PayServiceTest {
         Pay saved = payRepository.findAll().get(0);
         assertThat(saved.getTradeNo()).isEqualTo(updateTradeNo);
     }
+
+    @Test
+    public void SpringDataJpa로_확인() {
+        //given
+        Pay pay = payRepository.save(new Pay("test1",  100));
+
+        //when
+        String updateTradeNo = "test2";
+        payService.update(pay.getId(), updateTradeNo);
+
+        //then
+        Pay saved = payRepository.findAll().get(0);
+        assertThat(saved.getTradeNo()).isEqualTo(updateTradeNo);
+    }
 }

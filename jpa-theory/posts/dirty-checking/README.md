@@ -64,20 +64,58 @@ public class PayServiceTest {
 
 트랜잭션이 끝날 때, Hibernate는 적절한 테이블 잠금을 획득하고 테이블의 레코드를 업데이트하며 획득 된 모든 잠금을 해제하여 트랜잭션을 완료한다.
 Hibernate는 우리 자신의 커스텀 dirty checking 알고리즘의 구현을 허용한다. 이것은 세션을위한 org.hibernate.Interceptor 인터페이스 의 findDirty () 메소드를 구현함으로써 이루어진다 .
+
 class DirtyChecker 는 인터셉터 {
 
 ```java
 
-    @보수
-    공개  INT [] findDirty ( 객체 엔티티 직렬화 ID는
-             객체 []의 currentState을 개체 [] previousState는
-             문자열 {[]로 propertyNames은 [] 타입 타입)
+class DirtyChecker implements Interceptor {
+    
+    @Override
+    public int[] findDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
+
          // 반환 값은 엔티티가 갱신되었는지 여부를 판단한다 
         // 그것은 배열을 반환 엔티티를 나타내는 속성 인덱스 더럽 
-        // 또는 빈 어레이 - 엔티티가 깨끗한 지         
-        복귀  널 ;
+        // 또는 빈 어레이 - 엔티티가 깨끗한 지   
+        return null;
     }
-// 더 많은 메소드 ...
+//more methods ...
+
 }
 
+```
+
+Spring Data Jpa와 ```@Transactional```이 함께 할 경우엔 다음과 같습니다.
+
+```java
+@Slf4j
+@RequiredArgsConstructor
+@Service
+public class PayService {
+
+    private final PayRepository payRepository;
+    private final EntityManagerFactory entityManagerFactory;
+
+    @Transactional
+    public void update(Long id, String tradeNo) {
+        Pay pay = payRepository.getOne(id);
+        pay.changeTradeNo(tradeNo);
+    }
+}
+```
+
+```java
+@Test
+public void SpringDataJpa로_확인() {
+    //given
+    Pay pay = payRepository.save(new Pay("test1",  100));
+
+    //when
+    String updateTradeNo = "test2";
+    payService.update(pay.getId(), updateTradeNo);
+
+    //then
+    Pay saved = payRepository.findAll().get(0);
+    assertThat(saved.getTradeNo()).isEqualTo(updateTradeNo);
+}
 ```
