@@ -1,8 +1,13 @@
 # 더티 체킹이란?
 
 Spring Data Jpa와 같은 ORM 구현체를 사용하다보면 **더티 체킹이란 단어를 종종 듣게 됩니다**.  
+  
+이번 시간엔 더티 체킹이 무엇인지 알아보겠습니다.
 
 > 모든 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/jpa-theory)에 있습니다.
+
+예를 들어 다음과 같은 코드가 있습니다.  
+(Spring Data Jpa를 직접 쓰지 않고, EntityManager로 직접 처리합니다).  
 
 ```java
 @Slf4j
@@ -15,12 +20,16 @@ public class PayService {
         EntityTransaction tx = em.getTransaction();
         Pay pay = em.find(Pay.class, id);
         tx.begin();
-        pay.changeTradeNo(tradeNo);
+        pay.changeTradeNo(tradeNo); // 엔티티만 변경
         tx.commit();
     }
 }
 ```
 
+코드를 보시면 **별도로 데이터베이스에 save 하지 않습니다**.  
+* 엔티티를 조회하고
+* 트랜잭션이 시작되고
+* 
 테스트 코드는 아래와 같습니다.
 
 ```java
