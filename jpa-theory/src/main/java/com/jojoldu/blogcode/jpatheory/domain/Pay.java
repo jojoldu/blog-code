@@ -3,6 +3,7 @@ package com.jojoldu.blogcode.jpatheory.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -16,6 +17,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Entity
+@DynamicUpdate // 변경한 필드만 대응
 public class Pay {
 
     @Id

@@ -23,8 +23,8 @@ public class PayService {
     public void updateNative(Long id, String tradeNo) {
         EntityManager em = entityManagerFactory.createEntityManager();
         EntityTransaction tx = em.getTransaction();
-        Pay pay = em.find(Pay.class, id);
         tx.begin();
+        Pay pay = em.find(Pay.class, id);
         pay.changeTradeNo(tradeNo);
         tx.commit();
     }

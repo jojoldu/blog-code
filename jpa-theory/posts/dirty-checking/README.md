@@ -2,12 +2,12 @@
 
 Spring Data Jpa와 같은 ORM 구현체를 사용하다보면 **더티 체킹이란 단어를 종종 듣게 됩니다**.  
   
-이번 시간엔 더티 체킹이 무엇인지 알아보겠습니다.
+더티 체킹이란 단어를 처음 듣는분들을 몇번 만나게 되어 이번 시간엔 더티 체킹이 무엇인지 알아보겠습니다.
 
 > 모든 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/jpa-theory)에 있습니다.
 
 예를 들어 다음과 같은 코드가 있습니다.  
-(Spring Data Jpa를 직접 쓰지 않고, EntityManager로 직접 처리합니다).  
+(Spring Data Jpa가 익숙하시겠지만, 네이티브한 코드 먼저 보고 가겠습니다.)
 
 ```java
 @Slf4j
@@ -18,8 +18,8 @@ public class PayService {
     public void updateNative(Long id, String tradeNo) {
         EntityManager em = entityManagerFactory.createEntityManager();
         EntityTransaction tx = em.getTransaction();
+        tx.begin(); 
         Pay pay = em.find(Pay.class, id);
-        tx.begin();
         pay.changeTradeNo(tradeNo); // 엔티티만 변경
         tx.commit();
     }
@@ -27,10 +27,15 @@ public class PayService {
 ```
 
 코드를 보시면 **별도로 데이터베이스에 save 하지 않습니다**.  
-* 엔티티를 조회하고
-* 트랜잭션이 시작되고
-* 
-테스트 코드는 아래와 같습니다.
+
+1. 트랜잭션이 시작되고
+2. 엔티티를 조회하고
+3. **엔티티의 값을 변경**하고
+4. 트랜잭션을 커밋합니다.
+
+여기서 **데이터베이스에 update 쿼리에 관한 코드는 어디에도 없습니다**.  
+  
+자 그리고 이 코드가 어떻게 작동하는지 테스트 코드를 작성해보겠습니다.
 
 ```java
 RunWith(SpringRunner.class)
@@ -62,44 +67,26 @@ public class PayServiceTest {
         assertThat(saved.getTradeNo()).isEqualTo(updateTradeNo);
     }
 }
-
 ```
+
+이 테스트 코드를 수행보시면, 아래와 같은 로그를 확인할 수 있습니다.
 
 ![update](./images/update.png)
 
 **save** 메소드로 변경 사항을 저장하지 않았음에도 update 쿼리가 실행되었습니다.  
-이유는 **Auto Dirty Checking** 때문입니다.  
+이유는 **Dirty Checking** 덕분인데요.  
 
 > 여기에서 Dirty란 "상태의 변화가 생긴" 정도로 이해하시면 됩니다.  
-즉, Auto Dirty Checking이란 자동 상태 변경 검사 정도로 이해하시면 됩니다.
+즉, Dirty Checking이란 **상태 변경 검사** 정도로 이해하시면 됩니다.
 
-Hibernate는 트랜잭션이 끝나는 시점에 **변화가 있는 모든 엔티티 객체**를 데이터베이스에 자동으로 반영해줍니다.  
+JPA에서는 트랜잭션이 끝나는 시점에 **변화가 있는 모든 엔티티 객체**를 데이터베이스에 자동으로 반영해줍니다.  
+이때 변화가 있는 기준은 **최초 조회 상태**입니다.  
+  
+JPA에서는 엔티티를 조회하면 해당 엔티티의 조회 상태 그대로 **스냅샷**을 만들어놓습니다.  
+그리고 트랜잭션이 끝나는 시점에는 이 스냅샷과 비교해서 **다른점이 있다면 Update Query를 데이터베이스**로 전달합니다.
 
-모든 트랜잭션이 끝날 때, Hibernate는이 트랜잭션에서 변경된 모든 객체를 데이터베이스에 유지시키기 위해 그 자체를 취한다 . Hibernate는 변경되거나 더러운 모든 객체를 탐지 할 수있다 . 이것은 PersistenceContext 의 도움으로 수행 됩니다. PersistenceContext 내에서 Hibernate는 데이터베이스로부터로드 된 모든 영속 객체들의 복사본을 가지고 있다. 영구 오브젝트와이 오브젝트를 비교하여 수정 된 오브젝트를 감지합니다 . 이것은 기본 구현입니다. 
 
 
-트랜잭션이 끝날 때, Hibernate는 적절한 테이블 잠금을 획득하고 테이블의 레코드를 업데이트하며 획득 된 모든 잠금을 해제하여 트랜잭션을 완료한다.
-Hibernate는 우리 자신의 커스텀 dirty checking 알고리즘의 구현을 허용한다. 이것은 세션을위한 org.hibernate.Interceptor 인터페이스 의 findDirty () 메소드를 구현함으로써 이루어진다 .
-
-class DirtyChecker 는 인터셉터 {
-
-```java
-
-class DirtyChecker implements Interceptor {
-    
-    @Override
-    public int[] findDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
-
-         // 반환 값은 엔티티가 갱신되었는지 여부를 판단한다 
-        // 그것은 배열을 반환 엔티티를 나타내는 속성 인덱스 더럽 
-        // 또는 빈 어레이 - 엔티티가 깨끗한 지   
-        return null;
-    }
-//more methods ...
-
-}
-
-```
 
 Spring Data Jpa와 ```@Transactional```이 함께 할 경우엔 다음과 같습니다.
 
