@@ -18,10 +18,10 @@ public class PayService {
     public void updateNative(Long id, String tradeNo) {
         EntityManager em = entityManagerFactory.createEntityManager();
         EntityTransaction tx = em.getTransaction();
-        tx.begin(); 
+        tx.begin(); //트랜잭션 시작
         Pay pay = em.find(Pay.class, id);
         pay.changeTradeNo(tradeNo); // 엔티티만 변경
-        tx.commit();
+        tx.commit(); //트랜잭션 커밋
     }
 }
 ```
@@ -80,14 +80,19 @@ public class PayServiceTest {
 즉, Dirty Checking이란 **상태 변경 검사** 입니다.
 
 JPA에서는 트랜잭션이 끝나는 시점에 **변화가 있는 모든 엔티티 객체**를 데이터베이스에 자동으로 반영해줍니다.  
-이때 변화가 있는 기준은 **최초 조회 상태**입니다.  
+  
+이때 변화가 있다의 기준은 **최초 조회 상태**입니다.  
   
 JPA에서는 엔티티를 조회하면 해당 엔티티의 조회 상태 그대로 **스냅샷**을 만들어놓습니다.  
-그리고 트랜잭션이 끝나는 시점에는 이 **스냅샷과 비교해서 다른점이 있다면 Update Query를 데이터베이스**로 전달합니다.
+그리고 트랜잭션이 끝나는 시점에는 이 **스냅샷과 비교해서 다른점이 있다면 Update Query를 데이터베이스**로 전달합니다.  
+  
+당연히 이런 상태 변경 검사의 대상은 **영속성 컨텍스트가 관리하는 엔티티에만**적용 됩니다.  
 
+* detach된 엔티티 (준영속)
+* DB에 반영되기 전 처음 생성된 엔티티 (비영속)
 
-
-
+등 준영속/비영속 상태의 엔티티는 Dirty Checking 대상에 포함되지 않습니다.  
+즉, **값을 변경해도 데이터베이스에 반영되지 않는다**는 것이죠.  
 Spring Data Jpa와 ```@Transactional```이 함께 할 경우엔 다음과 같습니다.
 
 ```java
@@ -97,7 +102,6 @@ Spring Data Jpa와 ```@Transactional```이 함께 할 경우엔 다음과 같습
 public class PayService {
 
     private final PayRepository payRepository;
-    private final EntityManagerFactory entityManagerFactory;
 
     @Transactional
     public void update(Long id, String tradeNo) {
@@ -106,6 +110,8 @@ public class PayService {
     }
 }
 ```
+
+그리고 테스트 코드를 작성해서 실행해보면!
 
 ```java
 @Test
@@ -122,3 +128,52 @@ public void SpringDataJpa로_확인() {
     assertThat(saved.getTradeNo()).isEqualTo(updateTradeNo);
 }
 ```
+
+아래와 같이 정상적으로 update 쿼리가 수행됨을 확인할 수 있습니다.
+
+![update2](./images/update2.png)
+
+## 변경 부분만 update하고 싶을땐?
+
+Dirty Checking으로 생성되는 update 쿼리는 기본적으로 **모든 필드**를 업데이트합니다.  
+  
+JPA에서는 **전체 필드를 업데이트하는 방식을 기본값**으로 사용합니다.  
+전체 필드를 업데이트하는 방식의 장점은 다음과 같습니다.
+
+* 생성되는 쿼리가 같아 **부트 실행시점에 미리 만들어서 재사용**가능합니다.
+* 데이터베이스 입장에서 쿼리 재사용이 가능하다
+    * 동일한 쿼리를 받으면 이전에 파싱된 쿼리를 재사용한다.
+ 
+> 출처: [김영한님의 자바 ORM 표준 JPA 프로그래밍](https://coupa.ng/bg5M4j)  
+
+다만, 필드가 20~30개 이상인 경우엔 이런 전체 필드 Update 쿼리가 부담스러울 수 있습니다.
+
+> 사실 이런 경우 정규화가 잘못된 경우일 확률이 높습니다.  
+한 테이블에 필드 30개는 확실히 많습니다.  
+현재 운영중인 정산 서비스에는 데이터양이나 복잡도가 국내에서 손꼽히지만 15개 넘는 필드를 가진 테이블은 없습니다.
+
+그래서 이런 경우엔 ```@DynamicUpdate```로 **변경 필드만 반영**되도록 할 수 있습니다.  
+  
+엔티티 최상단에 아래와 같이 ```@DynamicUpdate``` 를 선언해주시면 됩니다.
+
+```java
+@Getter
+@NoArgsConstructor
+@Entity
+@DynamicUpdate // 변경한 필드만 대응
+public class Pay {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String tradeNo;
+    private long amount;
+
+```
+
+그리고 다시 테스트 코드를 수행해서 로그를 확인해보면!
+
+![update3](./images/update3.png)
+
+변경분 (```trade_no```)만 Update 쿼리에 반영된 것을 확인할 수 있습니다.
