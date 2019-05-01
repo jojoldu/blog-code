@@ -9,23 +9,37 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class DeliveryDay {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate expectedArriveDate;
+    private LocalDate date;
 
     private boolean isHoliday;
 
     @Builder
-    public DeliveryDay(LocalDate expectedArriveDate, boolean isHoliday) {
-        this.expectedArriveDate = expectedArriveDate;
-        this.isHoliday = isHoliday;
+    public DeliveryDay(LocalDate date, boolean isHoliday) {
+        this.date = date;
+        this.isHoliday = isWeekend(date) || isHoliday;
+    }
+
+    private boolean isWeekend(LocalDate date) {
+        return date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY;
+    }
+
+    public boolean isBusinessDay() {
+        return !isHoliday;
+    }
+
+    public boolean isAfter (LocalDate compare) {
+        return this.date.isAfter(compare);
     }
 }
