@@ -14,11 +14,10 @@ public class DeliveryDayCalendar {
         this.candidates = candidates;
     }
 
-    public LocalDate getExpectedArriveDate(LocalDate orderDate) {
-        List<LocalDate> businessDates = candidates.stream()
+    public DeliveryDay getExpectedArriveDate(LocalDate orderDate) {
+        List<DeliveryDay> businessDates = candidates.stream()
                 .filter(d -> d.isAfter(orderDate))
                 .filter(DeliveryDay::isBusinessDay)
-                .map(DeliveryDay::getDate)
                 .collect(Collectors.toList());
 
         return businessDates.get(CYCLE_DAY-1);
