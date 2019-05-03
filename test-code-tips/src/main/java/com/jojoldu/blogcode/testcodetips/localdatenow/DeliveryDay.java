@@ -13,7 +13,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Entity
 public class DeliveryDay {
 
