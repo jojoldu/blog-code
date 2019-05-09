@@ -31,6 +31,14 @@ cd ./ec2-gazua/
 pip install --user -r requirements.txt
 ```
 
+혹시나 pip가 없다는 메세지가 뜬다면 아래 커맨드로 설치합니다.
+
+![pip1](./images/pip1.png)
+
+```bash
+sudo easy_install pip
+```
+
 설치가 끝났다면 **접속 가능한 EC2 목록을 보기 위해** AccessKey와 SecretKey를 등록하겠습니다.
 
 ### 2. AccessKey & SecretKey 등록
@@ -125,7 +133,7 @@ vim ~/.bashrc
 아래 코드를 등록합니다.
 
 ```bash
-alias ec2-gz="python /home/사용자계정/ec2-gazua/ec2-gz.py"
+alias ec2-gz="python ec2-gauza설치Path/ec2-gz.py"
 ```
 
 ![5](./images/5.png)
