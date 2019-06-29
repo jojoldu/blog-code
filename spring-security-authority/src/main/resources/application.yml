@@ -21,3 +21,20 @@ logging:
   level:
     org.hibernate.type: trace # JPA로 생성되는 쿼리의 파라미터 값 확인
 
+google :
+  client :
+    clientId : 인증정보
+    clientSecret: 인증정보
+    accessTokenUri: https://accounts.google.com/o/oauth2/token
+    userAuthorizationUri: https://accounts.google.com/o/oauth2/auth
+    clientAuthenticationScheme: form
+    scope: email, profile
+  resource:
+    userInfoUri: https://www.googleapis.com/oauth2/v2/userinfo
+
+spring:
+  security:
+    oauth2:
+      client:
+        clientId: 인증정보
+        clientSecret: 인증정보
