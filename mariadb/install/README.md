@@ -56,3 +56,35 @@ sudo passwd mysql
 
 ### MariaDB 설치
 
+아래 명령어로 yum repository를 열어봅니다.
+
+```bash
+sudo vim /etc/yum.repos.d/maria.repo
+```
+
+아래 내용을 그대로 붙여넣습니다.
+
+```bash
+[mariadb]
+name = MariaDB
+baseurl = http://yum.mariadb.org/10.1/centos6-amd64
+gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+gpgcheck=1
+~
+```
+
+* baseurl 은 본인이 원하는 스펙으로 합니다.
+  * 10.1 은 MariaDB의 버전을 얘기합니다.
+    * 10.1.x 버전을 사용합니다 (즉, 10.1.12를 사용해도 10.1로 입력하셔야 합니다.)
+    * 저는 현재 업무에서 사용되는 버전을 사용했습니다.
+    * 현재 (2019.07.10) 으로는 10.3 (10.3.16) 까지 출시되었습니다.
+* centos6-amd64
+  * 현재 리눅스 서버 스펙을 선택합니다.
+  * Centos 64비트를 사용하는데, 본인이 Centos 7을 사용한다면 ```centos7-amd64``` 을 쓰시면 됩니다.
+
+yum install 을 실행합니다.
+
+```
+sudo yum install -y MariaDB-server MariaDB-client
+```
+
