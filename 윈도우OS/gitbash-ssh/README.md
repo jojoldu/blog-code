@@ -89,7 +89,7 @@ pem키 방식 역시 위와 동일합니다.
 Host 호스트명
     HostName 호스트IP
     User 호스트사용자명
-    Iden
+    IdentityFile pem키위치
 ```
 
 그리고 다시 접속을 시도해보면 아래와 같이 잘 접속되는 것을 확인할 수 있습니다.
