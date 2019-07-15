@@ -1,4 +1,4 @@
-# 젠킨스로 앤서블(Ansible) 관리하기 - useradd
+# 젠킨스로 앤서블(Ansible) 관리하기 - 신규 사용자 추가하기
 
 ## 1. 설치
 
@@ -128,7 +128,6 @@ SSH password:
     "ping": "pong"
 }
 ...
-
 ```
 
 정상적으로 결과가 출력 되는 것을 확인해볼 수 있습니다.  
@@ -271,7 +270,45 @@ ansible all -m shell -a "tail -n 1 /etc/passwd" -k --user=dwlee
 
 여기서 더이상 ```jojoldu``` 라는 사용자가 출력되지 않으면 삭제가 정상적으로 수행된 것을 알 수 있습니다.
 
+### 패스워드 변경하기
+
+파이썬의 암호화 모듈이 필요합니다.  
+
+> 만약 pip가 설치되어 있지 않다면 (리눅스에서 파이썬2는 기본설치입니다.) ```yum install python-pip``` 로 설치해주세요.
+
+```bash
+yum install python-pip
+```
+
+
+```bash
+ansible all -m user -a "name=jojoldu update_password=always password={{ '변경하고싶은 비밀번호' | password_hash('sha512') }}" -k --user=dwlee
+```
+
+
+```bash
+echo 'jojoldu   ALL=(ALL)   NOPASSWD:ALL' > /etc/sudoers.d/jojoldu
+```
+
+```bash
+ansible all -m shell -a "echo '$USER_NAME   ALL=(ALL)   NOPASSWD:ALL' > /etc/sudoers.d/$USER_NAME" -e "ansible_user=dwlee ansible_ssh_pass=비밀번호"
+```
+
+```bash
+[web]
+호스트1
+호스트2
+
+[db]
+호스트3
+
+[all:vars]
+ansible_user=접속계정
+ansible_ssh_pass=접속비밀번호
+```
+
 
 ## 3. Playbook
 
 
+ansible-playbook useradd.yml --extra-vars "USER_NAME=dwlee PASSWORD=패스워드
