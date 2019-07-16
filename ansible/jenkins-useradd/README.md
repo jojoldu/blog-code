@@ -311,4 +311,23 @@ ansible_ssh_pass=접속비밀번호
 ## 3. Playbook
 
 
-ansible-playbook useradd.yml --extra-vars "USER_NAME=dwlee PASSWORD=패스워드
+ansible-playbook useradd.yml --extra-vars "USER_NAME=dwlee PASSWORD=패스워드" -i group_vars/all
+
+```yaml
+---
+- name: 사용자 추가
+  hosts: all
+  become: true
+  tasks:
+    - name: 계정 생성
+      user:
+        name: "{{ USER_NAME }}"
+    - name: 패스워드 변경
+      user:
+        name: "{{ USER_NAME }}"
+        password: "{{ PASSWORD | password_hash('sha512') }}"
+    - name: sudoers.d 추가
+      shell: "echo '{{ USER_NAME }}   ALL=(ALL)   NOPASSWD:ALL' > /etc/sudoers.d/{{ USER_NAME }}"
+      validate: "/usr/sbin/visudo -c -f '%s'"
+
+```
