@@ -64,6 +64,16 @@ cat /var/lib/jenkins/.ssh/github_ansible-in-action
 
 ## 4. 테스트
 
+만약 젠킨스에 Git이 설치 안되어있다면 Git 먼저 설치합니다.
+
 ```bash
 sudo yum install git
 ```
+
+![14](./images/14.png)
+
+![15](./images/15.png)
+
+![16](./images/16.png)
+
+![17](./images/17.png)
