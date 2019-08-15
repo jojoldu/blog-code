@@ -50,4 +50,20 @@ ssh-keygen -t rsa -f /var/lib/jenkins/.ssh/github_ansible-in-action
 
 ## 3. 젠킨스
 
-비공개키 복사
+![10](./images/10.png)
+
+![11](./images/11.png)
+
+![12](./images/12.png)
+
+```bash
+cat /var/lib/jenkins/.ssh/github_ansible-in-action
+```
+
+![13](./images/13.png)
+
+## 4. 테스트
+
+```bash
+sudo yum install git
+```
