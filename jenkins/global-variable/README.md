@@ -139,3 +139,7 @@ version=${BUILD_NUMBER}
 > ```$(readlink -f 배치jar)```는 스프링 배치를 **무중단 배포**하기 위해 자주 사용되는 방법입니다.  
 왜 필요한지, 어떻게 사용되는지 궁금하신 분들은 [이전에 작성된 포스팅](https://jojoldu.tistory.com/315)을 참고해보세요.
 
+
+## 참고
+
+* [Jenkins environment variables](https://medium.com/@mukeshsingal/access-jenkins-global-environment-variables-using-groovy-or-java-b5c1e6b53685)
