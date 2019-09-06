@@ -43,6 +43,3 @@ Delete workspace before build starts 에는 **Exclude** 기능이 있습니다.
 ![5](./images/5.png)
 
 이렇게 구성하시면 해당 디렉토리들만 남겨두고 나머지 디렉토리들과 파일은 모두 삭제후 build가 수행됩니다.
-
-
-
