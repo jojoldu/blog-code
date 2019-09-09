@@ -1,5 +1,5 @@
-책
-blog-code
+# blog-code
+
 =========
 
 http://jojoldu.tistory.com/ 에서 제공하는 예제 code
