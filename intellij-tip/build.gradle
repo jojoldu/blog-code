@@ -1,28 +1,31 @@
 buildscript {
-	ext {
-		springBootVersion = '1.4.3.RELEASE'
-	}
 	repositories {
 		mavenCentral()
+		maven { url "https://plugins.gradle.org/m2/" }
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath "io.spring.gradle:dependency-management-plugin:1.0.8.RELEASE"
+		classpath "gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:1.0.10"
+		classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.4.17"
 	}
 }
 
 apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.gorylenko.gradle-git-properties'
 
-jar {
-	baseName = 'intellij'
-	version = '0.0.1-SNAPSHOT'
-}
+group = "${projectGroup}"
+version = "${projectVersion}-"+new Date().format("yyyyMMddHHmmss")
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
 	mavenCentral()
+	jcenter()
+	maven { url 'https://jitpack.io' }
 }
 
 
