@@ -1,4 +1,4 @@
-package com.blogcode;
+package com.jojoldu.blogcode.intellij;
 
 /**
  * Created by jojoldu@gmail.com on 2016-12-13

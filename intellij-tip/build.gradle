@@ -7,11 +7,12 @@ buildscript {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 		classpath "io.spring.gradle:dependency-management-plugin:1.0.8.RELEASE"
 		classpath "gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:1.0.10"
-		classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.4.17"
+		classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.0"
 	}
 }
 
 apply plugin: 'java'
+apply plugin: 'eclipse'
 apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
