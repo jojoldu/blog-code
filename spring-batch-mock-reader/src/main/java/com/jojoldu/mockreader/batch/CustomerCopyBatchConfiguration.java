@@ -1,6 +1,7 @@
 package com.jojoldu.mockreader.batch;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -26,7 +27,7 @@ import static com.jojoldu.mockreader.batch.CustomerCopyBatchConfiguration.JOB_NA
  * Github : https://github.com/jojoldu
  */
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Configuration
 @ConditionalOnProperty(name = "job.name", havingValue = JOB_NAME)
 public class CustomerCopyBatchConfiguration {
@@ -34,14 +35,14 @@ public class CustomerCopyBatchConfiguration {
     private static final String STEP_NAME = "customerCopyStep";
     private static final int CHUNK_SIZE = 100;
 
-    private JobBuilderFactory jobBuilderFactory;
-    private StepBuilderFactory stepBuilderFactory;
-    private EntityManagerFactory emf;
+    private final JobBuilderFactory jobBuilderFactory;
+    private final StepBuilderFactory stepBuilderFactory;
+    private final EntityManagerFactory emf;
 
     /**
      * Mock 객체로 교체할 수 있게 Autowired 받도록 수정
      */
-    private JpaPagingItemReader<Customer> itemReader;
+    private final JpaPagingItemReader<Customer> itemReader;
 
     @Bean
     public Job job() {
