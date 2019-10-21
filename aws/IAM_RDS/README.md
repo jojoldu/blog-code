@@ -2,6 +2,7 @@
 
 > [Github](https://github.com/jojoldu/income-bot) 코드가 있습니다.
 
+
 ## 주의 사항
 
 MySQL / PostgreSQL 을 제외하고는 IAM DB 인증 옵션이 없습니다.  
@@ -18,3 +19,8 @@ aws rds modify-db-instance \
 ![exception](./images/exception.jpg)
 
 
+## 계정 생성
+
+```sql
+CREATE USER 계정명 IDENTIFIED WITH AWSAuthenticationPlugin as 'RDS';
+```
