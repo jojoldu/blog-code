@@ -1,52 +1,53 @@
-buildscript {
-	ext {
-		springBootVersion = '2.1.5.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-		jcenter()
-		maven { url "https://plugins.gradle.org/m2/" }
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-		classpath "io.spring.gradle:dependency-management-plugin:1.0.6.RELEASE"
-		classpath "gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:1.0.10"
-	}
+plugins {
+	id 'org.springframework.boot' version '2.2.0.RELEASE' apply false
+	id "io.spring.dependency-management" version "1.0.8.RELEASE"
+	id 'java'
+	id 'groovy'
+	id 'com.gorylenko.gradle-git-properties' version '2.2.0'
+	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
-
-apply plugin: 'java'
-apply plugin: 'groovy'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
-apply plugin: "io.spring.dependency-management"
-
-group = 'com.jojoldu'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 1.8
 
 repositories {
 	mavenCentral()
+	jcenter()
+	maven { url 'https://jitpack.io' }
 }
 
+group = 'com.jojoldu.blogcode'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	compile('org.springframework.boot:spring-boot-starter-batch')
+	annotationProcessor 'org.projectlombok:lombok'
+	implementation 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.projectlombok:lombok'
 
-	runtime('com.h2database:h2')
-	compile('org.projectlombok:lombok')
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-batch'
 
-	compile("com.querydsl:querydsl-jpa")
-	compile("com.querydsl:querydsl-apt")
+	implementation 'com.h2database:h2'
 
-	testCompile('org.springframework.batch:spring-batch-test')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
-	testCompile('org.spockframework:spock-spring:1.1-groovy-2.4')
+	implementation 'com.querydsl:querydsl-jpa'
+	implementation 'com.querydsl:querydsl-apt'
+
+	testImplementation('org.springframework.batch:spring-batch-test')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.spockframework:spock-core:1.2-groovy-2.4'
+	testImplementation 'org.spockframework:spock-spring:1.2-groovy-2.4'
 }
 
-apply plugin: "com.ewerk.gradle.plugins.querydsl" // Plugin 적용
-def querydslSrcDir = 'src/main/generated' // QClass 생성 위치
+configurations {
+	querydsl.extendsFrom compileClasspath
+	developmentOnly
+	runtimeClasspath {
+		extendsFrom developmentOnly
+	}
+}
+
+def querydslSrcDir = 'src/main/generated'
 
 querydsl {
 	library = "com.querydsl:querydsl-apt"
@@ -59,5 +60,21 @@ sourceSets {
 		java {
 			srcDirs = ['src/main/java', querydslSrcDir]
 		}
+	}
+}
+
+compileQuerydsl{
+	options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+dependencyManagement {
+	imports {
+		mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
 	}
 }
