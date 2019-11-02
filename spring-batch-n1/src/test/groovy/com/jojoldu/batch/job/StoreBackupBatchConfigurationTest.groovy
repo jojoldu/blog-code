@@ -8,7 +8,6 @@ import org.springframework.batch.core.JobParametersBuilder
 import org.springframework.batch.test.JobLauncherTestUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Bean
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
 
