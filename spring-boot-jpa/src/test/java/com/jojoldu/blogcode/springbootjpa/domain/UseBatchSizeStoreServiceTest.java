@@ -1,9 +1,11 @@
 package com.jojoldu.blogcode.springbootjpa.domain;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
@@ -17,13 +19,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class StoreServiceTest {
+@TestPropertySource(properties = "spring.jpa.properties.hibernate.default_batch_fetch_size=1000")
+public class UseBatchSizeStoreServiceTest {
     @Autowired StoreRepository storeRepository;
 
     @Autowired StoreService storeService;
 
+    @After
+    public void tearDown() throws Exception {
+        storeRepository.deleteAll();
+    }
+
     @Test
-    public void Repository_의_BatchSize () throws Exception {
+    public void USE_Repository_의_BatchSize () throws Exception {
         Store store1 = new Store("서점", "서울시 강남구");
         store1.addProduct(new Product("책1_1", 10000L));
         store1.addProduct(new Product("책1_2", 20000L));

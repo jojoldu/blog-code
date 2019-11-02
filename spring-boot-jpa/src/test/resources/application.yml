@@ -4,7 +4,7 @@ spring:
     open-in-view: false
     properties:
       hibernate.format_sql: true
-      hibernate.default_batch_fetch_size: 1000
+
   datasource:
     hikari:
       auto-commit: false
