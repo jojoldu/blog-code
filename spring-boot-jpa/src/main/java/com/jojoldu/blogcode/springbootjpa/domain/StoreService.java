@@ -17,6 +17,7 @@ public class StoreService {
 
     private final StoreQuerydslRepository storeQuerydslRepository;
 
+    @SuppressWarnings("DuplicatedCode")
     @Transactional(readOnly = true)
     public long find() {
         List<Store> stores = storeQuerydslRepository.findAll();
