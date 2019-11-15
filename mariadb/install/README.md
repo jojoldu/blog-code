@@ -31,10 +31,50 @@ vim /etc/security/limits.conf
 
 ![2](./images/2.png)
 
+### 1-2. Hostname 변경
+
+여러대의 MariaDB를 관리해야하거나, 마스터-슬레이브 구조로 관리 해야될때는 각 서버가 Hostname을 갖고 있는게 편합니다.  
+  
+빠르게 호스트명을 지정하겠습니다.  
+
+Centos 6 이라면 아래 명령어로 설정 파일을 열어봅니다.
+
+```bash
+vim /etc/sysconfig/network
+```
+
+그리고 아래와 같이 **HOSTNAME** 항목에 원하는 이름을 등록합니다.
+
+![3](./images/3.png)
+
+(저는 mariadb1로 등록하였습니다.)  
+  
+만약 centos7 (Amazon Linux 2) 라면 다음과 같이 변경합니다.
+
+```bash
+hostnamectl set-hostname 원하는호스트명
+```
+
+설정이 완료되셨다면 적용을 위해 재부팅을 합니다.
+
+```bash
+sudo reboot
+```
+
+부팅 완료후 재접속을 해보시면!
+
+![4](./images/4.png)
+
+성공적으로 변경된 것을 확인할 수 있습니다.  
+  
 여기까지 하셨다면 기본적인 설정은 끝이납니다.  
 
 ## 2. MariaDB 설치
 
+기본적으로 Linxu yum repository에는 MariaDB가 등록되어 있지 않습니다.  
+  
+그래서 직접 저장소 정보를 등록하겠습니다.  
+  
 아래 명령어로 yum repository를 열어봅니다.
 
 ```bash
@@ -84,31 +124,6 @@ MariaDB-server-10.1.43-1.el6.x86_64
 
 > 버전은 설치 당시 최신 버전에 따라 다릅니다.
 
-설치된 디렉토리로 이동해봅니다.  
-
-```bash
-cd /var/lib/myql
-```
-
-> ```yum install``` 진행시 기본적으로 ```/var/lib/mysql```이 설치 디렉토리입니다.
-
-설치된 파일들을 확인해봅니다.
-
-```bash
-$ ll
-total 110624
--rw-rw---- 1 mysql mysql    16384 Nov 15 06:13 aria_log.00000001
--rw-rw---- 1 mysql mysql       52 Nov 15 06:13 aria_log_control
--rw-rw---- 1 mysql mysql 12582912 Nov 15 06:13 ibdata1
--rw-rw---- 1 mysql mysql 50331648 Nov 15 06:13 ib_logfile0
--rw-rw---- 1 mysql mysql 50331648 Nov 15 06:13 ib_logfile1
-drwx------ 2 mysql mysql     4096 Nov 15 06:13 mysql
-drwx------ 2 mysql mysql     4096 Nov 15 06:13 performance_schema
-drwx------ 2 mysql mysql     4096 Nov 15 06:13 test
-```
-
-* 권한이 ```mysql:mysql``` 로 되어있는 것을 알 수 있습니다.
-
 설치가 다 되셨으면 MariaDB 설정을 진행합니다.
 
 ### 2-1. my.cnf 설정
@@ -120,7 +135,7 @@ my.cnf 파일에서 사용할 디렉토리들을 미리 생성해두겠습니다
   
 지금 생성할 디렉토리들이 my.cnf 설정 옵션에 등록됩니다.  
   
-먼저 백업 대상이 되는 디렉토리들을 생성합니다.
+먼저 **백업 대상**이 되는 디렉토리들을 생성합니다.
 
 ```bash
 mkdir -p /data/mysql/mysql-data
@@ -146,6 +161,9 @@ chown -R mysql:mysql /home/mysql
 vim /etc/my.cnf
 ```
 
+아래는 my.cnf에 복사할 설정들입니다.  
+꼭 이대로 설정할 필요는 없습니다.  
+사내의 DBA분들에게 여쭤보시거나 기존에 사용중이던 설정값들을 사용하시면 됩니다. 
 
 ```bash
 [client]
@@ -157,7 +175,6 @@ port                            = 3306
 socket                          = /data/mysql/mysql.sock
 
 ## config server and data path
-basedir                         = /var/lib/mysql
 datadir                         = /data/mysql/mysql-data
 tmpdir                          = /home/mysql/tmpdir
 innodb_data_home_dir           = /data/mysql/mysql-data
@@ -178,7 +195,7 @@ slow_query_log_file             = /home/mysql/log/mysql-slow-query.log
 general_log_file                = /home/mysql/log/general/mysql_general.log
 log-warnings                    = 2
 
-# Character set Config
+# Character set Config (utf8mb4)
 character_set-client-handshake  = FALSE
 character-set-server            = utf8mb4
 collation_server                = utf8mb4_general_ci
@@ -247,12 +264,34 @@ max_allowed_packet              = 512M
 
 ```
 
-* 각 디렉토리 들은 회사/팀마다 다를수 있으니 꼭 my.cnf 파일로 확인해보셔야 합니다.
+* 각 디렉토리들의 위치는 회사/팀마다 다를수 있으니 꼭 my.cnf 파일로 확인해보셔야 합니다.
 * innodb_buffer_pool_size 의 경우 **현재 서버 사양의 70~80%** 정도로 설정합니다.
   * 현재 사용중인 EC2 서버는 메모리가 4GB 라서 my.cnf에서 3GB로만 설정했습니다.
 
-### 2-2. root 계정으로 접속하기
+다 되셨으면 한번 실행해보겠습니다.
 
 ```bash
-mysqladmin -u root -p password
+service mysql start
+```
+
+그럼 아래와 같이 로그가 보이면서 실행이 되는 것을 알 수 있습니다.
+
+![5](./images/5.png)
+
+### 2-2. root 계정으로 접속하기
+
+실행한 MariaDB로 접속을 해볼텐데요.  
+생성된 계정이 없는데 어떤걸로 해야하지? 라는 생각이 듭니다.  
+  
+이제 막 설치되었을때는 ```root``` 계정의 비밀번호가 없는 상태라 그냥 접속이 가능합니다.  
+
+
+```bash
+mysql -u root
+```
+
+```bash
+use mysql;
+update user set password=password('비밀번호') where user='root';
+flush pribvileges;
 ```
