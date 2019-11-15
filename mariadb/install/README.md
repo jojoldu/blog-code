@@ -159,11 +159,9 @@ socket                          = /data/mysql/mysql.sock
 ## config server and data path
 basedir                         = /var/lib/mysql
 datadir                         = /data/mysql/mysql-data
-tmpdir                          = /data/mysql/mysql-tmp
-pid-file                        = /data/mysql/mysql.pid
+tmpdir                          = /home/mysql/tmpdir
 innodb_data_home_dir           = /data/mysql/mysql-data
-innodb_log_group_home_dir       = /data/mysql/mysql-iblog
-
+innodb_log_group_home_dir       = /home/mysql/log
 
 
 # Log Config
@@ -173,18 +171,19 @@ long_query_time                 = 10
 max_binlog_size                 = 1G
 sync_binlog                     = 1
 slow_query_log                  = 1
-log-bin                         = /home/MariaDB/log/binary/mysql-bin
-log-error                       = /home/MariaDB/log/error/mysql.err
-relay-log                       = /home/MariaDB/log/relay/relay-log
-slow_query_log_file             = /home/MariaDB/log/mysql-slow-query.log
-general_log_file                = /home/MariaDB/log/general/mysql_general.log
+log-bin                         = /home/mysql/log/binary/mysql-bin
+log-error                       = /home/mysql/log/error/mysql.err
+relay-log                       = /home/mysql/log/relay/relay-log
+slow_query_log_file             = /home/mysql/log/mysql-slow-query.log
+general_log_file                = /home/mysql/log/general/mysql_general.log
 log-warnings                    = 2
 
 # Character set Config
 character_set-client-handshake  = FALSE
-character-set-server            = utf8
-init_connect                    = set collation_connection=utf8_general_ci
-init_connect                    = set names utf8
+character-set-server            = utf8mb4
+collation_server                = utf8mb4_general_ci
+init_connect                    = set collation_connection=utf8mb4_general_ci
+init_connect                    = set names utf8mb4
 
 # Common Config
 back_log                        = 1024
@@ -216,7 +215,7 @@ query_cache_size                = 0
 # Innodb config
 innodb_additional_mem_pool_size = 32M
 innodb_autoinc_lock_mode        = 1
-innodb_buffer_pool_size         = 32G
+innodb_buffer_pool_size         = 3G # 현재 서버 사양의 70~80%를 설정한다.
 innodb_fast_shutdown            = 1
 innodb_file_per_table           = 1
 innodb_flush_log_at_trx_commit  = 2
@@ -240,7 +239,7 @@ thread_pool_stall_limit         = 60
 # Replication related settings
 log_bin_trust_function_creators = 1
 
-server-id                       = 1
+server-id                       = 1 
 
 [mysqldump]
 quick
@@ -248,7 +247,9 @@ max_allowed_packet              = 512M
 
 ```
 
-* 각 ```dir``` 들은 회사/팀마다 다를수 있으니 꼭 my.cnf 파일로 확인해보셔야 합니다.
+* 각 디렉토리 들은 회사/팀마다 다를수 있으니 꼭 my.cnf 파일로 확인해보셔야 합니다.
+* innodb_buffer_pool_size 의 경우 **현재 서버 사양의 70~80%** 정도로 설정합니다.
+  * 현재 사용중인 EC2 서버는 메모리가 4GB 라서 my.cnf에서 3GB로만 설정했습니다.
 
 ### 2-2. root 계정으로 접속하기
 
