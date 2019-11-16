@@ -58,7 +58,7 @@ hostnamectl set-hostname 원하는호스트명
 설정이 완료되셨다면 적용을 위해 재부팅을 합니다.
 
 ```bash
-sudo reboot
+reboot
 ```
 
 부팅 완료후 재접속을 해보시면!
@@ -67,6 +67,25 @@ sudo reboot
 
 성공적으로 변경된 것을 확인할 수 있습니다.  
   
+### 1-3. KST로 수정
+
+서버의 시간이 UTC 라서 한국시간인 KST로 변경하겠습니다.  
+(현재 상태로 시간 함수를 사용하게 되면 한국 시간보다 -9 시간으로 사용됩니다.)
+
+```bash
+rm /etc/localtime
+ln -s /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+```
+
+```bash
+$ date
+Sat Nov 16 18:20:27 KST 2019
+```
+
+```bash
+reboot
+```
+
 여기까지 하셨다면 기본적인 설정은 끝이납니다.  
 
 ## 2. MariaDB 설치
@@ -278,7 +297,51 @@ service mysql start
 
 ![5](./images/5.png)
 
-### 2-2. root 계정으로 접속하기
+### 2-2. 실행 실패시
+
+바로 시작할때 아래와 같이 에러가 발생할 수 있습니다.
+
+```bash
+$ service mysql start
+Starting MariaDB.191116 09:01:10 mysqld_safe Logging to '/home/mysql/log/error/mysql.err'.
+191116 09:01:10 mysqld_safe Starting mysqld daemon with databases from /data/mysql/mysql-data
+./etc/init.d/mysql: line 264: kill: (19565) - No such process
+ ERROR!
+```
+
+좀 더 자세히 원인을 파악해봅니다.
+
+```bash
+vim /home/mysql/log/error/mysql.err
+```
+
+필수 파일들이 존재하지 않다는 것인데요.  
+
+```bash
+2019-11-16  9:01:12 140219978098816 [Note] Plugin 'FEEDBACK' is disabled.
+2019-11-16  9:01:12 140219978098816 [ERROR] Could not open mysql.plugin table. Some plugins may be not loaded
+2019-11-16  9:01:12 140219978098816 [Note] Recovering after a crash using /home/mysql/log/binary/mysql-bin
+2019-11-16  9:01:12 140219978098816 [Note] Starting crash recovery...
+2019-11-16  9:01:12 140219978098816 [Note] Crash recovery finished.
+2019-11-16  9:01:12 140219977733888 [Warning] Failed to load slave replication state from table mysql.gtid_slave_pos: 1146: Table 'mysql.gtid_slave_pos' doesn't exist
+2019-11-16  9:01:12 140219978098816 [ERROR] Can't open and lock privilege tables: Table 'mysql.servers' doesn't exist
+2019-11-16  9:01:12 140219978098816 [Note] Server socket created on IP: '::'.
+2019-11-16  9:01:12 140219978098816 [ERROR] Fatal error: Can't open and lock privilege tables: Table 'mysql.user' doesn't exist
+```
+
+이는 처음 설치시 자동으로 생성되는 ```data``` 들이 기본 위치인 ```/var/lib/mysql``` 에 있기 때문인데요.  
+이들이 ```/etc/my.cnf```에 지정된 위치로 가있어야만 정상적으로 실행할 수 있습니다.  
+그래서 이 파일들을 모두 복사하겠습니다.
+
+```bash
+cp -R /var/lib/mysql/* /data/mysql/mysql-data/
+```
+
+```bash
+chown -R mysql:mysql /data/mysql
+```
+
+### 2-3. root 계정으로 접속하기
 
 실행한 MariaDB로 접속을 해볼텐데요.  
 생성된 계정이 없는데 어떤걸로 해야하지? 라는 생각이 듭니다.  
