@@ -1,8 +1,8 @@
 # MariaDB 설치 및 설정
 
-AWS 를 쓸 수 있다면 Aurora가 정답이지만, IDC를 쓰고 있다면 MariaDB 혹은 MySQL을 써야 합니다.  
+AWS 를 쓸 수 있다면 Aurora가 정답이지만, IDC를 쓰고 있다면 MariaDB 혹은 MySQL을 직접 설치해서 사용할 필요가 있습니다.  
   
-여기선 IDC 환경에서 MariaDB 운영을 위해 필요한
+여기선 IDC 환경에서 MariaDB 운영을 위해 필요한 기본 설정들과 설치를 진행해보겠습니다.
 
 ## 1. OS 설정
 
@@ -70,23 +70,30 @@ reboot
 ### 1-3. KST로 수정
 
 서버의 시간이 UTC 라서 한국시간인 KST로 변경하겠습니다.  
-(현재 상태로 시간 함수를 사용하게 되면 한국 시간보다 -9 시간으로 사용됩니다.)
+(현재 상태로 시간 함수를 사용하게 되면 한국 시간보다 -9 시간으로 사용됩니다.)  
+  
+아래 명령어를 차례로 입력합니다.
 
 ```bash
 rm /etc/localtime
 ln -s /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 ```
 
+변경 하신후 ```date``` 명령어를 사용하시면 KST로 변경된 것을 확인할 수 있습니다.
+
 ```bash
 $ date
 Sat Nov 16 18:20:27 KST 2019
 ```
+
+재부팅을 하여 최종 적용을 합니다.
 
 ```bash
 reboot
 ```
 
 여기까지 하셨다면 기본적인 설정은 끝이납니다.  
+이제 MariaDB 설치를 진행하겠습니다.
 
 ## 2. MariaDB 설치
 
@@ -113,7 +120,7 @@ gpgcheck=1
 * baseurl 은 본인이 원하는 스펙으로 합니다.
   * 10.1 은 MariaDB의 버전을 얘기합니다.
     * 즉, 10.1.x 버전중 최신을 사용합니다
-    * 현재 (2019.11.14) 으로는 10.4.10 까지 출시되었습니다.
+    * 현재 (2019.11.14) **10.4.10** 까지 출시되었습니다.
       * 저는 **기존에 사용중**이던 10.1.x 버전으로 진행합니다.
 * centos6-amd64
   * 현재 리눅스 서버 스펙을 선택합니다.
@@ -329,17 +336,31 @@ vim /home/mysql/log/error/mysql.err
 2019-11-16  9:01:12 140219978098816 [ERROR] Fatal error: Can't open and lock privilege tables: Table 'mysql.user' doesn't exist
 ```
 
-이는 처음 설치시 자동으로 생성되는 ```data``` 들이 기본 위치인 ```/var/lib/mysql``` 에 있기 때문인데요.  
-이들이 ```/etc/my.cnf```에 지정된 위치로 가있어야만 정상적으로 실행할 수 있습니다.  
+이는 처음 설치시 자동으로 생성되는 ```data``` 들이 기본 위치인 ```/var/lib/mysql``` 에 있기 때문입니다.  
+  
+이들이 ```/etc/my.cnf```에 지정된 위치에 있어야만 정상적으로 실행할 수 있습니다.  
 그래서 이 파일들을 모두 복사하겠습니다.
 
 ```bash
 cp -R /var/lib/mysql/* /data/mysql/mysql-data/
 ```
 
+복사하신뒤, 현재 계정이 root 계정이라면 복사된 파일들이 모두 root 권한이 되므로 다시 mysql 권한으로 변경합니다.
+
 ```bash
 chown -R mysql:mysql /data/mysql
 ```
+
+다시 한번 실행해보시면!
+
+```bash
+$ service mysql start
+Starting MariaDB.191117 20:21:38 mysqld_safe Logging to '/home/mysql/log/error/mysql.err'.
+191117 20:21:38 mysqld_safe Starting mysqld daemon with databases from /data/mysql/mysql-data
+. SUCCESS!
+```
+
+정상적으로 실행하게 됩니다.
 
 ### 2-3. root 계정으로 접속하기
 
@@ -347,14 +368,44 @@ chown -R mysql:mysql /data/mysql
 생성된 계정이 없는데 어떤걸로 해야하지? 라는 생각이 듭니다.  
   
 이제 막 설치되었을때는 ```root``` 계정의 비밀번호가 없는 상태라 그냥 접속이 가능합니다.  
-
+  
+아래 명령어로 바로 접속해봅니다.
 
 ```bash
 mysql -u root
 ```
 
-```bash
+비밀번호를 등록하겠습니다.  
+아래 명령어들을 차례로 입력합니다.
+
+```sql
 use mysql;
-update user set password=password('비밀번호') where user='root';
+update user set password=PASSWORD("본인비밀번호") where User='root';
 flush pribvileges;
 ```
+
+비밀번호를 잘 입력하셨다면 빠져나와 다시 비밀번호로 로그인 해봅니다.
+
+```sql
+quit
+```
+
+아래와 같이 로그인 시도하여 비밀번호가 정상적으로 사용되면 성공입니다.
+
+```bash
+$ mysql -u root -p
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 4
+Server version: 10.1.43-MariaDB MariaDB Server
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]>
+```
+
+
+> 만약에 비밀번호를 잘못입력하셨다면 [이전 포스팅](https://jojoldu.tistory.com/460)을 참고하여 초기화시키시면 됩니다.
+
