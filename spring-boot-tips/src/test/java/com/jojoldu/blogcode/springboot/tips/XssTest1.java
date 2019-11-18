@@ -48,6 +48,7 @@ public class XssTest1 {
     @Test
     public void 태그가_치환된다() throws Exception {
         String content = "<li>content</li>";
+        String expected = "\"&lt;li&gt;content&lt;/li&gt;\"";
         String requestBody = objectMapper.writeValueAsString(new XssRequestDto(content));
         mvc
                 .perform(post("/xss")
@@ -55,7 +56,7 @@ public class XssTest1 {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(requestBody));
+                .andExpect(content().string(expected));
     }
 
     @Configuration

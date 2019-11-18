@@ -34,13 +34,13 @@ public class XssTest0 {
     @Test
     public void 태그가_치환되지않는다() throws Exception {
         String content = "<li>content</li>";
+        String expected = "\"&lt;li&gt;content&lt;/li&gt;\"";
         String requestBody = objectMapper.writeValueAsString(new XssRequestDto(content));
         mvc
                 .perform(post("/xss")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(requestBody));
+                .andExpect(content().string(expected));
     }
 }
