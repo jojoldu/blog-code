@@ -5,6 +5,7 @@ import com.jojoldu.blogcode.springboot.tips.web.XssRequestController;
 import com.jojoldu.blogcode.springboot.tips.web.config.AppConfig;
 import com.jojoldu.blogcode.springboot.tips.web.config.HtmlCharacterEscapes;
 import com.jojoldu.blogcode.springboot.tips.web.dto.XssRequestDto;
+import com.jojoldu.blogcode.springboot.tips.web.dto.XssRequestDto2;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,7 +50,7 @@ public class XssTest1 {
     @Test
     public void 태그가_치환된다() throws Exception {
         String content = "<li>content</li>";
-        String expected = "\"&lt;li&gt;content&lt;/li&gt;\"";
+        String expected = "&lt;li&gt;content&lt;/li&gt;";
         String requestBody = objectMapper.writeValueAsString(new XssRequestDto(content));
         mvc
                 .perform(post("/xss")
@@ -56,7 +58,21 @@ public class XssTest1 {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(expected));
+                .andExpect(content().string(containsString(expected)));
+    }
+
+    @Test
+    public void LocalDate가_치환된다() throws Exception {
+        String content = "<li>content</li>";
+        String expected = "&lt;li&gt;content&lt;/li&gt;";
+        String requestBody = objectMapper.writeValueAsString(new XssRequestDto2(content, LocalDate.now()));
+        mvc
+                .perform(post("/xss2")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(containsString(expected)));
     }
 
     @Configuration

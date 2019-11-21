@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -75,15 +76,10 @@ public class XssTest2 {
     }
 
     @Configuration
-    public static class WebMvcConfig extends WebMvcConfigurationSupport {
+    public static class WebMvcConfig implements WebMvcConfigurer {
 
-        @Override
-        public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-            converters.add(htmlEscapingConverter());
-            super.addDefaultHttpMessageConverters(converters);
-        }
-
-        private HttpMessageConverter<?> htmlEscapingConverter() {
+        @Bean
+        public MappingJackson2HttpMessageConverter htmlEscapingConverter() {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.getFactory().setCharacterEscapes(new HtmlCharacterEscapes());
 

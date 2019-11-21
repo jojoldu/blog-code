@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class XssRequestController {
 
     @PostMapping("/xss")
-    public String xss (@RequestBody XssRequestDto xssRequestDto) {
+    public XssRequestDto xss (@RequestBody XssRequestDto xssRequestDto) {
         log.info("requestDto={}", xssRequestDto);
 
-        return xssRequestDto.getContent();
+        return xssRequestDto;
     }
 
     @PostMapping("/xss2")
-    public String xss2 (@RequestBody XssRequestDto2 xssRequestDto) {
+    public XssRequestDto2 xss2 (@RequestBody XssRequestDto2 xssRequestDto) {
         log.info("requestDto={}", xssRequestDto);
 
-        return xssRequestDto.getContent();
+        return xssRequestDto;
     }
 }

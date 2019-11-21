@@ -1,6 +1,7 @@
 package com.jojoldu.blogcode.springboot.tips;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jojoldu.blogcode.springboot.tips.web.IndexController;
 import com.jojoldu.blogcode.springboot.tips.web.XssRequestController;
 import com.jojoldu.blogcode.springboot.tips.web.dto.XssRequestDto;
 import org.junit.Test;
@@ -11,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(XssRequestController.class)
+@WebMvcTest(controllers = {XssRequestController.class, IndexController.class})
 public class XssTest0 {
 
     @Autowired
@@ -42,5 +45,13 @@ public class XssTest0 {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(expected));
+    }
+
+    @Test
+    public void index페이지_호출() throws Exception {
+        mvc
+                .perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Spring Boot Tips")));
     }
 }
