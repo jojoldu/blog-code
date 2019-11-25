@@ -5,8 +5,6 @@ package com.jojoldu.blogcode.springboot.tips;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 
 @SpringBootApplication
 public class Application {
