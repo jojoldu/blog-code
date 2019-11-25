@@ -1,7 +1,6 @@
 package com.jojoldu.blogcode.springboot.tips;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jojoldu.blogcode.springboot.tips.web.IndexController;
 import com.jojoldu.blogcode.springboot.tips.web.XssRequestController;
 import com.jojoldu.blogcode.springboot.tips.web.dto.XssRequestDto;
 import org.junit.Test;
@@ -25,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = {XssRequestController.class, IndexController.class})
+@WebMvcTest(controllers = {XssRequestController.class})
 public class XssTest0 {
 
     @Autowired

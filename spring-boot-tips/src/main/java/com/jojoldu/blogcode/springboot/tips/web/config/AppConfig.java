@@ -14,10 +14,11 @@ public class AppConfig {
     @Bean
     @Primary
     public ObjectMapper objectMapper() {
-        return new Jackson2ObjectMapperBuilder()
+        ObjectMapper objectMapper = new Jackson2ObjectMapperBuilder()
                 .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .modules(new JavaTimeModule())
                 .timeZone("Asia/Seoul")
                 .build();
+        return objectMapper;
     }
 }

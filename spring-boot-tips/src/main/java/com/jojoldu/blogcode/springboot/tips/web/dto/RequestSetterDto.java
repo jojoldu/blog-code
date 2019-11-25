@@ -1,15 +1,13 @@
 package com.jojoldu.blogcode.springboot.tips.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.annotation.Nonnull;
 import java.time.LocalDate;
 
 
@@ -27,7 +25,7 @@ public class RequestSetterDto {
     private RequestType requestType;
 
     @Builder
-    public RequestSetterDto(@Nonnull String name, @Nonnull Long amount) {
+    public RequestSetterDto(String name, Long amount) {
         this.name = name;
         this.amount = amount;
     }
@@ -39,11 +37,11 @@ public class RequestSetterDto {
         this.requestType = requestType;
     }
 
-    @AllArgsConstructor
+    @RequiredArgsConstructor
     public enum RequestType {
         GET ("get"),
         POST ("post");
 
-        private String method;
+        private final String method;
     }
 }

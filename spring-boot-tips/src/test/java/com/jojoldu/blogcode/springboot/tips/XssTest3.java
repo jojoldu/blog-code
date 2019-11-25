@@ -1,31 +1,24 @@
 package com.jojoldu.blogcode.springboot.tips;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.jojoldu.blogcode.springboot.tips.web.IndexController;
 import com.jojoldu.blogcode.springboot.tips.web.XssRequestController;
 import com.jojoldu.blogcode.springboot.tips.web.config.AppConfig;
 import com.jojoldu.blogcode.springboot.tips.web.config.HtmlCharacterEscapes;
-import com.jojoldu.blogcode.springboot.tips.web.dto.XssRequestDto;
 import com.jojoldu.blogcode.springboot.tips.web.dto.XssRequestDto2;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -44,12 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {
-                XssRequestController.class,
-                IndexController.class,
-                XssTest3.WebMvcConfig.class,
-                AppConfig.class})
-@AutoConfigureMockMvc
+@WebMvcTest(controllers = {XssRequestController.class})
+@Import(value = {AppConfig.class})
 public class XssTest3 {
 
     @Autowired
@@ -64,7 +53,6 @@ public class XssTest3 {
                 .perform(get("/"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.TEXT_HTML))
                 .andExpect(content().string(containsString("Spring Boot Tips")));
     }
 
@@ -84,24 +72,16 @@ public class XssTest3 {
 
     @RequiredArgsConstructor
     @Configuration
-    public static class WebMvcConfig extends WebMvcConfigurationSupport {
+    public static class WebMvcConfig {
 
         private final ObjectMapper objectMapper;
 
-        @Override
-        public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-            converters.add(htmlEscapingConverter());
-            super.addDefaultHttpMessageConverters(converters);
+        @Bean
+        public MappingJackson2HttpMessageConverter jsonEscapeConverter() {
+            ObjectMapper copy = objectMapper.copy();
+            copy.getFactory().setCharacterEscapes(new HtmlCharacterEscapes());
+            return new MappingJackson2HttpMessageConverter(copy);
         }
 
-        private HttpMessageConverter<?> htmlEscapingConverter() {
-            objectMapper.getFactory().setCharacterEscapes(new HtmlCharacterEscapes());
-
-            MappingJackson2HttpMessageConverter htmlEscapingConverter =
-                    new MappingJackson2HttpMessageConverter();
-            htmlEscapingConverter.setObjectMapper(objectMapper);
-
-            return htmlEscapingConverter;
-        }
     }
 }

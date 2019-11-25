@@ -5,27 +5,21 @@ import com.jojoldu.blogcode.springboot.tips.web.XssRequestController;
 import com.jojoldu.blogcode.springboot.tips.web.config.AppConfig;
 import com.jojoldu.blogcode.springboot.tips.web.config.HtmlCharacterEscapes;
 import com.jojoldu.blogcode.springboot.tips.web.dto.XssRequestDto;
-import com.jojoldu.blogcode.springboot.tips.web.dto.XssRequestDto2;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.time.LocalDate;
-import java.util.List;
-
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,8 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {XssRequestController.class, XssTest2.WebMvcConfig.class, AppConfig.class})
-@AutoConfigureMockMvc
+@WebMvcTest(controllers = {XssRequestController.class})
+@Import(value = {AppConfig.class})
 public class XssTest2 {
 
     @Autowired
@@ -58,36 +52,26 @@ public class XssTest2 {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(expected));
+                .andExpect(content().string(containsString(expected)));
     }
 
     @Test
-    public void LocalDate가_치환되지않는다() throws Exception {
-        String content = "<li>content</li>";
-        String expected = "\"&lt;li&gt;content&lt;/li&gt;\"";
-        String requestBody = objectMapper.writeValueAsString(new XssRequestDto2(content, LocalDate.now()));
+    public void index페이지_호출() throws Exception {
         mvc
-                .perform(post("/xss2")
-                        .content(requestBody)
-                        .contentType(MediaType.APPLICATION_JSON))
+                .perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(expected));
+                .andExpect(content().string(containsString("Spring Boot Tips")));
     }
 
     @Configuration
-    public static class WebMvcConfig implements WebMvcConfigurer {
+    public static class WebMvcConfig {
 
         @Bean
-        public MappingJackson2HttpMessageConverter htmlEscapingConverter() {
+        public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.getFactory().setCharacterEscapes(new HtmlCharacterEscapes());
 
-            MappingJackson2HttpMessageConverter htmlEscapingConverter =
-                    new MappingJackson2HttpMessageConverter();
-            htmlEscapingConverter.setObjectMapper(objectMapper);
-
-            return htmlEscapingConverter;
+            return new MappingJackson2HttpMessageConverter(objectMapper);
         }
     }
 }
