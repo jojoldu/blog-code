@@ -55,6 +55,8 @@ mysql/gtid_slave_pos.ibd
 
 ## 복구하기
 
+압축 해제가 잘되었으면 
+
 ```bash
 vim /etc/my.cnf
 ```
