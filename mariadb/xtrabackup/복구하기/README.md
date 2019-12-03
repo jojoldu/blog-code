@@ -1,7 +1,14 @@
-# Xtrabackup 복구하기
+# Xtrabackup으로 DB 복구하기
 
 
-## 백업 파일 다운로드
+아래부터 실행되는 모든 명령은 ```root``` 계정으로 실행합니다.  
+즉, ```ec2-user```, ```centos``` 등의 계정에서 ```root``` 계정으로 전환합니다.
+
+```bash
+sudo su - root
+```
+
+## 1. 백업 파일 다운로드
 
 **s3**
 
@@ -15,7 +22,7 @@ aws s3 cp s3://버킷/압축파일 ./
 wget https://aws주소/버킷/압축파일
 ```
 
-## 압축풀기
+## 2. 압축풀기
 
 먼저 빠르게 압축 해제를 위해 ```pigz``` 패키지를 설치하겠습니다.
 
@@ -53,7 +60,7 @@ mysql/innodb_index_stats.ibd
 mysql/gtid_slave_pos.ibd
 ```
 
-## 2. 복구하기
+## 3. 복구하기
 
 먼저 기존에 실행중인 MariaDB를 종료합니다.
 
@@ -92,7 +99,7 @@ Installed:
 Complete!
 ```
 
-설치가 다 되셨다면 root home으로 이동하여 복원 명령어를 수행해보겠습니다.
+설치가 다 되셨다면 root 디렉토리로 이동하여 복원 명령어를 수행해보겠습니다.
 
 ```bash
 cd ~
@@ -194,3 +201,22 @@ cd /data/mysql/
 chown -R mysql:mysql *
 ```
 
+## 4. 실행하기
+
+```bash
+$ service mysql start
+Starting MariaDB.191204 07:27:43 mysqld_safe Logging to '/home/mysql/log/error/mysql.err'.
+191204 07:27:43 mysqld_safe Starting mysqld daemon with databases from /data/mysql/mysql-data
+....................... SUCCESS!
+```
+
+```bash
+$ mysql -u 사용자계정 -p
+Enter password:
+```
+
+![databases](./images/databases.png)
+
+![tables](./images/tables.png)
+
+![item](./images/item.png)
