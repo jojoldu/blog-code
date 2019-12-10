@@ -1,6 +1,8 @@
 # Xtrabackup으로 DB 복구하기
 
+Xtrabackup으로 백업된 데이터를 DB에 복구 시키는 과정을 진행해보겠습니다.  
 
+  
 아래부터 실행되는 모든 명령은 ```root``` 계정으로 실행합니다.  
 즉, ```ec2-user```, ```centos``` 등의 계정에서 ```root``` 계정으로 전환합니다.
 
@@ -8,7 +10,12 @@
 sudo su - root
 ```
 
+그럼 차례로 진행해보겠습니다.
+
 ## 1. 백업 파일 다운로드
+
+백업 파일의 경우 s3 혹은 별도의 파일 서버에서 관리하고 있을텐데요.  
+각자의 명령어로 현재 서버로 가져오시면 됩니다.
 
 **s3**
 
@@ -36,14 +43,14 @@ yum install pigz
 
 설치가 끝나셨다면 아래와 같이 ```nohup &``` 으로 ```pigz```를 실행합니다.
 
+```bash
+nohup sh -c "pigz -dc 압축파일.tar.gz | tar xvfi -" &
+```
+
 > ```nohup &``` 을 사용하는 이유는 지금처럼 대용량 파일 압축 해제시 최소 1시간, 최대 10시간 이상 소요될 수 있기 때문입니다.
 > 압축 해제 하는 동안 사용자 세션이 끊기면 강제 종료 되니, 세션 관계 없이 백그라운드로 실행하기 위해 필수로 사용됩니다.
 > 파일 용량이 적을때는 ```pigz -dc 압축파일.tar.gz | tar xvfi -``` 만 사용하셔도 됩니다.
 
-
-```bash
-nohup sh -c "pigz -dc 압축파일.tar.gz | tar xvfi -" &
-```
 
 해당 명령어가 잘 수행되는지 확인 하기 위해 ```tail -f```로 로그를 확인합니다.
 
@@ -60,9 +67,11 @@ mysql/innodb_index_stats.ibd
 mysql/gtid_slave_pos.ibd
 ```
 
+모든 압축 해제가 끝났다면 복구작업을 시작해보겠습니다.
+
 ## 3. 복구하기
 
-먼저 기존에 실행중인 MariaDB를 종료합니다.
+
 
 ### innobackupex 설치하기
 
@@ -105,20 +114,10 @@ Complete!
 cd ~
 ```
 
-
-```bash
-innobackupex —-apply-log 백업디렉토리
-```
-
-예를 들어 저같은 경우 아래와 같이 적용합니다.
-
-```bash
-innobackupex --apply-log /data/mysql/backup/
-```
-
 ### --move-back 으로 복구하기
 
-풀백업을 복구하려면 MariaDB를 정지하고 데이터베이스의 현재 내용을 삭제해야 합니다.
+풀백업을 복구하려면 MariaDB를 정지하고 데이터베이스의 현재 내용을 삭제해야 합니다.  
+그래서 먼저 기존에 실행중인 MariaDB를 종료합니다.
 
 ```
 service mysql stop
