@@ -11,12 +11,18 @@
 
 ![1](./images/1.png)
 
-아래 과정을 따라 프로젝트에 차례로 등록합니다.
+아래 과정을 따라 프로젝트에 차례로 등록합니다.  
+  
+File -> Project Structure
 
 ![2](./images/2.png)
 
+Platform Settings -> SDKs -> +
+
 ![3](./images/3.png)
 
++ 클릭을 하게 되면 여러 유형의 SDK가 등장하는데, 이중 파이썬 SDK를 선택합니다.
++ 
 ![4](./images/4.png)
 
 어떤 환경에서의 파이썬 인터프리터를 선택할지 나옵니다.
@@ -30,6 +36,12 @@
 
 ![6](./images/6.png)
 
+여기서 아래와 같이 프로젝트에 파이썬 SDK가 선택되어 있지 않다고 나옵니다.  
+
 ![7](./images/7.png)
 
+Python Interperter -> Use specified interpreter를 선택하시면 아래와 같이 좀전에 등록한 파이썬 SDK를 선택할 수 있습니다.
+
 ![8](./images/8.png)
+
+선택하신 후, 실행해보시면 정상적으로 실행되는 것을 확인할 수 있습니다.
