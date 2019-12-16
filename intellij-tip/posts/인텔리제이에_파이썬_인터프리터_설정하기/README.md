@@ -22,7 +22,7 @@ Platform Settings -> SDKs -> +
 ![3](./images/3.png)
 
 + 클릭을 하게 되면 여러 유형의 SDK가 등장하는데, 이중 파이썬 SDK를 선택합니다.
-+ 
+  
 ![4](./images/4.png)
 
 어떤 환경에서의 파이썬 인터프리터를 선택할지 나옵니다.
