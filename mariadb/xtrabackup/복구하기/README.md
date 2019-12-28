@@ -88,7 +88,7 @@ mysql/gtid_slave_pos.ibd
 당연히 Xtrabackup으로 백업했으니, 복구 작업 역시 해당 패키지가 필요합니다.  
 
 
-### innobackupex 설치하기
+### 3-1. innobackupex 설치하기
 
 ```bash
 yum install -y percona-xtrabackup
@@ -147,13 +147,15 @@ Installed:
 Complete!
 ```
 
-설치가 다 되셨다면 root 디렉토리로 이동하여 복원 명령어를 수행해보겠습니다.
+### 3-2. apply-log 적용
+
+압축해제된 디렉토리에 ```--apply-log``` 옵션을 이용해 복구 단계를 수행합니다.
 
 ```bash
-cd ~
+innobackupex —-apply-log 압축해제된디렉토리
 ```
 
-### --move-back 으로 복구하기
+### 3-3. --move-back 으로 복구하기
 
 풀백업을 복구하려면 MariaDB를 정지하고 데이터베이스의 현재 내용을 삭제해야 합니다.  
 그래서 먼저 기존에 실행중인 MariaDB를 종료합니다.
