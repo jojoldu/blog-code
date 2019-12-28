@@ -1,6 +1,12 @@
 # Xtrabackup으로 DB 복구하기
 
 Xtrabackup으로 백업된 데이터를 DB에 복구 시키는 과정을 진행해보겠습니다.  
+이 과정은 **2대의 DB 서버가 있다는 가정하에** 진행합니다.
+
+* 1번 DB는 실제 운영 DB이며, **매일매일 Xtrabackup으로 백업 파일을 생성**합니다.
+* 2번 DB는 운영 DB가 장애나서 급하게 공수한 서버이며, **MariaDB만 설치된 상태**입니다.
+  * 즉, 깡통 상태입니다.
+  * 깡통 서버에서 MariaDB를 설치하는 방법은 [이전 포스팅](https://jojoldu.tistory.com/461)을 참고해주세요.
 
   
 아래부터 실행되는 모든 명령은 ```root``` 계정으로 실행합니다.  
@@ -13,6 +19,14 @@ sudo su - root
 그럼 차례로 진행해보겠습니다.
 
 ## 1. 백업 파일 다운로드
+
+먼저 백업 파일을 저장할 백업 디렉토리로 이동합니다.  
+
+> 저는 /data/mysql/backup/ 에서 진행합니다.
+
+```bash
+cd /data/mysql/backup/
+```
 
 백업 파일의 경우 s3 혹은 별도의 파일 서버에서 관리하고 있을텐데요.  
 각자의 명령어로 현재 서버로 가져오시면 됩니다.
@@ -71,6 +85,7 @@ mysql/gtid_slave_pos.ibd
 
 ## 3. 복구하기
 
+당연히 Xtrabackup으로 백업했으니, 복구 작업 역시 해당 패키지가 필요합니다.  
 
 
 ### innobackupex 설치하기
@@ -81,7 +96,31 @@ yum install -y percona-xtrabackup
 
 > **MariaDB 10.1**이라면 **percona-xtrabackup** (2.3), **MariaDB 10.2**라면 **percona-xtrabackup-24** (2.4) 를 설치하시면 됩니다.
 
-만약 설치 도중, 아래와 같은 에러가 발생한다면
+만약 아래와 같이 **사용 가능한 패키지가 없다고 한다면**  
+
+```bash
+$ yum install -y percona-xtrabackup
+Loaded plugins: priorities, update-motd, upgrade-helper
+amzn-main                                                                                                                                                         | 2.1 kB  00:00:00
+amzn-updates                                                                                                                                                      | 2.5 kB  00:00:00
+4 packages excluded due to repository priority protections
+No package percona-xtrabackup available.
+Error: Nothing to do
+```
+
+아래 명령어를 먼저 실행하신뒤
+
+```bash
+yum install http://www.percona.com/downloads/percona-release/redhat/0.1-4/percona-release-0.1-4.noarch.rpm
+```
+
+다시 설치해봅니다.
+
+```bash
+yum install -y percona-xtrabackup
+```
+
+설치 도중, 아래와 같은 에러가 발생한다면
 
 ```bash
 Transaction check error:
@@ -143,10 +182,15 @@ datadir                         = /data/mysql/mysql-data
 rm -rf /data/mysql/mysql-data
 ```
 
-copy-back 명령어로 복구를 진행합니다.
+move-back (혹은 copy-back) 명령어로 복구를 진행합니다.
+
+> move-back은 백업 파일을 **옮기는 방식**으로 복원하며
+> copy-back은 백업 파일은 **복사하는 방식**으로 복원합니다.
+> 보편적으로는 copy-back을 사용합니다.
+> 용량이 부족하여 도저히 복사해서는 안되겠다 싶으면 move-back을 사용하시면 됩니다.
 
 ```bash
-innobackupex --move-back /data/mysql/backup/
+innobackupex --move-back 압축해제된 디렉토리
 ```
 
 디렉토리 용량이 많다면 압축해제와 마찬가지로 ```nohup```으로 명령어를 실행합니다.
@@ -196,11 +240,12 @@ srwxrwxrwx 1 mysql mysql    0 Dec  1 12:55 mysql.sock
 MariaDB가 사용할 수 있도록 ```mysql``` 권한으로 변경합니다.
 
 ```bash
-cd /data/mysql/
-chown -R mysql:mysql *
+chown -R mysql:mysql /data/mysql/
 ```
 
 ## 4. 실행하기
+
+그럼 정상적으로 수행되는지 확인해보겠습니다.
 
 ```bash
 $ service mysql start
@@ -209,13 +254,26 @@ Starting MariaDB.191204 07:27:43 mysqld_safe Logging to '/home/mysql/log/error/m
 ....................... SUCCESS!
 ```
 
+**사용자 정보 역시 백업 대상에 포함**되니, 기존 원본 서버에서 사용되던 사용자 계정 정보로 로그인하셔도 됩니다.
+
 ```bash
 $ mysql -u 사용자계정 -p
 Enter password:
 ```
+
+차례로 쿼리를 수행하며 데이터가 정상적으로 백업되었는지 확인해봅니다.
 
 ![databases](./images/databases.png)
 
 ![tables](./images/tables.png)
 
 ![item](./images/item.png)
+
+## 5. 마무리
+
+정상적으로 복구가 끝났다면 운영 환경에선 다음의 2가지 작업이 추가로 필요합니다.
+
+* Replication (레플리케이션-복제) 투입
+* MHA 투입
+
+다만 위 과정은 현재 포스팅에서 벗어나는 내용인지라, 별도로 포스팅하겠습니다.  
