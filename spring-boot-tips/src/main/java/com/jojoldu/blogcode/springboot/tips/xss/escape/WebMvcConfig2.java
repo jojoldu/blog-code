@@ -1,7 +1,6 @@
-package com.jojoldu.blogcode.springboot.tips;
+package com.jojoldu.blogcode.springboot.tips.xss.escape;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jojoldu.blogcode.springboot.tips.web.config.HtmlCharacterEscapes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -19,13 +18,12 @@ import java.util.List;
  */
 @Slf4j
 @Configuration
-@EnableWebMvc
-@ConditionalOnProperty(name = "test.type", havingValue = "1")
-public class WebMvcConfig1 implements WebMvcConfigurer {
+@ConditionalOnProperty(name = "test.type", havingValue = "2") // 실제 사용시에는 제거해주세요 (개별 테스트를 위해 사용)
+public class WebMvcConfig2 implements WebMvcConfigurer {
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        log.info(">>>>>>>>>>>>>>>>>>> [XSS TEST]");
+        log.info(">>>>>>>>>>>>>>>>>>> [WebMvcConfig2]");
         converters.add(htmlEscapingConverter());
     }
 
@@ -33,10 +31,6 @@ public class WebMvcConfig1 implements WebMvcConfigurer {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.getFactory().setCharacterEscapes(new HtmlCharacterEscapes());
 
-        MappingJackson2HttpMessageConverter htmlEscapingConverter =
-                new MappingJackson2HttpMessageConverter();
-        htmlEscapingConverter.setObjectMapper(objectMapper);
-
-        return htmlEscapingConverter;
+        return new MappingJackson2HttpMessageConverter(objectMapper);
     }
 }

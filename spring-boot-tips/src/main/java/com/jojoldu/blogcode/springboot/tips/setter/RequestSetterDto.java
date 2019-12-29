@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.springboot.tips.web.dto;
+package com.jojoldu.blogcode.springboot.tips.setter;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;

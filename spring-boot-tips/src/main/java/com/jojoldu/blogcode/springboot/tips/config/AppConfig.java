@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.springboot.tips.web.config;
+package com.jojoldu.blogcode.springboot.tips.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -14,11 +14,10 @@ public class AppConfig {
     @Bean
     @Primary
     public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new Jackson2ObjectMapperBuilder()
+        return new Jackson2ObjectMapperBuilder()
                 .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .modules(new JavaTimeModule())
                 .timeZone("Asia/Seoul")
                 .build();
-        return objectMapper;
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -30,17 +31,11 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-public class XssSpringBootTest0 {
+@TestPropertySource(properties = "test.type=2")
+public class XssSpringBootTest2 {
 
     @Autowired
     private TestRestTemplate restTemplate;
-
-    @Test
-    public void 웹페이지_호출() {
-        ResponseEntity<String> response = restTemplate.getForEntity("/", String.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).contains("Spring Boot Tips");
-    }
 
     @Test
     public void 태그_치환() {
@@ -65,24 +60,11 @@ public class XssSpringBootTest0 {
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
 
         ResponseEntity<String> response = restTemplate.exchange("/form",
-                        HttpMethod.POST,
-                        entity,
-                        String.class);
+                HttpMethod.POST,
+                entity,
+                String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getHeaders().getContentType().toString()).isEqualTo("text/plain;charset=UTF-8");
         assertThat(response.getBody()).isEqualTo(content);
-    }
-
-    @Test
-    public void LocalDate가_치환된다() throws Exception {
-        String content = "<li>content</li>";
-        LocalDate requestDate = LocalDate.of(2019,12,29);
-        ResponseEntity<XssRequestDto2> response = restTemplate.postForEntity(
-                "/xss2",
-                new XssRequestDto2(content, requestDate),
-                XssRequestDto2.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getRequestDate()).isEqualTo(requestDate);
     }
 }

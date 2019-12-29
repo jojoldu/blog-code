@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.springboot.tips.web.config;
+package com.jojoldu.blogcode.springboot.tips.xss.escape;
 
 import com.fasterxml.jackson.core.SerializableString;
 import com.fasterxml.jackson.core.io.CharacterEscapes;

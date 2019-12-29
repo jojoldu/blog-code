@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.springboot.tips.web.dto;
+package com.jojoldu.blogcode.springboot.tips.xss;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

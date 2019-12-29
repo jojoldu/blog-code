@@ -1,8 +1,7 @@
 package com.jojoldu.blogcode.springboot.tips;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jojoldu.blogcode.springboot.tips.web.dto.RequestSetterDto;
+import com.jojoldu.blogcode.springboot.tips.setter.RequestSetterDto;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -4,8 +4,8 @@
 package com.jojoldu.blogcode.springboot.tips;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jojoldu.blogcode.springboot.tips.web.RequestDtoSetterController;
-import com.jojoldu.blogcode.springboot.tips.web.dto.RequestSetterDto;
+import com.jojoldu.blogcode.springboot.tips.setter.RequestDtoSetterController;
+import com.jojoldu.blogcode.springboot.tips.setter.RequestSetterDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +40,9 @@ public class RequestDtoSetterControllerTest {
         mvc
                 .perform(post("/request/setter")
                         .content(content)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(content));
     }
 
@@ -58,9 +58,9 @@ public class RequestDtoSetterControllerTest {
         mvc
                 .perform(get("/request/setter")
                         .params(params)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(content));
     }
 
@@ -76,9 +76,9 @@ public class RequestDtoSetterControllerTest {
         mvc
                 .perform(get("/request/setter")
                         .params(params)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(content));
     }
 }

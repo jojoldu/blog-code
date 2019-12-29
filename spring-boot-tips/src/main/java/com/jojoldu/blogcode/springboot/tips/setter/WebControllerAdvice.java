@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.springboot.tips.web;
+package com.jojoldu.blogcode.springboot.tips.setter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.WebDataBinder;
