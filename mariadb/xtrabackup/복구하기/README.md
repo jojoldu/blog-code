@@ -61,7 +61,7 @@ yum install pigz
 nohup sh -c "pigz -dc 압축파일.tar.gz | tar xvfi -" &
 ```
 
-> ```nohup &``` 을 사용하는 이유는 지금처럼 대용량 파일 압축 해제시 최소 1시간, 최대 10시간 이상 소요될 수 있기 때문입니다.
+> ```nohup &``` 을 사용하는 이유는 지금처럼 대용량 파일 압축 해제시 **최소 1시간, 최대 10시간 이상** 소요될 수 있기 때문입니다.
 > 압축 해제 하는 동안 사용자 세션이 끊기면 강제 종료 되니, 세션 관계 없이 백그라운드로 실행하기 위해 필수로 사용됩니다.
 > 파일 용량이 적을때는 ```pigz -dc 압축파일.tar.gz | tar xvfi -``` 만 사용하셔도 됩니다.
 
@@ -152,8 +152,37 @@ Complete!
 압축해제된 디렉토리에 ```--apply-log``` 옵션을 이용해 복구 단계를 수행합니다.
 
 ```bash
-innobackupex —-apply-log 압축해제된디렉토리
+innobackupex --apply-log 압축해제된디렉토리
 ```
+
+그럼 아래와 같이 로그가 확인됩니다.
+
+```bash
+InnoDB: from the doublewrite buffer...
+InnoDB: Doing recovery: scanned up to log sequence number 3747732006912 (0%)
+InnoDB: Doing recovery: scanned up to log sequence number 3747737249792 (0%)
+InnoDB: Doing recovery: scanned up to log sequence number 3747742492672 (1%)
+InnoDB: Doing recovery: scanned up to log sequence number 3747747735552 (1%)
+InnoDB: Doing recovery: scanned up to log sequence number 3747752978432 (2%)
+InnoDB: Doing recovery: scanned up to log sequence number 3747758221312 (2%)
+InnoDB: Doing recovery: scanned up to log sequence number 3747763464192 (3%)
+InnoDB: Doing recovery: scanned up to log sequence number 3747768707072 (3%)
+InnoDB: Starting an apply batch of log records to the database...
+```
+
+정상적으로 적용이 다 되면 아래와 같이 로그가 나옵니다.
+
+```bash
+InnoDB: 128 rollback segment(s) are active.
+InnoDB: Waiting for purge to start
+InnoDB: 5.6.24 started; log sequence number 3748892633100
+xtrabackup: starting shutdown with innodb_fast_shutdown = 1
+InnoDB: FTS optimize thread exiting.
+InnoDB: Starting shutdown...
+InnoDB: Shutdown completed; log sequence number 3748892633110
+191230 09:10:47 completed OK!
+```
+
 
 ### 3-3. --move-back 으로 복구하기
 
@@ -279,3 +308,5 @@ Enter password:
 * MHA 투입
 
 다만 위 과정은 현재 포스팅에서 벗어나는 내용인지라, 별도로 포스팅하겠습니다.  
+  
+긴 글 끝까지 봐주셔서 감사합니다!
