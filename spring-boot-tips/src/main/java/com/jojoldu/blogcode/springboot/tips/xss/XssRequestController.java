@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.validation.Valid;
+
 @Slf4j
 @Controller
 public class XssRequestController {
@@ -24,7 +26,7 @@ public class XssRequestController {
     }
 
     @PostMapping("/xss2")
-    public @ResponseBody XssRequestDto2 xss2 (@RequestBody XssRequestDto2 requestDto) {
+    public @ResponseBody XssRequestDto2 xss2 (@Valid @RequestBody XssRequestDto2 requestDto) {
         log.info("requestDto={}", requestDto);
 
         return requestDto;

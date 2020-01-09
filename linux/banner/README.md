@@ -68,3 +68,6 @@ echo "$BANNER_MESSAGE" > /etc/issue
 echo "$BANNER_MESSAGE" > /etc/motd
 echo "$BANNER_MESSAGE" > /etc/issue.net
 ```
+
+## 3. AWS Beanstalk 적용시
+
