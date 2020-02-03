@@ -1,9 +1,21 @@
 # 커버링 인덱스
 
+커버링 인덱스란?
+
+* SELECT 구문의 요청 칼럼과 WHERE 필터 등이 특정 인덱스의 구성 칼럼인 경우
+* 데이터에 대한 접근 없이 인덱스 만으로 쿼리의 결과 생성 가능
+* EXPLAIN 결과의 Extra 필드에 “Using index” 표시
+* Clustered Key (PK) 의 값은 모든 Non-Clustered Key에 포함되어 있음
+  * Clustered Key는 테이블당 1개만 존재한다.
+  * PK가 없을 경우 유니크 키가 Clustered Key로
+  * PK와 유니크키 둘다 없을 경우 6 byte의 Hidden Key를 생성 (rowid)
+
 ![clusterindex](./images/clusterindex.png)
 
-* 즉, **인덱스 키 조합에는 PK가 항상 포함**되어 있다.
+* 즉, **인덱스 키 조합에는 Clustered Key가 항상 포함**되어 있다.
 * 다만 PK를 사용할 경우 인덱스 탐색 시간이 없어지기 때문에 향상된 데이터 파일 접근이 가능하다
+
+
 
 |       | 표기        | 설명                               |
 |-------|-------------|------------------------------------|
