@@ -5,13 +5,17 @@
 * SELECT 구문의 요청 칼럼과 WHERE 필터 등이 특정 인덱스의 구성 칼럼인 경우
 * 데이터에 대한 접근 없이 인덱스 만으로 쿼리의 결과 생성 가능
 * EXPLAIN 결과의 Extra 필드에 “Using index” 표시
-* Clustered Key (PK) 의 값은 모든 Non-Clustered Key에 포함되어 있음
+* Clustered Key (PK) 의 값은 **모든 Non-Clustered Key에 포함**되어 있음
   * Clustered Key는 테이블당 1개만 존재한다.
   * PK가 없을 경우 유니크 키가 Clustered Key로
   * PK와 유니크키 둘다 없을 경우 6 byte의 Hidden Key를 생성 (rowid)
+  * Non-Clustered Key에는 **데이터 블록의 위치가 없다**.
+    * 즉, 인덱스외 다른 필드를 찾을때는 Non-Clustered Key에 있는 Clustered Key 값으로 데이터블록을 찾는 과정이 필요하다.
 
 ![clusterindex](./images/clusterindex.png)
 
+(index-age는 age순으로 정렬되어있고, pk는 id순으로 정렬되어있다.)  
+  
 * 즉, **인덱스 키 조합에는 Clustered Key가 항상 포함**되어 있다.
 * 다만 PK를 사용할 경우 인덱스 탐색 시간이 없어지기 때문에 향상된 데이터 파일 접근이 가능하다
 
