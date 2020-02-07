@@ -8,9 +8,19 @@
 
 > 좀 더 쉽게 말씀드리면 SELECT, WHERE, ORDER BY, GROUP BY 등에 사용되는 모든 컬럼이 인덱스의 구성요소인 경우를 얘기합니다.
 
-## 1. 첫번째 예제
+## 1. 커버링 인덱스 기본 지식
 
-* EXPLAIN 결과의 Extra 필드에 "Using index" 표시
+커버링 인덱스의 예제를 보기전에 기본 지식을 먼저 익히고 넘어가겠습니다.
+
+실제 행을 읽은 횟수
+
+```sql
+show session status like 'Handler_read' ;
+```
+
+### 1-1. Using index
+
+먼저, 커버링 인덱스가 적용되면 아래와 같이 EXPLAIN 결과 (실행 계획) 의 Extra 필드에 "**Using index**" 가 표기됩니다.
 
 ![usingindex](./images/usingindex.png)
 
@@ -21,12 +31,14 @@
 | Extra | Using index | 커버링 인덱스, 인덱스 range 스캔  |
 | type  | index       | 인덱스 풀 스캔 (range 스캔이 아님) |
 
-인덱스 풀 스캔 발생하는 경우
+인덱스 풀 스캔 발생하는 경우는 아래와 같습니다.
 
 * range, const, ref와 같은 접근 방식으로 인덱스를 사용하지 못하는 경우
   * 위 조건과 더불어 아래 조건 중 하나가 동시 만족될 경우
     * 인덱스에 포함된 컬럼만으로 처리할 수 있는 쿼리인 경우 (즉, 데이터 파일을 안읽어도 되는 경우)
     * 인덱스를 이용해 정렬이나 그룹핑 작업이 가능한 경우 (즉, 별도의 정렬 작업을 피할 수 있는 경우)
+
+### 1-2. 
 
 sakila.inventory 테이블은 (store_id, film_id) 필드를 가진 인덱스가 있다.  
 이럴 경우 아래의 쿼리는 **커버링 인덱스** 대상이 된다.
@@ -114,6 +126,8 @@ possible_keys: ACTOR,ACTOR_2,IX_PROD_ACTOR
 * Example 1 5 queries per sec 5 queries per sec
 * Example 2 7 queries per sec 35 queries per sec
 * Example 3 2400 queries per sec 2000 queries per sec
+
+이 세 가지 데이터 세트를 사용하여 쿼리의 두 가지 변형을 벤치마킹하고 표 5-2에 표시된 결과를 얻었습니다 .
 
 표 5-2. 인덱스가 적용되지 않은 쿼리와 인덱스가 적용되지 않은 쿼리에 대한 벤치 마크 결과
 
