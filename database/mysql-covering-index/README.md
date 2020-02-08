@@ -12,12 +12,6 @@
 
 커버링 인덱스의 예제를 보기전에 기본 지식을 먼저 익히고 넘어가겠습니다.
 
-실제 행을 읽은 횟수
-
-```sql
-show session status like 'Handler_read' ;
-```
-
 ### 1-1. Using index
 
 먼저, 커버링 인덱스가 적용되면 아래와 같이 EXPLAIN 결과 (실행 계획) 의 Extra 필드에 "**Using index**" 가 표기됩니다.
@@ -38,30 +32,44 @@ show session status like 'Handler_read' ;
     * 인덱스에 포함된 컬럼만으로 처리할 수 있는 쿼리인 경우 (즉, 데이터 파일을 안읽어도 되는 경우)
     * 인덱스를 이용해 정렬이나 그룹핑 작업이 가능한 경우 (즉, 별도의 정렬 작업을 피할 수 있는 경우)
 
-### 1-2. 
+### 1-2. Non Clustered Key와 Clustered Key
 
-sakila.inventory 테이블은 (store_id, film_id) 필드를 가진 인덱스가 있다.  
-이럴 경우 아래의 쿼리는 **커버링 인덱스** 대상이 된다.
+|                   | 대상                                                                                             | 특징                     |
+|-------------------|--------------------------------------------------------------------------------------------------|--------------------------|
+| Clustered Key     | 1) PK <br/> 2) PK가 없을땐 유니크키 <br/> 3) 1~2둘다 없을 경우 6byte의 Hidden Key를 생성 (rowid) | 테이블당 1개만 존재 가능 |
+| Non Clustered Key | 일반적인 인덱스                                                                                  | 여러개 생성 가능         |
+
+Non Clustered Key와 Clustered Key를 통한 탐색은 다음과 같이 진행됩니다.
+
+![clusterindex](./images/clusterindex.png)
+
+> index-age는 age순으로 정렬되어있고, pk는 id순으로 정렬되어있습니다.  
+
+MySQL에서는 **Non Clustered Key에 Clustered Key가 항상 포함**되어 있습니다.  
+이유는 Non Clustered Key에는 **데이터 블록의 위치가 없기 때문**인데요.  
+  
+즉, 인덱스에서 인덱스에 포함된 컬럼 외에 다른 컬럼값를 찾을때는 Non Clustered Key에 있는 Clustered Key 값으로 데이터 블록을 찾는 과정이 필요합니다.
+
+> 다만 PK를 사용할 경우 인덱스 탐색 시간이 없어지기 때문에 향상된 데이터 파일 접근이 가능하다
+
+자 이 내용을 숙지 하신뒤, 다음의 예제를 확인해보겠습니다.
+
+## 2. 커버링 인덱스 예제
+
+### 2-1. 
+
+temp_ad_offset 테이블에 (customer_id, amount) 필드를 가진 인덱스가 있을 경우,  아래의 쿼리는 **커버링 인덱스** 대상이 된다.
 
 ```sql
-mysql> EXPLAIN SELECT store_id, film_id FROM sakila.inventory\G
-*************************** 1. row ***************************
-           id: 1
-  select_type: SIMPLE
-        table: inventory
-         type: index
-possible_keys: NULL
-          key: idx_store_id_film_id
-      key_len: 3
-          ref: NULL
-         rows: 4673
-        Extra: Using index
+mysql> explain select customer_id, amount from temp_ad_offset
 ```
+
+![example1](./images/example1.png)
 
 아래는 해결하지 못한다.
 
 ```sql
-mysql> EXPLAIN SELECT * FROM products WHERE actor='SEAN CARREY' AND title like '%APOLLO%'\G
+mysql> EXPLAIN SELECT * FROM products WHERE actor='SEAN CARREY' AND title like '%APOLLO%'
 *************************** 1. row ***************************
            id: 1
   select_type: SIMPLE
@@ -75,9 +83,16 @@ possible_keys: ACTOR,IX_PROD_ACTOR
         Extra: Using where
 ```
 
-* 테이블에서 모든 열을 선택하고 인덱스가 모든 열을 덮지 않기 때문에 인덱스는 쿼리를 다루지 않습니다. 그래도 MySQL이 이론적으로 사용할 수있는 지름길은 여전히 ​​있습니다.이 WHERE절은 인덱스가 다루는 열만 언급하므로 MySQL은 인덱스를 사용하여 액터를 찾고 제목이 일치하는지 확인한 다음 전체 행을 읽을 수 있습니다.
+> 이럴 경우 MariaDB 5.2, MySQL 5.5 까지는 ```Using where```이 나왔습니다.
+>  
+* 테이블에서 모든 열을 선택하고 인덱스가 모든 열을 덮지 않기 때문에 인덱스는 쿼리를 다루지 않습니다. 
+* 그래도 MySQL이 이론적으로 사용할 수있는 지름길은 여전히 ​​있습니다.
+* 이 WHERE절은 인덱스가 다루는 열만 언급하므로 MySQL은 인덱스를 사용하여 액터를 찾고 제목이 일치하는지 확인한 다음 전체 행을 읽을 수 있습니다.
 
-* MySQL은 LIKE인덱스 에서 작업을 수행 할 수 없습니다 . 이는 저수준 스토리지 엔진 API의 한계로, MySQL 5.5 및 이전 버전에서는 인덱스 작업에서 동등성, 불평등 및 그 이상과 같은 간단한 비교 만 허용합니다. MySQL은 LIKE 간단한 비교로 변환 할 수 있기 때문에 인덱스에서 접두사 일치 패턴을 수행 할 수 있지만 쿼리에서 선행 와일드 카드를 사용하면 스토리지 엔진이 일치를 평가할 수 없습니다. 따라서 MySQL 서버 자체는 인덱스 값이 아닌 행 값을 가져 와서 일치시켜야합니다.
+* MySQL은 LIKE인덱스 에서 작업을 수행 할 수 없습니다. 
+* 이는 저수준 스토리지 엔진 API의 한계로, MySQL 5.5 및 이전 버전에서는 인덱스 작업에서 동등성, 불평등 및 그 이상과 같은 간단한 비교 만 허용합니다. 
+* MySQL은 LIKE 간단한 비교로 변환 할 수 있기 때문에 인덱스에서 접두사 일치 패턴을 수행 할 수 있지만 쿼리에서 선행 와일드 카드를 사용하면 스토리지 엔진이 일치를 평가할 수 없습니다. 
+* 따라서 MySQL 서버 자체는 인덱스 값이 아닌 행 값을 가져 와서 일치시켜야합니다.
 
 이를 해결하기 위해서 다음과 같이 해결할 수 있다.
 
@@ -112,14 +127,18 @@ possible_keys: ACTOR,ACTOR_2,IX_PROD_ACTOR
         Extra: Using where; Using index
 ```
 
-열에 대한 액세스를 지연시키기 때문에 이것을 "지연된 조인"이라고합니다. MySQL은 FROM절의 하위 쿼리에서 일치하는 행을 찾을 때 쿼리의 첫 번째 단계에서 포함 인덱스를 사용합니다 . 인덱스를 사용하여 전체 쿼리를 처리하지는 않지만 아무것도 사용하지 않는 것이 좋습니다.
+열에 대한 액세스를 지연시키기 때문에 이것을 "지연된 조인"이라고합니다. MySQL은 FROM절의 하위 쿼리에서 일치하는 행을 찾을 때 쿼리의 첫 번째 단계에서 포함 인덱스를 사용합니다.  
+인덱스를 사용하여 전체 쿼리를 처리하지는 않지만 아무것도 사용하지 않는 것이 좋습니다.
 
-이 최적화의 효과는 WHERE절이 찾는 행 수에 따라 다릅니다 . products테이블에 백만 개의 행이 있다고 가정하십시오 . 이 두 쿼리가 서로 다른 3 개의 데이터 세트에서 어떻게 수행되는지 봅시다. 각 데이터 세트에는 백만 개의 행이 있습니다.
-
-첫 번째로 30,000 개의 제품에 배우로 Sean Carrey가 있고 그 중 20,000 개에는 제목에 "Apollo"가 포함되어 있습니다.
-
-두 번째로 30,000 개의 제품에 배우로 Sean Carrey가 있고 그 중 40 개에는 제목에 "Apollo"가 포함되어 있습니다.
-
+이 최적화의 효과는 WHERE절이 찾는 행 수에 따라 다릅니다.  
+products테이블에 백만 개의 행이 있다고 가정하십시오.  
+이 두 쿼리가 서로 다른 3 개의 데이터 세트에서 어떻게 수행되는지 봅시다.  
+각 데이터 세트에는 백만 개의 행이 있습니다.  
+  
+첫 번째로 30,000 개의 제품에 배우로 Sean Carrey가 있고 그 중 20,000 개에는 제목에 "Apollo"가 포함되어 있습니다.  
+  
+두 번째로 30,000 개의 제품에 배우로 Sean Carrey가 있고 그 중 40 개에는 제목에 "Apollo"가 포함되어 있습니다.  
+  
 세 번째로 50 개의 제품에 Sean Carrey가 배우로, 그 중 10 개에는 제목에 "Apollo"가 포함되어 있습니다.
 
 * Dataset Original query Optimized query
@@ -157,22 +176,6 @@ possible_keys: idx_actor_last_name
         Extra: Using where; Using index
 ```
 
-### Non Clustered Key와 Clustered Key
-
-* Clustered Key (PK) 의 값은 **모든 Non Clustered Key에 포함**되어 있음
-  * Non Clustered Key는 일반적인 **인덱스**
-  * Clustered Key는 테이블당 1개만 존재하며, 일반적으로 PK가 지정된다
-    * PK가 없을 경우 유니크 키가 Clustered Key로
-    * PK와 유니크키 둘다 없을 경우 6 byte의 Hidden Key를 생성 (rowid)
-  * Non Clustered Key에는 **데이터 블록의 위치가 없다**.
-    * 즉, 인덱스외 다른 필드를 찾을때는 Non Clustered Key에 있는 Clustered Key 값으로 데이터블록을 찾는 과정이 필요하다.
-
-![clusterindex](./images/clusterindex.png)
-
-(index-age는 age순으로 정렬되어있고, pk는 id순으로 정렬되어있다.)  
-  
-* 즉, **인덱스 키 조합에는 Clustered Key가 항상 포함**되어 있다.
-* 다만 PK를 사용할 경우 인덱스 탐색 시간이 없어지기 때문에 향상된 데이터 파일 접근이 가능하다
 
 ## 커버링 인덱스의 장점
 
