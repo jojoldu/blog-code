@@ -22,10 +22,12 @@
 
 |       | 표기        | 설명                               |
 |-------|-------------|------------------------------------|
-| Extra | Using index | 커버링 인덱스, 인덱스 range 스캔  |
+| Extra | Using index | 커버링 인덱스  |
+| Extra | Using index condition| [인덱스 컨디션 푸시다운 인덱스](https://jojoldu.tistory.com/474)  |
 | type  | index       | 인덱스 풀 스캔 (range 스캔이 아님) |
 
-인덱스 풀 스캔 발생하는 경우는 아래와 같습니다.
+
+인덱스 풀 스캔이 발생하는 경우는 아래와 같습니다.
 
 * range, const, ref와 같은 접근 방식으로 인덱스를 사용하지 못하는 경우
   * 위 조건과 더불어 아래 조건 중 하나가 동시 만족될 경우
@@ -34,7 +36,7 @@
 
 ### 1-2. Non Clustered Key와 Clustered Key
 
-|                   | 대상                                                                                             | 특징                     |
+|                   | 대상                                                                                             | 제한                     |
 |-------------------|--------------------------------------------------------------------------------------------------|--------------------------|
 | Clustered Key     | 1) PK <br/> 2) PK가 없을땐 유니크키 <br/> 3) 1~2둘다 없을 경우 6byte의 Hidden Key를 생성 (rowid) | 테이블당 1개만 존재 가능 |
 | Non Clustered Key | 일반적인 인덱스                                                                                  | 여러개 생성 가능         |
@@ -45,87 +47,46 @@ Non Clustered Key와 Clustered Key를 통한 탐색은 다음과 같이 진행�
 
 > index-age는 age순으로 정렬되어있고, pk는 id순으로 정렬되어있습니다.  
 
+위 그림에선 2가지를 보셔야하는데요.
+
+* Non Clustered Key (일반적인 인덱스) 에는 **인덱스 컬럼의 값들**과 **Clustered Key (PK) 의 값**이 포함되어 있음
+* Clustered Key 만이 실제 테이블의 row 위치를 알고 있음
+
 MySQL에서는 **Non Clustered Key에 Clustered Key가 항상 포함**되어 있습니다.  
 이유는 Non Clustered Key에는 **데이터 블록의 위치가 없기 때문**인데요.  
   
-즉, 인덱스에서 인덱스에 포함된 컬럼 외에 다른 컬럼값를 찾을때는 Non Clustered Key에 있는 Clustered Key 값으로 데이터 블록을 찾는 과정이 필요합니다.
+즉, 인덱스 조건에 부합한 ```where``` 조건이 있더라도 ```select```에 **인덱스에 포함된 컬럼 외에 다른 컬럼값**이 필요할때는 Non Clustered Key에 있는 Clustered Key 값으로 데이터 블록을 찾는 과정이 필요합니다.
 
 > 다만 PK를 사용할 경우 인덱스 탐색 시간이 없어지기 때문에 향상된 데이터 파일 접근이 가능하다
 
+커버링 인덱스는 여기서 **"2. 실제 데이터 접근" 하는 행위 없이** 인덱스에 있는 컬럼값들로만 쿼리를 완성하는 것을 이야기 합니다.  
+  
 자 이 내용을 숙지 하신뒤, 다음의 예제를 확인해보겠습니다.
 
 ## 2. 커버링 인덱스 예제
 
-### 2-1. 
+테스트용 테이블의 이름은 temp_ad_offset 입니다.  
+해당 테이블에 대략 1300만건의 데이터를 넣고 테스트를 진행합니다.
 
-temp_ad_offset 테이블에 (customer_id, amount) 필드를 가진 인덱스가 있을 경우,  아래의 쿼리는 **커버링 인덱스** 대상이 된다.
+### 2-1. SELECT
+
+기존에 customer_id 필드를 가진 인덱스가 있을 경우, 아래의 쿼리는 어떻게 작동될까요?
 
 ```sql
-mysql> explain select customer_id, amount from temp_ad_offset
+select customer_id, amount
+from temp_ad_offset
+where customer_id = 7;
 ```
 
 ![example1](./images/example1.png)
 
-아래는 해결하지 못한다.
+Extra가 빈값일 경우 
 
-```sql
-mysql> EXPLAIN SELECT * FROM products WHERE actor='SEAN CARREY' AND title like '%APOLLO%'
-*************************** 1. row ***************************
-           id: 1
-  select_type: SIMPLE
-        table: products
-         type: ref
-possible_keys: ACTOR,IX_PROD_ACTOR
-          key: ACTOR
-      key_len: 52
-          ref: const
-         rows: 10
-        Extra: Using where
-```
+인덱스 (customer_id, amount)
 
-> 이럴 경우 MariaDB 5.2, MySQL 5.5 까지는 ```Using where```이 나왔습니다.
->  
-* 테이블에서 모든 열을 선택하고 인덱스가 모든 열을 덮지 않기 때문에 인덱스는 쿼리를 다루지 않습니다. 
-* 그래도 MySQL이 이론적으로 사용할 수있는 지름길은 여전히 ​​있습니다.
-* 이 WHERE절은 인덱스가 다루는 열만 언급하므로 MySQL은 인덱스를 사용하여 액터를 찾고 제목이 일치하는지 확인한 다음 전체 행을 읽을 수 있습니다.
+![example2](./images/example2.png)
 
-* MySQL은 LIKE인덱스 에서 작업을 수행 할 수 없습니다. 
-* 이는 저수준 스토리지 엔진 API의 한계로, MySQL 5.5 및 이전 버전에서는 인덱스 작업에서 동등성, 불평등 및 그 이상과 같은 간단한 비교 만 허용합니다. 
-* MySQL은 LIKE 간단한 비교로 변환 할 수 있기 때문에 인덱스에서 접두사 일치 패턴을 수행 할 수 있지만 쿼리에서 선행 와일드 카드를 사용하면 스토리지 엔진이 일치를 평가할 수 없습니다. 
-* 따라서 MySQL 서버 자체는 인덱스 값이 아닌 행 값을 가져 와서 일치시켜야합니다.
 
-이를 해결하기 위해서 다음과 같이 해결할 수 있다.
-
-```sql
-mysql> EXPLAIN SELECT *
-    -> FROM products
-    ->    JOIN (
-    ->       SELECT id
-    ->       FROM products
-    ->       WHERE actor='SEAN CARREY' AND title LIKE '%APOLLO%'
-    ->    ) AS t1 ON (t1.id=products.id)\G
-*************************** 1. row ***************************
-           id: 1
-  select_type: PRIMARY
-        table: <derived2>
-               ...omitted...
-*************************** 2. row ***************************
-           id: 1
-  select_type: PRIMARY
-        table: products
-               ...omitted...
-*************************** 3. row ***************************
-           id: 2
-  select_type: DERIVED
-        table: products
-         type: ref
-possible_keys: ACTOR,ACTOR_2,IX_PROD_ACTOR
-          key: ACTOR_2
-      key_len: 52
-          ref:
-         rows: 11
-        Extra: Using where; Using index
-```
 
 열에 대한 액세스를 지연시키기 때문에 이것을 "지연된 조인"이라고합니다. MySQL은 FROM절의 하위 쿼리에서 일치하는 행을 찾을 때 쿼리의 첫 번째 단계에서 포함 인덱스를 사용합니다.  
 인덱스를 사용하여 전체 쿼리를 처리하지는 않지만 아무것도 사용하지 않는 것이 좋습니다.
@@ -176,6 +137,11 @@ possible_keys: idx_actor_last_name
         Extra: Using where; Using index
 ```
 
+### 2-2. WHERE + ORDER BY
+
+### 2-3. ORDER BY + GROUP BY
+
+### 2-4. WHERE + ORDER BY + GROUP BY
 
 ## 커버링 인덱스의 장점
 
