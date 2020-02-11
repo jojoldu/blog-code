@@ -78,64 +78,26 @@ from temp_ad_offset
 where customer_id = 7;
 ```
 
+실행 계획을 돌려보면 다음과 같습니다.
+
 ![example1](./images/example1.png)
 
-Extra가 빈값일 경우 
-
-인덱스 (customer_id, amount)
+실행 계획의 결과는 일반적인 **인덱스가 where절에 사용된 경우**로 출력 됩니다.  
+(key 항목에 사용된 인덱스가, Extra 항목에는 빈값)  
+이 경우는 **where절에는 인덱스가 사용되었지만, select절의 필드를 완성하기 위해** 데이터 블록 접근이 있었다를 의미합니다.  
+  
+자 그럼 여기서 기존 인덱스 (customer_id)를 변경 (customer_id, amount) 해서 다시 해당 쿼리의 실행 계획을 확인해보겠습니다.
 
 ![example2](./images/example2.png)
 
+앞선 결과와 다르게 Extra 항목에 ```Using index``` 가 등장합니다.  
+이 쿼리는 인덱스에 포함된 컬럼 (customer_id, amount) 만으로 쿼리가 생성 가능하니 커버링 인덱스가 사용 된 것입니다.  
+이렇게 Extra 항목에 ```Using index``` 가 나온다면 이 쿼리는 **커버링 인덱스**가 사용된 것으로 보시면 됩니다. 
 
+> 즉, Extra 항목에 ```Using index```가 있어야만 인덱스를 사용한 것이 아닙니다.  
+> 인덱스 사용 유무는 **key 항목에 선택된 인덱스**가 있냐 없냐의 차이입니다.  
+> Extra 항목에 ```Using index```가 있는 경우는 **쿼리 전체가 인덱스 컬럼값으로 다 채워진 경우**에만 발생합니다.
 
-열에 대한 액세스를 지연시키기 때문에 이것을 "지연된 조인"이라고합니다. MySQL은 FROM절의 하위 쿼리에서 일치하는 행을 찾을 때 쿼리의 첫 번째 단계에서 포함 인덱스를 사용합니다.  
-인덱스를 사용하여 전체 쿼리를 처리하지는 않지만 아무것도 사용하지 않는 것이 좋습니다.
-
-이 최적화의 효과는 WHERE절이 찾는 행 수에 따라 다릅니다.  
-products테이블에 백만 개의 행이 있다고 가정하십시오.  
-이 두 쿼리가 서로 다른 3 개의 데이터 세트에서 어떻게 수행되는지 봅시다.  
-각 데이터 세트에는 백만 개의 행이 있습니다.  
-  
-첫 번째로 30,000 개의 제품에 배우로 Sean Carrey가 있고 그 중 20,000 개에는 제목에 "Apollo"가 포함되어 있습니다.  
-  
-두 번째로 30,000 개의 제품에 배우로 Sean Carrey가 있고 그 중 40 개에는 제목에 "Apollo"가 포함되어 있습니다.  
-  
-세 번째로 50 개의 제품에 Sean Carrey가 배우로, 그 중 10 개에는 제목에 "Apollo"가 포함되어 있습니다.
-
-* Dataset Original query Optimized query
-* Example 1 5 queries per sec 5 queries per sec
-* Example 2 7 queries per sec 35 queries per sec
-* Example 3 2400 queries per sec 2000 queries per sec
-
-이 세 가지 데이터 세트를 사용하여 쿼리의 두 가지 변형을 벤치마킹하고 표 5-2에 표시된 결과를 얻었습니다 .
-
-표 5-2. 인덱스가 적용되지 않은 쿼리와 인덱스가 적용되지 않은 쿼리에 대한 벤치 마크 결과
-
-이러한 결과를 해석하는 방법은 다음과 같습니다.
-
-* 예제 1에서 쿼리는 큰 결과 집합을 반환하므로 최적화 효과를 볼 수 없습니다. 대부분의 시간은 데이터를 읽고 보내는 데 소비됩니다.
-
-* 인덱스 필터링 후 두 번째 조건 필터가 작은 결과 집합 만 남기는 예제 2는 제안 된 최적화가 얼마나 효과적인지 보여줍니다. 데이터에서 성능이 5 배 더 우수합니다. 효율성은 첫 번째 쿼리에서와 같이 30,000 개가 아닌 40 개의 전체 행을 읽을 필요가 있기 때문에 발생합니다.
-
-* 예제 3은 부속 조회가 비효율적 인 경우를 보여줍니다. 인덱스 필터링 후 남은 결과 세트는 너무 작아서 서브 쿼리가 테이블에서 모든 데이터를 읽는 것보다 비쌉니다.
-
-대부분의 스토리지 엔진에서 인덱스는 인덱스의 일부인 열에 액세스하는 쿼리 만 처리 할 수 ​​있습니다. 그러나 InnoDB는 실제로이 최적화를 조금 더 진행할 수 있습니다. InnoDB의 2 차 인덱스는 리프 노드에서 기본 키 값을 보유합니다. 이는 InnoDB의 보조 인덱스에 InnoDB가 쿼리를 처리하는 데 사용할 수있는 "추가 열"을 효과적으로 가지고 있음을 의미합니다.
-
-예를 들어, sakila.actor 테이블은 InnoDB를 사용하고 인덱스는 on last_name이므로 인덱스는 actor_id기술적으로 인덱스의 일부가 아니더라도 기본 키 열을 검색하는 쿼리를 처리 할 수 ​​있습니다 .
-```sql
-mysql> EXPLAIN SELECT actor_id, last_name FROM sakila.actor WHERE last_name = 'HOPPER'\G
-*************************** 1. row ***************************
-           id: 1
-  select_type: SIMPLE
-        table: actor
-         type: ref
-possible_keys: idx_actor_last_name
-          key: idx_actor_last_name
-      key_len: 137
-          ref: const
-         rows: 2
-        Extra: Using where; Using index
-```
 
 ### 2-2. WHERE + ORDER BY
 
