@@ -90,7 +90,7 @@ where customer_id = 7;
 | Type          | ref                            | 조인을 할때 PK 혹은 Unique Key가 아닌 Key로 매핑된 경우 |
 | key           | idx_temp_ad_offset_customer_id | 쿼리에 사용된 인덱스                                    |
 | ref           | const                          |                                                         |
-| Extra         |                                | 일반적인 쿼리시 빈값                                    |
+| Extra         |                                | 빈값일 경우 일반적인 쿼리                                    |
 
 실행 계획의 결과는 일반적인 **인덱스가 where절에 사용된 경우**로 출력 됩니다.  
 (key 항목에 사용된 인덱스가, Extra 항목에는 빈값)  
@@ -109,11 +109,49 @@ where customer_id = 7;
 > Extra 항목에 ```Using index```가 있는 경우는 **쿼리 전체가 인덱스 컬럼값으로 다 채워진 경우**에만 발생합니다.
 
 
-### 2-2. WHERE + ORDER BY
+### 2-2. WHERE + GROUP BY
 
-### 2-3. ORDER BY + GROUP BY
+먼저 GROUP BY 에서 인덱스는 아래 조건에서 적용됩니다.
 
-### 2-4. WHERE + ORDER BY + GROUP BY
+* GROUP BY 절에 명시된 컬럼이 인덱스 컬럼의 순서와 같아야 한다.
+  * 아래 모든 케이스는 **인덱스가 적용 안된다**. (index: a,b,c)
+    * ```group by b```
+    * ```group by b, a```
+    * ```group by a, c, b```
+* 인덱스 컬럼 중 뒤에 있는 컬럼이 GROUP BY 절에 명시되지 않아도 인덱스는 사용할 수 있다.
+  * 아래 모든 케이스는 **인덱스가 적용된다**. (index: a,b,c)
+    * ```group by a```
+    * ```group by a, b```
+    * ```group by a, b, c```
+* 반대로 인덱스 컬럼 중 앞에 있는 컬럼이 GROUP BY 절에 명시되지 않으면 인덱스를 사용할 수 없다
+  * ex: (index: a,b,c), ```group by b, c``` 는 **인덱스 적용안됨**
+* 인덱스에 없는 컬럼이 GROUP BY 절에 포함되어 있으면 인덱스가 적용되지 않는다.
+  * ex: (index: a,b,c), ```group by a,b,cㅇ,d``` 는 **인덱스 적용안됨**
+
+여기서 ```WHERE``` 조건과 ```GROUP BY```가 함께 사용되면 **WHERE 조건이 동등** 비교일 경우 GROUP BY 절에 해당 컬럼은 없어도 인덱스가 적용 됩니다.
+
+```sql
+WHERE a = 1 
+GROUP BY b, c
+
+WHERE a = 1 and b = 'b'
+GROUP BY c
+```
+
+### 2-3. WHERE + ORDER BY
+
+ORDER BY 
+
+### 2-4. ORDER BY + GROUP BY
+
+
+
+
+### 2-5. WHERE + ORDER BY + GROUP BY
+
+1. WHERE
+2. GROUP BY
+3. ORDER BY
 
 ## 커버링 인덱스의 장점
 
