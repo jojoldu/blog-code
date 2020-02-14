@@ -113,7 +113,7 @@ where customer_id = 7;
 
 먼저 GROUP BY 에서 인덱스는 아래 조건에서 적용됩니다.
 
-* GROUP BY 절에 명시된 컬럼이 인덱스 컬럼의 순서와 같아야 한다.
+* GROUP BY 절에 명시된 컬럼이 **인덱스 컬럼의 순서와 같아야 한다**.
   * 아래 모든 케이스는 **인덱스가 적용 안된다**. (index: a,b,c)
     * ```group by b```
     * ```group by b, a```
@@ -126,7 +126,7 @@ where customer_id = 7;
 * 반대로 인덱스 컬럼 중 앞에 있는 컬럼이 GROUP BY 절에 명시되지 않으면 인덱스를 사용할 수 없다
   * ex: (index: a,b,c), ```group by b, c``` 는 **인덱스 적용안됨**
 * 인덱스에 없는 컬럼이 GROUP BY 절에 포함되어 있으면 인덱스가 적용되지 않는다.
-  * ex: (index: a,b,c), ```group by a,b,cㅇ,d``` 는 **인덱스 적용안됨**
+  * ex: (index: a,b,c), ```group by a,b,c,d``` 는 **인덱스 적용안됨**
 
 여기서 ```WHERE``` 조건과 ```GROUP BY```가 함께 사용되면 **WHERE 조건이 동등** 비교일 경우 GROUP BY 절에 해당 컬럼은 없어도 인덱스가 적용 됩니다.
 
