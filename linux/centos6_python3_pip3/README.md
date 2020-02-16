@@ -5,7 +5,6 @@
 > 모든 명령어는 ```root``` 사용자에서 진행합니다.  
 > root 외 사용자라면 ```sudo```를 각 명령어 앞에 넣어서 실행하시면 됩니다.
 
-
 Centos6 기본 yum repository에는 Python 3.6 패키지가 없어서 IUS Community Project의 리포지토리를 yum repository에 추가합니다.
 
 ```bash
