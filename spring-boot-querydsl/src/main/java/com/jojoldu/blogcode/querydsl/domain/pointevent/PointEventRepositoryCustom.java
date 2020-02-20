@@ -16,4 +16,6 @@ import java.util.List;
 public interface PointEventRepositoryCustom {
 
     List<PointCalculateAmount> calculateAmounts();
+
+    List<Integer> getGroupOne();
 }
