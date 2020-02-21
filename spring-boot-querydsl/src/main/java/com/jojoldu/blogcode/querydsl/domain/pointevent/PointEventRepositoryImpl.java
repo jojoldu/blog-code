@@ -43,7 +43,7 @@ public class PointEventRepositoryImpl implements PointEventRepositoryCustom {
         return queryFactory.select(Expressions.ONE)
                 .from(pointEvent)
                 .groupBy(pointEvent.pointStatus)
-//                .orderBy(OrderByNull.DEFAULT)
+                .orderBy(OrderByNull.DEFAULT)
                 .fetch();
     }
 }

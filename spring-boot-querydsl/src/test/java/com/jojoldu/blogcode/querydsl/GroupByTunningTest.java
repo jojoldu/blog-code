@@ -52,6 +52,5 @@ public class GroupByTunningTest {
 
         //then
         assertThat(result.size(), is(3));
-
     }
 }
