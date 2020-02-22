@@ -1,8 +1,10 @@
 package com.jojoldu.blogcode.springboot.tips.multivalumap;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.jojoldu.blogcode.springboot.tips.multivaluemap.MultiValueMapController;
 import com.jojoldu.blogcode.springboot.tips.multivaluemap.MultiValueMapConverter;
 import com.jojoldu.blogcode.springboot.tips.multivalumap.MultiValueMapTestDto1.Status;
 import org.junit.jupiter.api.AfterEach;
@@ -14,7 +16,10 @@ import org.springframework.util.MultiValueMap;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Map;
 
+import static com.jojoldu.blogcode.springboot.tips.LocalDateTimeUtils.toStringDateTime;
 import static com.jojoldu.blogcode.springboot.tips.multivalumap.MultiValueMapTestDto1.Status.SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,6 +48,19 @@ public class MultiValueMapConverterTest {
     }
 
     @Test
+    @DisplayName("그냥 변환하면 실패한다.")
+    void fail_test() throws Exception {
+        //given
+        MultiValueMapTestDto1 dto = MultiValueMapTestDto1.builder()
+                .name("name")
+                .build();
+        //when
+        MultiValueMap<String, String> params = objectMapper.convertValue(dto, new TypeReference<MultiValueMap<String, String>>() {});
+
+        //then
+    }
+
+    @Test
     @DisplayName("String/long/boolean/LocalDateTime/enum 모두 변환된다")
     void test1() throws Exception {
         //given
@@ -63,10 +81,11 @@ public class MultiValueMapConverterTest {
         result = MultiValueMapConverter.convert(objectMapper, dto);
 
         //then
+        assertThat(result.size()).isEqualTo(5);
         assertValue("name", expectedName);
         assertValue("amount", String.valueOf(expectedAmount));
         assertValue("checked", String.valueOf(expectedChecked));
-        assertValue("dateTime", parse(expectedDateTime));
+        assertValue("dateTime", toStringDateTime(expectedDateTime));
         assertValue("status", expectedStatus.name());
     }
 
@@ -91,9 +110,24 @@ public class MultiValueMapConverterTest {
         result = MultiValueMapConverter.convert(objectMapper, dto);
 
         //then
+        assertThat(result.size()).isEqualTo(5);
         assertValue("na", expectedName);
-        assertValue("date_time", parse(expectedDateTime));
+        assertValue("date_time", toStringDateTime(expectedDateTime));
         assertValue("st", expectedStatus.name());
+    }
+
+    @Test
+    @DisplayName("Collection 필드 변환")
+    void test3() throws Exception {
+        //given
+        MultiValueMapController.Request dto = new MultiValueMapController.Request();
+        dto.setName(Arrays.asList("a", "b", "c"));
+
+        //when
+        result = MultiValueMapConverter.convert(objectMapper, dto);
+
+        //then
+        assertThat(result.size()).isEqualTo(1);
     }
 
     private void assertValue(String name, String expectedName) {
@@ -104,9 +138,4 @@ public class MultiValueMapConverterTest {
         return result.get(name).get(0);
     }
 
-    private String parse(LocalDateTime localDateTime) {
-        return DateTimeFormatter
-                .ofPattern("yyyy-MM-dd HH:mm:ss")
-                .format(localDateTime);
-    }
 }

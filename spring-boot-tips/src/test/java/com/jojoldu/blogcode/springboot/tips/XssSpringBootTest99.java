@@ -14,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDate;
+
 import static java.time.LocalDate.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -35,10 +37,10 @@ public class XssSpringBootTest99 {
     public void LocalDate가_치환된다() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        LocalDate expected = of(2019, 12, 29);
+        XssRequestDto2 requestBody = new XssRequestDto2("content", expected);
 
-        //language=JSON
-        String requestBody = "{\"content\": \"content\", \"requestDate\": \"2019-12-29\"}";
-        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+        HttpEntity<XssRequestDto2> entity = new HttpEntity<>(requestBody, headers);
         ResponseEntity<XssRequestDto2> response = restTemplate.exchange(
                 "/xss2",
                 HttpMethod.POST,
@@ -46,6 +48,6 @@ public class XssSpringBootTest99 {
                 XssRequestDto2.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getRequestDate()).isEqualTo(of(2019,12,29));
+        assertThat(response.getBody().getRequestDate()).isEqualTo(expected);
     }
 }

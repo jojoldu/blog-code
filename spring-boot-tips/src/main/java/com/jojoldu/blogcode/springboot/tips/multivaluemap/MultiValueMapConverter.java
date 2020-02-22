@@ -11,10 +11,10 @@ import java.util.Map;
 @Slf4j
 public class MultiValueMapConverter {
 
-    public static MultiValueMap<String, String> convert(ObjectMapper mapper, Object dto) {
+    public static MultiValueMap<String, String> convert(ObjectMapper objectMapper, Object dto) {
         try {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            Map<String, String> map = mapper.convertValue(dto, new TypeReference<Map<String, String>>() {});
+            Map<String, String> map = objectMapper.convertValue(dto, new TypeReference<Map<String, String>>() {});
             params.setAll(map);
 
             return params;
