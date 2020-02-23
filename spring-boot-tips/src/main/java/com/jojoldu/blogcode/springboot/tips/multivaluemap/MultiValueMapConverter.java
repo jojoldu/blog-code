@@ -2,6 +2,8 @@ package com.jojoldu.blogcode.springboot.tips.multivaluemap;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -9,7 +11,8 @@ import org.springframework.util.MultiValueMap;
 import java.util.Map;
 
 @Slf4j
-public class MultiValueMapConverter {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public abstract class MultiValueMapConverter {
 
     public static MultiValueMap<String, String> convert(ObjectMapper objectMapper, Object dto) {
         try {
