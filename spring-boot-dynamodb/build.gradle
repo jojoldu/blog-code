@@ -16,13 +16,23 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://s3-us-west-2.amazonaws.com/dynamodb-local/release' } // for DynamoDBLocal Lib
 }
 
 dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws'
+    implementation 'io.github.boostchicken:spring-data-dynamodb:5.2.3' // spring boot 2.2 부터 사용 가능
+    implementation 'com.amazonaws:aws-java-sdk-dynamodb:[1.11,2.0)' // aws-java-sdk-dynamodb:1.11.415 (spring-cloud-starter-aws버전)
+    implementation 'com.amazonaws:DynamoDBLocal:1.11.119' // aws-java-sdk-dynamodb:1.11.415 에 호환가능한 버전 (이 다음버전부터는 에러발생)
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
+
     annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.projectlombok:lombok'
+
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -30,4 +40,11 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Hoxton.SR1'
+    }
 }

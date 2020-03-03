@@ -1,0 +1,39 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQL57Dialect
+      hibernate.dialect.storage_engine: innodb
+      hibernate.hbm2ddl.import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+---
+spring:
+  profiles: local
+  h2:
+    console.settings.trace: false
+    console:
+      enabled: true
+  datasource:
+    hikari:
+      jdbc-url: jdbc:h2:mem://localhost/~/jojoldu;MODE=MYSQL # MODE=MYSQL 없으면 h2가 mysql 모드로 실행이 안됨
+      username: sa
+      password:
+      driver-class-name: org.h2.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+# 로컬환경에서는 instance profile false로
+cloud:
+  aws:
+    credentials:
+      instance-profile: false
