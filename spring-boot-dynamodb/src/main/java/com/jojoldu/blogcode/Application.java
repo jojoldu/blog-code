@@ -1,13 +1,13 @@
-package com.jojoldu.blogcode.dynamodb;
+package com.jojoldu.blogcode;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringBootDynamodbApplication {
+public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringBootDynamodbApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 
 }

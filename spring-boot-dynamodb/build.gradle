@@ -25,7 +25,7 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-dynamodb:[1.11,2.0)' // aws-java-sdk-dynamodb:1.11.415 (spring-cloud-starter-aws버전)
     implementation 'com.amazonaws:DynamoDBLocal:1.11.119' // aws-java-sdk-dynamodb:1.11.415 에 호환가능한 버전 (이 다음버전부터는 에러발생)
 
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     annotationProcessor 'org.projectlombok:lombok'
