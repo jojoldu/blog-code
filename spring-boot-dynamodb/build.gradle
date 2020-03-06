@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-aws'
-//    implementation 'io.github.boostchicken:spring-data-dynamodb:5.2.3' // spring boot 2.2 부터 사용 가능
+    implementation 'io.github.boostchicken:spring-data-dynamodb:5.2.3' // spring boot 2.2 부터 사용 가능
     implementation 'com.amazonaws:aws-java-sdk-dynamodb:[1.11,2.0)' // aws-java-sdk-dynamodb:1.11.415 (spring-cloud-starter-aws버전)
     implementation 'com.amazonaws:DynamoDBLocal:1.11.119' // aws-java-sdk-dynamodb:1.11.415 에 호환가능한 버전 (이 다음버전부터는 에러발생)
 
