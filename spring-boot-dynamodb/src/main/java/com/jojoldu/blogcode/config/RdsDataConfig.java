@@ -15,7 +15,7 @@ import static com.jojoldu.blogcode.config.RdsDataConfig.RDS_DOMAIN_PACKAGE;
  */
 @RequiredArgsConstructor
 @Configuration
-//@EnableJpaRepositories(basePackages = {RDS_DOMAIN_PACKAGE})
+@EnableJpaRepositories(basePackages = {RDS_DOMAIN_PACKAGE})
 @EnableConfigurationProperties({JpaProperties.class, HibernateProperties.class})
 public class RdsDataConfig {
 

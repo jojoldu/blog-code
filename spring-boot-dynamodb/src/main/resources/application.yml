@@ -9,7 +9,6 @@ spring:
       hibernate.dialect.storage_engine: innodb
       hibernate.hbm2ddl.import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
 
-
 cloud:
   aws:
     region:

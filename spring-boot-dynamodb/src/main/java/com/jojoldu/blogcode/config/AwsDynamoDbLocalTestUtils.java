@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 import static lombok.AccessLevel.PRIVATE;
 
-/**
+/*
  * 공식 예제에서는 메이븐으로 설정하는 방법이 나와있으나, 그레이들 혹은 IDE에 실행하면 sqlite4java 기본 라이브러리를 사용할 수 없으므로 로컬 데이터베이스가 시작되지 않을 수 있다.
  * AwsDynamoDbLocal 의 기본 의존성에 sqlite4java가 포함되지만, 이를 IDE나 그레이들에서 가져오지 못하여 발생한 이슈이며, 아래 유틸 클래스는 의존성을 강제로 가져오는 코드이다.
  * 로컬 데이터베이스를 사용하기 전에 AwsDynamoDbLocalTestUtils.initSqLite() 만 호출하면 된다.
