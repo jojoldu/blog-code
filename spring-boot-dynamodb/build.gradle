@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.5.RELEASE'
+    id 'org.springframework.boot' version '2.2.5.RELEASE' apply false
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'java'
 }
@@ -21,9 +21,9 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-aws'
-    implementation 'io.github.boostchicken:spring-data-dynamodb:5.2.3' // spring boot 2.2 부터 사용 가능
-    implementation 'com.amazonaws:aws-java-sdk-dynamodb:[1.11,2.0)' // aws-java-sdk-dynamodb:1.11.415 (spring-cloud-starter-aws버전)
-    implementation 'com.amazonaws:DynamoDBLocal:1.11.119' // aws-java-sdk-dynamodb:1.11.415 에 호환가능한 버전 (이 다음버전부터는 에러발생)
+    implementation 'io.github.boostchicken:spring-data-dynamodb:5.2.3'
+    implementation 'software.amazon.awssdk:dynamodb:2.10.80'
+    implementation 'com.amazonaws:DynamoDBLocal:1.11.119'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -46,6 +46,6 @@ test {
 dependencyManagement {
     imports {
         mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
-        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Hoxton.SR1'
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Hoxton.SR3'
     }
 }

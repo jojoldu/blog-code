@@ -22,23 +22,29 @@ public class EmbeddedDynamoDbConfig {
 
     @PostConstruct
     public void start() {
+        if (server != null) {
+            return;
+        }
+
         try {
             AwsDynamoDbLocalTestUtils.initSqLite();
             server = ServerRunner.createServerFromCommandLineArgs(new String[]{"-inMemory"});
             server.start();
             log.info("Start Embedded DynamoDB");
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new IllegalStateException("Fail Start Embedded DynamoDB", e);
         }
     }
 
     @PreDestroy
     public void stop() {
+        if (server == null) {
+            return;
+        }
+
         try {
-            if (server != null) {
-                log.info("Stop Embedded DynamoDB");
-                server.stop();
-            }
+            log.info("Stop Embedded DynamoDB");
+            server.stop();
         } catch (Exception e) {
             throw new IllegalStateException("Fail Stop Embedded DynamoDB", e);
         }

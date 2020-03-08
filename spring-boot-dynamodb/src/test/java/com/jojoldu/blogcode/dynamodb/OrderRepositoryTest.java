@@ -67,5 +67,4 @@ public class OrderRepositoryTest {
         assertThat(savedOrder.getOrderNo()).isEqualTo(orderNo);
         assertThat(savedOrder.getOrderAmount()).isEqualTo(orderAmount);
     }
-
 }
