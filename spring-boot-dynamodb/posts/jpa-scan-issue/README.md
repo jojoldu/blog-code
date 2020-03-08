@@ -342,7 +342,7 @@ Spring Data JPA 사용시 별다른 설정을 하지 않으시는 경우엔 ```@
 
 그러다보니 DynamoDB와 JPA **양쪽에서 OrderRepository를 Repository Bean으로 등록하려다보니** 발생하게 된 것이죠.  
 
-> 즉, Spring Data DynamoDB에서 Repository Bean을 등록하니 굳이 ```@Repository```를 **선언 안하셔도 됩니다**.   
+> 즉, Spring Data DynamoDB에서 Repository Bean을 등록하니 굳이 ```@Repository```를 **선언 안하셔도 됩니다**.
   
 원인을 알게되었으니, 해결책은 간단합니다.  
 **JpaRepository 스캔 범위를 직접 지정**하는 것입니다.  
