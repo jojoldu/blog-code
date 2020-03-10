@@ -4,6 +4,9 @@ spring:
       enabled: true
   jpa:
     show-sql: true
+  profiles:
+    include:
+      - rds
 
 logging:
   level:

@@ -3,6 +3,8 @@
 !gradle/wrapper/gradle-wrapper.jar
 out
 
+application-rds.yml
+
 ### STS ###
 .apt_generated
 .classpath

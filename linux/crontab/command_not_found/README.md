@@ -1,5 +1,7 @@
 # Linux에서 crontab 실행시 명령어 찾지 못할때
 
+![crontab](./images/crontab.png)
+
 crontab의 기본 PATH는 ```/usr/bin``` 밖에 없습니다.  
 즉, ```/usr/local/bin``` 등 다른 경로에 있는 command에 대해서는 crontab 이 인식하지 못하는데요.  
   
