@@ -1,0 +1,37 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQL57Dialect
+      hibernate.dialect.storage_engine: innodb
+      hibernate.hbm2ddl.import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
+      hibernate.default_batch_fetch_size: ${chunkSize:1000}
+      hibernate.query.in_clause_parameter_padding: true
+
+    open-in-view: false
+  datasource:
+    hikari:
+      auto-commit: false
+
+---
+spring:
+  profiles: local
+  h2:
+    console.settings.trace: false
+    console:
+      enabled: true
+  datasource:
+    hikari:
+      jdbc-url: jdbc:h2:mem://localhost/~/jojoldu;MODE=MYSQL # MODE=MYSQL 없으면 h2가 mysql 모드로 실행이 안됨
+      username: sa
+      password:
+      driver-class-name: org.h2.Driver
+      data-source-properties:
+        connect-timeout: 10000
+        socket-timeout: 60000
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
