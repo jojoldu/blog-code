@@ -23,10 +23,11 @@ spring:
       enabled: true
   datasource:
     hikari:
-      jdbc-url: jdbc:h2:mem://localhost/~/jojoldu;MODE=MYSQL # MODE=MYSQL 없으면 h2가 mysql 모드로 실행이 안됨
-      username: sa
-      password:
-      driver-class-name: org.h2.Driver
+      jdbc-url: jdbc:mysql:aurora://jojoldu.cluster-cvqgfwbdqpys.ap-northeast-2.rds.amazonaws.com:3306/jojoldu
+  #    jdbc-url: jdbc:mysql:aurora://jojoldu.cluster-cvqgfwbdqpys.ap-northeast-2.rds.amazonaws.com:3306/jojoldu?connectTimeout=1000&socketTimeout=600000
+  #    username: sa
+  #    password:
+      driver-class-name: org.mariadb.jdbc.Driver
       data-source-properties:
         connect-timeout: 10000
         socket-timeout: 60000
