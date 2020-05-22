@@ -1,0 +1,39 @@
+spring:
+  profiles:
+    include:
+      - real
+    active: local
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQL57Dialect
+      hibernate.hbm2ddl.import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
+      hibernate.default_batch_fetch_size: ${chunkSize:1000}
+    open-in-view: false
+spring.batch.job.names: ${job.name:NONE}
+logging.level.org.springframework.batch.item.querydsl.reader: DEBUG
+
+---
+spring:
+  profiles: local
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+
+main:
+  datasource:
+    jdbc-url: jdbc:h2:mem:main;MODE=MYSQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+other:
+  datasource:
+    jdbc-url: jdbc:h2:mem:other;MODE=MYSQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver

@@ -22,7 +22,6 @@ import javax.sql.DataSource;
  */
 @RequiredArgsConstructor
 @Configuration
-@EnableConfigurationProperties
 public class EntityManagerConfig {
     public static final String MAIN_ENTITY_MANAGER_FACTORY = "entityManagerFactory";
     public static final String MAIN_TRANSACTION_MANAGER = "transactionManager";
@@ -58,7 +57,6 @@ public class EntityManagerConfig {
         return transactionManager;
     }
 
-    @Primary
     @Bean(name = OTHER_ENTITY_MANAGER_FACTORY)
     public LocalContainerEntityManagerFactoryBean otherEntityManagerFactory(
             @Qualifier("otherDataSource") DataSource dataSource) {
@@ -71,7 +69,6 @@ public class EntityManagerConfig {
                 .build();
     }
 
-    @Primary
     @Bean(name = OTHER_TRANSACTION_MANAGER)
     public PlatformTransactionManager otherTransactionManager(
             @Qualifier("otherDataSource") DataSource dataSource,
