@@ -1,5 +1,6 @@
 package com.jojoldu.blogcode.batch.config;
 
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateProperties;
@@ -29,43 +30,22 @@ import javax.sql.DataSource;
 @EnableConfigurationProperties
 public class DataSourceConfig {
 
-    private final JpaProperties jpaProperties;
-    private final HibernateProperties hibernateProperties;
-    private final ObjectProvider<PersistenceUnitManager> persistenceUnitManager;
-
     @Bean
     @Primary
     @ConfigurationProperties(prefix = "main.datasource")
     public DataSource dataSource() {
         return DataSourceBuilder.create()
+                .type(HikariDataSource.class)
                 .build();
     }
 
     @Bean
-    @Primary
     @ConfigurationProperties(prefix = "other.datasource")
     public DataSource otherDataSource() {
         return DataSourceBuilder.create()
+                .type(HikariDataSource.class)
                 .build();
     }
 
-    @Primary
-    @Bean("entityManagerFactoryBuilder")
-    public EntityManagerFactoryBuilder entityManagerFactoryBuilder() {
-        JpaVendorAdapter jpaVendorAdapter = jpaVendorAdapter();
 
-        return new EntityManagerFactoryBuilder(
-                jpaVendorAdapter,
-                hibernateProperties.determineHibernateProperties(this.jpaProperties.getProperties(), new HibernateSettings()),
-                this.persistenceUnitManager.getIfAvailable());
-    }
-
-    private JpaVendorAdapter jpaVendorAdapter() {
-        AbstractJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
-        adapter.setShowSql(this.jpaProperties.isShowSql());
-        adapter.setDatabase(this.jpaProperties.getDatabase());
-        adapter.setDatabasePlatform(this.jpaProperties.getDatabasePlatform());
-        adapter.setGenerateDdl(this.jpaProperties.isGenerateDdl());
-        return adapter;
-    }
 }

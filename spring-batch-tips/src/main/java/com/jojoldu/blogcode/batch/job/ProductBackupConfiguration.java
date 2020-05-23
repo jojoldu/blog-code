@@ -2,7 +2,6 @@ package com.jojoldu.blogcode.batch.job;
 
 import com.jojoldu.blogcode.batch.domain.Product;
 import com.jojoldu.blogcode.batch.domain.ProductBackup;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -14,7 +13,6 @@ import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -46,14 +44,14 @@ public class ProductBackupConfiguration {
     public ProductBackupConfiguration(
             JobBuilderFactory jobBuilderFactory,
             StepBuilderFactory stepBuilderFactory,
-            @Qualifier(MAIN_ENTITY_MANAGER_FACTORY) EntityManagerFactory emf,
+            EntityManagerFactory emf,
             @Qualifier(OTHER_ENTITY_MANAGER_FACTORY) EntityManagerFactory otherEmf,
             ProductBackupJobParameter jobParameter) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.emf = emf;
-        this.jobParameter = jobParameter;
         this.otherEmf = otherEmf;
+        this.jobParameter = jobParameter;
     }
 
 
