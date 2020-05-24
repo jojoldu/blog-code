@@ -29,8 +29,10 @@ import javax.sql.DataSource;
 @Configuration
 @EnableConfigurationProperties
 public class DataSourceConfiguration {
+    public static final String MAIN_DATASOURCE = "dataSource";
+    public static final String OTHER_DATASOURCE = "otherDataSource";
 
-    @Bean
+    @Bean(MAIN_DATASOURCE)
     @Primary
     @ConfigurationProperties(prefix = "main.datasource")
     public DataSource dataSource() {
@@ -39,7 +41,7 @@ public class DataSourceConfiguration {
                 .build();
     }
 
-    @Bean
+    @Bean(OTHER_DATASOURCE)
     @ConfigurationProperties(prefix = "other.datasource")
     public DataSource otherDataSource() {
         return DataSourceBuilder.create()

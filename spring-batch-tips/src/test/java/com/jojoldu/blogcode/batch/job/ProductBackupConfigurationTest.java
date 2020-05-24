@@ -1,7 +1,6 @@
 package com.jojoldu.blogcode.batch.job;
 
 import com.jojoldu.blogcode.batch.TestBatchConfig;
-import com.jojoldu.blogcode.batch.domain.Product;
 import com.jojoldu.blogcode.batch.domain.ProductBackup;
 import com.jojoldu.blogcode.batch.domain.ProductBackupRepository;
 import com.jojoldu.blogcode.batch.domain.ProductRepository;
@@ -18,15 +17,15 @@ import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static com.jojoldu.blogcode.batch.config.BatchJpaConfiguration.OTHER_ENTITY_MANAGER_FACTORY;
+import static com.jojoldu.blogcode.batch.config.DataSourceConfiguration.OTHER_DATASOURCE;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,28 +41,28 @@ public class ProductBackupConfigurationTest {
     public static final DateTimeFormatter FORMATTER = ofPattern("yyyy-MM-dd");
 
     @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
     private ProductBackupRepository productBackupRepository;
 
     @Autowired
     private JobLauncherTestUtils jobLauncherTestUtils;
 
     @Autowired
-    @Qualifier(OTHER_ENTITY_MANAGER_FACTORY)
-    private EntityManagerFactory otherEmf;
+    @Qualifier(OTHER_DATASOURCE)
+    private DataSource otherDataSource;
 
-    @Autowired
-    private EntityManagerFactory emf;
-
-    private SimpleJpaRepository<Product, Long> productRepository;
+    private JdbcTemplate otherJdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        productRepository = new SimpleJpaRepository<>(Product.class, otherEmf.createEntityManager());
+        this.otherJdbcTemplate = new JdbcTemplate(otherDataSource);
     }
 
     @AfterEach
     public void after() throws Exception {
-        productRepository.deleteAllInBatch();
+        otherJdbcTemplate.execute("DELETE FROM product");
         productBackupRepository.deleteAllInBatch();
     }
 
@@ -75,8 +74,8 @@ public class ProductBackupConfigurationTest {
         int categoryNo = 1;
         int expected1 = 1000;
         int expected2 = 2000;
-        productRepository.save(new Product(name, expected1, categoryNo, txDate));
-        productRepository.save(new Product(name, expected2, categoryNo, txDate));
+        otherJdbcTemplate.update("insert into product (name, price, category_no, create_date) values (?, ?, ?, ?)", name, expected1, categoryNo, txDate);
+        otherJdbcTemplate.update("insert into product (name, price, category_no, create_date) values (?, ?, ?, ?)", name, expected2, categoryNo, txDate);
 
         JobParameters jobParameters = new JobParametersBuilder(jobLauncherTestUtils.getUniqueJobParameters())
                 .addString("txDate", txDate.format(FORMATTER))

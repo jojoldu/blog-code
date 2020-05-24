@@ -3,11 +3,9 @@ spring:
     include:
       - real
     active: local
-  datasource:
-    hikari:
-      auto-commit: false
   jpa:
     database: MYSQL
+    database-platform:
     hibernate:
       ddl-auto: none
     show-sql: true
@@ -16,6 +14,7 @@ spring:
       hibernate.hbm2ddl.import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
       hibernate.default_batch_fetch_size: ${chunkSize:1000}
     open-in-view: false
+
 spring.batch.job.names: ${job.name:NONE}
 logging.level:
   org:

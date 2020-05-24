@@ -4,25 +4,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateProperties;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateSettings;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
-import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+
+import static com.jojoldu.blogcode.batch.config.DataSourceConfiguration.OTHER_DATASOURCE;
 
 /**
  * Created by jojoldu@gmail.com on 24/05/2020
@@ -46,8 +43,7 @@ public class BatchJpaConfiguration {
 
     @Primary
     @Bean(name = MAIN_ENTITY_MANAGER_FACTORY)
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            @Qualifier("dataSource") DataSource dataSource) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
 
         return new EntityManagerCreator(properties, hibernateProperties, metadataProviders, entityManagerFactoryBuilder, dataSource)
                 .entityManagerFactory("com.jojoldu.blogcode.batch.domain", "main");
@@ -55,9 +51,20 @@ public class BatchJpaConfiguration {
 
     @Bean(name = OTHER_ENTITY_MANAGER_FACTORY)
     public LocalContainerEntityManagerFactoryBean otherEntityManagerFactory(
-            @Qualifier("otherDataSource") DataSource dataSource) {
+            @Qualifier(OTHER_DATASOURCE) DataSource dataSource) {
 
         return new EntityManagerCreator(properties, hibernateProperties, metadataProviders, entityManagerFactoryBuilder, dataSource)
                 .entityManagerFactory("com.jojoldu.blogcode.batch.domain", "other");
     }
+
+    @Bean(name = OTHER_TRANSACTION_MANAGER)
+    public PlatformTransactionManager transactionManager(
+            @Qualifier(OTHER_DATASOURCE) DataSource dataSource,
+            @Qualifier(OTHER_ENTITY_MANAGER_FACTORY) EntityManagerFactory entityManagerFactory) {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setDataSource(dataSource);
+        transactionManager.setEntityManagerFactory(entityManagerFactory);
+        return transactionManager;
+    }
+
 }

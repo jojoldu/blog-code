@@ -54,7 +54,6 @@ public class ProductBackupConfiguration {
         this.jobParameter = jobParameter;
     }
 
-
     private int chunkSize;
 
     @Value("${chunkSize:1000}")
@@ -78,7 +77,7 @@ public class ProductBackupConfiguration {
     @Bean
     @JobScope
     public Step step() {
-        return stepBuilderFactory.get("querydslPagingReaderStep")
+        return stepBuilderFactory.get("step")
                 .<Product, ProductBackup>chunk(chunkSize)
                 .reader(reader())
                 .processor(processor())
