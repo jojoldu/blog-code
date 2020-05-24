@@ -28,7 +28,7 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 @Configuration
 @EnableConfigurationProperties
-public class DataSourceConfig {
+public class DataSourceConfiguration {
 
     @Bean
     @Primary

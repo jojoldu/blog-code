@@ -8,6 +8,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
@@ -20,8 +21,7 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.persistence.EntityManagerFactory;
 
-import static com.jojoldu.blogcode.batch.config.EntityManagerConfig.MAIN_ENTITY_MANAGER_FACTORY;
-import static com.jojoldu.blogcode.batch.config.EntityManagerConfig.OTHER_ENTITY_MANAGER_FACTORY;
+import static com.jojoldu.blogcode.batch.config.BatchJpaConfiguration.OTHER_ENTITY_MANAGER_FACTORY;
 
 
 /**
@@ -76,6 +76,7 @@ public class ProductBackupConfiguration {
     }
 
     @Bean
+    @JobScope
     public Step step() {
         return stepBuilderFactory.get("querydslPagingReaderStep")
                 .<Product, ProductBackup>chunk(chunkSize)
@@ -86,8 +87,9 @@ public class ProductBackupConfiguration {
     }
 
     @Bean
+    @StepScope
     public JpaPagingItemReader<Product> reader() {
-        String query = "SELECT p FROM Product p WHERE p.createDate ="+jobParameter.getTxDate();
+        String query = String.format("SELECT p FROM Product p WHERE p.createDate ='%s'", jobParameter.getTxDate());
 
         return new JpaPagingItemReaderBuilder<Product>()
                 .entityManagerFactory(otherEmf)

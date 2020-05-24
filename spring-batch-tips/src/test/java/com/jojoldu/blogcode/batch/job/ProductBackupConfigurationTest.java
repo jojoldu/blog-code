@@ -6,6 +6,7 @@ import com.jojoldu.blogcode.batch.domain.ProductBackup;
 import com.jojoldu.blogcode.batch.domain.ProductBackupRepository;
 import com.jojoldu.blogcode.batch.domain.ProductRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.batch.core.BatchStatus;
@@ -15,14 +16,17 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.persistence.EntityManagerFactory;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static com.jojoldu.blogcode.batch.config.BatchJpaConfiguration.OTHER_ENTITY_MANAGER_FACTORY;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,18 +38,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {TestBatchConfig.class, ProductBackupConfiguration.class})
 @SpringBatchTest
-@ActiveProfiles(profiles = "real")
-public class RealProductBackupConfigurationTest {
+public class ProductBackupConfigurationTest {
     public static final DateTimeFormatter FORMATTER = ofPattern("yyyy-MM-dd");
-
-    @Autowired
-    private ProductRepository productRepository;
 
     @Autowired
     private ProductBackupRepository productBackupRepository;
 
     @Autowired
     private JobLauncherTestUtils jobLauncherTestUtils;
+
+    @Autowired
+    @Qualifier(OTHER_ENTITY_MANAGER_FACTORY)
+    private EntityManagerFactory otherEmf;
+
+    @Autowired
+    private EntityManagerFactory emf;
+
+    private SimpleJpaRepository<Product, Long> productRepository;
+
+    @BeforeEach
+    void setUp() {
+        productRepository = new SimpleJpaRepository<>(Product.class, otherEmf.createEntityManager());
+    }
 
     @AfterEach
     public void after() throws Exception {
@@ -54,7 +68,7 @@ public class RealProductBackupConfigurationTest {
     }
 
     @Test
-    public void MYSQL_Product가_ProductBackup으로_이관된다() throws Exception {
+    public void Product가_ProductBackup으로_이관된다() throws Exception {
         //given
         LocalDate txDate = LocalDate.of(2020,10,12);
         String name = "a";

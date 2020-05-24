@@ -3,7 +3,11 @@ spring:
     include:
       - real
     active: local
+  datasource:
+    hikari:
+      auto-commit: false
   jpa:
+    database: MYSQL
     hibernate:
       ddl-auto: none
     show-sql: true
@@ -13,19 +17,25 @@ spring:
       hibernate.default_batch_fetch_size: ${chunkSize:1000}
     open-in-view: false
 spring.batch.job.names: ${job.name:NONE}
-logging.level.org.springframework.batch.item.querydsl.reader: DEBUG
+logging.level:
+  org:
+    springframework:
+      batch:
+        item:
+          database: DEBUG
 
 ---
 spring:
   profiles: local
   jpa:
+    database: H2
     hibernate:
       ddl-auto: update
     show-sql: true
 
-
 main:
   datasource:
+    auto-commit: false
     jdbc-url: jdbc:h2:mem:main;MODE=MYSQL
     username: sa
     password:
@@ -33,6 +43,7 @@ main:
 
 other:
   datasource:
+    auto-commit: false
     jdbc-url: jdbc:h2:mem:other;MODE=MYSQL
     username: sa
     password:
