@@ -30,6 +30,13 @@ public class MultiValueMapController {
         return request.toString();
     }
 
+    @GetMapping("/get2")
+    public String get2 (MultiValueMapTestDto1 request) {
+        log.info("request body= {}", request.toString());
+        return request.toString();
+    }
+
+
     @Getter
     @Setter
     @NoArgsConstructor

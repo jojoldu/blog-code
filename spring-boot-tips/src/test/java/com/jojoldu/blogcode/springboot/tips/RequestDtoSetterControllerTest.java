@@ -81,4 +81,30 @@ public class RequestDtoSetterControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(content));
     }
+
+    @Test
+    public void GET_20200231_날짜도_LocalDate바인딩이_가능하다() throws Exception {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.put("date", Arrays.asList("2020-02-31"));
+
+        mvc
+                .perform(get("/request/setter")
+                        .params(params)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("{\"date\":\"2020-02-29\"}"));
+    }
+
+    @Test
+    public void POST_20200231_날짜도_LocalDate바인딩이_가능하다() throws Exception {
+        String content = "{\"date\":\"2020-02-31\"}";
+        mvc
+                .perform(post("/request/setter")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("{\"date\":\"2020-02-29\"}"));
+    }
 }

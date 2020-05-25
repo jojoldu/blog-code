@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jojoldu.blogcode.springboot.tips.multivaluemap.MultiValueMapController;
 import com.jojoldu.blogcode.springboot.tips.multivaluemap.MultiValueMapConverter;
-import com.jojoldu.blogcode.springboot.tips.multivalumap.MultiValueMapTestDto1.Status;
+import com.jojoldu.blogcode.springboot.tips.multivaluemap.MultiValueMapTestDto1;
+import com.jojoldu.blogcode.springboot.tips.multivaluemap.MultiValueMapTestDto1.Status;
+import com.jojoldu.blogcode.springboot.tips.multivaluemap.MultiValueMapTestDto2;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,12 +17,10 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.MultiValueMap;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Map;
 
 import static com.jojoldu.blogcode.springboot.tips.LocalDateTimeUtils.toStringDateTime;
-import static com.jojoldu.blogcode.springboot.tips.multivalumap.MultiValueMapTestDto1.Status.SUCCESS;
+import static com.jojoldu.blogcode.springboot.tips.multivaluemap.MultiValueMapTestDto1.Status.SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

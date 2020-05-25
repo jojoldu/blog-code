@@ -12,17 +12,15 @@ public class RequestDtoSetterController {
 
     @PostMapping("/request/setter")
     public RequestSetterDto postRequestSetter (@RequestBody RequestSetterDto requestSetterDto) {
-        log.info(requestSetterDto.getName() + " : " + requestSetterDto.getAmount());
+        log.info("requestDto={}", requestSetterDto.toString());
 
         return requestSetterDto;
     }
 
     @GetMapping("/request/setter")
     public RequestSetterDto getRequestSetter (RequestSetterDto requestSetterDto) {
-        log.info(requestSetterDto.getName() + " : " + requestSetterDto.getAmount());
+        log.info("requestDto={}", requestSetterDto.toString());
 
         return requestSetterDto;
     }
-
-
 }
