@@ -5,7 +5,6 @@ spring:
     active: local
   jpa:
     database: MYSQL
-    database-platform:
     hibernate:
       ddl-auto: none
     show-sql: true
@@ -17,8 +16,12 @@ spring:
 
 spring.batch.job.names: ${job.name:NONE}
 logging.level:
+
   org:
     springframework:
+      jdbc:
+        core:
+          JdbcTemplate: DEBUG
       batch:
         item:
           database: DEBUG

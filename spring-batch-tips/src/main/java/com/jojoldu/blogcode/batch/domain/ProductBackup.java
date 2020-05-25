@@ -31,7 +31,6 @@ public class ProductBackup {
     private int categoryNo;
     private LocalDate createDate;
 
-
     @Builder
     public ProductBackup(Product product) {
         this.originId = product.getId();

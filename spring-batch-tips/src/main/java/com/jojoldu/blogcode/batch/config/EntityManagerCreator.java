@@ -1,6 +1,7 @@
 package com.jojoldu.blogcode.batch.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateSettings;
@@ -25,6 +26,7 @@ import java.util.Map;
  * Github : http://github.com/jojoldu
  */
 
+@Slf4j
 @RequiredArgsConstructor
 public class EntityManagerCreator {
     private static final String PROVIDER_DISABLES_AUTOCOMMIT = "hibernate.connection.provider_disables_autocommit";
@@ -35,7 +37,7 @@ public class EntityManagerCreator {
     private final EntityManagerFactoryBuilder entityManagerFactoryBuilder;
     private final DataSource dataSource;
 
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory (
             String packages, String persistenceUnit) {
 
         Map<String, Object> vendorProperties = getVendorProperties();
@@ -68,6 +70,7 @@ public class EntityManagerCreator {
 
     private void configureProviderDisablesAutocommit(Map<String, Object> vendorProperties) {
         if (isDataSourceAutoCommitDisabled()) {
+            log.info("Hikari auto-commit: false");
             vendorProperties.put(PROVIDER_DISABLES_AUTOCOMMIT, "true");
         }
     }

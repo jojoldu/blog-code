@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import static com.jojoldu.blogcode.batch.config.DataSourceConfiguration.OTHER_DATASOURCE;
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -76,6 +77,8 @@ public class ProductBackupConfigurationTest {
         int expected2 = 2000;
         otherJdbcTemplate.update("insert into product (name, price, category_no, create_date) values (?, ?, ?, ?)", name, expected1, categoryNo, txDate);
         otherJdbcTemplate.update("insert into product (name, price, category_no, create_date) values (?, ?, ?, ?)", name, expected2, categoryNo, txDate);
+
+        List<Map<String, Object>> saved = otherJdbcTemplate.queryForList("select * from product");
 
         JobParameters jobParameters = new JobParametersBuilder(jobLauncherTestUtils.getUniqueJobParameters())
                 .addString("txDate", txDate.format(FORMATTER))
