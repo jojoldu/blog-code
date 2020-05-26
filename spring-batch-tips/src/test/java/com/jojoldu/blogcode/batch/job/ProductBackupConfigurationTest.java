@@ -1,6 +1,7 @@
 package com.jojoldu.blogcode.batch.job;
 
 import com.jojoldu.blogcode.batch.TestBatchConfig;
+import com.jojoldu.blogcode.batch.domain.Product;
 import com.jojoldu.blogcode.batch.domain.ProductBackup;
 import com.jojoldu.blogcode.batch.domain.ProductBackupRepository;
 import com.jojoldu.blogcode.batch.domain.ProductRepository;
@@ -78,7 +79,8 @@ public class ProductBackupConfigurationTest {
         otherJdbcTemplate.update("insert into product (name, price, category_no, create_date) values (?, ?, ?, ?)", name, expected1, categoryNo, txDate);
         otherJdbcTemplate.update("insert into product (name, price, category_no, create_date) values (?, ?, ?, ?)", name, expected2, categoryNo, txDate);
 
-        List<Map<String, Object>> saved = otherJdbcTemplate.queryForList("select * from product");
+        List<Map<String, Object>> others = otherJdbcTemplate.queryForList("select * from product");
+        List<Product> mains = productRepository.findAll();
 
         JobParameters jobParameters = new JobParametersBuilder(jobLauncherTestUtils.getUniqueJobParameters())
                 .addString("txDate", txDate.format(FORMATTER))
