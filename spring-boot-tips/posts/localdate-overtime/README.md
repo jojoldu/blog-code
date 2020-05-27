@@ -1,4 +1,4 @@
-# Get 요청시 LocalDate 필드에 2월 31일자가 올 경우 정상 처리 방법
+# Get 요청시 LocalDate 필드에 2월 31일 올 경우 정상 처리 방법 (feat. @DateTimeFormat 제거하기)
 
 Spring Boot로 LocalDate를 Request Parameter로 받을 경우 예상치 못한 이슈가 발생합니다.  
 이번 시간에는 여러 이슈 중 하나인 초과된 날짜에 대해 LocalDate로 받으면 400에러가 발생하는 경우를 어떻게 안전하게 해결할지에 대해서 이야기해보겠습니다.  
@@ -166,6 +166,10 @@ Post에서는 가능한 이유는 Post로 인한 값 직렬화는 **ObjectMapper
 
 ## 해결 방법
 
+해결 방법엔 2가지가 있습니다.
+
+### 1. PropertyEditor
+
 먼저 Get 요청시 값 변환에 대한 코드를 확인해봅니다.  
 코드를 쫓아가시다보면 ```TypeConverterDelegate``` 클래스에서 필드 변환이 발생하는 것을 확인할 수 있는데요.  
 
@@ -207,6 +211,9 @@ public class WebControllerAdvice {
 }
 ```
 
+* PropertyEditor는 **Thread Safe하지 않습니다**.
+* 그래서 PropertyEditor를 Bean으로 등록할 경우 Thread 문제가 발생할 수 있으니 ```@InitBinder```를 통해 Thread Safe를 보장받도록 하였습니다. 
+
 > 여기서는 익명 클래스로 ```PropertyEditorSupport``` 구현체를 만들었지만, 별도의 클래스로 생성해서 사용하셔도 무방합니다.
 
 자 이렇게 등록하신 뒤 다시 Get 테스트 코드를 수행해보면!?
@@ -220,4 +227,64 @@ ObjectMapper의 변환처럼 문자열 2020-02-31 값이 ```LocalDate``` 2020-02
 ![post4](./images/post4.png)
 
 
-> 물론 정확하게 2020-02-29 로 파라미터를 던져주는게 기획상/팀규칙상 맞다면 이런 옵션은 전혀 사용하지 않으셔도 됩니다.
+### 2. Formatter 
+
+hojinDev님께서 댓글로 알려주신건데요.  
+최근엔 ```Formatter```를 통해 바인딩 정보를 변경하는 것을 권장하고 있습니다.
+
+![hojindev](./images/hojindev.png)
+
+그래서 PropertyEditor가 아닌 Formatter를 사용한다면 아래와 같은 코드로 개선할 수 있습니다.  
+  
+먼저 ```LocalDate``` 변환을 담당할 Formatter 구현체를 만들고,
+
+```java
+public class LocalDateFormatter implements Formatter<LocalDate> {
+
+    @Override
+    public LocalDate parse(String text, Locale locale) {
+        return LocalDate.parse(text, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
+    @Override
+    public String print(LocalDate object, Locale locale) {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(object);
+    }
+}
+```
+
+이를 프로젝트의 Config 클래스에 Bean으로 등록하면 됩니다.
+
+```java
+@Configuration
+public class AppConfig {
+
+    ...
+
+    @Bean
+    public LocalDateFormatter localDateFormatter() {
+        return new LocalDateFormatter();
+    }
+}
+```
+
+이렇게 변경 후 다시 테스트를 돌려보면?
+
+![get3](./images/get3.png)
+
+정상적으로 테스트가 통과하는 것을 확인할 수 있습니다.
+
+> 제보 감사합니다 hojinDev님!
+
+## 마무리
+
+위 2가지 방법 어느것을 사용하더라도 **모든 Get요청에 대해선 일관된 규칙**을 가지게 됩니다.  
+  
+즉, 수많은 Request Dto에서 더이상 ```@DateTimeFormat```을 사용하지 않아도 된다는 것이죠.
+
+![dto](./images/dto.png)
+
+팀에서 일관된 규칙의 날짜 파라미터를 사용한다면 한번쯤 고려해볼만한 옵션이라고 생각됩니다.  
+  
+위에선 강제로 2월 31일에 대해서 문제 없이 발생하도록 구현하였는데요.  
+무조건 그렇게 해야된다기 보다는 **기획상/팀 규칙상** 정확하게 2020-02-29 로 파라미터를 받고, 그 외에는 에러를 발생하는게 맞다면 이런 옵션은 전혀 사용하지 않으셔도 됩니다.

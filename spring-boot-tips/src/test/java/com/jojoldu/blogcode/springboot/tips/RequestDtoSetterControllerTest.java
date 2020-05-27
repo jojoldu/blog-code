@@ -4,6 +4,8 @@
 package com.jojoldu.blogcode.springboot.tips;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jojoldu.blogcode.springboot.tips.config.AppConfig;
+import com.jojoldu.blogcode.springboot.tips.config.LocalDateFormatter;
 import com.jojoldu.blogcode.springboot.tips.setter.RequestDtoSetterController;
 import com.jojoldu.blogcode.springboot.tips.setter.RequestSetterDto;
 import org.junit.Test;
@@ -25,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(RequestDtoSetterController.class)
+@WebMvcTest(controllers = {RequestDtoSetterController.class, AppConfig.class})
 public class RequestDtoSetterControllerTest {
 
     @Autowired
