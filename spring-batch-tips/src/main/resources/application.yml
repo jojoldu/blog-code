@@ -16,9 +16,7 @@ spring:
 
 spring.batch.job.names: ${job.name:NONE}
 logging.level:
-
-  org:
-    springframework:
+  org.springframework:
       jdbc:
         core:
           JdbcTemplate: DEBUG
