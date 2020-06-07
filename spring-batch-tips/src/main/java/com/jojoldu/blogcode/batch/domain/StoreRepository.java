@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Github : https://github.com/jojoldu
  */
 
-public interface ProductBackupRepository extends JpaRepository<ProductBackup, Long> {
+public interface StoreRepository extends JpaRepository<Store, Long> {
 }

@@ -10,10 +10,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.time.LocalDate;
 
 @Getter
@@ -28,15 +32,21 @@ public class ProductBackup {
 
     private String name;
     private long price;
-    private int categoryNo;
     private LocalDate createDate;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
+    private Store store;
 
     @Builder
     public ProductBackup(Product product) {
         this.originId = product.getId();
         this.name = product.getName();
         this.price = product.getPrice();
-        this.categoryNo = product.getCategoryNo();
         this.createDate = product.getCreateDate();
+    }
+
+    public void changeStore(Store store) {
+        this.store = store;
     }
 }
