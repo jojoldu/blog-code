@@ -1,14 +1,9 @@
 package com.jojoldu.batch.job;
 
 import com.jojoldu.batch.job.common.JpaPagingFetchItemReader;
-import com.jojoldu.batch.job.common.QuerydslCursorItemReader;
-import com.jojoldu.batch.job.common.QuerydslPagingItemReader;
-import com.jojoldu.batch.job.domain.QStore;
 import com.jojoldu.batch.job.domain.Store;
 import com.jojoldu.batch.job.domain.StoreHistory;
-import com.querydsl.core.types.Projections;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.SessionFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -16,10 +11,9 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.database.HibernateCursorItemReader;
-import org.springframework.batch.item.database.HibernatePagingItemReader;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
+import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.jojoldu.batch.job.StoreBackupBatchConfiguration.JOB_NAME;
-import static com.jojoldu.batch.job.domain.QStore.store;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 10. 27.
@@ -70,15 +63,33 @@ public class StoreBackupBatchConfiguration {
                 .build();
     }
 
+    @Bean
+    @StepScope
+    public JpaPagingItemReader<Store> reader (
+            @Value("#{jobParameters[address]}") String address) {
+
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("address", address+"%");
+
+        return new JpaPagingItemReaderBuilder<Store>()
+                .pageSize(chunkSize)
+                .parameterValues(parameters)
+                .queryString("SELECT s FROM Store s WHERE s.address LIKE :address order by s.id")
+                .entityManagerFactory(entityManagerFactory)
+                .name("reader")
+                .transacted(false)
+                .build();
+    }
+
 //    @Bean
 //    @StepScope
-//    public JpaPagingItemReader<Store> reader (
+//    public JpaPagingFetchItemReader<Store> reader(
 //            @Value("#{jobParameters[address]}") String address) {
 //
 //        Map<String, Object> parameters = new LinkedHashMap<>();
-//        parameters.put("address", address+"%");
+//        parameters.put("address", address + "%");
 //
-//        JpaPagingItemReader<Store> reader = new JpaPagingItemReader<>();
+//        JpaPagingFetchItemReader<Store> reader = new JpaPagingFetchItemReader<>();
 //        reader.setEntityManagerFactory(entityManagerFactory);
 //        reader.setQueryString("SELECT s FROM Store s WHERE s.address LIKE :address order by s.id");
 //        reader.setParameterValues(parameters);
@@ -86,23 +97,6 @@ public class StoreBackupBatchConfiguration {
 //
 //        return reader;
 //    }
-
-    @Bean
-    @StepScope
-    public JpaPagingFetchItemReader<Store> reader(
-            @Value("#{jobParameters[address]}") String address) {
-
-        Map<String, Object> parameters = new LinkedHashMap<>();
-        parameters.put("address", address + "%");
-
-        JpaPagingFetchItemReader<Store> reader = new JpaPagingFetchItemReader<>();
-        reader.setEntityManagerFactory(entityManagerFactory);
-        reader.setQueryString("SELECT s FROM Store s WHERE s.address LIKE :address order by s.id");
-        reader.setParameterValues(parameters);
-        reader.setPageSize(chunkSize);
-
-        return reader;
-    }
 
 //    @Bean
 //    @StepScope
@@ -169,10 +163,10 @@ public class StoreBackupBatchConfiguration {
     @StepScope
     public ItemProcessor<Store, StoreHistory> processor() {
         return item -> {
-            count++;
-            if (count > 2) {
-                throw new IllegalStateException();
-            }
+//            count++;
+//            if (count > 2) {
+//                throw new IllegalStateException();
+//            }
             return new StoreHistory(item, item.getProducts(), item.getEmployees());
         };
     }

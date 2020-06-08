@@ -8,7 +8,7 @@
 
 프로젝트는 SpringBoot Batch + Lombok + Spock으로 구성됩니다.  
 
-> 스프링부트의 버전은 2.1.3 입니다.
+> 스프링부트의 버전은 2.2.7 입니다.
   
 해당 기술들이 처음이셔도 기존에 사용되던 기술과 크게 다르지 않기 때문에 보시는데 어려움이 없으실 것 같습니다.  
   
@@ -688,12 +688,25 @@ Chunk 단위 트랜잭션 관리가 안되는지 확인해볼까요?
 아쉽게도, 이 방법에는 **어떤 사이드 이펙트가 있는지 알 수 없습니다**.
 그래서 아직까지 추천하기가 어렵습니다.
 
+## 3-4. Transacted 옵션을 사용하면 안되나요?
+
+위에서 만든 ```JpaPagingFetchItemReader```의 코드를 보시면서 다음과 같이 ```transacted``` 옵션을 ```false```로 두면 같은 효과가 발생하지 않나요? 라는 의문이 생기시는 분도 계실텐데요.  
+  
+실제로 해보시면 아래와 같이 ```failed to lazily initialize a collection of role``` 문제가 발생합니다.  
+
+![transacted](./images/transacted.png)
+
+이는 ```transacted``` 옵션을 ```false``` 일때는 ```entityManager.detach``` 가 발생하게 되어서 **ItemProcessor에서는 세션이 없는 엔티티**가 되버립니다.  
+  
+해당 코드가 정상작동하려면 ```entityManager.detach``` 가 발생하면 안되는데, 이럴려면 ```transacted``` 옵션이 ```true```여야 하니 피할 방법이 없는 것이죠.  
+결국 ```transacted``` 옵션을 ```false``` 로 둔다 하여도 이 글에서 원하는 효과를 얻을 순 없습니다.
+
 ## 4. 결론
 
 * ```join fetch```는 **하나의 자식에만 적용**가능
 * Spring Data의 JpaRepository / Spring Batch의 HibernateItemReader에서는
-    * ```hibernate.default_batch_fetch_size```로 N+1 문제를 피할 수 있다.
-    * ```@BatchSize```도 가능
+  * ```hibernate.default_batch_fetch_size```로 N+1 문제를 피할 수 있다.
+  * ```@BatchSize```도 가능
 * Spring Boot 2.1.3 (Spring Batch 4.1.1)까지는 ```hibernate.default_batch_fetch_size``` 옵션이 **JpaPagingItemReader에서 작동하지 않는다**.
 * Custom하게 수정해서 쓸 순 있지만, 검증되지 않은 방식
 
@@ -703,9 +716,6 @@ Merge되면 이 블로그의 내용은 수정 될 수 있습니다.
 ## 참고
 
 * [7 tips-to-boost-your-hibernate-performance/](http://www.thoughts-on-java.org/tips-to-boost-your-hibernate-performance/)
-
 * [hibernate-facts-multi-level-fetching](https://vladmihalcea.com/2013/10/22/hibernate-facts-multi-level-fetching/)
-
 * [권남 위키](http://kwonnam.pe.kr/wiki/java/hibernate/performance)
-
 * [beware-of-hibernate-batch-fetching](https://prasanthmathialagan.wordpress.com/2017/04/20/beware-of-hibernate-batch-fetching/)
