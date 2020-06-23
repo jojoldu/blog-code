@@ -1,10 +1,8 @@
 package com.jojoldu.blogcode.querydsl;
 
-import com.jojoldu.blogcode.querydsl.domain.academy.AcademyRepository;
 import com.jojoldu.blogcode.querydsl.domain.pointevent.PointEvent;
 import com.jojoldu.blogcode.querydsl.domain.pointevent.PointEventRepository;
 import com.jojoldu.blogcode.querydsl.domain.pointevent.PointStatus;
-import com.jojoldu.blogcode.querydsl.dto.PointCalculateAmount;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;

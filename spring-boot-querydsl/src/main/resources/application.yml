@@ -17,3 +17,6 @@ logging:
     org:
       hibernate:
         type: trace
+    com:
+      querydsl:
+        sql: DEBUG

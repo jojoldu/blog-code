@@ -1,15 +1,11 @@
 package com.jojoldu.blogcode.querydsl.domain.academy;
 
-import com.jojoldu.blogcode.querydsl.domain.pointevent.PointStatus;
-import com.jojoldu.blogcode.querydsl.dto.AcademyTeacher;
-import com.jojoldu.blogcode.querydsl.dto.PointCalculateAmount;
 import com.jojoldu.blogcode.querydsl.dto.StudentCount;
+import com.jojoldu.blogcode.querydsl.dto.AcademyTeacher;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ExpressionUtils;
-import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +14,6 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 import static com.jojoldu.blogcode.querydsl.domain.academy.QAcademy.academy;
-import static com.jojoldu.blogcode.querydsl.domain.pointevent.QPointEvent.pointEvent;
 import static com.jojoldu.blogcode.querydsl.domain.student.QStudent.student;
 import static com.jojoldu.blogcode.querydsl.domain.teacher.QTeacher.teacher;
 import static com.querydsl.core.types.ExpressionUtils.count;

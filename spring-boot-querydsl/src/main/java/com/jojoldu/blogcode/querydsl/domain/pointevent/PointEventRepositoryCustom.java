@@ -1,9 +1,6 @@
 package com.jojoldu.blogcode.querydsl.domain.pointevent;
 
-import com.jojoldu.blogcode.querydsl.domain.academy.Academy;
-import com.jojoldu.blogcode.querydsl.dto.AcademyTeacher;
 import com.jojoldu.blogcode.querydsl.dto.PointCalculateAmount;
-import com.jojoldu.blogcode.querydsl.dto.StudentCount;
 
 import java.util.List;
 

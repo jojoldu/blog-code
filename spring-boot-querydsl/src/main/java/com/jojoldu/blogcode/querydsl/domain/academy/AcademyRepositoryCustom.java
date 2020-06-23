@@ -1,8 +1,7 @@
 package com.jojoldu.blogcode.querydsl.domain.academy;
 
-import com.jojoldu.blogcode.querydsl.dto.AcademyTeacher;
-import com.jojoldu.blogcode.querydsl.dto.PointCalculateAmount;
 import com.jojoldu.blogcode.querydsl.dto.StudentCount;
+import com.jojoldu.blogcode.querydsl.dto.AcademyTeacher;
 
 import java.util.List;
 

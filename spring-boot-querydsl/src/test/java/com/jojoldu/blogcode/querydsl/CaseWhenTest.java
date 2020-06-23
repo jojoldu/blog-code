@@ -1,9 +1,9 @@
 package com.jojoldu.blogcode.querydsl;
 
+import com.jojoldu.blogcode.querydsl.dto.PointCalculateAmount;
 import com.jojoldu.blogcode.querydsl.domain.pointevent.PointEvent;
 import com.jojoldu.blogcode.querydsl.domain.pointevent.PointEventRepository;
 import com.jojoldu.blogcode.querydsl.domain.pointevent.PointStatus;
-import com.jojoldu.blogcode.querydsl.dto.PointCalculateAmount;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;

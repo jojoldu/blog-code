@@ -1,8 +1,20 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+    dependencies {
+        classpath "com.github.eXsio:querydsl-entityql:2.4.4"
+    }
+}
+
 plugins {
-    id 'org.springframework.boot' version '2.2.4.RELEASE' apply false
+    id 'org.springframework.boot' version '2.3.1.RELEASE' apply false
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+    id 'com.ewerk.gradle.plugins.querydsl' version "1.0.10"
     id 'java'
+    id 'idea'
 }
 
 group = 'com.jojoldu.blogcode'
@@ -12,14 +24,19 @@ sourceCompatibility = 1.8
 repositories {
     mavenCentral()
     jcenter()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     implementation("com.querydsl:querydsl-jpa") // querydsl
     implementation("com.querydsl:querydsl-apt") // querydsl
-
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     implementation('org.springframework.boot:spring-boot-starter-web')
+
+    implementation("com.querydsl:querydsl-sql-spring:4.3.1") // querydsl-sql
+    implementation("com.github.eXsio:querydsl-entityql:2.4.4") // entityql
+    // auto-registers all Enum types with QueryDSL, auto-registers Boolean and UUID data types
+    implementation("org.reflections:reflections:0.9.12")
 
     runtimeOnly('com.h2database:h2')
 
@@ -29,6 +46,10 @@ dependencies {
     testImplementation 'org.projectlombok:lombok'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
+}
+
+test {
+    useJUnitPlatform()
 }
 
 configurations {
@@ -54,6 +75,12 @@ sourceSets {
     }
 }
 
+idea {
+    module {
+        generatedSourceDirs += file(querydslSrcDir) // just hint
+    }
+}
+
 configurations {
     querydsl.extendsFrom compileClasspath
     developmentOnly
@@ -71,3 +98,5 @@ dependencyManagement {
         mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
     }
 }
+
+

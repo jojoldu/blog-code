@@ -1,10 +1,10 @@
 package com.jojoldu.blogcode.querydsl;
 
+import com.jojoldu.blogcode.querydsl.dto.StudentCount;
 import com.jojoldu.blogcode.querydsl.domain.academy.Academy;
 import com.jojoldu.blogcode.querydsl.domain.academy.AcademyRepository;
 import com.jojoldu.blogcode.querydsl.domain.student.Student;
 import com.jojoldu.blogcode.querydsl.domain.student.StudentRepository;
-import com.jojoldu.blogcode.querydsl.dto.StudentCount;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
