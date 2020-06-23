@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url 'https://jitpack.io' }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    compile(gradleApi())
+
+    implementation("com.querydsl:querydsl-sql:4.3.1") // querydsl-sql
+    implementation("com.github.eXsio:querydsl-entityql:2.4.4") // entityql
+    implementation("jakarta.persistence:jakarta.persistence-api:2.2.3") // @Entity, @Id
+
+    // auto-registers all Enum types with QueryDSL, auto-registers Boolean and UUID data types
+    implementation("org.reflections:reflections:0.9.12")
+    implementation("org.slf4j:slf4j-api:1.7.30")
+    implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("ch.qos.logback:logback-core:1.2.3")
+    implementation("com.google.googlejavaformat:google-java-format:1.8")
+    implementation("org.jtwig:jtwig-core:5.87.0.RELEASE")
+    implementation("commons-io:commons-io:2.7")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+    testImplementation("org.assertj:assertj-core:3.16.1")
+
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    implementation 'org.projectlombok:lombok:1.18.12'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+    testImplementation 'org.projectlombok:lombok:1.18.12'
+
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
