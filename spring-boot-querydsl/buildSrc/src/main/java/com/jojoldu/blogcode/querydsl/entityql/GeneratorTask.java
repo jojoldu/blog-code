@@ -86,16 +86,15 @@ public class GeneratorTask extends DefaultTask {
         return new URLClassLoader(
                 projectClasspathList.toArray(new URL[0]),
                 Thread.currentThread().getContextClassLoader());
-
-
     }
 
     private List<String> getCompileClasspathElements() {
-        try {
-            return project.getCompileClasspathElements();
-        } catch (DependencyResolutionRequiredException e) {
-            throw new GradleException("Dependency resolution failed", e);
-        }
+        return new ArrayList<>();
+//        try {
+//            return project.getCompileClasspathElements();
+//        } catch (DependencyResolutionRequiredException e) {
+//            throw new GradleException("Dependency resolution failed", e);
+//        }
     }
 
     private static Set<Class<?>> resolveJpaEntityClasses(Generator generator,

@@ -1,20 +1,10 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        jcenter()
-        maven { url 'https://jitpack.io' }
-    }
-    dependencies {
-        classpath "com.github.eXsio:querydsl-entityql:2.4.4"
-    }
-}
-
 plugins {
     id 'org.springframework.boot' version '2.3.1.RELEASE' apply false
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'com.ewerk.gradle.plugins.querydsl' version "1.0.10"
     id 'java'
     id 'idea'
+    id 'maven'
 }
 
 group = 'com.jojoldu.blogcode'
