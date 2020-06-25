@@ -1,5 +1,6 @@
 package com.jojoldu.blogcode.querydsl.config;
 
+import com.jojoldu.blogcode.querydsl.domain.student.Student;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.sql.H2Templates;
 import com.querydsl.sql.MySQLTemplates;
@@ -10,22 +11,29 @@ import com.querydsl.sql.spring.SpringExceptionTranslator;
 import com.querydsl.sql.types.DateTimeType;
 import com.querydsl.sql.types.LocalDateType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import pl.exsio.querydsl.entityql.QExporter;
 import pl.exsio.querydsl.entityql.config.EntityQlQueryFactory;
 
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.Connection;
+
+import static pl.exsio.querydsl.entityql.EntityQL.qEntity;
 
 /**
  * Created by jojoldu@gmail.com on 21/06/2020
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
+
+@Slf4j
 @RequiredArgsConstructor
 @Configuration
 public class QuerydslConfiguration {
@@ -59,5 +67,21 @@ public class QuerydslConfiguration {
 
         return new EntityQlQueryFactory(configuration, dataSource)
                 .registerEnumsByName("com.jojoldu.blogcode.querydsl.domain");
+    }
+
+    @Bean
+    public QExporter entityQlScanner() {
+        String fileNamePattern = "E%s.java"; // file/class name pattern
+        String packageName = "com.jojoldu.blogcode.querydsl.domain"; //package of the generated class
+        String destinationPath = "/src/main/generated-sql"; //physical location of resulting *.java file
+
+        QExporter qExporter = new QExporter();
+        try {
+            qExporter.export(qEntity(Student.class), fileNamePattern, packageName, destinationPath);
+            return qExporter;
+        } catch (Exception e) {
+            log.error("qExporter Scan Exception", e);
+            throw new IllegalStateException("qExporter Scan Exception", e);
+        }
     }
 }
