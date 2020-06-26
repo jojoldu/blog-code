@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.querydsl;
+package com.jojoldu.blogcode.querydsl.repository;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

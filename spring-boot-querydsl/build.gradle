@@ -27,7 +27,10 @@ dependencies {
     implementation("com.github.eXsio:querydsl-entityql:2.4.4") // entityql
     // auto-registers all Enum types with QueryDSL, auto-registers Boolean and UUID data types
     implementation("org.reflections:reflections:0.9.12")
-
+    implementation("com.google.googlejavaformat:google-java-format:1.7")
+    implementation("org.jtwig:jtwig-core:5.87.0.RELEASE")
+    implementation("commons-io:commons-io:2.7")
+    implementation("joda-time:joda-time:2.10.6")
     runtimeOnly('com.h2database:h2')
 
     annotationProcessor 'org.projectlombok:lombok'

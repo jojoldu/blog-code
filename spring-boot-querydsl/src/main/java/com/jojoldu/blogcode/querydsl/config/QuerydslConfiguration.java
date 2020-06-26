@@ -1,5 +1,6 @@
 package com.jojoldu.blogcode.querydsl.config;
 
+import com.jojoldu.blogcode.querydsl.domain.book.Book;
 import com.jojoldu.blogcode.querydsl.domain.student.Student;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.sql.H2Templates;
@@ -73,11 +74,11 @@ public class QuerydslConfiguration {
     public QExporter entityQlScanner() {
         String fileNamePattern = "E%s.java"; // file/class name pattern
         String packageName = "com.jojoldu.blogcode.querydsl.domain"; //package of the generated class
-        String destinationPath = "/src/main/generated-sql"; //physical location of resulting *.java file
+        String destinationPath = "src/main/generated"; //physical location of resulting *.java file
 
         QExporter qExporter = new QExporter();
         try {
-            qExporter.export(qEntity(Student.class), fileNamePattern, packageName, destinationPath);
+            qExporter.export(qEntity(Book.class), fileNamePattern, packageName, destinationPath);
             return qExporter;
         } catch (Exception e) {
             log.error("qExporter Scan Exception", e);

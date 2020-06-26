@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.querydsl;
+package com.jojoldu.blogcode.querydsl.repository;
 
 import com.jojoldu.blogcode.querydsl.domain.pointevent.PointEvent;
 import com.jojoldu.blogcode.querydsl.domain.pointevent.PointEventRepository;

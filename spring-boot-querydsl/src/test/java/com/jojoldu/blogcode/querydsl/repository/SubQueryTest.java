@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.querydsl;
+package com.jojoldu.blogcode.querydsl.repository;
 
 import com.jojoldu.blogcode.querydsl.dto.StudentCount;
 import com.jojoldu.blogcode.querydsl.domain.academy.Academy;

@@ -1,13 +1,15 @@
-package com.jojoldu.blogcode.querydsl;
+package com.jojoldu.blogcode.querydsl.repository;
 
 import com.jojoldu.blogcode.querydsl.domain.academy.Academy;
 import com.jojoldu.blogcode.querydsl.domain.academy.AcademyRepository;
 import com.jojoldu.blogcode.querydsl.domain.academy.AcademyRepositorySupport;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
@@ -22,7 +24,7 @@ import static org.junit.Assert.assertThat;
  * Github : https://github.com/jojoldu
  */
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class BasicTest {
     
@@ -32,7 +34,7 @@ public class BasicTest {
     @Autowired
     private AcademyRepositorySupport academyRepositorySupport;
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         academyRepository.deleteAllInBatch();
     }

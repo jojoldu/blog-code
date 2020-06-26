@@ -6,6 +6,8 @@ spring:
         dialect: org.hibernate.dialect.MySQL57Dialect
         dialect.storage_engine: innodb
         format_sql: true
+    hibernate:
+      ddl-auto: update
   datasource:
     hikari:
       jdbc-url: jdbc:h2:mem://localhost/~/acquire;MODE=MYSQL # MODE=MYSQL 없으면 h2가 mysql 모드로 실행이 안됨
