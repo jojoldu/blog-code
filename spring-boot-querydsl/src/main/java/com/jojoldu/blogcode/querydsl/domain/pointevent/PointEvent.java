@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,10 +26,14 @@ public class PointEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
     private Long id;
 
+    @Column
     private PointStatus pointStatus;
-    private long pointAmount;
+
+    @Column
+    private Long pointAmount;
 
     @Builder
     public PointEvent(PointStatus pointStatus, long pointAmount) {

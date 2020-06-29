@@ -1,6 +1,7 @@
 package com.jojoldu.blogcode.querydsl.config;
 
 import com.jojoldu.blogcode.querydsl.domain.book.Book;
+import com.jojoldu.blogcode.querydsl.domain.pointevent.PointEvent;
 import com.jojoldu.blogcode.querydsl.domain.student.Student;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.sql.H2Templates;
@@ -79,6 +80,7 @@ public class QuerydslConfiguration {
         QExporter qExporter = new QExporter();
         try {
             qExporter.export(qEntity(Book.class), fileNamePattern, packageName, destinationPath);
+            qExporter.export(qEntity(PointEvent.class), fileNamePattern, packageName, destinationPath);
             return qExporter;
         } catch (Exception e) {
             log.error("qExporter Scan Exception", e);
