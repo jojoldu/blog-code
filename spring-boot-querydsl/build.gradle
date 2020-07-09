@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.3.1.RELEASE' apply false
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'com.ewerk.gradle.plugins.querydsl' version "1.0.10"
+    id 'pl.exsio.querydsl.entityql' version "0.0.11"
     id 'java'
     id 'idea'
     id 'maven'
@@ -24,13 +25,8 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web')
 
     implementation("com.querydsl:querydsl-sql-spring:4.3.1") // querydsl-sql
-    implementation("com.github.eXsio:querydsl-entityql:2.4.4") // entityql
+    implementation("com.github.eXsio:querydsl-entityql:3.1.0") // entityql
     // auto-registers all Enum types with QueryDSL, auto-registers Boolean and UUID data types
-    implementation("org.reflections:reflections:0.9.12")
-    implementation("com.google.googlejavaformat:google-java-format:1.7")
-    implementation("org.jtwig:jtwig-core:5.87.0.RELEASE")
-    implementation("commons-io:commons-io:2.7")
-    implementation("joda-time:joda-time:2.10.6")
     runtimeOnly('com.h2database:h2')
 
     annotationProcessor 'org.projectlombok:lombok'
@@ -43,6 +39,19 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+entityql {
+    generators = [
+            generator = {
+                type = 'JPA'
+                sourcePackage = 'com.jojoldu.blogcode.querydsl.domain'
+                destinationPackage = 'com.jojoldu.blogcode.querydsl.domain'
+                //below parameters are optional and will be set with the following default values:
+                destinationPath = new StringBuilder(project.projectDir.absolutePath).append('/src/main/generated').toString()
+                filenamePattern = 'E%s.java'
+            }
+    ]
 }
 
 configurations {

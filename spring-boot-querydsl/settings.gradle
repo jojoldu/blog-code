@@ -1,1 +1,20 @@
+pluginManagement {
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == "pl.exsio.querydsl.entityql") {
+                useModule("com.github.eXsio:querydsl-entityql-gradle-plugin:${requested.version}")
+            }
+        }
+    }
+    repositories {
+        gradlePluginPortal()
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url = uri('https://jitpack.io')
+        }
+    }
+}
+
 rootProject.name = 'spring-boot-querydsl'
+

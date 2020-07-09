@@ -71,20 +71,20 @@ public class QuerydslConfiguration {
                 .registerEnumsByName("com.jojoldu.blogcode.querydsl.domain");
     }
 
-    @Bean
-    public QExporter entityQlScanner() {
-        String fileNamePattern = "E%s.java"; // file/class name pattern
-        String packageName = "com.jojoldu.blogcode.querydsl.domain"; //package of the generated class
-        String destinationPath = "src/main/generated"; //physical location of resulting *.java file
-
-        QExporter qExporter = new QExporter();
-        try {
-            qExporter.export(qEntity(Book.class), fileNamePattern, packageName, destinationPath);
-            qExporter.export(qEntity(PointEvent.class), fileNamePattern, packageName, destinationPath);
-            return qExporter;
-        } catch (Exception e) {
-            log.error("qExporter Scan Exception", e);
-            throw new IllegalStateException("qExporter Scan Exception", e);
-        }
-    }
+//    @Bean
+//    public QExporter entityQlScanner() {
+//        String fileNamePattern = "E%s.java"; // file/class name pattern
+//        String packageName = "com.jojoldu.blogcode.querydsl.domain"; //package of the generated class
+//        String destinationPath = "src/main/generated"; //physical location of resulting *.java file
+//
+//        QExporter qExporter = new QExporter();
+//        try {
+//            qExporter.export(qEntity(Book.class), fileNamePattern, packageName, destinationPath);
+//            qExporter.export(qEntity(PointEvent.class), fileNamePattern, packageName, destinationPath);
+//            return qExporter;
+//        } catch (Exception e) {
+//            log.error("qExporter Scan Exception", e);
+//            throw new IllegalStateException("qExporter Scan Exception", e);
+//        }
+//    }
 }
