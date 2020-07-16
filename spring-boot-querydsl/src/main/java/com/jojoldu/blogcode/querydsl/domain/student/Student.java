@@ -36,7 +36,7 @@ public class Student {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "academy_no")
+    @Column
     private int academyNo;
 
     @ManyToOne

@@ -40,7 +40,7 @@ public class Academy {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "phone_number")
+    @Column
     private String phoneNumber;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "academy")

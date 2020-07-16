@@ -32,7 +32,7 @@ public class Book {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "book_no")
+    @Column
     private Integer bookNo;
 
     @Builder
