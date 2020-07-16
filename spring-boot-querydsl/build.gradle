@@ -45,8 +45,9 @@ entityql {
     generators = [
             generator = {
                 type = 'JPA'
-                sourcePackage = 'com.jojoldu.blogcode.querydsl.domain'
-                destinationPackage = 'com.jojoldu.blogcode.querydsl.domain'
+//                sourcePackage = 'com.jojoldu.blogcode.querydsl.domain'
+                sourcleClasses = [ 'PointEvent', 'Student', 'Academy']
+                destinationPackage = 'com.jojoldu.blogcode.querydsl.domain.sql'
                 //below parameters are optional and will be set with the following default values:
                 destinationPath = new StringBuilder(project.projectDir.absolutePath).append('/src/main/generated').toString()
                 filenamePattern = 'E%s.java'
