@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import com.querydsl.sql.ColumnMetadata;
 import com.querydsl.sql.RelationalPath;
 import com.querydsl.sql.dml.BeanMapper;
+import com.querydsl.sql.dml.Mapper;
 import com.querydsl.sql.types.Null;
 
 import java.lang.reflect.Field;
@@ -18,7 +19,7 @@ import java.util.Map;
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
-public class EntityMapper extends BeanMapper {
+public class EntityMapper implements Mapper<Object> {
     public static final EntityMapper DEFAULT = new EntityMapper(false);
 
     public static final EntityMapper WITH_NULL_BINDINGS = new EntityMapper(true);

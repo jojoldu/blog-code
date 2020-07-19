@@ -82,7 +82,7 @@ public class QuerydslSqlInsertTest {
 
         //when
         sqlQueryFactory.insert(qBook)
-                .populate(entity, EntityMapper.DEFAULT)
+                .populate(entity, EntityMapper.DEFAULT) // BeanMapper.DEFAULT error.
                 .execute();
 
         //then
