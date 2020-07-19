@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,13 +28,14 @@ public class PointEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "id")
     private Long id;
 
-    @Column
+    @Column(name = "point_status")
+    @Enumerated(EnumType.STRING)
     private PointStatus pointStatus;
 
-    @Column
+    @Column(name = "point_amount")
     private Long pointAmount;
 
     @Builder

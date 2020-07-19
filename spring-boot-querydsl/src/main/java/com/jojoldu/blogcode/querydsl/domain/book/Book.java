@@ -13,9 +13,12 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedAttributeNode;
 import javax.persistence.Table;
 
 @Getter
@@ -32,13 +35,18 @@ public class Book {
     @Column(name = "name")
     private String name;
 
-    @Column
+    @Column(name = "book_no")
     private Integer bookNo;
 
+    @Column(name = "book_type")
+    @Enumerated(EnumType.STRING)
+    private BookType bookType;
+
     @Builder
-    public Book(String name, int bookNo) {
+    public Book(String name, int bookNo, BookType bookType) {
         this.name = name;
         this.bookNo = bookNo;
+        this.bookType = bookType;
     }
 
 }
