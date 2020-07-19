@@ -2,7 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.3.1.RELEASE' apply false
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'com.ewerk.gradle.plugins.querydsl' version "1.0.10"
-    id 'pl.exsio.querydsl.entityql' version "0.0.11"
+    id 'pl.exsio.querydsl.entityql' version "0.0.12"
     id 'java'
     id 'idea'
     id 'maven'
@@ -46,7 +46,7 @@ entityql {
             generator = {
                 type = 'JPA'
 //                sourcePackage = 'com.jojoldu.blogcode.querydsl.domain'
-                sourcleClasses = [ 'PointEvent', 'Student', 'Academy']
+                sourceClasses = [ 'PointEvent', 'Student', 'Academy']
                 destinationPackage = 'com.jojoldu.blogcode.querydsl.domain.sql'
                 //below parameters are optional and will be set with the following default values:
                 destinationPath = new StringBuilder(project.projectDir.absolutePath).append('/src/main/generated').toString()
