@@ -41,12 +41,15 @@ test {
     useJUnitPlatform()
 }
 
+def defaultPackage = 'com.jojoldu.blogcode.querydsl.domain.'
 entityql {
     generators = [
             generator = {
                 type = 'JPA'
 //                sourcePackage = 'com.jojoldu.blogcode.querydsl.domain'
-                sourceClasses = [ 'PointEvent', 'Student', 'Academy']
+                sourceClasses = [ defaultPackage+'pointevent.PointEvent',
+                                  defaultPackage+'student.Student',
+                                  defaultPackage+'academy.Academy']
                 destinationPackage = 'com.jojoldu.blogcode.querydsl.domain.sql'
                 //below parameters are optional and will be set with the following default values:
                 destinationPath = new StringBuilder(project.projectDir.absolutePath).append('/src/main/generated').toString()
