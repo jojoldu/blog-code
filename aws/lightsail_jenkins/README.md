@@ -8,7 +8,7 @@
 
 이럴 경우 고사양의 EC2가 필요로 하지 않으며, 전문가 수준의 AWS 사용 방법도 필요로 하진 않습니다.  
   
-Lightsail은 이렇게 작은 비용으로 시작할 수 있는 가상서버(VPS) 서비스인데요.  
+Lightsail은 이렇게 작은 비용으로 시작할 수 있는 가상서버(VPS) 서비스입니다.  
 
 > VPS란?  
 > 하나의 물리 서버를 **여러 개의 가상 서버로 쪼개어 사용**하는 것을 의미합니다.  
@@ -95,40 +95,95 @@ AWS 의 서비스 검색에서 Lightsail을 검색합니다.
 일단은 테스트 용도로 첫 달 무료인 $3.5를 선택합니다.  
 다만, Spring Boot/Jenkins 등 자바 애플리케이션을 실행시키길 원하시는 분들은 **최소 메모리 1GB 이상**을 선택하셔야 합니다.  
 첫달 무료인 nano 는 메모리가 512MB인데, 실제 Linux 시스템에 필요한 메모리를 제외하면 200~300MB만 사용할 수 있어 Spring Boot를 실행시킬 수가 없습니다.  
+그러니 간단한 Node 혹은 Python 스크립트를 실행할 정도일때만 제일 작은 타입을 고르시는게 마음 편하실 것 같습니다.  
   
 다음은 인스턴스 이름을 등록합니다.  
+저는 배치 애플리케이션을 실행할거라 아래와 같은 이름을 지었습니다.
 
 ![aws8](./images/aws8.png)
 
-저는 검색을 좀 더 쉽게하기 위해 별도의 태그도 추가하였는데요.  
-꼭 해야할 작업은 아니니 필요없으신 분들은 태그는 넘어가셔도 됩니다.
+검색을 좀 더 쉽게하기 위해 별도의 태그도 추가하였는데요.  
+꼭 해야할 작업은 아니니 필요 없으신 분들은 태그는 넘어가셔도 됩니다.
 
 ![aws9](./images/aws9.png)
 
-
+태그까지 등록을 마치시면 아래와 같이 인스턴스 생성이 시작 됩니다.
 
 ![aws10](./images/aws10.png)
 
+### 1-1. 접근 IP 제한
+
+인스턴스가 생성이 시작되었다면 이제 네트워크를 수정해봅니다.  
+여기서는 고정 IP (ElasticIP) 와 방화벽을 수정할 예정입니다.  
+  
+인스턴스 화면에서 ```:``` 버튼을 클릭 하시면 아래와 같이 항목이 나오는데, 여기서 **관리** 버튼을 클릭합니다.  
+
 ![aws11](./images/aws11.png)
+
+가장 먼저 방화벽을 수정할 수 있는데,  
+저는 혼자만 사용할 서비스라 80,22 포트 모두 제 IP로만 등록하였습니다.  
+  
+만약 외부에서 언제든 접속할 서비스라면 
+
+* ```80``` 포트는 모든 IP주소로
+* ```22``` 포트는 나의 IP만 사용합니다.
+
+> ```22``` 포트는 **무조건 본인 IP로만** 등록하세요.
+
+현재 PC의 IP를 알고 싶으신 분들은 [ifconfig.co](https://ifconfig.co/)로 접속하시면 확인하실 수 있습니다.
+
+![ifconfig](./images/ifconfig.png)
+
+포트 범위 제한은 아래와 같이 수정할 수 있습니다.  
+수정 버튼을 클릭 하신뒤 
 
 ![aws12](./images/aws12.png)
 
+아래와 같이 **IP 주소로 제한**을 체크하시고, 소스 IP 주소 입력란에 본인 IP를 등록 하시면 됩니다.  
+
+> IP 주소로 제한을 체크하지 않으면 모든 범위의 IP가 접근 가능합니다.
+> 
 ![aws13](./images/aws13.png)
+
+22 포트의 경우 체크항목이 하나더 나오는데요.  
+웹 UI에서 터미널 접속을 하신다면 **Lightsail 브라우저 SSH 허용**도 같이 체크하시면 됩니다.
 
 ![aws14](./images/aws14.png)
 
+저장을 하시고 바로 아래로 내려가시면 고정 IP 항목이 나옵니다.  
+
+### 1-2. 고정 IP 등록
+
+Lightsail 의 인스턴스 역시 재부팅을 하게 되면 IP가 계속 변경이 되는데요.  
+이를 일관된 IP로 관리하기 위해 고정 IP를 생성하고 등록하겠습니다.  
+  
+아래와 같이 퍼블릭 IP 항목에서 **고정 IP 생성** 버튼을 클릭 합니다.
+
 ![aws15](./images/aws15.png)
+
+그럼 아래처럼 고정 IP 대상이 되는 인스턴스의 간략 소개와 이제 생성될 고정 IP의 이름을 등록할 수 있습니다.  
+저는 고정 IP의 이름을 ```인스턴스명-eip```로 지었습니다.  
 
 ![aws16](./images/aws16.png)
 
-![aws17](./images/aws17.png)
-
+여기까지 하셨다면 인스턴스 생성에 관한 모든 작업이 끝났습니다!  
+  
+자 이제 막 생성한 인스턴스로 터미널 접속을 해보겠습니다.
 
 ## 2. Lightsail 인스턴스 접속하기
 
+생성된 Lightsail에 접속하는 방법은 기존의 EC2와 동일합니다.  
+여기서는 웹 UI가 아닌, iTerm 과 같은 터미널 도구를 통해서 진행해보겠습니다.
+
+> 윈도우 사용자 분들은 웹 터미널을 사용하시거나 [이전에 작성한 글](https://jojoldu.tistory.com/427)을 참고하시는것도 좋습니다.
+
+터미널을 여시고 아래와 같이 ```ssh``` 커맨드를 입력하시면 접속할 수 있습니다.
+
 ```bash
-ssh ec2-user@퍼블릭IP -i /Users/idong-uk/.ssh/jojoldu-lightsail.pem -o StrictHostKeyChecking=no
+ssh ec2-user@퍼블릭IP -i pem키위치 -o StrictHostKeyChecking=no
 ```
+
+그럼 아래와 같이 pem키에 대한 권한이 없음 메세지가 발생하는데요.
 
 ```bash
 Warning: Permanently added 'XXX.XXX.XXX.XXX' (ECDSA) to the list of known hosts.
@@ -142,23 +197,29 @@ Load key "/Users/idong-uk/.ssh/jojoldu-lightsail.pem": bad permissions
 ec2-user@XXX.XXX.XXX.XXX: Permission denied (publickey).
 ```
 
-```bash
-chmod 600 라이트세일pem키
-```
-
+해당 pem키에 600 권한을 주고 다시 ```ssh``` 접속을 해보시면 정상적으로 접속이 됩니다.
 
 ```bash
-sudo yum update -y
+chmod 600 pem키위치
 ```
 
-
-
-
- 
 ## 3. 더이상 사용하지 않을 시 삭제
 
-![aws-delete](./images/aws-delete-eip1.png)
+한달이 지나 무료 기간이 끝나서 삭제하고 싶으실때는 아래의 과정을 진행하시면 됩니다.  
+  
+먼저 인스턴스에 연결된 고정 IP를 삭제합니다.
 
-![aws-delete](./images/aws-delete-eip2.png)
+> 고정 IP는 인스턴스에 연결되어있을때는 무료지만, **연결된 인스턴스가 없을 경우 비용이 부과**됩니다.
+
+인스턴스의 네트워킹 탭으로 들어가셔서 고정 IP 를 클릭합니다.
+
+![aws-delete-eip1](./images/aws-delete-eip1.png)
+
+삭제 항목으로 이동하여 고정 IP삭제를 클릭하면 삭제가 됩니다.
+
+![aws-delete-eip2](./images/aws-delete-eip2.png)
+
+고정 IP가 삭제가 되면 이후에 인스턴스 항목으로 돌아가 **삭제** 버튼을 클릭하시면 인스턴스까지 삭제가 완료 됩니다.
 
 ![aws-delete](./images/aws-delete.png)
+
