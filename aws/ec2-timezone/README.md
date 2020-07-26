@@ -1,6 +1,6 @@
 # AWS EC2의 Timezone KST로 변경하기 (Amazon Linux 1)
 
-AWS의 Amazon Linux 1을 사용할 경우 Timezone을 변경하고, 잘 적용되다가 인스턴스를 재시작하면 다시 UST로 롤백되는 경우가 종종 있는데요.  
+AWS의 Amazon Linux 1을 사용할 경우 Timezone을 변경하고, 잘 적용되다가 인스턴스를 재시작하면 다시 UTC로 롤백되는 경우가 종종 있는데요.  
 이는 한가지 설정이 누락되어서 그렇습니다.  
   
 먼저 기존의 다른 포스팅처럼 아래 명령어를 차례로 입력합니다.  
