@@ -66,40 +66,37 @@ ps -ef | grep jenkins
 
 ![war](./images/war.png)
 
-War 위치를 확인했으니 Jenkins
-
-```bash
-service jenkins stop
-```
-
+War 위치를 확인했으니 **Jenkins를 정지**하고 업데이트를 시작하겠습니다.  
+  
+먼저 설치하고자 하는 버전을 확인해봐야하는데요.  
+[젠킨스 미러 사이트](http://mirrors.jenkins-ci.org/)에 접속하시면 아래와 같이 OS별/릴리즈버전별로 확인 할 수 있습니다.
 
 ![version](./images/version.png)
 
-가장 최신 버전
-
-```bash
-http://mirrors.jenkins-ci.org/war/latest/jenkins.war
-```
-
-LTS 버전
-
-```bash
-http://mirrors.jenkins-ci.org/war-stable/latest/jenkins.war
-```
-
-![wget](./images/wget.png)
+여기서 가장 최신 버전은 Release이며, 보통은 플러그인 호환성 등으로 인해서 LTS 버전을 많이 사용합니다.  
+  
+본인이 원하는 버전의 war 파일을 ```wget```으로 다운 받습니다.  
+  
+**가장 최신 버전**
 
 ```bash
 wget http://mirrors.jenkins-ci.org/war/latest/jenkins.war
 ```
 
+**LTS**
+
 ```bash
 wget http://mirrors.jenkins-ci.org/war-stable/latest/jenkins.war
 ```
 
+![wget](./images/wget.png)
+
+다운 받으셨으면 해당 war파일을 기존의 Jenkins war파일과 교체합니다.
 
 ```bash
 mv 다운받은war경로 /usr/lib/jenkins/jenkins.war
 ```
+
+War 파일이 교체되면 다시 Jenkins를 실행하면 업데이트는 끝입니다.
 
 ![end](./images/end.png)
