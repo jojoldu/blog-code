@@ -14,15 +14,17 @@ import static com.jojoldu.blogcode.querydsl.domain.book.QBook.book;
  * Github : http://github.com/jojoldu
  */
 
-@Repository
 @RequiredArgsConstructor
+@Repository
 public class BookQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Transactional(readOnly = true)
     public Book getBookById (Long bookId) {
         return queryFactory
-                .select(book).from(book).where(book.id.eq(bookId))
+                .select(book)
+                .from(book)
+                .where(book.id.eq(bookId))
                 .fetchOne();
     }
 }

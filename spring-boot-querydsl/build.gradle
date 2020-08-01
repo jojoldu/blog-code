@@ -30,6 +30,7 @@ dependencies {
 
     // auto-registers all Enum types with QueryDSL, auto-registers Boolean and UUID data types
     runtimeOnly('com.h2database:h2')
+    implementation('org.mariadb.jdbc:mariadb-java-client')
 
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.projectlombok:lombok'
