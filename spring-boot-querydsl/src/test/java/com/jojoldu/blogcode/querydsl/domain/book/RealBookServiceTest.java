@@ -45,9 +45,8 @@ public class RealBookServiceTest {
         bookService.update(bookId, result);
 
         //then
-        Book book = bookRepository.findById(bookId).get();
-
-        assertThat(book.getName()).isEqualTo(result);
+        String bookName = bookRepository.getNameById(bookId);
+        assertThat(bookName).isEqualTo(result);
 
     }
 }

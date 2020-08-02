@@ -3,6 +3,7 @@ package com.jojoldu.blogcode.querydsl.domain.book;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.jojoldu.blogcode.querydsl.domain.book.QBook.book;
