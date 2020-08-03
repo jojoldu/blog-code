@@ -52,4 +52,11 @@ public class Book {
         this.name = name;
     }
 
+    public static Book create (String name) {
+        return Book.builder()
+                .name(name)
+                .build();
+
+    }
+
 }

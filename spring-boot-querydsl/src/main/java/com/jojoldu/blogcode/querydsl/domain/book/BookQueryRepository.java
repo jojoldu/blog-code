@@ -2,6 +2,7 @@ package com.jojoldu.blogcode.querydsl.domain.book;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +21,19 @@ import static com.jojoldu.blogcode.querydsl.domain.book.QBook.book;
 public class BookQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
     public Book getBookById (Long bookId) {
         return queryFactory
                 .select(book)
+                .from(book)
+                .where(book.id.eq(bookId))
+                .fetchOne();
+    }
+
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
+    public String getBookNameById (Long bookId) {
+        return queryFactory
+                .select(book.name)
                 .from(book)
                 .where(book.id.eq(bookId))
                 .fetchOne();
