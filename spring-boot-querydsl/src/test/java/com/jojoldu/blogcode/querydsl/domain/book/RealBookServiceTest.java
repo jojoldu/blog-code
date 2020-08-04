@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -47,7 +49,25 @@ public class RealBookServiceTest {
         //then
         String bookName = bookRepository.getNameById(bookId);
         assertThat(bookName).isEqualTo(result);
+    }
 
+    @Test
+    void test_트랜잭션_전파() throws Exception {
+        //given
+        String name = "a";
+        Long bookId = bookRepository.save(Book.builder()
+                .name(name)
+                .build())
+                .getId();
+
+        //when
+        bookService.backup(bookId);
+
+        //then
+        List<Book> books = bookRepository.findAll();
+        assertThat(books).hasSize(2);
+        assertThat(books.get(0).getName()).isEqualTo(name);
+        assertThat(books.get(1).getName()).isEqualTo(name);
     }
 }
 
