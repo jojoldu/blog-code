@@ -1,5 +1,8 @@
 package com.jojoldu.blogcode.querydsl.domain.book;
 
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
@@ -37,5 +40,16 @@ public class BookQueryRepository {
                 .from(book)
                 .where(book.id.eq(bookId))
                 .fetchOne();
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean exist(Long bookId) {
+        Integer fetchOne = queryFactory
+                .selectOne()
+                .from(book)
+                .where(book.id.eq(bookId))
+                .fetchFirst();
+
+        return fetchOne > 0;
     }
 }
