@@ -30,7 +30,36 @@ public class BookQueryRepositoryTest {
     }
 
     @Test
-    void test_exist() throws Exception {
+    void test_jpaRepository_exist() throws Exception {
+        //given
+        String name = "a";
+        bookRepository.save(Book.builder()
+                .name(name)
+                .build());
+        //when
+        boolean exist = bookRepository.existsByName(name);
+
+        //then
+        assertThat(exist).isTrue();
+    }
+
+    @Test
+    void test_jpaRepository_exist2() throws Exception {
+        //given
+        Long bookId = bookRepository.save(Book.builder()
+                .name("a")
+                .build())
+                .getId();
+
+        //when
+        boolean exist = bookRepository.exist(bookId);
+
+        //then
+        assertThat(exist).isTrue();
+    }
+
+    @Test
+    void test_querydsl_exist() throws Exception {
         //given
         Long bookId = bookRepository.save(Book.builder()
                 .name("a")

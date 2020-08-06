@@ -13,4 +13,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     @Query("SELECT b.name FROM Book b WHERE b.id =:id")
     String getNameById (@Param("id") Long id);
+
+    boolean existsByName(String name);
+
+    @Query("SELECT EXIST (SELECT b.id FROM Book b WHERE b.id =:id)")
+    boolean exist (@Param("id") Long id);
 }
