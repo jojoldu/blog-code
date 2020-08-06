@@ -63,7 +63,14 @@ SQL로 직접 ```count``` 와 ```exists```로 성능 비교를 해보시면 큰 
 
 ### Querydsl에서 exists?
 
-자 그럼 아래 ```exists``` 쿼리를 
+Querydsl에서 기본적으로 지원하는 ```exists``` 를 보면 성능상 이슈가 있는 ```count``` 쿼리 방식을 사용했음을 알 수 있습니다.
+
+![querydsl_exists](./images/querydsl_exists.png)
+
+(```QuerydslJpaPredicateExecutor.exists```)
+
+그래서 ```exists``` 쿼리를 직접 구현해보겠습니다.  
+아래 쿼리를 
 
 ```sql
 select exists (select 1
