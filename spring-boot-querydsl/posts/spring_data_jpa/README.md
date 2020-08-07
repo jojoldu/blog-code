@@ -45,7 +45,7 @@ IntelliJ가 아닌 이클립스라도 크게 문제는 없습니다만, IntelliJ
 ```groovy
 buildscript {
     ext {
-        ...
+        5...
         querydslPluginVersion = '1.0.10' // 플러그인 버전
     }
     repositories {
@@ -529,7 +529,11 @@ public class CustomTest {
 이렇게 성공적으로 기능이 작동하는 것을 확인할 수 있습니다.  
 위 코드가 잘 적용된거죠?
 
-## 4. 주의 사항
+## 4. 상속/구현 없는 Repository
+
+
+
+## 5. 주의 사항
 
 Querydsl의 QClass를 담는 ```src/main/generated```는 자동생성되는 파일들의 디렉토리이니 무조건 ```.gitignore```에 추가하셔야 합니다.
 

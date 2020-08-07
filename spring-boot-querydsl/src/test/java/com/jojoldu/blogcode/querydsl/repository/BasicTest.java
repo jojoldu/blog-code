@@ -1,6 +1,7 @@
 package com.jojoldu.blogcode.querydsl.repository;
 
 import com.jojoldu.blogcode.querydsl.domain.academy.Academy;
+import com.jojoldu.blogcode.querydsl.domain.academy.AcademyQueryRepository;
 import com.jojoldu.blogcode.querydsl.domain.academy.AcademyRepository;
 import com.jojoldu.blogcode.querydsl.domain.academy.AcademyRepositorySupport;
 import org.junit.jupiter.api.AfterEach;
@@ -34,6 +35,9 @@ public class BasicTest {
     @Autowired
     private AcademyRepositorySupport academyRepositorySupport;
 
+    @Autowired
+    private AcademyQueryRepository academyQueryRepository;
+
     @AfterEach
     public void tearDown() throws Exception {
         academyRepository.deleteAllInBatch();
@@ -48,6 +52,21 @@ public class BasicTest {
 
         //when
         List<Academy> result = academyRepositorySupport.findByName(name);
+
+        //then
+        assertThat(result.size(), is(1));
+        assertThat(result.get(0).getAddress(), is(address));
+    }
+
+    @Test
+    public void querydsl_기본_기능_확인2() {
+        //given
+        String name = "jojoldu";
+        String address = "jojoldu@gmail.com";
+        academyRepository.save(new Academy(name, address));
+
+        //when
+        List<Academy> result = academyQueryRepository.findByName(name);
 
         //then
         assertThat(result.size(), is(1));
