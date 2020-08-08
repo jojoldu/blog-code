@@ -16,6 +16,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     boolean existsByName(String name);
 
-    @Query("SELECT EXIST (SELECT b.id FROM Book b WHERE b.id =:id)")
+    @Query("SELECT count(b.id) > 0 FROM Book b WHERE b.id =:id")
     boolean exist (@Param("id") Long id);
 }

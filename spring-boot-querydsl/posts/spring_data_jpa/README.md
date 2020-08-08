@@ -531,8 +531,38 @@ public class CustomTest {
 
 ## 4. 상속/구현 없는 Repository
 
+마지막은 제가 가장 선호하는 방식인 **Querydsl만으로** Repository를 구성하는 방법입니다.
 
+```java
+@RequiredArgsConstructor
+@Repository
+public class AcademyQueryRepository {
+    private final JPAQueryFactory queryFactory;
 
+    public List<Academy> findByName(String name) {
+        return queryFactory.selectFrom(academy)
+                .where(academy.name.eq(name))
+                .fetch();
+    }
+}
+```
+
+```java
+@Test
+public void querydsl_기본_기능_확인2() {
+    //given
+    String name = "jojoldu";
+    String address = "jojoldu@gmail.com";
+    academyRepository.save(new Academy(name, address));
+
+    //when
+    List<Academy> result = academyQueryRepository.findByName(name);
+
+    //then
+    assertThat(result.size(), is(1));
+    assertThat(result.get(0).getAddress(), is(address));
+}
+```
 ## 5. 주의 사항
 
 Querydsl의 QClass를 담는 ```src/main/generated```는 자동생성되는 파일들의 디렉토리이니 무조건 ```.gitignore```에 추가하셔야 합니다.
