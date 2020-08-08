@@ -531,11 +531,12 @@ public class CustomTest {
 
 ## 4. 상속/구현 없는 Repository
 
-마지막은 제가 가장 선호하는 방식인 **Querydsl만으로** Repository를 구성하는 방법입니다.
+마지막은 제가 가장 선호하는 방식인 **Querydsl만으로** Repository를 구성하는 방법입니다.  
+아래처럼 **JPAQueryFactory** 만 있으면 Querdsl을 사용할 수 있습니다.
 
 ```java
 @RequiredArgsConstructor
-@Repository
+@Repository 
 public class AcademyQueryRepository {
     private final JPAQueryFactory queryFactory;
 
@@ -547,7 +548,19 @@ public class AcademyQueryRepository {
 }
 ```
 
+* 최소한의 Bean 등록을 위해 ```@Repository```를 선언합니다.
+* 별도의 상속(extends) / 구현(implements) 없이 ```JPAQueryFactory``` 만 있으면 됩니다. 
+* 특정 Entity 만 사용해야한다는 제약도 없습니다.
+
+잘 작동하는지 한번 확인해볼까요?  
+  
+아래 테스트 코드를 수행해보면?
+
 ```java
+
+@Autowired
+private AcademyQueryRepository academyQueryRepository;
+
 @Test
 public void querydsl_기본_기능_확인2() {
     //given
@@ -563,6 +576,13 @@ public void querydsl_기본_기능_확인2() {
     assertThat(result.get(0).getAddress(), is(address));
 }
 ```
+
+테스트가 성공하는 것을 확인할 수 있습니다.
+
+![test2](./images/test2.png)
+
+Core 기능이 아닌 어드민/API 등에서 **특정 Entity를 메인으로 확정할 수 없는 경우**와 자주 변경되는 기능에 대해서는 위처럼 선언해서 사용하시면 심플하게 변경에 대응할 수 있습니다.ㄴ
+
 ## 5. 주의 사항
 
 Querydsl의 QClass를 담는 ```src/main/generated```는 자동생성되는 파일들의 디렉토리이니 무조건 ```.gitignore```에 추가하셔야 합니다.
