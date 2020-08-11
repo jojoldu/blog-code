@@ -32,8 +32,8 @@ public class AdItemServiceTest {
     void after() {
         adItemRepository.deleteAllInBatch();
         adBondRepository.deleteAllInBatch();
-        customerRepository.deleteAllInBatch();
         shopRepository.deleteAllInBatch();
+        customerRepository.deleteAllInBatch();
     }
 
     @Test
@@ -64,9 +64,9 @@ public class AdItemServiceTest {
     @Test
     void test_createAdBond3() throws Exception {
         //given
-        Shop shop = shopRepository.save(new Shop("no", "name"));
         String expectedNo = "no";
-        Customer customer = customerRepository.save(new Customer(expectedNo, "name", "bizNo", "ceo", shop));
+        Customer customer = customerRepository.save(new Customer(expectedNo, "name", "bizNo", "ceo"));
+        shopRepository.save(new Shop(expectedNo, "name", customer));
         LocalDate startDate = LocalDate.of(2020,8,11);
         LocalDate endDate = LocalDate.of(2020,8,12);
 
@@ -80,12 +80,15 @@ public class AdItemServiceTest {
 
         //then
         List<AdBond> adBonds = adBondRepository.findAll();
-        assertThat(adBonds).hasSize(2);
-        assertThat(adBonds.get(0).getCustomer().getCustomerNo()).isEqualTo(expectedNo);
-        assertThat(adBonds.get(1).getCustomer().getCustomerNo()).isEqualTo(expectedNo);
+        AdBond adBond1 = adBonds.get(0);
+        AdBond adBond2 = adBonds.get(1);
 
-        List<Customer> customers = customerRepository.findAll();
-        assertThat(customers).hasSize(1);
-        assertThat(customers.get(0).getCustomerNo()).isEqualTo(expectedNo);
+        assertThat(adBonds).hasSize(2);
+        assertThat(adBond1.getCustomer().getCustomerNo()).isEqualTo(expectedNo);
+        assertThat(adBond2.getCustomer().getCustomerNo()).isEqualTo(expectedNo);
+
+        assertThat(adBond1.getCustomer().getShop().getShopNo()).isEqualTo(expectedNo);
+        assertThat(adBond2.getCustomer().getShop().getShopNo()).isEqualTo(expectedNo);
+
     }
 }

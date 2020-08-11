@@ -5,11 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -26,12 +24,18 @@ public class Customer {
     private String bizNo; //사업자번호
     private String ceoName; //대표자명
 
-    @OneToOne
-    @JoinColumn(name = "shop_id", foreignKey = @ForeignKey(name = "fk_customer_shop"))
+    @OneToOne(mappedBy = "customer")
     private Shop shop;
 
     public Customer(Long id) {
         this.id = id;
+    }
+
+    public Customer(String customerNo, String customerName, String bizNo, String ceoName) {
+        this.customerNo = customerNo;
+        this.customerName = customerName;
+        this.bizNo = bizNo;
+        this.ceoName = ceoName;
     }
 
     @Builder
@@ -45,5 +49,6 @@ public class Customer {
 
     public void setShop(Shop shop) {
         this.shop = shop;
+        shop.setCustomer(this);
     }
 }

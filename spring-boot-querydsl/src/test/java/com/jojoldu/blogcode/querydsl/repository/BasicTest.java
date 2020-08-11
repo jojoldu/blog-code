@@ -7,16 +7,13 @@ import com.jojoldu.blogcode.querydsl.domain.academy.AcademyRepositorySupport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
@@ -54,8 +51,8 @@ public class BasicTest {
         List<Academy> result = academyRepositorySupport.findByName(name);
 
         //then
-        assertThat(result.size(), is(1));
-        assertThat(result.get(0).getAddress(), is(address));
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getAddress()).isEqualTo(address);
     }
 
     @Test
@@ -69,7 +66,7 @@ public class BasicTest {
         List<Academy> result = academyQueryRepository.findByName(name);
 
         //then
-        assertThat(result.size(), is(1));
-        assertThat(result.get(0).getAddress(), is(address));
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getAddress()).isEqualTo(address);
     }
 }
