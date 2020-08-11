@@ -4,6 +4,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
@@ -24,7 +25,7 @@ import static com.querydsl.core.types.dsl.Expressions.constantAs;
 public class AdItemQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-
+    @Transactional(readOnly = true)
     public List<AdBond> createAdBond(LocalDate startDate, LocalDate endDate, List<String> orderTypes) {
         if(CollectionUtils.isEmpty(orderTypes)) {
             return new ArrayList<>();
@@ -36,6 +37,26 @@ public class AdItemQueryRepository {
                         adItem.txDate,
                         adItem.orderType,
                         adItem.customer) // AdBond의 customer 를 바로 지정
+                )
+                .from(adItem)
+                .where(adItem.orderType.in(orderTypes)
+                        .and(adItem.txDate.between(startDate, endDate)))
+                .groupBy(adItem.orderType, adItem.txDate, adItem.customer)
+                .fetch();
+    }
+
+    @Transactional(readOnly = true)
+    public List<AdBondDto> createAdBondDto(LocalDate startDate, LocalDate endDate, List<String> orderTypes) {
+        if(CollectionUtils.isEmpty(orderTypes)) {
+            return new ArrayList<>();
+        }
+
+        return queryFactory
+                .select(Projections.fields(AdBondDto.class,
+                        adItem.amount.sum().as("amount"),
+                        adItem.txDate,
+                        adItem.orderType,
+                        adItem.customer.id.as("customerId"))
                 )
                 .from(adItem)
                 .where(adItem.orderType.in(orderTypes)
