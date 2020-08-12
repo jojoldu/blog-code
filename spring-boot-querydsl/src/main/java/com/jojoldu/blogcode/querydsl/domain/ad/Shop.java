@@ -1,6 +1,5 @@
 package com.jojoldu.blogcode.querydsl.domain.ad;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
