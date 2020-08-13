@@ -19,8 +19,9 @@ querydsl-sql은 해당하지 않는다.
 
 MySQL 5.6 에는 [인덱스 컨디션 푸시다운](https://jojoldu.tistory.com/474) 최적화가 진행되었고,
 5.7에서는 각종 인덱스와 옵티마이저 개선이 진행되었습니다.  
+그래서 버전별로 인덱스 효과가 더 뛰어날 수도/떨어질 수도 있습니다.  
   
-Querydsl의 경우에도 2,3,4 로 오면서 문법적인것에서 변화가 있었기 때문에 아래 내용을 적용시에는 꼭 현재 환경에서 테스트를 진행해시길 추천드립니다.
+Querydsl의 경우에도 2,3,4 로 오면서 문법적인 것에서 변화가 있었기 때문에 아래 내용을 적용시에는 꼭 현재 환경에서 테스트를 진행해시길 추천드립니다.
 
 ### exist 사용하지 않기
 
@@ -28,7 +29,14 @@ Querydsl의 경우에도 2,3,4 로 오면서 문법적인것에서 변화가 있
 
 ### QuerydslSupport의 페이징 사용하지 않기
 
+매번 count 쿼리가 자동으로 실행된다.  
+서비스 상황에 따라 **마감된 데이터** 기준으로 서비스 되는 경우 
+
 ### 페이징이 필요 없는 정렬 조회는 애플리케이션에서 정렬하기
+
+### constantAs 적극 사용하기
+
+이미 특정값을 알고 있는 경우엔 constantAs로 불필요한 컬럼 조회를 제거한다.
 
 ### 정렬이 필요 없는 group by는 정렬 제거하기
 
@@ -38,7 +46,7 @@ in 절에 select 쿼리를 넣을시 성능상 이슈가 발생할 수 있다.
 서브쿼리로 조회된 결과 데이터를 임시 테이블에 적재해서 처리하는데,
 이 데이터의 양이 **메모리에서 처리할 수 없는 규모일 경우** 디스크에 임시 테이블을 생성해서 처리하게 된다.
 
-### 커버링 인덱스는 2번의 쿼리로
+### 커버링 인덱스는 두번의 쿼리로
 
 ```sql
 select *
@@ -97,26 +105,157 @@ public class AcademyQueryRepository {
 }
 ```
 
-결국 Querydsl은 ```JPAQueryFactory``` 만 있으면 사용할 수 있다.
+결국 Querydsl은 ```JPAQueryFactory``` 만 있으면 사용할 수 있다는 점을 명심하자.
 
-### bean/constructor 대신에 fields 사용하기
+### Projection은 fields를 사용한다
+
+Projection을 위해 setter나 생성자를 추가할 경우 서비스 로직에서 무분별하게 사용될 여지가 있다.
+
+```java
+/* BAD example 1. */
+queryFactory
+.select(Projections.beans(DmGiveDetailDto.class,
+      give.id.as("giveId"),
+      adBond.amount.as("adBondAmount")
+))
+.from(give)
+.innerJoin(give.giveAdBonds, giveAdBond)
+.innerJoin(giveAdBond.adBond, adBond)
+
+
+/* BAD example 2. */
+queryFactory
+.select(Projections.constructor(DmGiveDetailDto.class,
+      give.id.as("giveId"),
+      adBond.amount.as("adBondAmount")
+))
+.from(give)
+.innerJoin(give.giveAdBonds, giveAdBond)
+.innerJoin(giveAdBond.adBond, adBond)
+```
+
+명시적으로 setter와 생성자는 배제한다.
+setter와 생성자는 그 의도가 명확한 서비스 로직이 필요한 경우에만 등록한다.
+
+
+```java
+/* GOOD example */
+queryFactory
+.select(Projections.fields(DmGiveDetailDto.class,
+      give.id.as("giveId"),
+      adBond.amount.as("adBondAmount")
+))
+.from(give)
+.innerJoin(give.giveAdBonds, giveAdBond)
+.innerJoin(giveAdBond.adBond, adBond)
+```
 
 ### if문 대신 BooleanExpression
 
-### 불필요한 캐스팅 제거
+### 같은 타입은 별도 캐스팅하지 않는다.
 
-### constantAs 적극 사용하기
 
-이미 특정값을 알고 있는 경우엔 constantAs로 불필요한 컬럼 조회를 제거한다.
+### selectDistinct 보다는 distinct 를 사용한다.
 
+
+코드리뷰 과정에서 selectDistinct는 select로 착각하고 넘어가는 경우가 빈번하다.
+
+
+```java
+/* BAD example */
+queryFactory
+.selectDistinct(give)
+.from(give)
+.innerJoin(give.giveAdBonds, giveAdBond)
+.innerJoin(giveAdBond.adBond, adBond)
+```
+
+명확하게 distinct()를 별도로 빼서 코드리뷰때 놓치지 않도록 한다.
+
+```java
+/* GOOD example */
+queryFactory
+.select(give).distinct()
+.from(give)
+.innerJoin(give.giveAdBonds, giveAdBond)
+.innerJoin(giveAdBond.adBond, adBond)
+```
+
+
+
+
+
+### JPAQueryFactory 가 필요할땐 JPAQueryFactory 의존성을 주입받는다
+
+
+**직접 EntityManager를 주입 받아 사용하지 않는다**.
+
+
+```java
+/* BAD example */
+private final EntityManager em;
+...
+
+
+new JPAQueryFactory(em).delete(테이블)
+      .where(...).execute();
+```
+
+
+JPA를 다루는 Sub Module에서 JPAQueryFactory Bean을 등록한 상태이다. 
+
+
+```java
+@Configuration
+@EnableJpaAuditing // JPA Auditing 활성화
+public class JpaConfig {
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Bean
+    public JPAQueryFactory jpaQueryFactory() {
+        return new JPAQueryFactory(entityManager);
+    }
+}
+```
+
+즉, 불필요하게 계속 JPAQueryFactory 인스턴스를 만들 필요가 없다.  
+위 예제는 아래 코드처럼 사용하면 된다.
+
+```java
+/* GOOD example */
+private final JPAQueryFactory queryFactory;
+...
+
+
+queryFactory.delete(테이블)
+      .where(...).execute();
+```
 
 ## 3. 의도치 않은 쿼리 주의
 
-### distinct dto
+### dto를 조회할때 distinct는 권장하지 않는다.
 
-서로 다른 row라도 dto 필드 값이 같다면 distinct 대상이 되어버린다.
+distinct는 조회 컬럼 전체가 동일할 경우 하나로 합쳐버린다.  
+즉, **서로 다른 데이터 임에도 하나로** 나을 수가 있다.  
+아래 같은 경우 customerId와 giveAmount가 동일하면 1개로 조회된다 (실제로 다른 row라 하더라도)
 
-### 연관관계에선 alias 사용
+
+```java
+/* BAD example */
+queryFactory
+.select(Projections.fields(DmGiveDetailDto.class,
+      give.customer.id.as("customerId"), // 같은 customer의
+      give.amount.as("giveAmount") // 서로 다른 give 지만 amount가 같은 경우
+))
+.distinct()
+.from(give)
+```
+
+그래서 Dto를 쓸때 ```distinct``` 는 **진짜 필요한지** 한번 더 고민해보고, 유의해서 사용한다.
+
+
+### oneToOne 관계에선 alias를 꼭 선언한다.
 
 oneToOne 에서 Cross Join 발생한다.
 

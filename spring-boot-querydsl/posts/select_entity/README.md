@@ -157,11 +157,11 @@ public List<AdBond> createAdBond(LocalDate startDate, LocalDate endDate, List<St
 }
 ```
 
-자 위 상황은 어떤 것들이 문제인지 하나씩 확인해보겠습니다.
+어떤 것들이 문제인지 하나씩 확인해보겠습니다.
 
 ### 1-1. 성능 이슈
 
-위 코드를 수행해보면 아래 쿼리가 실행됩니다.
+위 Querydsl 코드를 수행했을때 실행되는 쿼리는 아래와 같습니다.
 
 ![query1](./images/query1.png)
 
