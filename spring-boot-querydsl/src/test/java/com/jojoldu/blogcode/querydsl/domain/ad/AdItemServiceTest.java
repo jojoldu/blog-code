@@ -89,6 +89,5 @@ public class AdItemServiceTest {
 
         assertThat(adBond1.getCustomer().getShop().getShopNo()).isEqualTo(expectedNo);
         assertThat(adBond2.getCustomer().getShop().getShopNo()).isEqualTo(expectedNo);
-
     }
 }
