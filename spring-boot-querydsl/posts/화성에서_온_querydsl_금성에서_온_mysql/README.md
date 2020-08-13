@@ -30,8 +30,7 @@ Querydsl의 경우에도 2,3,4 로 오면서 문법적인것에서 변화가 있
 
 ### 페이징이 필요 없는 정렬 조회는 애플리케이션에서 정렬하기
 
-### 정렬이 필요 없는 group by 
-
+### 정렬이 필요 없는 group by는 정렬 제거하기
 
 ### 서브쿼리 대신 Join으로
 
@@ -70,6 +69,35 @@ Querydsl의 경우 from절의 subquery를 지원하지 않습니다.
 
 
 ### 상속 (extends) / 구현 (implements) 없이 사용하기
+
+아래와 같은 형태의 Querydsl Repository는 사용하지 않는다.
+
+```java
+ARepository extends QuerydslRepositorySupport
+```
+
+```java
+BRepositoryImpl implements BRepositoryCustom
+```
+
+core repsotory에 둘 것인가, 서비스 Repository에 둘 것인지 구분한다.  
+서비스 repository들은 모두 아래와 같이 querydslFactory만 받아서 사용한다.
+
+```java
+@RequiredArgsConstructor
+@Repository
+public class AcademyQueryRepository {
+    private final JPAQueryFactory queryFactory;
+
+    public List<Academy> findByName(String name) {
+        return queryFactory.selectFrom(academy)
+                .where(academy.name.eq(name))
+                .fetch();
+    }
+}
+```
+
+결국 Querydsl은 ```JPAQueryFactory``` 만 있으면 사용할 수 있다.
 
 ### bean/constructor 대신에 fields 사용하기
 
