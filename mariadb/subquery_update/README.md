@@ -1,9 +1,4 @@
-# Bulk Update 시 권장 사항 (feat. MySQL)
-
-
-## 더티체킹 보다는 일괄처리로
-
-## Subquery는 사용하지 않는다.
+# Subquery로 Update를 하면 안되는 이유
 
 mysql에서 업데이트 쿼리 작성시 subquery를 사용할 경우 select와 동작방식이 다르기 때문에 주의가 필요하여 해당 테스트 스크립트를 작성했습니다.
 
