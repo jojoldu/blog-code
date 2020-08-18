@@ -1,5 +1,8 @@
 # Subquery로 Update를 하면 안되는 이유
 
+MySQL 5.6 부터는 서브쿼리 구문이 대폭 개선되어 더이상 서브쿼리로 인한 성능 저하는 없는 것처럼 보입니다.  
+
+
 mysql에서 업데이트 쿼리 작성시 subquery를 사용할 경우 select와 동작방식이 다르기 때문에 주의가 필요하여 해당 테스트 스크립트를 작성했습니다.
 
 결론
@@ -149,3 +152,11 @@ Query OK, 1000 rows affected (0.01 sec)
 
 target_table에서 변경하고자 하는 데이터만 인덱스를 이용해서 찾는다.
 엑세스하는 데이터가 1,000 * 1
+
+
+[공식문서](https://dev.mysql.com/doc/refman/5.6/en/subquery-optimization.html)
+
+![docs](./images/docs.png)
+
+> **단일 테이블을 수정** (UPDATE 및 DELETE) 하기 위한 서브 쿼리에는 옵티마이저가 세미 조인 또는 구체화 서브 쿼리 최적화를 사용하지 않는다는 것입니다.  
+> 해결 방법으로, 여러 테이블로 다시 작성하려고 UPDATE하고 DELETEA는 하위 쿼리보다는 조인을 사용 문.
