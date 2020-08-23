@@ -12,12 +12,14 @@ mysql에서 업데이트 쿼리 작성시 subquery를 사용할 경우 select와
 
 
 
-* 업데이트 대상 테이블 100만건
-* 업데이트 조건 테이블 1000건
+## 테스트 환경
+
+* 메인 테이블 100만건
+* 서브 테이블 1000건
 
 ```sql
 -- 업데이트 대상 테이블
-create table target_table
+create table main_table
 (
     id int not null auto_increment,
     target_id int not NULL,
@@ -26,38 +28,20 @@ create table target_table
 ```
 
 ```sql
--- 100만건 insert
-insert into target_table (target_id)
-select (FLOOR( 1 + RAND( ) *100000000 ))
-from information_schema.tables a, information_schema.tables b, information_schema.tables c
-limit 1000000;
-```
-
-```sql
 -- 업데이트 조건 테이블 (인덱스 없음)
-create table source_table_noindex
+create table sub_table_noindex
 (
     id int not null
 )ENGINE=InnoDB;
 ```
-
-```sql
--- 1000건 삽입
-insert into source_table_noindex select id from target_table limit 1000;
-``` 
-
+ 
 ```sql 
 -- 업데이트 조건 테이블 (인덱스 있음)
-create table source_table_index
+create table sub_table_index
 (
     id int not null ,
     primary key (id)
 )ENGINE=InnoDB;
-```
-
-```sql
--- 1000건 삽입
-insert into source_table_index select id from target_table limit 1000;
 ```
 
 
