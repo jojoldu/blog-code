@@ -63,11 +63,13 @@ create table sub_table_index
 
 ![이상적인_서브쿼리](./images/이상적인_서브쿼리.png)
 
-하지만, MySQL 5.5 에서는 **서브쿼리가 우선 수행되지 않습니다**.  
+하지만, MySQL 5.5 에서는 위에서 의도한것처럼 **서브쿼리가 우선 수행되지 않습니다**.  
   
 > 서브쿼리 최적화가 5.6에서 적용되었습니다.
 
-### Subquery
+실제로 그런지 한번 확인해보겠습니다.
+
+### 1-1. Subquery
 
 테스트할 쿼리는 아래와 같습니다.
 
@@ -81,25 +83,35 @@ where target_id in (
 );
 ```
 
-많은 분들이 즐겨쓰시는 **세미조인 서브쿼리** 입니다.  
-  
-**No Index**
+> 많은 분들이 즐겨쓰시는 **세미조인 서브쿼리** 입니다.  
+
+첫번째로 볼 것은 서브쿼리 테이블에 인덱스가 없는 경우 입니다.  
+
+#### No Index
+
+**실행계획**
 
 ![55_no_index](./images/55_no_index.png)
 
+**수행시간**
+
 ![55_no_index_time](./images/55_no_index_time.png)
 
-**Index**
+#### Index
+
+**실행계획**
 
 ![55_index](./images/55_index.png)
+
+**수행시간**
 
 ![55_index_time](./images/55_index_time.png)
 
 그렇다면 위 쿼리를 Join으로 풀면 얼마나 성능 차이가 발생할까요?  
 
-### Join
+### 1-2. Join
 
-**No Index**
+위 서브쿼리를 Join쿼리로 아래와 같이 변경합니다.
 
 ```sql
 select *
@@ -109,17 +121,23 @@ from main_table_55 m
 where s.id < 500;
 ```
 
+#### No Index
+
+**실행계획**
+
+![55_no_index_join](./images/55_no_index_join.png)
+
+**수행시간**
+
 ![55_no_index_time_join](./images/55_no_index_time_join.png)
 
-**Index**
+#### Index
 
-```sql
-select *
-from main_table_55 m
-    join sub_table_index_55 s
-        on m.target_id = s.id
-where s.id < 500;
-```
+**실행계획**
+
+![55_index_join](./images/55_index_join.png)
+
+**수행시간**
 
 ![55_index_time_join](./images/55_index_time_join.png)
 
@@ -127,23 +145,39 @@ where s.id < 500;
 
 ## 2. MySQL 5.6
 
-### Subquery
+### 2-1. Subquery
 
-**No Index**
+#### No Index
+
+```sql
+explain extended
+select *
+from main_table
+where target_id in (select id from sub_table_index where id < 500);
+```
+
+저의 경우 Jetbrains사의 DataGrip이라는 제품을 사용하고 있는데요.  
+해당 제품에서 ```explain extended``` 를 사용하면 아래와 같이 내부에서 수행된 쿼리를 확인할 수 있습니다.
+
+![56_no_index_extended](./images/56_no_index_extended.png)
+
+
+> MySQL CLI 로 실행하신다면 ```SHOW WARNING;``` 명령어를 사용하면 [옵티마이저가 분석해서 다시 재조합한 쿼리 문장을 확인](https://weicomes.tistory.com/154)할 수 있습니다.67ㅕㅠ 
+
 
 ![56_no_index](./images/56_no_index.png)
 
 ![56_no_index_time](./images/56_no_index_time.png)
 
-![56_no_index_extended](./images/56_no_index_extended.png)
+#### Index
 
-**Index**
+![56_index_extended](./images/56_index_extended.png)
 
 ![56_index](./images/56_index.png)
 
 ![56_index_time](./images/56_index_time.png)
 
-![56_index_extended](./images/56_index_extended.png)
+
 
 
 ## 결론
