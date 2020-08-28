@@ -1,6 +1,7 @@
 # Subquery로 Update를 하면 안되는 이유
 
-MySQL 5.6 부터는 서브쿼리 구문이 대폭 개선되어 더이상 서브쿼리로 인한 성능 저하는 없는 것처럼 보입니다.  
+[지난 포스팅](https://jojoldu.tistory.com/520)으로 ```select ~ where in (서브쿼리)```는 MySQL 5.6 버전에서 대폭 최적화 되었음을 확인하였는데요.  
+
 
 
 mysql에서 업데이트 쿼리 작성시 subquery를 사용할 경우 select와 동작방식이 다르기 때문에 주의가 필요하여 해당 테스트 스크립트를 작성했습니다.
