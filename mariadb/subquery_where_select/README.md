@@ -40,7 +40,7 @@ create table sub_table_noindex
 
 **서브 테이블2 (인덱스 X)**
 
-```sql 
+```sql
 -- 업데이트 조건 테이블 (인덱스 있음)
 create table sub_table_index
 (
