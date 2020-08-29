@@ -6,14 +6,8 @@
 
 mysql에서 업데이트 쿼리 작성시 subquery를 사용할 경우 select와 동작방식이 다르기 때문에 주의가 필요하여 해당 테스트 스크립트를 작성했습니다.
 
-결론
-서브쿼리는 JOIN으로 변경하여 작성
-서브쿼리를 이용하여 update가 실행될 경우 업데이트 대상의 테이블 전체를 읽게 되어 매우 느리게 처리된다.
-서브쿼리를 이용할 경우 작은 테이블이라도 인덱스가 반드시 있어야 한다.
 
-
-
-## 테스트 환경
+## 0. 테스트 환경
 
 * 메인 테이블 100만건
 * 서브 테이블 1000건
@@ -45,8 +39,10 @@ create table sub_table_index
 )ENGINE=InnoDB;
 ```
 
+## 1. Subquery
 
-Case 1
+### 1-1. No Index
+
 인덱스가 없는 테이블로 서브쿼리로 작성 
 
 ```sql
@@ -70,7 +66,8 @@ Query OK, 1000 rows affected (5 min 25.64 sec)
 target_table 전체를 full scan하게되며, temporary table을 사용한다.
 엑세스하는 데이터가 1,000,000 * 1,000
 
-Case 2
+### 1-2. Index
+
 인덱스가 있는 테이블로 서브쿼리로 작성
 
 ```sql
@@ -95,26 +92,10 @@ Query OK, 1000 rows affected (2.64 sec)
 target_table 전체를 full scan하게되며, temporary table을 사용한다.
 엑세스하는 데이터가 1,000,000 * 1
 
-Case 3
-Join 쿼리
+## 2. Join
 
-```sql
--- 서브쿼리 사용하지 않고 JOIN으로 작성 (인덱스 있음)
-update target_table a
-    join source_table_index b on a.id = b.id
-set a.target_id = 100000
-Query OK, 1000 rows affected (0.01 sec)
-```
+### 2-1. No Index
 
-```sql 
--- 실행계획
-+----+-------------+-------+------------+--------+---------------+---------+---------+------------+------+----------+-------------+
-| id | select_type | table | partitions | type   | possible_keys | key     | key_len | ref        | rows | filtered | Extra       |
-+----+-------------+-------+------------+--------+---------------+---------+---------+------------+------+----------+-------------+
-|  1 | SIMPLE      | b     | NULL       | index  | PRIMARY       | PRIMARY | 4       | NULL       | 1000 |   100.00 | Using index |
-|  1 | UPDATE      | a     | NULL       | eq_ref | PRIMARY       | PRIMARY | 4       | point.b.id |    1 |   100.00 | NULL        |
-+----+-------------+-------+------------+--------+---------------+---------+---------+------------+------+----------+-------------+
-```
  
 ```sql
 -- 서브쿼리 사용하지 않고 JOIN으로 작성 (인덱스 없음)
@@ -135,13 +116,43 @@ Query OK, 1000 rows affected (0.01 sec)
 실행시간 : 0.01초
 ```
 
+### 2-2. Index
+
+```sql
+-- 서브쿼리 사용하지 않고 JOIN으로 작성 (인덱스 있음)
+update target_table a
+    join source_table_index b on a.id = b.id
+set a.target_id = 100000
+Query OK, 1000 rows affected (0.01 sec)
+```
+
+```sql 
+-- 실행계획
++----+-------------+-------+------------+--------+---------------+---------+---------+------------+------+----------+-------------+
+| id | select_type | table | partitions | type   | possible_keys | key     | key_len | ref        | rows | filtered | Extra       |
++----+-------------+-------+------------+--------+---------------+---------+---------+------------+------+----------+-------------+
+|  1 | SIMPLE      | b     | NULL       | index  | PRIMARY       | PRIMARY | 4       | NULL       | 1000 |   100.00 | Using index |
+|  1 | UPDATE      | a     | NULL       | eq_ref | PRIMARY       | PRIMARY | 4       | point.b.id |    1 |   100.00 | NULL        |
++----+-------------+-------+------------+--------+---------------+---------+---------+------------+------+----------+-------------+
+```
+
+
+
 target_table에서 변경하고자 하는 데이터만 인덱스를 이용해서 찾는다.
 엑세스하는 데이터가 1,000 * 1
-
 
 [공식문서](https://dev.mysql.com/doc/refman/5.6/en/subquery-optimization.html)
 
 ![docs](./images/docs.png)
 
 > **단일 테이블을 수정** (UPDATE 및 DELETE) 하기 위한 서브 쿼리에는 옵티마이저가 세미 조인 또는 구체화 서브 쿼리 최적화를 사용하지 않는다는 것입니다.  
-> 해결 방법으로, 여러 테이블로 다시 작성하려고 UPDATE하고 DELETEA는 하위 쿼리보다는 조인을 사용 문.
+> 해결 방법으로, 여러 테이블로 다시 작성하려고 UPDATE하고 DELETEA는 하위 쿼리보다는 조인을 사용문.
+
+## 결론
+
+* MySQL 5.6 에서 서브쿼리가 개선되었지만, **Update/Delete** 에는 적용되지 않는다.
+* 즉, ```update ~ where in (서브쿼리)``` 형태는 **JOIN으로 변경** 해야만 한다.
+    * 서브쿼리를 이용하여 update가 실행될 경우 업데이트 대상의 테이블 전체를 읽게 되어 매우 느리게 처리된다.  
+    * 서브쿼리를 이용할 경우 작은 테이블이라도 인덱스가 반드시 있어야 한다.
+
+
