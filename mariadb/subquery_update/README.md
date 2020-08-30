@@ -46,48 +46,34 @@ create table sub_table_index
 인덱스가 없는 테이블로 서브쿼리로 작성 
 
 ```sql
-update target_table
+update main_table
 set target_id = 100000
-where id in (select id from source_table_noindex);
-Query OK, 1000 rows affected (5 min 25.64 sec)
+where id in (select id from sub_table_noindex);
 ``` 
 
-```sql 
--- 실행계획
-+----+--------------------+----------------------+------------+-------+---------------+---------+---------+------+---------+----------+------------------------------+
-| id | select_type        | table                | partitions | type  | possible_keys | key     | key_len | ref  | rows    | filtered | Extra                        |
-+----+--------------------+----------------------+------------+-------+---------------+---------+---------+------+---------+----------+------------------------------+
-|  1 | UPDATE             | target_table         | NULL       | index | NULL          | PRIMARY | 4       | NULL | 1000000 |   100.00 | Using where; Using temporary |
-|  2 | DEPENDENT SUBQUERY | source_table_noindex | NULL       | ALL   | NULL          | NULL    | NULL    | NULL |    1000 |    10.00 | Using where                  |
-+----+--------------------+----------------------+------------+-------+---------------+---------+---------+------+---------+----------+------------------------------+
-실행시간 : 5분 25초
-```
+![subquery_noindex_plan](./images/subquery_noindex_plan.png)
 
 target_table 전체를 full scan하게되며, temporary table을 사용한다.
 엑세스하는 데이터가 1,000,000 * 1,000
 
 ### 1-2. Index
 
-인덱스가 있는 테이블로 서브쿼리로 작성
+
 
 ```sql
-update target_table
+update main_table
 set target_id = 100000
-where id in (select id from source_table_index);
-Query OK, 1000 rows affected (2.64 sec)
+where id in (select id from sub_table_index);
 ```
 
-```sql 
--- 실행계획
-+----+--------------------+--------------------+------------+-----------------+---------------+---------+---------+------+---------+----------+------------------------------+
-| id | select_type        | table              | partitions | type            | possible_keys | key     | key_len | ref  | rows    | filtered | Extra                        |
-+----+--------------------+--------------------+------------+-----------------+---------------+---------+---------+------+---------+----------+------------------------------+
-|  1 | UPDATE             | target_table       | NULL       | index           | NULL          | PRIMARY | 4       | NULL | 1000000 |   100.00 | Using where; Using temporary |
-|  2 | DEPENDENT SUBQUERY | source_table_index | NULL       | unique_subquery | PRIMARY       | PRIMARY | 4       | func |       1 |   100.00 | Using index                  |
-+----+--------------------+--------------------+------------+-----------------+---------------+---------+---------+------+---------+----------+------------------------------+
-실행시간 : 2.64초
 
-```
+![subquery_index_plan](./images/subquery_index_plan.png)
+
+> type의 ```unique_subquery``` 는 WHERE 조건절에서 사용될 수 있는 IN (subquery) 형태의 쿼리를 위한 접근 방식입니다.  
+> unique_subquery의 의미 그대로 서브 쿼리에서 중복되지 않은 유니크한 값만 반환할 때 이 접근 방법을 사용합니다.
+> 위 쿼리 문장의 IN (subquery) 부분에서 subquery를 살펴보겠습니다. 
+> emp_no=10001인 레코드 중에서 부서 번호는 중복이 없기 때문에(dept_emp 테이블에서 프라이머리 키가 dept_no + emp_no이므로) 실행 계획의 두 번째 라인의 dept_emp 테이블의 접근 방식은 unique_subquery로 표시된 것입니다.
+
 
 target_table 전체를 full scan하게되며, temporary table을 사용한다.
 엑세스하는 데이터가 1,000,000 * 1
@@ -102,19 +88,9 @@ target_table 전체를 full scan하게되며, temporary table을 사용한다.
 update target_table a
     join source_table_noindex b on a.id = b.id
 set a.target_id = 100001
-Query OK, 1000 rows affected (0.01 sec)
 ```
 
-```sql
--- 실행계획
-+----+-------------+-------+------------+--------+---------------+---------+---------+------------+------+----------+-------+
-| id | select_type | table | partitions | type   | possible_keys | key     | key_len | ref        | rows | filtered | Extra |
-+----+-------------+-------+------------+--------+---------------+---------+---------+------------+------+----------+-------+
-|  1 | SIMPLE      | b     | NULL       | ALL    | NULL          | NULL    | NULL    | NULL       | 1000 |   100.00 | NULL  |
-|  1 | UPDATE      | a     | NULL       | eq_ref | PRIMARY       | PRIMARY | 4       | point.b.id |    1 |   100.00 | NULL  |
-+----+-------------+-------+------------+--------+---------------+---------+---------+------------+------+----------+-------+
-실행시간 : 0.01초
-```
+![join_noindex_plan](./images/join_noindex_plan.png)
 
 ### 2-2. Index
 
@@ -126,16 +102,7 @@ set a.target_id = 100000
 Query OK, 1000 rows affected (0.01 sec)
 ```
 
-```sql 
--- 실행계획
-+----+-------------+-------+------------+--------+---------------+---------+---------+------------+------+----------+-------------+
-| id | select_type | table | partitions | type   | possible_keys | key     | key_len | ref        | rows | filtered | Extra       |
-+----+-------------+-------+------------+--------+---------------+---------+---------+------------+------+----------+-------------+
-|  1 | SIMPLE      | b     | NULL       | index  | PRIMARY       | PRIMARY | 4       | NULL       | 1000 |   100.00 | Using index |
-|  1 | UPDATE      | a     | NULL       | eq_ref | PRIMARY       | PRIMARY | 4       | point.b.id |    1 |   100.00 | NULL        |
-+----+-------------+-------+------------+--------+---------------+---------+---------+------------+------+----------+-------------+
-```
-
+![join_index_plan](./images/join_index_plan.png)
 
 
 target_table에서 변경하고자 하는 데이터만 인덱스를 이용해서 찾는다.
