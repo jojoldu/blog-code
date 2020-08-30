@@ -56,6 +56,8 @@ where id in (select id from sub_table_noindex);
 target_table 전체를 full scan하게되며, temporary table을 사용한다.
 엑세스하는 데이터가 1,000,000 * 1,000
 
+![subquery_noindex_time](./images/subquery_noindex_time.png)
+
 ### 1-2. Index
 
 
@@ -78,6 +80,8 @@ where id in (select id from sub_table_index);
 target_table 전체를 full scan하게되며, temporary table을 사용한다.
 엑세스하는 데이터가 1,000,000 * 1
 
+![subquery_index_time](./images/subquery_index_time.png)
+
 ## 2. Join
 
 ### 2-1. No Index
@@ -92,6 +96,8 @@ set a.target_id = 100001
 
 ![join_noindex_plan](./images/join_noindex_plan.png)
 
+![join_noindex_time](./images/join_noindex_time.png)
+
 ### 2-2. Index
 
 ```sql
@@ -99,7 +105,6 @@ set a.target_id = 100001
 update target_table a
     join source_table_index b on a.id = b.id
 set a.target_id = 100000
-Query OK, 1000 rows affected (0.01 sec)
 ```
 
 ![join_index_plan](./images/join_index_plan.png)
@@ -107,6 +112,9 @@ Query OK, 1000 rows affected (0.01 sec)
 
 target_table에서 변경하고자 하는 데이터만 인덱스를 이용해서 찾는다.
 엑세스하는 데이터가 1,000 * 1
+
+![join_index_time](./images/join_index_time.png)
+
 
 [공식문서](https://dev.mysql.com/doc/refman/5.6/en/subquery-optimization.html)
 
