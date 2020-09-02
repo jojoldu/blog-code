@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -71,6 +73,25 @@ public class BookQueryRepositoryTest {
 
         //then
         assertThat(exist).isTrue();
+    }
 
+    @Test
+    void 상수값을_사용한다() throws Exception {
+        //given
+        int bookNo = 1;
+        for (int i = 1; i <= 10; i++) {
+            bookRepository.save(Book.builder()
+                    .name("a"+i)
+                    .bookNo(bookNo)
+                    .build());
+        }
+
+        //when
+        List<BookPageDto> bookPages = bookQueryRepository.getBookPage(bookNo, 0);
+
+        //then
+        assertThat(bookPages).hasSize(10);
+        assertThat(bookPages.get(0).getPageNo()).isEqualTo(0);
+        assertThat(bookPages.get(0).getBookNo()).isEqualTo(bookNo);
     }
 }

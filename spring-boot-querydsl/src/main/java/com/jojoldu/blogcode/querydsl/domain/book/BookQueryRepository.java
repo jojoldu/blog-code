@@ -1,14 +1,14 @@
 package com.jojoldu.blogcode.querydsl.domain.book;
 
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.jojoldu.blogcode.querydsl.domain.book.QBook.book;
 
@@ -52,4 +52,19 @@ public class BookQueryRepository {
 
         return fetchOne > 0;
     }
+
+    public List<BookPageDto> getBookPage (int bookNo, int pageNo) {
+        return queryFactory
+                .select(Projections.fields(BookPageDto.class,
+                        book.name,
+                        Expressions.as(Expressions.constant(pageNo), "pageNo"),
+                        Expressions.constantAs(bookNo, book.bookNo)
+                        ))
+                .from(book)
+                .where(book.bookNo.eq(bookNo))
+                .offset(pageNo)
+                .limit(10)
+                .fetch();
+    }
+
 }
