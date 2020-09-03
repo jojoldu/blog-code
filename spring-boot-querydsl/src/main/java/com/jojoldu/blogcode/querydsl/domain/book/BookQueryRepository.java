@@ -57,7 +57,8 @@ public class BookQueryRepository {
         return queryFactory
                 .select(Projections.fields(BookPageDto.class,
                         book.name,
-                        Expressions.as(Expressions.constant(pageNo), "pageNo"),
+//                        Expressions.as(Expressions.constant(pageNo), "pageNo"),
+                        Expressions.constant(pageNo),
                         Expressions.constantAs(bookNo, book.bookNo)
                         ))
                 .from(book)
