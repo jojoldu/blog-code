@@ -17,9 +17,8 @@ querydsl-sql은 해당하지 않는다.
 * Querydsl 4.2.1
 * MySQL 5.6 (MariaDB 10.1)
 
-MySQL 5.6 에는 [인덱스 컨디션 푸시다운](https://jojoldu.tistory.com/474) 최적화가 진행되었고,
-5.7에서는 각종 인덱스와 옵티마이저 개선이 진행되었습니다.  
-그래서 버전별로 인덱스 효과가 더 뛰어날 수도/떨어질 수도 있습니다.  
+MySQL 5.6 에서는 [인덱스 컨디션 푸시다운](https://jojoldu.tistory.com/474)과 [서브쿼리](https://jojoldu.tistory.com/520) 등의 최적화가 있었습니다.  
+그만큼 MySQL 버전별로 인덱스나 옵티마이저 개선이 많이 되어있어서 버전별 차이가 심합니다.  
   
 Querydsl의 경우에도 2,3,4 로 오면서 문법적인 것에서 변화가 있었기 때문에 아래 내용을 적용시에는 꼭 현재 환경에서 테스트를 진행해시길 추천드립니다.
 
@@ -78,7 +77,7 @@ from (
 * 카카오뱅크 MySQL DBA이신 [성동찬님의 커버링 인덱스 소개글](https://gywn.net/2012/04/mysql-covering-index/)
 * Non Clustered Key, Clustered Key를 포함한 [커버링 인덱스 기본 지식](https://jojoldu.tistory.com/476)
 
-Querydsl의 경우 from절의 subquery를 지원하지 않습니다.  
+Querydsl의 경우 **from절의 subquery를 지원하지 않습니다**.  
 그래서 이럴 경우엔 다음처럼 2번의 쿼리로 나눠서 호출합니다.
 
 
