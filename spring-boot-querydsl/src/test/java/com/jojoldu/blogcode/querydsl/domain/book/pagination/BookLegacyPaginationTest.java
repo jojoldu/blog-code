@@ -48,7 +48,7 @@ public class BookLegacyPaginationTest {
                     .bookType(bookType)
                     .build());
         }
-        PageRequest request = PageRequest.of(0, 10);
+        PageRequest request = PageRequest.of(1, 10);
 
         //when
         List<Book> books = bookRepositorySupport.getBooks(request, bookType)
@@ -56,7 +56,7 @@ public class BookLegacyPaginationTest {
 
         //then
         assertThat(books).hasSize(10);
-        assertThat(books.get(0).getBookNo()).isEqualTo(30);
+        assertThat(books.get(0).getBookNo()).isEqualTo(20);
         assertThat(books.get(0).getBookType()).isEqualTo(bookType);
     }
 }

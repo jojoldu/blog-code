@@ -34,9 +34,9 @@ public class BookRepositorySupport extends QuerydslRepositorySupport {
                 .where(book.bookType.eq(bookType))
                 .orderBy(book.id.desc());
 
-        JPQLQuery<Book> applyPagination = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query);
-        List<Book> elements = applyPagination.fetch();
-        long totalCount = applyPagination.fetchCount();
+        JPQLQuery<Book> paginationQuery = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, query);
+        List<Book> elements = paginationQuery.fetch();
+        long totalCount = paginationQuery.fetchCount();
         return new PageImpl<>(elements, pageable, totalCount);
     }
 
