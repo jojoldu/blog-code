@@ -13,7 +13,6 @@ import static com.jojoldu.blogcode.querydsl.domain.academy.QAcademy.academy;
  * Blog : http://jojoldu.tistory.com
  * Github : https://github.com/jojoldu
  */
-
 @Repository
 public class AcademyRepositorySupport extends QuerydslRepositorySupport {
     private final JPAQueryFactory queryFactory;
