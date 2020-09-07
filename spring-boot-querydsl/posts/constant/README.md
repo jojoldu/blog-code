@@ -176,3 +176,32 @@ void 상수값을_사용한다() throws Exception {
 
 ![query](./images/query.png)
 
+
+## 3. 좀 더 축약해서 쓴다면
+
+댓글로 ```@hojinDev```님께서 알려주신 것인데요.
+좋은 내용이라 생각되어 본문에 첨부합니다 :)
+
+![addition](./images/addition.png)
+
+즉, 위 코드를 ```asNumber```, ```asString```으로 좀 더 축약해서 사용할 수가 있습니다.
+
+![addition2](./images/addition2.png)
+
+```java
+public List<BookPageDto> getBookPage (int bookNo, int pageNo) {
+    return queryFactory
+            .select(Projections.fields(BookPageDto.class,
+                    book.name,
+                    Expressions.asNumber(pageNo).as("pageNo"), // entity에 없는 필드일 경우
+                    Expressions.asNumber(bookNo).as(book.bookNo) // entity에 있는 필드일 경우
+                    ))
+            .from(book)
+            .where(book.bookNo.eq(bookNo))
+            .offset(pageNo)
+            .limit(10)
+            .fetch();
+}
+```
+
+상황에 따라 편하게 골라서 사용하시면 좋을것 같습니다 :)

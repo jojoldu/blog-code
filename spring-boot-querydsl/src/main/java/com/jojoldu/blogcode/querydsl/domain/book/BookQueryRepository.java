@@ -58,8 +58,10 @@ public class BookQueryRepository {
                 .select(Projections.fields(BookPageDto.class,
                         book.name,
 //                        Expressions.as(Expressions.constant(pageNo), "pageNo"),
-                        Expressions.constant(pageNo),
-                        Expressions.constantAs(bookNo, book.bookNo)
+//                        Expressions.constant(pageNo),
+//                        Expressions.constantAs(bookNo, book.bookNo)
+                        Expressions.asNumber(pageNo).as("pageNo"),
+                        Expressions.asNumber(bookNo).as(book.bookNo)
                         ))
                 .from(book)
                 .where(book.bookNo.eq(bookNo))
