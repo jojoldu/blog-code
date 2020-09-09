@@ -6,5 +6,8 @@ package com.jojoldu.blogcode.querydsl.domain.book;
  * Github : http://github.com/jojoldu
  */
 public enum BookType {
-    IT
+    IT,
+    ESSAY,
+    NOVEL,
+    COMIC
 }
