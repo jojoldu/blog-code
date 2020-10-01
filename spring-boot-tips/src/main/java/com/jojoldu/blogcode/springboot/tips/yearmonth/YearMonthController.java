@@ -20,7 +20,7 @@ public class YearMonthController {
     }
 
     @PostMapping("/yearMonth")
-    public YearMonth postYearMonth (@Valid @RequestBody YearMonthRequestDto requestDto) {
+    public YearMonth postYearMonth (@RequestBody YearMonthRequestDto requestDto) {
         log.info("requestDto={}", requestDto);
         return requestDto.getYearMonth();
     }

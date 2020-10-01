@@ -30,7 +30,6 @@ public class YearMonthRequestDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM", timezone = "Asia/Seoul")
     private YearMonth yearMonth;
 
-    @NotBlank(message = "시작년월은 필수입니다.")
     @Pattern(regexp = "^\\d{4}\\-(0[1-9]|1[012])$", message = "년월 형식(yyyy-MM)에 맞지 않습니다")
     private String strYearMonth;
 

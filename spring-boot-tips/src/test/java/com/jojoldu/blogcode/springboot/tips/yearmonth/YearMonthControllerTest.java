@@ -24,12 +24,14 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,7 +52,7 @@ public class YearMonthControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    public void YearMonth가_치환된다() throws Exception {
+    public void get_YearMonth가_치환된다() throws Exception {
         String yearMonth = "2020-08";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.put("yearMonth", Arrays.asList(yearMonth));
@@ -64,5 +66,16 @@ public class YearMonthControllerTest {
                 .andExpect(content().string(containsString(yearMonth)));
     }
 
+    @Test
+    public void post_YearMonth가_치환된다() throws Exception {
+        String content = "{\"yearMonth\":\"2020-08\"}";
+        mvc
+                .perform(post("/yearMonth")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(containsString("2020-08")));
+    }
 
 }
