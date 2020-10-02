@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.IsoFields;
 
 import static java.time.LocalDate.parse;
 
@@ -33,6 +34,10 @@ public class YearMonthRequestDto {
     @Pattern(regexp = "^\\d{4}\\-(0[1-9]|1[012])$", message = "년월 형식(yyyy-MM)에 맞지 않습니다")
     private String strYearMonth;
 
+    public YearMonthRequestDto(YearMonth yearMonth) {
+        this.yearMonth = yearMonth;
+    }
+
     @Builder
     public YearMonthRequestDto(YearMonth yearMonth, String strYearMonth) {
         this.yearMonth = yearMonth;
@@ -49,6 +54,10 @@ public class YearMonthRequestDto {
 
     public YearMonth getBeforeMonthByYearMonth () {
         return this.yearMonth.minusMonths(1);
+    }
+
+    public int getQuarterOfYear(){
+        return this.yearMonth.get(IsoFields.QUARTER_OF_YEAR);
     }
 
     public LocalDate getLocalDate() {

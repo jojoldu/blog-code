@@ -1,6 +1,5 @@
 package com.jojoldu.blogcode.querydsl.config;
 
-import com.jojoldu.blogcode.querydsl.domain.pointevent.PointStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.sql.H2Templates;
 import com.querydsl.sql.MySQLTemplates;
@@ -8,9 +7,7 @@ import com.querydsl.sql.SQLQueryFactory;
 import com.querydsl.sql.SQLTemplates;
 import com.querydsl.sql.spring.SpringExceptionTranslator;
 import com.querydsl.sql.types.DateTimeType;
-import com.querydsl.sql.types.EnumByNameType;
 import com.querydsl.sql.types.LocalDateType;
-import com.querydsl.sql.types.UtilDateType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;

@@ -48,9 +48,6 @@ public class YearMonthControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Test
     public void get_YearMonth가_치환된다() throws Exception {
         String yearMonth = "2020-08";

@@ -5,7 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.YearMonth;
+import java.time.temporal.IsoFields;
 
+import static java.time.YearMonth.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -33,14 +35,20 @@ public class YearMonthRequestDtoTest {
     @Test
     void YearMonth로_직전월을_구한다() throws Exception {
         //given
-        YearMonth month = YearMonth.of(2020,9);
-        YearMonthRequestDto dto = YearMonthRequestDto.builder()
-                .yearMonth(month)
-                .build();
-        //when
+        YearMonthRequestDto dto = new YearMonthRequestDto(of(2020,9));
+
+        //whens
         YearMonth beforeMonth = dto.getBeforeMonthByYearMonth();
 
         //then
-        assertThat(beforeMonth).isEqualTo(YearMonth.of(2020,8));
+        assertThat(beforeMonth).isEqualTo(of(2020,8));
+    }
+
+    @Test
+    void YearMonth로_분기를_구할수_있다() throws Exception {
+        assertThat(YearMonth.of(2020,1).get(IsoFields.QUARTER_OF_YEAR)).isEqualTo(1);
+        assertThat(YearMonth.of(2020,4).get(IsoFields.QUARTER_OF_YEAR)).isEqualTo(2);
+        assertThat(YearMonth.of(2020,7).get(IsoFields.QUARTER_OF_YEAR)).isEqualTo(3);
+        assertThat(YearMonth.of(2020,10).get(IsoFields.QUARTER_OF_YEAR)).isEqualTo(4);
     }
 }
