@@ -1,15 +1,11 @@
 package com.jojoldu.blogcode.querydsl.domain.book.pagination;
 
-import com.jojoldu.blogcode.querydsl.domain.book.BookPageDto;
 import com.jojoldu.blogcode.querydsl.domain.book.BookType;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
