@@ -1,10 +1,12 @@
 # 페이징 성능 개선하기 (feat. Querydsl)
 
-페이징을 어떻게 구현하느냐에 대해서는 이미 알고 계시다는 가정하에 진행하겠습니다.  
 
-> 이 글은 이전에 사내 기술 블로그에 기고한 [Spring Batch와 Querydsl](https://woowabros.github.io/experience/2020/02/05/springbatch-querydsl.html)와 연결됩니다.
 
 특히 1억건이 넘은 테이블들간 Join을 통해 페이징을 구현하게 되면 뒷페이지로 갈수록 페이징이 느려질수밖에 없는데요.  
+
+> ps 1. 페이징을 어떻게 구현하느냐에 대해서는 이미 알고 계시다는 가정하에 진행하겠습니다.  
+> ps 2. 사내 기술 블로그에 기고한 [Spring Batch와 Querydsl](https://woowabros.github.io/experience/2020/02/05/springbatch-querydsl.html)와 연결됩니다.
+
 
 
 ## 1. No Offset 으로 구조 변경하기
@@ -77,9 +79,10 @@ LIMIT 페이지사이즈
 
 ## 1-4. 단점
 
+* where 기준 Key가 중복이 있을 경우
+  * 이를 테면 ```id``` 등을 쓸 수 없는 ```group by``` 등으로 
 * 회사 혹은 서비스 정책상 (or UX 관점에서) More 버튼형태로는 안된다고 하면 답이 없습니다.
-  * 그럴땐 2번을 고려해주세요.
-* 
+  
 
 ## 2. 커버링 인덱스 사용하기
 

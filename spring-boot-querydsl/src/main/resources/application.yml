@@ -1,5 +1,7 @@
 spring:
   profiles:
+    include:
+      - real
     active: local
   jpa:
     open-in-view: false

@@ -46,7 +46,6 @@ public class BookServiceTest {
         Book book = bookRepository.findById(bookId).get();
 
         assertThat(book.getName()).isEqualTo(result);
-
     }
 }
 
