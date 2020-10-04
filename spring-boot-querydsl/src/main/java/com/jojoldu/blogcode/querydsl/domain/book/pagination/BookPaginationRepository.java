@@ -29,16 +29,14 @@ public class BookPaginationRepository {
                 .select(Projections.fields(BookPaginationDto.class,
                         book.id.as("bookId"),
                         book.name,
-                        book.bookNo,
-                        constantAs(bookType, book.bookType)))
+                        book.bookNo))
                 .from(book)
                 .where(
-                        book.bookType.eq(bookType),
                         book.name.like("%"+name+"%")
                 )
+                .orderBy(book.id.desc())
                 .limit(10)
                 .offset(pageNo)
-                .orderBy(book.id.desc())
                 .fetch();
     }
 
@@ -47,16 +45,14 @@ public class BookPaginationRepository {
                 .select(Projections.fields(BookPaginationDto.class,
                         book.id.as("bookId"),
                         book.name,
-                        book.bookNo,
-                        constantAs(bookType, book.bookType)))
+                        book.bookNo))
                 .from(book)
                 .where(
                         ltBookId(bookId),
-                        book.bookType.eq(bookType),
                         book.name.like("%"+name+"%")
                 )
-                .limit(10)
                 .orderBy(book.id.desc())
+                .limit(10)
                 .fetch();
     }
 

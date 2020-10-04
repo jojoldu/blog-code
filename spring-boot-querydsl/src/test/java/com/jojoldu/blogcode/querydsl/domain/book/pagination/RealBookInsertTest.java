@@ -1,6 +1,7 @@
 package com.jojoldu.blogcode.querydsl.domain.book.pagination;
 
 import com.jojoldu.blogcode.querydsl.domain.book.Book;
+import com.jojoldu.blogcode.querydsl.domain.book.BookBatchInsertRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,42 +32,21 @@ import java.util.List;
 public class RealBookInsertTest {
 
     @Autowired
-    private DataSource dataSource;
-
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate = new JdbcTemplate(dataSource);
-    }
+    private BookBatchInsertRepository repository;
 
     @Test
     void 테스트용_데이터_insert() throws Exception {
         //given
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10_000; i++) {
             List<Book> books = new ArrayList<>();
-            for (int j = 0; j < 1000; j++) {
+            for (int j = 0; j < 10000; j++) {
                 books.add(Book.builder()
                         .name(i+"_"+j)
                         .bookNo(j)
                         .build());
             }
             log.info("{} 번째 Insert", i);
-            batchInsert(books);
+            repository.batchInsert(books);
         }
-    }
-
-    public int[] batchInsert(List<Book> books) {
-        return this.jdbcTemplate.batchUpdate(
-                "insert into book (name, book_no) values(?,?)",
-                new BatchPreparedStatementSetter() {
-                    public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setString(1, books.get(i).getName());
-                        ps.setInt(2, books.get(i).getBookNo());
-                    }
-                    public int getBatchSize() {
-                        return books.size();
-                    }
-                });
     }
 }
