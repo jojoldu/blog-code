@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.jojoldu.blogcode.querydsl.domain.book.QBook.book;
-import static com.querydsl.core.types.dsl.Expressions.constantAs;
 
 
 /**
