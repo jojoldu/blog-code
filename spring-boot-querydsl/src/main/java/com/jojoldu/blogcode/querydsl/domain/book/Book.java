@@ -18,12 +18,16 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "book")
+@Table(
+        name = "book",
+        indexes = @Index(name = "idx_book_1", columnList = "name") // id는 클러스터인덱스라 인덱스에 자동 포함
+)
 public class Book {
 
     @Id

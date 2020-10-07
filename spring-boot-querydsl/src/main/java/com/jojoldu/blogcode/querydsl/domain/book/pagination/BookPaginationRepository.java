@@ -23,7 +23,7 @@ import static com.jojoldu.blogcode.querydsl.domain.book.QBook.book;
 public class BookPaginationRepository {
     private final JPAQueryFactory queryFactory;
 
-    public List<BookPaginationDto> paginationLegacy (BookType bookType, String name, int pageNo) {
+    public List<BookPaginationDto> paginationLegacy (String name, int pageNo) {
         return queryFactory
                 .select(Projections.fields(BookPaginationDto.class,
                         book.id.as("bookId"),
@@ -31,7 +31,7 @@ public class BookPaginationRepository {
                         book.bookNo))
                 .from(book)
                 .where(
-                        book.name.like("%"+name+"%")
+                        book.name.like("%" + name + "%")
                 )
                 .orderBy(book.id.desc())
                 .limit(10)
@@ -39,7 +39,7 @@ public class BookPaginationRepository {
                 .fetch();
     }
 
-    public List<BookPaginationDto> paginationNoOffset (Long bookId, BookType bookType, String name) {
+    public List<BookPaginationDto> paginationNoOffset (Long bookId, String name) {
         return queryFactory
                 .select(Projections.fields(BookPaginationDto.class,
                         book.id.as("bookId"),
@@ -48,10 +48,26 @@ public class BookPaginationRepository {
                 .from(book)
                 .where(
                         ltBookId(bookId),
-                        book.name.like("%"+name+"%")
+                        book.name.like("%" + name + "%")
                 )
                 .orderBy(book.id.desc())
                 .limit(10)
+                .fetch();
+    }
+
+    public List<BookPaginationDto> paginationCoveringIndex (String name, int pageNo) {
+        return queryFactory
+                .select(Projections.fields(BookPaginationDto.class,
+                        book.id.as("bookId"),
+                        book.name,
+                        book.bookNo))
+                .from(book)
+                .where(
+                        book.name.like("%" + name + "%")
+                )
+                .orderBy(book.id.desc())
+                .limit(10)
+                .offset(pageNo)
                 .fetch();
     }
 
