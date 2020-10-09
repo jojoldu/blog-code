@@ -40,6 +40,7 @@ public class BookPaginationRepository {
     }
 
     public List<BookPaginationDto> paginationNoOffset (Long bookId, String name) {
+
         return queryFactory
                 .select(Projections.fields(BookPaginationDto.class,
                         book.id.as("bookId"),
@@ -53,6 +54,14 @@ public class BookPaginationRepository {
                 .orderBy(book.id.desc())
                 .limit(10)
                 .fetch();
+    }
+
+    private BooleanExpression ltBookId (Long bookId) {
+        if(bookId == null) {
+            return null;
+        }
+
+        return book.id.lt(bookId);
     }
 
     public List<BookPaginationDto> paginationCoveringIndex (String name, int pageNo) {
@@ -69,14 +78,6 @@ public class BookPaginationRepository {
                 .limit(10)
                 .offset(pageNo)
                 .fetch();
-    }
-
-    private BooleanExpression ltBookId (Long bookId) {
-        if(bookId == null) {
-            return null;
-        }
-
-        return book.id.lt(bookId);
     }
 
 }
