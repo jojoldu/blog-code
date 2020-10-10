@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class BookLegacyPaginationTest {
+public class BookRepositorySupportTest {
     @Autowired
     private BookRepository bookRepository;
 

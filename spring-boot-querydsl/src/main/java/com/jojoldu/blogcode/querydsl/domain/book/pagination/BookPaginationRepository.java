@@ -1,6 +1,6 @@
 package com.jojoldu.blogcode.querydsl.domain.book.pagination;
 
-import com.jojoldu.blogcode.querydsl.domain.book.BookType;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -23,7 +23,7 @@ import static com.jojoldu.blogcode.querydsl.domain.book.QBook.book;
 public class BookPaginationRepository {
     private final JPAQueryFactory queryFactory;
 
-    public List<BookPaginationDto> paginationLegacy (String name, int pageNo) {
+    public List<BookPaginationDto> paginationLegacy(String name, int pageNo) {
         return queryFactory
                 .select(Projections.fields(BookPaginationDto.class,
                         book.id.as("bookId"),
@@ -39,7 +39,29 @@ public class BookPaginationRepository {
                 .fetch();
     }
 
-    public List<BookPaginationDto> paginationNoOffset (Long bookId, String name) {
+    public List<BookPaginationDto> paginationNoOffsetBuilder(Long bookId, String name) {
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (bookId != null) {
+            builder.and(book.id.lt(bookId));
+        }
+
+        builder.and(book.name.like("%" + name + "%"));
+
+        return queryFactory
+                .select(Projections.fields(BookPaginationDto.class,
+                        book.id.as("bookId"),
+                        book.name,
+                        book.bookNo))
+                .from(book)
+                .where(builder)
+                .orderBy(book.id.desc())
+                .limit(10)
+                .fetch();
+    }
+
+    public List<BookPaginationDto> paginationNoOffset(Long bookId, String name) {
 
         return queryFactory
                 .select(Projections.fields(BookPaginationDto.class,
@@ -56,15 +78,15 @@ public class BookPaginationRepository {
                 .fetch();
     }
 
-    private BooleanExpression ltBookId (Long bookId) {
-        if(bookId == null) {
+    private BooleanExpression ltBookId(Long bookId) {
+        if (bookId == null) {
             return null;
         }
 
         return book.id.lt(bookId);
     }
 
-    public List<BookPaginationDto> paginationCoveringIndex (String name, int pageNo) {
+    public List<BookPaginationDto> paginationCoveringIndex(String name, int pageNo) {
         return queryFactory
                 .select(Projections.fields(BookPaginationDto.class,
                         book.id.as("bookId"),
