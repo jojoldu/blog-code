@@ -6,7 +6,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.jojoldu.blogcode.querydsl.domain.book.QBook.book;
@@ -23,7 +25,7 @@ import static com.jojoldu.blogcode.querydsl.domain.book.QBook.book;
 public class BookPaginationRepository {
     private final JPAQueryFactory queryFactory;
 
-    public List<BookPaginationDto> paginationLegacy(String name, int pageNo) {
+    public List<BookPaginationDto> paginationLegacy(String name, int pageNo, int pageSize) {
         return queryFactory
                 .select(Projections.fields(BookPaginationDto.class,
                         book.id.as("bookId"),
@@ -34,12 +36,12 @@ public class BookPaginationRepository {
                         book.name.like("%" + name + "%")
                 )
                 .orderBy(book.id.desc())
-                .limit(10)
-                .offset(pageNo)
+                .limit(pageSize)
+                .offset(pageNo * pageSize)
                 .fetch();
     }
 
-    public List<BookPaginationDto> paginationNoOffsetBuilder(Long bookId, String name) {
+    public List<BookPaginationDto> paginationNoOffsetBuilder(Long bookId, String name, int pageSize) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -57,11 +59,11 @@ public class BookPaginationRepository {
                 .from(book)
                 .where(builder)
                 .orderBy(book.id.desc())
-                .limit(10)
+                .limit(pageSize)
                 .fetch();
     }
 
-    public List<BookPaginationDto> paginationNoOffset(Long bookId, String name) {
+    public List<BookPaginationDto> paginationNoOffset(Long bookId, String name, int pageSize) {
 
         return queryFactory
                 .select(Projections.fields(BookPaginationDto.class,
@@ -74,7 +76,7 @@ public class BookPaginationRepository {
                         book.name.like("%" + name + "%")
                 )
                 .orderBy(book.id.desc())
-                .limit(10)
+                .limit(pageSize)
                 .fetch();
     }
 
@@ -86,19 +88,28 @@ public class BookPaginationRepository {
         return book.id.lt(bookId);
     }
 
-    public List<BookPaginationDto> paginationCoveringIndex(String name, int pageNo) {
+    public List<BookPaginationDto> paginationCoveringIndex(String name, int pageNo, int pageSize) {
+        List<Long> ids = queryFactory
+                .select(book.id)
+                .from(book)
+                .where(book.name.like("%" + name + "%"))
+                .orderBy(book.id.desc())
+                .limit(pageSize)
+                .offset(pageNo * pageSize)
+                .fetch();
+
+        if(CollectionUtils.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+
         return queryFactory
                 .select(Projections.fields(BookPaginationDto.class,
                         book.id.as("bookId"),
                         book.name,
                         book.bookNo))
                 .from(book)
-                .where(
-                        book.name.like("%" + name + "%")
-                )
+                .where(book.id.in(ids))
                 .orderBy(book.id.desc())
-                .limit(10)
-                .offset(pageNo)
                 .fetch();
     }
 

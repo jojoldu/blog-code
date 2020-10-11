@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -46,16 +45,19 @@ public class BookPaginationRepositoryTest {
         }
 
         //when
-        List<BookPaginationDto> books = bookPaginationRepository.paginationLegacy(prefixName, 2);
+        /**
+         * pageNo는 0부터 시작
+         */
+        List<BookPaginationDto> books = bookPaginationRepository.paginationLegacy(prefixName, 1, 10);
 
         //then
         assertThat(books).hasSize(10);
-        assertThat(books.get(0).getBookNo()).isEqualTo(20);
-        assertThat(books.get(9).getBookNo()).isEqualTo(11);
+        assertThat(books.get(0).getName()).isEqualTo("a20");
+        assertThat(books.get(9).getName()).isEqualTo("a11");
     }
 
     @Test
-    void nooffsetBuilder_방식1() throws Exception {
+    void nooffsetBuilder() throws Exception {
         //given
         String prefixName = "a";
 
@@ -67,16 +69,39 @@ public class BookPaginationRepositoryTest {
         }
 
         //when
-        List<BookPaginationDto> books = bookPaginationRepository.paginationNoOffsetBuilder(null, prefixName);
+        List<BookPaginationDto> books = bookPaginationRepository.paginationNoOffsetBuilder(null, prefixName, 10);
 
         //then
         assertThat(books).hasSize(10);
-        assertThat(books.get(0).getBookNo()).isEqualTo(30);
-        assertThat(books.get(9).getBookNo()).isEqualTo(21);
+        assertThat(books.get(0).getName()).isEqualTo("a30");
+        assertThat(books.get(9).getName()).isEqualTo("a21");
     }
 
     @Test
-    void nooffsetBuilder_방식2() throws Exception {
+    void nooffset() throws Exception {
+        //given
+        String prefixName = "a";
+
+        for (int i = 1; i <= 30; i++) {
+            bookRepository.save(Book.builder()
+                    .name(prefixName +i)
+                    .bookNo(i)
+                    .build());
+        }
+        List<Book> saved = bookRepository.findAll();
+        Long findBookId = saved.get(20).getId();
+
+        //when
+        List<BookPaginationDto> books = bookPaginationRepository.paginationNoOffset(findBookId, prefixName, 10);
+
+        //then
+        assertThat(books).hasSize(10);
+        assertThat(books.get(0).getName()).isEqualTo("a20");
+        assertThat(books.get(9).getName()).isEqualTo("a11");
+    }
+
+    @Test
+    void 커버링인덱스() throws Exception {
         //given
         String prefixName = "a";
 
@@ -88,11 +113,11 @@ public class BookPaginationRepositoryTest {
         }
 
         //when
-        List<BookPaginationDto> books = bookPaginationRepository.paginationNoOffsetBuilder(20L, prefixName);
+        List<BookPaginationDto> books = bookPaginationRepository.paginationCoveringIndex(prefixName, 1, 10);
 
         //then
         assertThat(books).hasSize(10);
-        assertThat(books.get(0).getBookNo()).isEqualTo(20);
-        assertThat(books.get(9).getBookNo()).isEqualTo(11);
+        assertThat(books.get(0).getName()).isEqualTo("a20");
+        assertThat(books.get(9).getName()).isEqualTo("a11");
     }
 }
