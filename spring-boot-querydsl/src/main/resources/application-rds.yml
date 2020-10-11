@@ -1,0 +1,18 @@
+---
+spring:
+  profiles: real
+  datasource:
+    hikari:
+      jdbc-url: jdbc:mysql:aurora://dwlee-database-test.cluster-cki3kdutd3oc.ap-northeast-2.rds.amazonaws.com:3306,dwlee-database-test.cluster-ro-cki3kdutd3oc.ap-northeast-2.rds.amazonaws.com:3306/jojoldu?connectTimeout=1000&socketTimeout=600000&rewriteBatchedStatements=true
+      username: jojoldu
+      password: fkeldjsx0
+      driver-class-name: org.mariadb.jdbc.Driver
+      auto-commit: false
+      idleTimeout: 30000      #30s
+      maxLifetime: 58000     #58s
+      connectionTimeout: 3000 # 3s
+      maximumPoolSize: 10
+logging:
+  level:
+    #    com.zaxxer.hikari.HikariConfig: DEBUG
+    com.zaxxer.hikari.pool.HikariPool: DEBUG
