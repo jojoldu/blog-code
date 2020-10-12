@@ -43,13 +43,11 @@ public class BookPaginationRepository {
 
     public List<BookPaginationDto> paginationNoOffsetBuilder(Long bookId, String name, int pageSize) {
 
-        BooleanBuilder builder = new BooleanBuilder();
+        BooleanBuilder dynamicLtId = new BooleanBuilder();
 
         if (bookId != null) {
-            builder.and(book.id.lt(bookId));
+            dynamicLtId.and(book.id.lt(bookId));
         }
-
-        builder.and(book.name.like("%" + name + "%"));
 
         return queryFactory
                 .select(Projections.fields(BookPaginationDto.class,
@@ -57,7 +55,8 @@ public class BookPaginationRepository {
                         book.name,
                         book.bookNo))
                 .from(book)
-                .where(builder)
+                .where(dynamicLtId
+                        .and(book.name.like("%" + name + "%")))
                 .orderBy(book.id.desc())
                 .limit(pageSize)
                 .fetch();
