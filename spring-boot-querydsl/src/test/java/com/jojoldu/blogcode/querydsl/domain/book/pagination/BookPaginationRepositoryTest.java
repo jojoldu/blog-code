@@ -78,7 +78,7 @@ public class BookPaginationRepositoryTest {
     }
 
     @Test
-    void nooffset() throws Exception {
+    void nooffset_첫페이지() throws Exception {
         //given
         String prefixName = "a";
 
@@ -88,11 +88,30 @@ public class BookPaginationRepositoryTest {
                     .bookNo(i)
                     .build());
         }
-        List<Book> saved = bookRepository.findAll();
-        Long findBookId = saved.get(20).getId();
 
         //when
-        List<BookPaginationDto> books = bookPaginationRepository.paginationNoOffset(findBookId, prefixName, 10);
+        List<BookPaginationDto> books = bookPaginationRepository.paginationNoOffset(null, prefixName, 10);
+
+        //then
+        assertThat(books).hasSize(10);
+        assertThat(books.get(0).getName()).isEqualTo("a30");
+        assertThat(books.get(9).getName()).isEqualTo("a21");
+    }
+
+    @Test
+    void nooffset_두번째페이지() throws Exception {
+        //given
+        String prefixName = "a";
+
+        for (int i = 1; i <= 30; i++) {
+            bookRepository.save(Book.builder()
+                    .name(prefixName +i)
+                    .bookNo(i)
+                    .build());
+        }
+
+        //when
+        List<BookPaginationDto> books = bookPaginationRepository.paginationNoOffset(21L, prefixName, 10);
 
         //then
         assertThat(books).hasSize(10);
