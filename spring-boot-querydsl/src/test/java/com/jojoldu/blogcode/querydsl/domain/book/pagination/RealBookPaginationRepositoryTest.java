@@ -30,7 +30,7 @@ public class RealBookPaginationRepositoryTest {
         String name = "200";
 
         //when
-        List<BookPaginationDto> books = bookPaginationRepository.paginationLegacy(name, 100_000, 10);
+        List<BookPaginationDto> books = bookPaginationRepository.paginationLegacy(name, 10_000, 10);
 
         //then
         assertThat(books).hasSize(10);
@@ -43,7 +43,7 @@ public class RealBookPaginationRepositoryTest {
         String name = "200";
 
         //when
-        List<BookPaginationDto> books = bookPaginationRepository.paginationNoOffset(20L, name, 10);
+        List<BookPaginationDto> books = bookPaginationRepository.paginationNoOffset(53291002L, name, 10);
 
         //then
         assertThat(books).hasSize(10);
