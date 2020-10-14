@@ -30,10 +30,12 @@ public class BookPaginationRepository {
                 .select(Projections.fields(BookPaginationDto.class,
                         book.id.as("bookId"),
                         book.name,
-                        book.bookNo))
+                        book.bookNo,
+                        book.bookType
+                        ))
                 .from(book)
                 .where(
-                        book.name.like("%" + name + "%")
+                        book.name.like(name + "%")
                 )
                 .orderBy(book.id.desc())
                 .limit(pageSize)
@@ -53,10 +55,11 @@ public class BookPaginationRepository {
                 .select(Projections.fields(BookPaginationDto.class,
                         book.id.as("bookId"),
                         book.name,
-                        book.bookNo))
+                        book.bookNo,
+                        book.bookType))
                 .from(book)
                 .where(dynamicLtId
-                        .and(book.name.like("%" + name + "%")))
+                        .and(book.name.like( name + "%")))
                 .orderBy(book.id.desc())
                 .limit(pageSize)
                 .fetch();
@@ -68,11 +71,12 @@ public class BookPaginationRepository {
                 .select(Projections.fields(BookPaginationDto.class,
                         book.id.as("bookId"),
                         book.name,
-                        book.bookNo))
+                        book.bookNo,
+                        book.bookType))
                 .from(book)
                 .where(
                         ltBookId(bookId),
-                        book.name.like("%" + name + "%")
+                        book.name.like(name + "%")
                 )
                 .orderBy(book.id.desc())
                 .limit(pageSize)
@@ -91,7 +95,7 @@ public class BookPaginationRepository {
         List<Long> ids = queryFactory
                 .select(book.id)
                 .from(book)
-                .where(book.name.like("%" + name + "%"))
+                .where(book.name.like(name + "%"))
                 .orderBy(book.id.desc())
                 .limit(pageSize)
                 .offset(pageNo * pageSize)
@@ -105,7 +109,8 @@ public class BookPaginationRepository {
                 .select(Projections.fields(BookPaginationDto.class,
                         book.id.as("bookId"),
                         book.name,
-                        book.bookNo))
+                        book.bookNo,
+                        book.bookType))
                 .from(book)
                 .where(book.id.in(ids))
                 .orderBy(book.id.desc())

@@ -27,29 +27,26 @@ public class RealBookPaginationRepositoryTest {
     @Test
     void 기존_페이징_방식() throws Exception {
         //given
-        String name = "1000";
+        String name = "200";
 
         //when
-        List<BookPaginationDto> books = bookPaginationRepository.paginationLegacy(name, 1, 10);
+        List<BookPaginationDto> books = bookPaginationRepository.paginationLegacy(name, 100_000, 10);
 
         //then
         assertThat(books).hasSize(10);
-        assertThat(books.get(0).getName()).isEqualTo("a20");
-        assertThat(books.get(9).getName()).isEqualTo("a11");
+        System.out.println(books.get(0).getBookId());
     }
 
     @Test
     void nooffset() throws Exception {
         //given
-        String name = "1000";
+        String name = "200";
 
         //when
         List<BookPaginationDto> books = bookPaginationRepository.paginationNoOffset(20L, name, 10);
 
         //then
         assertThat(books).hasSize(10);
-        assertThat(books.get(0).getName()).isEqualTo("a20");
-        assertThat(books.get(9).getName()).isEqualTo("a11");
     }
 
     @Test
