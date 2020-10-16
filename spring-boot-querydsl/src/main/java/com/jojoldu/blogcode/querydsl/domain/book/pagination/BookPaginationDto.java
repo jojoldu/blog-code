@@ -12,9 +12,18 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class BookPaginationDto {
+public class BookPaginationDto implements Comparable<BookPaginationDto>{
     private Long bookId;
     private String name;
     private int bookNo;
     private BookType bookType;
+
+    public BookPaginationDto(Long bookId) {
+        this.bookId = bookId;
+    }
+
+    @Override
+    public int compareTo(BookPaginationDto o) {
+        return o.bookId.compareTo(this.bookId);
+    }
 }
