@@ -52,7 +52,7 @@ public class RealBookPaginationRepositoryTest {
     @Test
     void 커버링인덱스() throws Exception {
         //given
-        String name = "1000";
+        String name = "200";
 
         //when
         List<BookPaginationDto> books = bookPaginationRepository.paginationCoveringIndex(name, 1, 10);

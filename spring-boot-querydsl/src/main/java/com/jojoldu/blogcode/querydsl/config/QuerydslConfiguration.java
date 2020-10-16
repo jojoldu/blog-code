@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.core.JdbcTemplate;
 import pl.exsio.querydsl.entityql.config.EntityQlQueryFactory;
 
 import javax.persistence.EntityManager;
@@ -30,12 +31,19 @@ import javax.sql.DataSource;
 @Configuration
 public class QuerydslConfiguration {
 
+    private final DataSource dataSource;
+
     @PersistenceContext
     private EntityManager entityManager;
 
     @Bean
     public JPAQueryFactory queryFactory() {
         return new JPAQueryFactory(entityManager);
+    }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate() {
+        return new JdbcTemplate(dataSource);
     }
 
     @Bean
