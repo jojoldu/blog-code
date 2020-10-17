@@ -139,4 +139,25 @@ public class BookPaginationRepositoryTest {
         assertThat(books.get(0).getName()).isEqualTo("a20");
         assertThat(books.get(9).getName()).isEqualTo("a11");
     }
+
+    @Test
+    void 커버링인덱스_jdbcTemplate() throws Exception {
+        //given
+        String prefixName = "a";
+
+        for (int i = 1; i <= 30; i++) {
+            bookRepository.save(Book.builder()
+                    .name(prefixName +i)
+                    .bookNo(i)
+                    .build());
+        }
+
+        //when
+        List<BookPaginationDto> books = bookPaginationRepository.paginationCoveringIndexSql(prefixName, 1, 10);
+
+        //then
+        assertThat(books).hasSize(10);
+        assertThat(books.get(0).getName()).isEqualTo("a20");
+        assertThat(books.get(9).getName()).isEqualTo("a11");
+    }
 }
