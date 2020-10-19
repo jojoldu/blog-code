@@ -6,13 +6,14 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.jojoldu.blogcode.querydsl.domain.book.QBook.book;
@@ -28,7 +29,7 @@ import static com.jojoldu.blogcode.querydsl.domain.book.QBook.book;
 @Repository
 public class BookPaginationRepository {
     private final JPAQueryFactory queryFactory;
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     /**
      * 0. 기존 페이징 by Querydsl
@@ -142,21 +143,23 @@ public class BookPaginationRepository {
      * 2. 커버링 인덱스 by JdbcTemplate
      */
     public List<BookPaginationDto> paginationCoveringIndexSql(String name, int pageNo, int pageSize) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name + "%");
+        params.put("pageSize", pageSize);
+        params.put("offset", pageNo * pageSize);
+
         String query =
                 "SELECT i.id, book_no, book_type, name " +
                 "FROM book as i " +
                 "JOIN (SELECT id " +
                 "       FROM book " +
-                "       WHERE name LIKE '?%' " +
+                "       WHERE name LIKE :name " +
                 "       ORDER BY id DESC " +
-                "       LIMIT ? " +
-                "       OFFSET ?) as temp on temp.id = i.id";
+                "       LIMIT :pageSize " +
+                "       OFFSET :offset) as temp on temp.id = i.id";
 
-        return jdbcTemplate
-                .query(query, new BeanPropertyRowMapper<>(BookPaginationDto.class),
-                        name,
-                        pageSize,
-                        pageNo * pageSize);
+        return namedParameterJdbcTemplate
+                .query(query, params, new BeanPropertyRowMapper<>(BookPaginationDto.class));
     }
 
 }

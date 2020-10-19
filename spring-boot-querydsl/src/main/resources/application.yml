@@ -24,6 +24,10 @@ logging:
     org:
       hibernate:
         type: trace
+      springframework:
+        jdbc:
+          core:
+            JdbcTemplate: debug
     com:
       querydsl:
         sql: DEBUG
