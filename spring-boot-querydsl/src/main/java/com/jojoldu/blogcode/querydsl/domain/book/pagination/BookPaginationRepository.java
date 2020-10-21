@@ -149,7 +149,7 @@ public class BookPaginationRepository {
         params.put("offset", pageNo * pageSize);
 
         String query =
-                "SELECT i.id, book_no, book_type, name " +
+                "SELECT i.id as bookId, book_no, book_type as bookType, name " +
                 "FROM book as i " +
                 "JOIN (SELECT id " +
                 "       FROM book " +

@@ -3,6 +3,7 @@ package com.jojoldu.blogcode.querydsl.domain.book.pagination;
 import com.jojoldu.blogcode.querydsl.domain.book.BookType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Created by jojoldu@gmail.com on 02/09/2020
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
  * Github : http://github.com/jojoldu
  */
 
+@Setter
 @Getter
 @NoArgsConstructor
 public class BookPaginationDto implements Comparable<BookPaginationDto>{
