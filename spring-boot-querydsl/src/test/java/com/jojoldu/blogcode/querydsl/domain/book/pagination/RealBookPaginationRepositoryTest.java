@@ -59,7 +59,17 @@ public class RealBookPaginationRepositoryTest {
 
         //then
         assertThat(books).hasSize(10);
-        assertThat(books.get(0).getName()).isEqualTo("a20");
-        assertThat(books.get(9).getName()).isEqualTo("a11");
+    }
+
+    @Test
+    void 커버링인덱스_jdbc() throws Exception {
+        //given
+        String name = "200";
+
+        //when
+        List<BookPaginationDto> books = bookPaginationRepository.paginationCoveringIndexSql(name, 1, 10);
+
+        //then
+        assertThat(books).hasSize(10);
     }
 }
