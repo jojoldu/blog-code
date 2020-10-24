@@ -3,14 +3,21 @@ package com.jojoldu.blogcode.querydsl.domain.book.pagination;
 import com.jojoldu.blogcode.querydsl.domain.book.Book;
 import com.jojoldu.blogcode.querydsl.domain.book.BookRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.JpaSort;
+import org.springframework.data.querydsl.QSort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
+import static com.jojoldu.blogcode.querydsl.domain.book.QBook.book;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -21,11 +28,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class BookPaginationRepositoryTest {
+
     @Autowired
     private BookRepository bookRepository;
 
     @Autowired
     private BookPaginationRepository bookPaginationRepository;
+
+    @Autowired
+    private BookPaginationRepositorySupport bookPaginationRepositorySupport;
+
+    private String prefixName = "a";
+
+    @BeforeEach
+    void setUp() {
+        for (int i = 1; i <= 30; i++) {
+            bookRepository.save(Book.builder()
+                    .name(prefixName +i)
+                    .bookNo(i)
+                    .build());
+        }
+    }
 
     @AfterEach
     void after() {
@@ -34,16 +57,6 @@ public class BookPaginationRepositoryTest {
 
     @Test
     void 기존_페이징_방식() throws Exception {
-        //given
-        String prefixName = "a";
-
-        for (int i = 1; i <= 30; i++) {
-            bookRepository.save(Book.builder()
-                    .name(prefixName +i)
-                    .bookNo(i)
-                    .build());
-        }
-
         //when
         /**
          * pageNo는 0부터 시작
@@ -58,15 +71,6 @@ public class BookPaginationRepositoryTest {
 
     @Test
     void nooffsetBuilder() throws Exception {
-        //given
-        String prefixName = "a";
-
-        for (int i = 1; i <= 30; i++) {
-            bookRepository.save(Book.builder()
-                    .name(prefixName +i)
-                    .bookNo(i)
-                    .build());
-        }
 
         //when
         List<BookPaginationDto> books = bookPaginationRepository.paginationNoOffsetBuilder(null, prefixName, 10);
@@ -79,15 +83,6 @@ public class BookPaginationRepositoryTest {
 
     @Test
     void nooffset_첫페이지() throws Exception {
-        //given
-        String prefixName = "a";
-
-        for (int i = 1; i <= 30; i++) {
-            bookRepository.save(Book.builder()
-                    .name(prefixName +i)
-                    .bookNo(i)
-                    .build());
-        }
 
         //when
         List<BookPaginationDto> books = bookPaginationRepository.paginationNoOffset(null, prefixName, 10);
@@ -100,15 +95,6 @@ public class BookPaginationRepositoryTest {
 
     @Test
     void nooffset_두번째페이지() throws Exception {
-        //given
-        String prefixName = "a";
-
-        for (int i = 1; i <= 30; i++) {
-            bookRepository.save(Book.builder()
-                    .name(prefixName +i)
-                    .bookNo(i)
-                    .build());
-        }
 
         //when
         List<BookPaginationDto> books = bookPaginationRepository.paginationNoOffset(21L, prefixName, 10);
@@ -121,15 +107,6 @@ public class BookPaginationRepositoryTest {
 
     @Test
     void 커버링인덱스() throws Exception {
-        //given
-        String prefixName = "a";
-
-        for (int i = 1; i <= 30; i++) {
-            bookRepository.save(Book.builder()
-                    .name(prefixName +i)
-                    .bookNo(i)
-                    .build());
-        }
 
         //when
         List<BookPaginationDto> books = bookPaginationRepository.paginationCoveringIndex(prefixName, 1, 10);
@@ -142,20 +119,24 @@ public class BookPaginationRepositoryTest {
 
     @Test
     void 커버링인덱스_jdbcTemplate() throws Exception {
-        //given
-        String prefixName = "a";
-
-        for (int i = 1; i <= 30; i++) {
-            bookRepository.save(Book.builder()
-                    .name(prefixName +i)
-                    .bookNo(i)
-                    .build());
-        }
 
         //when
         List<BookPaginationDto> books = bookPaginationRepository.paginationCoveringIndexSql(prefixName, 1, 10);
 
         //then
+        assertThat(books).hasSize(10);
+        assertThat(books.get(0).getName()).isEqualTo("a20");
+        assertThat(books.get(9).getName()).isEqualTo("a11");
+    }
+
+    @Test
+    void count_쿼리() throws Exception {
+        PageRequest pageRequest = PageRequest.of(1, 10);
+        Page<BookPaginationDto> page = bookPaginationRepositorySupport.paginationCount(pageRequest, prefixName);
+        List<BookPaginationDto> books = page.getContent();
+
+        //then
+        assertThat(page.getTotalElements()).isEqualTo(30);
         assertThat(books).hasSize(10);
         assertThat(books.get(0).getName()).isEqualTo("a20");
         assertThat(books.get(9).getName()).isEqualTo("a11");
