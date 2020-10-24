@@ -34,7 +34,6 @@ public class RealBookPaginationRepositoryTest {
 
         //then
         assertThat(books).hasSize(10);
-        System.out.println(books.get(0).getBookId());
     }
 
     @Test

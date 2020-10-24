@@ -134,9 +134,8 @@ public class BookPaginationRepository {
                         book.bookType))
                 .from(book)
                 .where(book.id.in(ids))
-                .fetch().stream()
-                .sorted() // where in id만 있어 결과 정렬이 보장되지 않는다. (쿼리 시간 최적화를 위해 애플리케이션에서 정렬한다)
-                .collect(Collectors.toList());
+                .orderBy(book.id.desc())
+                .fetch(); // where in id만 있어 결과 정렬이 보장되지 않는다.
     }
 
     /**
