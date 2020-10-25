@@ -160,4 +160,12 @@ public class BookPaginationRepository {
                 .query(query, params, new BeanPropertyRowMapper<>(BookPaginationDto.class));
     }
 
+    /**
+     * 3-1. 첫 페이지 조회시 count 고정값 쓰기
+     */
+
+    /**
+     * 3-2. 첫 페이지 조회 결과 cache 하기
+     */
+
 }
