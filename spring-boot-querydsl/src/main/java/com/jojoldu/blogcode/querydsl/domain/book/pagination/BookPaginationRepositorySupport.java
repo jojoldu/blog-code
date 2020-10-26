@@ -47,10 +47,59 @@ public class BookPaginationRepositorySupport extends QuerydslRepositorySupport {
                 )
                 .orderBy(book.id.desc()));
 
-        log.info(">>>>>>> query.fetch()");
-        List<BookPaginationDto> elements = query.fetch(); // 데이터 조회
-        log.info(">>>>>>> query.fetchCount()");
+        List<BookPaginationDto> items = query.fetch(); // 데이터 조회
         long totalCount = query.fetchCount(); // 전체 count
+        return new PageImpl<>(items, pageable, totalCount);
+    }
+
+    /**
+     * 3-1. 검색 버튼사용 count 고정값 쓰기
+     */
+    public Page<BookPaginationDto> paginationCountSearchBtn(boolean useSearchBtn, Pageable pageable, String name) {
+        JPQLQuery<BookPaginationDto> query = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable,
+                queryFactory
+                        .select(Projections.fields(BookPaginationDto.class,
+                                book.id.as("bookId"),
+                                book.name,
+                                book.bookNo,
+                                book.bookType
+                        ))
+                        .from(book)
+                        .where(
+                                book.name.like(name + "%")
+                        )
+                        .orderBy(book.id.desc()));
+
+        List<BookPaginationDto> items = query.fetch(); // 데이터 조회
+
+        /**
+         *  검색 버튼을 사용했을 경우: 10, 일반 페이지 버튼을 클릭했을 경우 실제 페이지
+         */
+        long totalCount = useSearchBtn? 10: query.fetchCount();
+        return new PageImpl<>(items, pageable, totalCount);
+    }
+
+
+    /**
+     * 3-2. 첫 페이지 조회 결과 cache 하기
+     */
+    public Page<BookPaginationDto> paginationCountCache(Long cachedCount, Pageable pageable, String name) {
+        JPQLQuery<BookPaginationDto> query = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable,
+                queryFactory
+                        .select(Projections.fields(BookPaginationDto.class,
+                                book.id.as("bookId"),
+                                book.name,
+                                book.bookNo,
+                                book.bookType
+                        ))
+                        .from(book)
+                        .where(
+                                book.name.like(name + "%")
+                        )
+                        .orderBy(book.id.desc()));
+
+        List<BookPaginationDto> elements = query.fetch(); // 데이터 조회
+        long totalCount = cachedCount!=null? cachedCount: query.fetchCount(); // 전체 count
         return new PageImpl<>(elements, pageable, totalCount);
     }
 
