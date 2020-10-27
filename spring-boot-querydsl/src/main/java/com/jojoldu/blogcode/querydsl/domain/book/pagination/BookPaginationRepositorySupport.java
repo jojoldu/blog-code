@@ -3,7 +3,6 @@ package com.jojoldu.blogcode.querydsl.domain.book.pagination;
 import com.jojoldu.blogcode.querydsl.domain.book.Book;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -73,9 +72,10 @@ public class BookPaginationRepositorySupport extends QuerydslRepositorySupport {
         List<BookPaginationDto> items = query.fetch(); // 데이터 조회
 
         /**
-         *  검색 버튼을 사용했을 경우: 10, 일반 페이지 버튼을 클릭했을 경우 실제 페이지
+         *  검색 버튼을 사용했을 경우: 10 페이지 건수 , 일반 페이지 버튼을 클릭했을 경우 실제 건수
          */
-        long totalCount = useSearchBtn? 10: query.fetchCount();
+        int tempPageCount = 10 * pageable.getPageSize(); // 10개 페이지 * 페이지당 건수
+        long totalCount = useSearchBtn? tempPageCount : query.fetchCount();
         return new PageImpl<>(items, pageable, totalCount);
     }
 
