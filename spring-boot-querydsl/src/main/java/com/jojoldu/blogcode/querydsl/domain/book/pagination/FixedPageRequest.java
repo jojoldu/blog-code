@@ -30,7 +30,7 @@ public class FixedPageRequest extends PageRequest {
             return pageNo;
         }
 
-        return (int) totalCount / pageSize; // 실제 건수가 부족한 경우 요청 페이지 번호를 가장 높은 번호로 교체
+        return (int) Math.ceil((double)totalCount/pageNo); // 실제 건수가 부족한 경우 요청 페이지 번호를 가장 높은 번호로 교체
     }
 
 

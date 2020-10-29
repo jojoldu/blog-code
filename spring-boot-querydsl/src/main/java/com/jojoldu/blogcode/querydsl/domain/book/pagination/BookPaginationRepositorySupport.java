@@ -97,7 +97,7 @@ public class BookPaginationRepositorySupport extends QuerydslRepositorySupport {
             return pageable;
         }
 
-        int requestPageNo = (int) totalCount / pageSize;
+        int requestPageNo = (int) Math.ceil((double)totalCount/pageNo); // 71~79이면 8이 되기 위해
         return PageRequest.of(requestPageNo, pageSize);
 
     }
@@ -128,11 +128,6 @@ public class BookPaginationRepositorySupport extends QuerydslRepositorySupport {
         return new PageImpl<>(querydsl().applyPagination(pageRequest, query).fetch(), pageRequest, totalCount);
     }
 
-    Querydsl querydsl() {
-        return Objects.requireNonNull(getQuerydsl());
-    }
-
-
     /**
      * 3-2. 첫 페이지 조회 결과 cache 하기
      */
@@ -156,4 +151,7 @@ public class BookPaginationRepositorySupport extends QuerydslRepositorySupport {
         return new PageImpl<>(elements, pageable, totalCount);
     }
 
+    private Querydsl querydsl() {
+        return Objects.requireNonNull(getQuerydsl());
+    }
 }
