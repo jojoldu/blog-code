@@ -26,7 +26,12 @@ public class ExchangePageRequestUnitTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"10, 100, 10", "10, 101, 10", "10, 91, 10", "10, 90, 9", "10, 79, 8"})
+    @CsvSource({
+            "10, 100, 10",
+            "10, 101, 10",
+            "10, 91, 10",
+            "10, 90, 9",
+            "10, 79, 8"})
     void repository_exchange_page_request(int pageNo, long totalCount, int expectedPageNo) throws Exception {
         //given
         Pageable pageRequest = PageRequest.of(pageNo, 10);
@@ -39,7 +44,12 @@ public class ExchangePageRequestUnitTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"10, 100, 10", "10, 101, 10", "10, 91, 10", "10, 90, 9", "10, 79, 8"})
+    @CsvSource({
+            "10, 100, 10",
+            "10, 101, 10",
+            "10, 91, 10",
+            "10, 90, 9",
+            "10, 79, 8"})
     void dto_exchange_page_request(int pageNo, long totalCount, int expectedPageNo) throws Exception {
         //given
         Pageable pageRequest = PageRequest.of(pageNo, 10);

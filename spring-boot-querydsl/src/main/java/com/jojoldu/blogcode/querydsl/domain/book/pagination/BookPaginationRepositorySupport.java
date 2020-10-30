@@ -73,13 +73,13 @@ public class BookPaginationRepositorySupport extends QuerydslRepositorySupport {
 
         JPQLQuery<BookPaginationDto> pagination = querydsl().applyPagination(pageable, query);
 
-        if(useSearchBtn) {
+        if(useSearchBtn) { // 검색 버튼 사용시
             int fixedPageCount = 10 * pageable.getPageSize(); // 10개 페이지 고정
             return new PageImpl<>(pagination.fetch(), pageable, fixedPageCount);
         }
 
         long totalCount = pagination.fetchCount();
-        Pageable pageRequest = exchangePageRequest(pageable, totalCount);
+        Pageable pageRequest = exchangePageRequest(pageable, totalCount); // 데이터 건수를 초과한 페이지 버튼 클릭시 보정
         return new PageImpl<>(querydsl().applyPagination(pageRequest, query).fetch(), pageRequest, totalCount);
     }
 

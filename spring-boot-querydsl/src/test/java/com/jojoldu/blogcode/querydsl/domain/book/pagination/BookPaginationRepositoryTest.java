@@ -146,7 +146,7 @@ public class BookPaginationRepositoryTest {
     void 검색버튼사용시_10개_페이지_건수가_리턴된다() throws Exception {
         PageRequest pageRequest = PageRequest.of(1, 10);
         boolean useSearchBtn = true;
-        Page<BookPaginationDto> page = bookPaginationRepositorySupport.paginationCountSearchBtn(useSearchBtn, pageRequest, prefixName);
+        Page<BookPaginationDto> page = bookPaginationRepositorySupport.paginationCountSearchBtn2(useSearchBtn, pageRequest, prefixName);
 
         //then
         assertThat(page.getTotalElements()).isEqualTo(100); // 10 (pageCount) * 10 (pageSize)
@@ -156,7 +156,7 @@ public class BookPaginationRepositoryTest {
     void 페이지버튼사용시_실제_페이지_건수가_리턴된다() throws Exception {
         PageRequest pageRequest = PageRequest.of(1, 10);
         boolean useSearchBtn = false;
-        Page<BookPaginationDto> page = bookPaginationRepositorySupport.paginationCountSearchBtn(useSearchBtn, pageRequest, prefixName);
+        Page<BookPaginationDto> page = bookPaginationRepositorySupport.paginationCountSearchBtn2(useSearchBtn, pageRequest, prefixName);
 
         //then
         assertThat(page.getTotalElements()).isEqualTo(30);
