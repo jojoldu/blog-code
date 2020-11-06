@@ -163,7 +163,7 @@ public class BookPaginationRepositoryTest {
     }
 
     @Test
-    void cache된_pageCount를_사용한다() throws Exception {
+    void cache된_count를_사용한다() throws Exception {
         PageRequest pageRequest = PageRequest.of(1, 10);
         Long cachedCount = 100L;
         Page<BookPaginationDto> page = bookPaginationRepositorySupport.paginationCountCache(cachedCount, pageRequest, prefixName);
