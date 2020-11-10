@@ -3,6 +3,7 @@ package com.jojoldu.blogcode.querydsl.domain.book.pagination;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -158,5 +159,43 @@ public class BookPaginationRepository {
 
         return namedParameterJdbcTemplate
                 .query(query, params, new BeanPropertyRowMapper<>(BookPaginationDto.class));
+    }
+
+    /**
+     * 4. NoOffset & id between by Querydsl
+     * * limit 10000 조건이 제일 나중에 반영되다보니, 원하는대로 플랜이 작동 안될때가 있음
+     */
+    public List<BookPaginationDto> paginationNoOffsetIdLimit(Long bookId, String name, int pageSize) {
+        long minBookId = bookId - pageSize;
+
+        JPAQuery<BookPaginationDto> query = queryFactory
+                .select(Projections.fields(BookPaginationDto.class,
+                        book.id.as("bookId"),
+                        book.name,
+                        book.bookNo,
+                        book.bookType))
+                .from(book)
+                .where(
+                        ltBookId(bookId, minBookId),
+                        book.name.like(name + "%")
+                )
+                .orderBy(book.id.desc());
+
+        long maxId = query.clone().limit(1).fetchOne().getBookId();
+
+        List<BookPaginationDto> books = query
+                .limit(pageSize)
+                .fetch();
+
+        return books;
+    }
+
+    private BooleanExpression ltBookId(Long bookId, long minBookId) {
+        if (bookId == null) {
+            return null;
+        }
+
+        return book.id.lt(bookId)
+                .and(book.id.goe(minBookId));
     }
 }

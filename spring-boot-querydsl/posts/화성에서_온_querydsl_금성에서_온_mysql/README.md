@@ -24,20 +24,25 @@ Querydsl의 경우에도 2,3,4 로 오면서 문법적인 것에서 변화가 �
 
 ### exist 사용하지 않기
 
-### select 필드에 entity 사용하지 않기
+### Entity 보다는 Dto를 사용한다
 
-### QuerydslSupport의 페이징 사용하지 않기
-
-매번 count 쿼리가 자동으로 실행된다.  
-서비스 상황에 따라 **마감된 데이터** 기준으로 서비스 되는 경우 
-
-### 페이징이 필요 없는 정렬 조회는 애플리케이션에서 정렬하기
+core한 로직을 다루는 Entity에 **서비스 모듈별 로직이 모두 담기게 된다**
 
 ### constantAs 적극 사용하기
 
 이미 특정값을 알고 있는 경우엔 constantAs로 불필요한 컬럼 조회를 제거한다.
 
+### select 필드에 entity 사용하지 않기
+
+oneToOne에서 N+1 문제가 난리난다.
+여기서 oneToOne 매핑을 Embeddable 로 풀 수 없는 경우도 있다.
+(주문-업주 관계에서 업주 정보를 Embeddable로 볼 수 있을까?)
+
+### select 필드에 entity가 있을 경우 distinct는 절대 쓰지 않는다.
+
 ### 정렬이 필요 없는 group by는 정렬 제거하기
+
+#### 페이징이 필요 없는 정렬 조회는 애플리케이션에서 정렬하기
 
 ### 서브쿼리 대신 Join으로
 
@@ -79,6 +84,8 @@ from (
 
 Querydsl의 경우 **from절의 subquery를 지원하지 않습니다**.  
 그래서 이럴 경우엔 다음처럼 2번의 쿼리로 나눠서 호출합니다.
+
+### Bulk Insert는 EntityQl을 사용한다.
 
 
 ## 2. 팀 컨벤션
