@@ -181,7 +181,8 @@ public class BookPaginationRepository {
                 )
                 .orderBy(book.id.desc());
 
-        long maxId = query.clone().limit(1).fetchOne().getBookId();
+        long maxId = query.clone().select(book.id.max()).fetchOne();
+        long minId = query.clone().select(book.id.min()).fetchOne();
 
         List<BookPaginationDto> books = query
                 .limit(pageSize)

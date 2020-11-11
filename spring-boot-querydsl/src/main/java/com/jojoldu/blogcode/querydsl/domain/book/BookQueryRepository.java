@@ -70,4 +70,32 @@ public class BookQueryRepository {
                 .fetch();
     }
 
+    /**
+     *
+     * @param name
+     * @return
+     */
+    public Long getMax(String name) {
+        return queryFactory
+                .select(book.id.max())
+                .from(book)
+                .where(book.name.like(name))
+                .fetchOne();
+    }
+
+    /**
+     *
+     * @param name
+     * @return
+     */
+    public Long getSortAndLimit(String name) {
+        return queryFactory
+                .select(book.id)
+                .from(book)
+                .where(book.name.like(name))
+                .orderBy(book.id.desc())
+                .limit(1)
+                .fetchOne();
+    }
+
 }
