@@ -85,7 +85,7 @@ from (
 Querydsl의 경우 **from절의 subquery를 지원하지 않습니다**.  
 그래서 이럴 경우엔 다음처럼 2번의 쿼리로 나눠서 호출합니다.
 
-### Bulk Insert는 EntityQl을 사용한다.
+### Bulk Insert는 entityql을 사용한다.
 
 
 ## 2. 팀 컨벤션
