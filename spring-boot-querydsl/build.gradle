@@ -1,7 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.3.2.RELEASE' apply false
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id 'com.ewerk.gradle.plugins.querydsl' version "1.0.10"
+//    id 'com.ewerk.gradle.plugins.querydsl' version "1.0.10"
     id 'pl.exsio.querydsl.entityql' version "0.0.12"
     id 'java'
     id 'idea'
@@ -18,9 +18,16 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
+
 dependencies {
-    implementation("com.querydsl:querydsl-jpa") // querydsl
-    implementation("com.querydsl:querydsl-apt") // querydsl
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    compile("com.querydsl:querydsl-core") // querydsl
+    compile("com.querydsl:querydsl-jpa") // querydsl
+    annotationProcessor("com.querydsl:querydsl-apt:4.3.1:jpa") // querydsl JPAAnnotationProcessor 사용 지정
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     implementation('org.springframework.boot:spring-boot-starter-web')
 
@@ -28,7 +35,6 @@ dependencies {
     implementation("com.github.eXsio:querydsl-entityql:3.1.0") // entityql
     implementation("joda-time:joda-time:2.9.4") // querydsl-sql
 
-    // auto-registers all Enum types with QueryDSL, auto-registers Boolean and UUID data types
     runtimeOnly('com.h2database:h2')
     implementation('org.mariadb.jdbc:mariadb-java-client')
 
@@ -71,39 +77,43 @@ configurations {
 }
 
 // querydsl 적용
-def querydslSrcDir = 'src/main/generated'
-
-querydsl {
-    library = "com.querydsl:querydsl-apt"
-    jpa = true
-    querydslSourcesDir = querydslSrcDir
+task cleanGeneratedDir(type: Delete) {
+    delete file('src/main/generated')
 }
 
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java', querydslSrcDir]
-        }
-    }
-}
-
-idea {
-    module {
-        generatedSourceDirs += file(querydslSrcDir) // just hint
-    }
-}
-
-configurations {
-    querydsl.extendsFrom compileClasspath
-    developmentOnly
-    runtimeClasspath {
-        extendsFrom developmentOnly
-    }
-}
-
-compileQuerydsl{
-    options.annotationProcessorPath = configurations.querydsl
-}
+//def querydslSrcDir = 'src/main/generated'
+//
+//querydsl {
+//    library = "com.querydsl:querydsl-apt"
+//    jpa = true
+//    querydslSourcesDir = querydslSrcDir
+//}
+//
+//sourceSets {
+//    main {
+//        java {
+//            srcDirs = ['src/main/java', querydslSrcDir]
+//        }
+//    }
+//}
+//
+//idea {
+//    module {
+//        generatedSourceDirs += file(querydslSrcDir) // just hint
+//    }
+//}
+//
+//configurations {
+//    querydsl.extendsFrom compileClasspath
+//    developmentOnly
+//    runtimeClasspath {
+//        extendsFrom developmentOnly
+//    }
+//}
+//
+//compileQuerydsl{
+//    options.annotationProcessorPath = configurations.querydsl
+//}
 
 dependencyManagement {
     imports {
