@@ -31,6 +31,7 @@ dependencies {
 
     implementation("com.querydsl:querydsl-sql-spring:4.3.1") // querydsl-sql
     implementation("com.github.eXsio:querydsl-entityql:3.1.0") // entityql
+    implementation("org.reflections:reflections:0.9.11") // entityql
     implementation("joda-time:joda-time:2.9.4") // querydsl-sql
 
     runtimeOnly('com.h2database:h2')
