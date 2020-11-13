@@ -165,9 +165,11 @@ sourceSets {
 }
 ```
 
-Gradle 설정이 다 되셨다면 이제 프로젝트에 설정을 진행하겠습니다.
+자 여기까지가 기존의 Querydsl & Gradle 설정 방법이였는데요.  
+최근 Gradle 5.0 이상 & IntelliJ 2020 이상부터는 제대로 작동하지 않는 경우가 있습니다.  
+이때 어떻게 해야할지 소개드립니다.
 
-> 현재 구글 검색에서 나오는 Querydsl이나 몇몇 책들을 보면 이 설정이 조금 과한데, 전혀 그럴 필요 없습니다.
+[[ad]]
 
 ### Gradle 5.0 이상 & IntelliJ 2020.x 사용시
 
@@ -305,6 +307,8 @@ public class AcademyRepositorySupport extends QuerydslRepositorySupport {
 
 이건 Querydsl의 QClass인 ```academy```를 사용하고 싶은데 아직 찾을수 없다는 뜻인데요.  
 QClass를 생성해보겠습니다.  
+
+[[ad]]
 
 IntelliJ의 Gradle View를 열어서 **Tasks -> other -> compileQuerydsl**를 더블클릭으로 실행합니다.  
 (이 Task가 위 Gradle 설정에서 등록한 Task입니다.)
@@ -485,6 +489,8 @@ public class CustomTest {
 
 이렇게 성공적으로 기능이 작동하는 것을 확인할 수 있습니다.  
 위 코드가 잘 적용된거죠?
+
+[[ad]]
 
 ## 4. 상속/구현 없는 Repository
 
