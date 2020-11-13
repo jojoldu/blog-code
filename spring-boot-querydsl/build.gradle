@@ -20,8 +20,6 @@ repositories {
 
 
 dependencies {
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
     compile("com.querydsl:querydsl-core") // querydsl
     compile("com.querydsl:querydsl-jpa") // querydsl
     annotationProcessor("com.querydsl:querydsl-apt:4.3.1:jpa") // querydsl JPAAnnotationProcessor 사용 지정
@@ -77,43 +75,18 @@ configurations {
 }
 
 // querydsl 적용
-task cleanGeneratedDir(type: Delete) {
-    delete file('src/main/generated')
+def generated='src/main/generated'
+sourceSets {
+    main.java.srcDirs += [ generated ]
 }
 
-//def querydslSrcDir = 'src/main/generated'
-//
-//querydsl {
-//    library = "com.querydsl:querydsl-apt"
-//    jpa = true
-//    querydslSourcesDir = querydslSrcDir
-//}
-//
-//sourceSets {
-//    main {
-//        java {
-//            srcDirs = ['src/main/java', querydslSrcDir]
-//        }
-//    }
-//}
-//
-//idea {
-//    module {
-//        generatedSourceDirs += file(querydslSrcDir) // just hint
-//    }
-//}
-//
-//configurations {
-//    querydsl.extendsFrom compileClasspath
-//    developmentOnly
-//    runtimeClasspath {
-//        extendsFrom developmentOnly
-//    }
-//}
-//
-//compileQuerydsl{
-//    options.annotationProcessorPath = configurations.querydsl
-//}
+tasks.withType(JavaCompile) {
+    options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+}
+
+clean.doLast {
+    file(generated).deleteDir()
+}
 
 dependencyManagement {
     imports {
