@@ -169,92 +169,49 @@ Gradle 설정이 다 되셨다면 이제 프로젝트에 설정을 진행하겠�
 
 > 현재 구글 검색에서 나오는 Querydsl이나 몇몇 책들을 보면 이 설정이 조금 과한데, 전혀 그럴 필요 없습니다.
 
-### Gradle 5.0 이라면
+### Gradle 5.0 이상 & IntelliJ 2020.x 사용시
 
-위 설정들은 Gradle 4 버전 기준입니다.  
-만약 본인이 5 버전대를 사용하신다면 build.gradle에 아래와 같은 설정이 추가로 필요합니다.
+위 설정들은 Gradle 4 & IntelliJ 2019 버전 기준입니다.  
+최근 Gradle 버전이 계속 증가하면서 Querydsl의 Gradle Plugin이 해당 버전을 못쫓아가는 경우가 계속 발생하는데요.  
+그러다보니 계속해서 QClass 생성 방법이 변경되다보니 Gradle & IntelliJ가 업데이트 될 때마다 새로운 설정 방법이 필요하게 됩니다.  
+  
+이로 인해서 최근엔 Gradle의 ```Annotation processor``` 을 사용하는 방법을 많이 사용하고 계십니다.  
+저 역시 최근 프로젝트에서는 ```Annotation processor``` 으로 설정하고 있습니다.
 
-```groovy
-compileQuerydsl{
-    options.annotationProcessorPath = configurations.querydsl
-}
+> 해당 설정들에 대한 상세한 설명은 [허니몬님의 블로그](http://honeymon.io/tech/2020/07/09/gradle-annotation-processor-with-querydsl.html)글을 꼭 정독해보시길 추천드립니다.
 
-configurations {
-    querydsl.extendsFrom compileClasspath
-}
-```
+아래는 **Gradle Plugin이 필요 없는 설정** (build.gradle) 코드입니다.  
 
-그래서 5 버전에서의 전체 설정은 아래와 같습니다.
+> 즉, ```com.ewerk.gradle.plugins.querydsl``` 플러그인 사용하지 않습니다.
 
 ```groovy
-buildscript {
-    ext {
-        springBootVersion = '2.1.4.RELEASE'
-        querydslPluginVersion = '1.0.10'
-    }
-    repositories {
-        mavenCentral()
-        maven { url "https://plugins.gradle.org/m2/" } // plugin 저장소
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath "io.spring.gradle:dependency-management-plugin:1.0.7.RELEASE"
-        classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:${querydslPluginVersion}")
-    }
-}
-
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-apply plugin: "com.ewerk.gradle.plugins.querydsl"
-
-group = 'com.jojoldu.blogcode'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-}
-
-
 dependencies {
+    compile("com.querydsl:querydsl-core") // querydsl
     compile("com.querydsl:querydsl-jpa") // querydsl
-    compile("com.querydsl:querydsl-apt") // querydsl
+    annotationProcessor("com.querydsl:querydsl-apt:4.3.1:jpa") // querydsl JPAAnnotationProcessor 사용 지정
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    compile('org.springframework.boot:spring-boot-starter-web')
-
-    compile('com.h2database:h2')
-    compile('org.projectlombok:lombok')
-    testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
-
-def querydslSrcDir = 'src/main/generated'
-
-querydsl {
-    library = "com.querydsl:querydsl-apt"
-    jpa = true
-    querydslSourcesDir = querydslSrcDir
-}
-
+def generated='src/main/generated'
 sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java', querydslSrcDir]
-        }
-    }
+    main.java.srcDirs += [ generated ]
 }
 
-compileQuerydsl{
-    options.annotationProcessorPath = configurations.querydsl
+tasks.withType(JavaCompile) {
+    options.annotationProcessorGeneratedSourcesDirectory = file(generated)
 }
 
-configurations {
-    querydsl.extendsFrom compileClasspath
+clean.doLast {
+    file(generated).deleteDir()
 }
 ```
+
+이것 이외에는 별도의 설정이 필요 없습니다.  
+설정 하시고 나면 이후부터는 Gradle Project (View -> Tool Windows -> Gradle Project)을 열어 Tasks -> other -> compileJava를 실행시키시면 src/main/generated에 Q클래스들이 생성됩니다.  
+
+![gradle-task](./images/gradle-task.png)
 
 ## 2. Java Config & 기본 사용법
 
