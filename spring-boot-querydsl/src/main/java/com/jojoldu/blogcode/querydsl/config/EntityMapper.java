@@ -3,13 +3,13 @@ package com.jojoldu.blogcode.querydsl.config;
 import com.querydsl.core.QueryException;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.util.ReflectionUtils;
-import javax.persistence.Column;
 import com.querydsl.sql.ColumnMetadata;
 import com.querydsl.sql.RelationalPath;
-import com.querydsl.sql.dml.BeanMapper;
 import com.querydsl.sql.dml.Mapper;
 import com.querydsl.sql.types.Null;
 
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,10 +26,6 @@ public class EntityMapper implements Mapper<Object> {
 
     private final boolean withNullBindings;
 
-    public EntityMapper() {
-        this(false);
-    }
-
     public EntityMapper(boolean withNullBindings) {
         this.withNullBindings = withNullBindings;
     }
@@ -44,23 +40,60 @@ public class EntityMapper implements Mapper<Object> {
             }
             Map<Path<?>, Object> values = new HashMap<>();
             for (Field field : ReflectionUtils.getFields(object.getClass())) {
-                Column ann = field.getAnnotation(Column.class);
-                if (ann != null) {
-                    field.setAccessible(true);
-                    Object propertyValue = field.get(object);
-                    if (propertyValue != null) {
-                        if (columnToPath.containsKey(ann.name())) {
-                            values.put(columnToPath.get(ann.name()), propertyValue);
-                        }
-                    } else if (withNullBindings) {
-                        values.put(columnToPath.get(ann.name()), Null.DEFAULT);
-                    }
-                }
+                putByColumn(object, columnToPath, values, field);
+                putByJoinColumn(object, columnToPath, values, field);
             }
             return values;
         } catch (IllegalAccessException e) {
             throw new QueryException(e);
         }
 
+    }
+
+    void putByColumn(Object object, Map<String, Path<?>> columnToPath, Map<Path<?>, Object> values, Field field) throws IllegalAccessException {
+        Column ann = field.getAnnotation(Column.class);
+        if (ann != null) {
+            field.setAccessible(true);
+            Object propertyValue = field.get(object);
+            String columnName = ann.name();
+            if (propertyValue != null) {
+                if (columnToPath.containsKey(columnName)) {
+                    values.put(columnToPath.get(columnName), propertyValue);
+                }
+            } else if (withNullBindings) {
+                values.put(columnToPath.get(columnName), Null.DEFAULT);
+            }
+        }
+    }
+
+    void putByJoinColumn(Object object, Map<String, Path<?>> columnToPath, Map<Path<?>, Object> values, Field field) throws IllegalAccessException {
+        JoinColumn ann = field.getAnnotation(JoinColumn.class);
+        if (ann != null) {
+            field.setAccessible(true);
+            Object joinObject = field.get(object);
+            String columnName = ann.name();
+            String joinColumnName = ann.referencedColumnName();
+            if (joinObject != null) {
+                if (columnToPath.containsKey(columnName)) {
+                    Object joinColumnValue = getJoinColumnValue(joinObject, joinColumnName);
+                    if(joinColumnValue != null) {
+                        values.put(columnToPath.get(columnName), joinColumnValue);
+                    }
+                }
+            } else if (withNullBindings) {
+                values.put(columnToPath.get(columnName), Null.DEFAULT);
+            }
+        }
+    }
+
+    private Object getJoinColumnValue(Object joinObject, String joinColumnName) throws IllegalAccessException {
+        for (Field field : ReflectionUtils.getFields(joinObject.getClass())){
+            Column ann = field.getAnnotation(Column.class);
+            if(ann != null && ann.name().equals(joinColumnName)) {
+                field.setAccessible(true);
+                return field.get(joinObject);
+            }
+        }
+        return null;
     }
 }
