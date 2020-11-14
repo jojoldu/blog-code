@@ -36,17 +36,23 @@ public class Student {
     @Column(name = "name")
     private String name;
 
-    @Column
-    private int academyNo;
+    @Column(name = "academy_no")
+    private Integer academyNo;
 
     @ManyToOne
-    @JoinColumn(name = "academy_id", foreignKey = @ForeignKey(name = "fk_student_academy"))
+    @JoinColumn(name = "academy_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_student_academy"))
     private Academy academy;
 
     @Builder
     public Student(String name, int academyNo) {
         this.name = name;
         this.academyNo = academyNo;
+    }
+
+    public Student(String name, Integer academyNo, Academy academy) {
+        this.name = name;
+        this.academyNo = academyNo;
+        this.academy = academy;
     }
 
     public void setAcademy(Academy academy) {
