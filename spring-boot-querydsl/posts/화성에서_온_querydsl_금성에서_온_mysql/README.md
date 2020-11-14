@@ -91,7 +91,8 @@ Querydsl의 경우 **from절의 subquery를 지원하지 않습니다**.
 
 #### 단점
 
-
+* 모든 컬럼에 ```@Column```과 ```name```을 선언해야함
+* primitive type을 사용할 수 없다 (int, long 등등)
 
 
 ## 2. 팀 컨벤션
