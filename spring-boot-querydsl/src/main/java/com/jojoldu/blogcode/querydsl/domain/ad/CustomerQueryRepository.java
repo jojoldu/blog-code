@@ -16,13 +16,12 @@ import static com.jojoldu.blogcode.querydsl.domain.ad.QShop.shop;
  */
 @RequiredArgsConstructor
 @Repository
-public class ShopQueryRepository {
+public class CustomerQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     public List<Customer> crossJoin() {
         return queryFactory
                 .selectFrom(customer)
-                .innerJoin(customer.shop).fetchJoin()
                 .where(customer.customerNo.gt(customer.shop.shopNo))
                 .fetch();
     }
@@ -30,7 +29,7 @@ public class ShopQueryRepository {
     public List<Customer> notCrossJoin() {
         return queryFactory
                 .selectFrom(customer)
-                .innerJoin(customer.shop, shop).fetchJoin()
+                .innerJoin(customer.shop, shop)
                 .where(customer.customerNo.gt(shop.shopNo))
                 .fetch();
     }
