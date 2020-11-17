@@ -50,7 +50,7 @@ public class BookQueryRepository {
                 .where(book.id.eq(bookId))
                 .fetchFirst();
 
-        return fetchOne > 0;
+        return fetchOne != null;
     }
 
     public List<BookPageDto> getBookPage (int bookNo, int pageNo) {

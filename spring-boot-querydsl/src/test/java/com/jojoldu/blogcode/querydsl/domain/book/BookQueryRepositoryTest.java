@@ -76,6 +76,16 @@ public class BookQueryRepositoryTest {
     }
 
     @Test
+    void test_querydsl_exist_zero_count() throws Exception {
+        //given
+        //when
+        Boolean exist = bookQueryRepository.exist(1L);
+
+        //then
+        assertThat(exist).isFalse();
+    }
+
+    @Test
     void 상수값을_사용한다() throws Exception {
         //given
         int bookNo = 1;

@@ -61,13 +61,15 @@ entityql {
                         defaultPackage+'academy.Academy',
                         defaultPackage+'book.Book',
                 ]
-                destinationPackage = 'com.jojoldu.blogcode.querydsl.domain.sql'
+                destinationPackage = defaultPackage+'sql'
                 //below parameters are optional and will be set with the following default values:
                 destinationPath = new StringBuilder(project.projectDir.absolutePath).append('/src/main/generated').toString()
                 filenamePattern = 'E%s.java'
             }
     ]
 }
+
+compileJava.finalizedBy generateModels
 
 configurations {
     compileOnly {
@@ -84,9 +86,6 @@ sourceSets {
 tasks.withType(JavaCompile) {
     options.annotationProcessorGeneratedSourcesDirectory = file(generated)
 }
-
-
-compileJava.finalizedBy generateModels
 
 clean.doLast {
     file(generated).deleteDir()
