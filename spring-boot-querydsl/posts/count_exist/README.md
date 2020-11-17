@@ -117,7 +117,7 @@ public Boolean exist(Long bookId) {
             .where(book.id.eq(bookId))
             .fetchFirst(); // limit 1
 
-    return fetchOne > 0; // 1개가 있는지 없는지 판단
+    return fetchOne != null; // 1개가 있는지 없는지 판단 (없으면 null이라 null체크)
 }
 ```
 

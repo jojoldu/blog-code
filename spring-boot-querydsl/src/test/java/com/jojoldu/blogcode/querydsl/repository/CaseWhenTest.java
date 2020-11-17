@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import static java.util.Comparator.comparingLong;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -49,7 +50,9 @@ public class CaseWhenTest {
                 ));
         //when
         List<PointCalculateAmount> result = pointEventRepository.calculateAmounts();
-        result.sort(Comparator.comparingLong(PointCalculateAmount::getPointAmount));
+
+
+        result.sort(comparingLong(PointCalculateAmount::getPointAmount));
 
         //then
         assertThat(result.get(0).getPointStatus(), is(PointStatus.USE));
