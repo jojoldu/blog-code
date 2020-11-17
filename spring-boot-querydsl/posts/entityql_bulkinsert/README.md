@@ -28,6 +28,7 @@ void one_jpaSaveAll() throws Exception {
 
 ![one_jpa_result](./images/one_jpa_result.png)
 
+**1분 7.5초**
 
 **Entity QL**
 
@@ -48,6 +49,8 @@ void one_sqlPopulateInsert() throws Exception {
 ```
 
 ![one_entityql_result](./images/one_entityql_result.png)
+
+**0.5초** (JPA대비 140배)
 
 ## OneToMany Entity Bulk Insert
 
@@ -78,6 +81,8 @@ void oneToMany_jpaSaveAll() throws Exception {
 
 ![oneToMany_jpa_result](./images/oneToMany_jpa_result.png)
 
+**12분 6.8초**  
+  
 **Entity QL**
 
 ```java
@@ -100,3 +105,5 @@ void oneToMany_sqlPopulateInsert() throws Exception {
 ```
 
 ![oneToMany_entityql_result](./images/oneToMany_entityql_result.png)
+
+**2분 49초** (JPA대비 6배)
