@@ -85,6 +85,9 @@ tasks.withType(JavaCompile) {
     options.annotationProcessorGeneratedSourcesDirectory = file(generated)
 }
 
+
+compileJava.finalizedBy generateModels
+
 clean.doLast {
     file(generated).deleteDir()
 }
