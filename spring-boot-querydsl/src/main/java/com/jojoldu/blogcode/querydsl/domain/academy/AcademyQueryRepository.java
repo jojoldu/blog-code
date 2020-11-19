@@ -25,4 +25,5 @@ public class AcademyQueryRepository {
                 .where(academy.name.eq(name))
                 .fetch();
     }
+
 }

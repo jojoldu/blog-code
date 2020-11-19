@@ -62,20 +62,25 @@ public class RealQuerydslSqlInsertTest {
 
             // 1000개씩 save (Academy 1개당 Student 10개)
             academyRepository.saveAll(academies);
-            log.info(i+"번째 saveAll");
+            log.info(i + "번째 saveAll");
         }
     }
 
     @Test
     void one_sqlPopulateInsert() throws Exception {
+
         for (int i = 1; i <= 100; i++) {
+
             SQLInsertClause insert = sqlQueryFactory.insert(qAcademy);
+
             for (int j = 1; j <= 1_000; j++) {
-                insert.populate(new Academy("address", "name"),EntityMapper.DEFAULT).addBatch();
+                insert.populate(new Academy("address", "name"), EntityMapper.DEFAULT)
+                        .addBatch();
             }
+
             insert.execute();
-            log.info(i+"번째 insert");
         }
+
     }
 
     @Test
@@ -95,7 +100,7 @@ public class RealQuerydslSqlInsertTest {
 
             // 1000개씩 save (Academy 1개당 Student 10개)
             academyRepository.saveAll(academies);
-            log.info(i+"번째 saveAll");
+            log.info(i + "번째 saveAll");
         }
     }
 
@@ -112,7 +117,8 @@ public class RealQuerydslSqlInsertTest {
                         );
             }
             insert.execute();
-            log.info(i+"번째 insert");
+            log.info(i + "번째 insert");
         }
     }
+
 }

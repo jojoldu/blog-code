@@ -25,7 +25,10 @@ public class AdItemService {
 
     @Transactional
     public void createAdBond1 (LocalDate startDate, LocalDate endDate, List<String> orderTypes) {
-        List<AdBond> adBonds = queryRepository.createAdBond(startDate, endDate, orderTypes);
+
+        List<AdBond> adBonds = queryRepository.createAdBond(
+                startDate, endDate, orderTypes);
+
         adBondRepository.saveAll(adBonds);
     }
 

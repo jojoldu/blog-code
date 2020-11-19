@@ -64,4 +64,23 @@ public class AdItemQueryRepository {
                 .groupBy(adItem.orderType, adItem.txDate, adItem.customer)
                 .fetch();
     }
+
+    public List<AdBond> distinctAdBond(LocalDate startDate, LocalDate endDate, List<String> orderTypes) {
+        if(CollectionUtils.isEmpty(orderTypes)) {
+            return new ArrayList<>();
+        }
+
+        return queryFactory
+                .select(Projections.fields(AdBond.class,
+                        adItem.amount,
+                        adItem.txDate,
+                        adItem.orderType,
+                        adItem.customer)
+                )
+                .from(adItem)
+                .distinct()
+                .where(adItem.orderType.in(orderTypes)
+                        .and(adItem.txDate.between(startDate, endDate)))
+                .fetch();
+    }
 }

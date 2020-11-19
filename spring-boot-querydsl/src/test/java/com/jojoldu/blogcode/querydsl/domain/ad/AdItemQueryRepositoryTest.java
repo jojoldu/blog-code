@@ -76,4 +76,24 @@ public class AdItemQueryRepositoryTest {
         //then
         assertThat(adBondDtos).hasSize(2);
     }
+
+    @Test
+    void distinct_ad_bond를_생성한다1() throws Exception {
+        //given
+        Shop shop = shopRepository.save(new Shop("no", "name"));
+        Customer customer = customerRepository.save(new Customer("no", "name", "bizNo", "ceo", shop));
+        LocalDate startDate = LocalDate.of(2020,8,11);
+        LocalDate endDate = LocalDate.of(2020,8,12);
+
+        String orderType1 = "a";
+        String orderType2 = "b";
+        adItemRepository.save(new AdItem(orderType1, startDate, "1", 1000L, customer));
+        adItemRepository.save(new AdItem(orderType2, endDate, "2", 2000L, customer));
+
+        //when
+        List<AdBond> adBonds = queryRepository.distinctAdBond(startDate, endDate, Arrays.asList(orderType1, orderType2));
+
+        //then
+        assertThat(adBonds).hasSize(2);
+    }
 }

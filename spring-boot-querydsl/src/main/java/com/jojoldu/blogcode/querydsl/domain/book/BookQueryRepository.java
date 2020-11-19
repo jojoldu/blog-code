@@ -64,7 +64,16 @@ public class BookQueryRepository {
 
     }
 
-    public List<BookPageDto> getBooks (int bookNo, int pageNo) {
+    public List<Book> getBooks (int bookNo, int pageNo) {
+        return queryFactory
+                .selectFrom(book)
+                .where(book.bookNo.eq(bookNo))
+                .offset(pageNo)
+                .limit(10)
+                .fetch();
+    }
+
+    public List<BookPageDto> getBookDtos (int bookNo, int pageNo) {
         return queryFactory
                 .select(Projections.fields(BookPageDto.class,
                         book.name,

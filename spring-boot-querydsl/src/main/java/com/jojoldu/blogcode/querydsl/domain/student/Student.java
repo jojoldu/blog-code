@@ -58,4 +58,8 @@ public class Student {
     public void setAcademy(Academy academy) {
         this.academy = academy;
     }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
 }
