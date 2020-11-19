@@ -1,7 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.3.2.RELEASE' apply false
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-//    id 'com.ewerk.gradle.plugins.querydsl' version "1.0.10"
     id 'pl.exsio.querydsl.entityql' version "0.0.12"
     id 'java'
     id 'idea'
@@ -60,6 +59,7 @@ entityql {
                         defaultPackage+'student.Student',
                         defaultPackage+'academy.Academy',
                         defaultPackage+'book.Book',
+                        defaultPackage+'book.store.BookStore',
                 ]
                 destinationPackage = defaultPackage+'sql'
                 //below parameters are optional and will be set with the following default values:

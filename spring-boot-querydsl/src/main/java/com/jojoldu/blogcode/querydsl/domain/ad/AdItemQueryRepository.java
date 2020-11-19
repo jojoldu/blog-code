@@ -36,7 +36,7 @@ public class AdItemQueryRepository {
                         adItem.amount.sum().as("amount"),
                         adItem.txDate,
                         adItem.orderType,
-                        adItem.customer) // AdBond의 customer 를 바로 지정
+                        adItem.customer)
                 )
                 .from(adItem)
                 .where(adItem.orderType.in(orderTypes)

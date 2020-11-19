@@ -53,6 +53,31 @@ public class BookQueryRepository {
         return fetchOne != null;
     }
 
+    public Boolean existByBookId(Long bookId) {
+
+        return queryFactory.select(queryFactory
+                .selectOne()
+                .from(book)
+                .where(book.id.eq(bookId))
+                .fetchAll().exists())
+                .fetchOne();
+
+    }
+
+    public List<BookPageDto> getBooks (int bookNo, int pageNo) {
+        return queryFactory
+                .select(Projections.fields(BookPageDto.class,
+                        book.name,
+                        book.bookNo,
+                        book.id
+                ))
+                .from(book)
+                .where(book.bookNo.eq(bookNo))
+                .offset(pageNo)
+                .limit(10)
+                .fetch();
+    }
+
     public List<BookPageDto> getBookPage (int bookNo, int pageNo) {
         return queryFactory
                 .select(Projections.fields(BookPageDto.class,

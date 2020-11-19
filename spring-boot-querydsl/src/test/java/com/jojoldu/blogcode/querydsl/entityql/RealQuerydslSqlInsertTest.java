@@ -53,7 +53,7 @@ public class RealQuerydslSqlInsertTest {
     @Test
     void one_jpaSaveAll() throws Exception {
         //when
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 100; i++) {
             List<Academy> academies = new ArrayList<>();
 
             for (int j = 1; j <= 1_000; j++) {
@@ -68,7 +68,7 @@ public class RealQuerydslSqlInsertTest {
 
     @Test
     void one_sqlPopulateInsert() throws Exception {
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 100; i++) {
             SQLInsertClause insert = sqlQueryFactory.insert(qAcademy);
             for (int j = 1; j <= 1_000; j++) {
                 insert.populate(new Academy("address", "name"),EntityMapper.DEFAULT).addBatch();
@@ -81,7 +81,7 @@ public class RealQuerydslSqlInsertTest {
     @Test
     void oneToMany_jpaSaveAll() throws Exception {
         //when
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 100; i++) {
             List<Academy> academies = new ArrayList<>();
 
             for (int j = 1; j <= 1_000; j++) {
@@ -101,7 +101,7 @@ public class RealQuerydslSqlInsertTest {
 
     @Test
     void oneToMany_sqlPopulateInsert() throws Exception {
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 100; i++) {
             SQLInsertClause insert = sqlQueryFactory.insert(qStudent);
             for (int j = 1; j <= 1_000; j++) {
                 Academy academy = academyRepository.save(new Academy("address", "name"));

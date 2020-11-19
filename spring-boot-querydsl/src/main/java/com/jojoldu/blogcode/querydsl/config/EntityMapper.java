@@ -9,6 +9,7 @@ import com.querydsl.sql.dml.Mapper;
 import com.querydsl.sql.types.Null;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.JoinColumn;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ public class EntityMapper implements Mapper<Object> {
             }
             Map<Path<?>, Object> values = new HashMap<>();
             for (Field field : ReflectionUtils.getFields(object.getClass())) {
+                putByEmbedded(object, columnToPath, values, field);
                 putByColumn(object, columnToPath, values, field);
                 putByJoinColumn(object, columnToPath, values, field);
             }
@@ -47,7 +49,19 @@ public class EntityMapper implements Mapper<Object> {
         } catch (IllegalAccessException e) {
             throw new QueryException(e);
         }
+    }
 
+    void putByEmbedded(Object object, Map<String, Path<?>> columnToPath, Map<Path<?>, Object> values, Field field) throws IllegalAccessException {
+        Embedded ann = field.getAnnotation(Embedded.class);
+        if (ann != null) {
+            field.setAccessible(true);
+            Object embeddedObject = field.get(object);
+            if (embeddedObject != null) {
+                for (Field embeddedField : ReflectionUtils.getFields(embeddedObject.getClass())) {
+                    putByColumn(embeddedObject, columnToPath, values, embeddedField);
+                }
+            }
+        }
     }
 
     void putByColumn(Object object, Map<String, Path<?>> columnToPath, Map<Path<?>, Object> values, Field field) throws IllegalAccessException {

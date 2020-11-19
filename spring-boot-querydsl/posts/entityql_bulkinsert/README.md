@@ -2,7 +2,7 @@
 
 
 
-## 단일 Entity Bulk Insert
+## 1. 단일 Entity Bulk Insert (1만건)
 
 **JPA**
 
@@ -51,6 +51,18 @@ void one_sqlPopulateInsert() throws Exception {
 ![one_entityql_result](./images/one_entityql_result.png)
 
 **0.5초** (JPA대비 140배)
+
+### 1-1. 단일 Entity Bulk Insert (10만건) 
+
+**JPA**
+
+![one_jpa_result_100_000](./images/one_jpa_result_100_000.png)
+
+**Entity QL**
+
+![one_entityql_result_100_000](./images/one_entityql_result_100_000.png)
+
+**약 190배 차이** (13분 / 4초)
 
 ## OneToMany Entity Bulk Insert
 

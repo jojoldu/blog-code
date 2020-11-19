@@ -5,7 +5,7 @@ spring:
     active: local
   jpa:
     open-in-view: false
-    show-sql: true
+#    show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL57Dialect
@@ -21,13 +21,13 @@ spring:
       driver-class-name: org.h2.Driver
 logging:
   level:
-    org:
-      hibernate:
-        type: trace
-      springframework:
-        jdbc:
-          core:
-            JdbcTemplate: debug
+#    org:
+#      hibernate:
+#        type: trace
+#      springframework:
+#        jdbc:
+#          core:
+#            JdbcTemplate: debug
     com:
       querydsl:
         sql: DEBUG
