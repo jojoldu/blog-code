@@ -1,6 +1,8 @@
 ---
 spring:
   profiles: real
+  jpa:
+    show-sql: false
   datasource:
     hikari:
       jdbc-url: jdbc:mysql:aurora://dwlee-database-test.cluster-cki3kdutd3oc.ap-northeast-2.rds.amazonaws.com:3306,dwlee-database-test.cluster-ro-cki3kdutd3oc.ap-northeast-2.rds.amazonaws.com:3306/jojoldu?connectTimeout=1000&socketTimeout=600000&rewriteBatchedStatements=true

@@ -24,7 +24,8 @@ public class StudentQueryRepository {
     @Transactional
     public void updateName1 (long studentId, String name) {
 
-        List<Student> students = queryFactory.selectFrom(student)
+        List<Student> students = queryFactory
+                .selectFrom(student)
                 .where(student.id.loe(studentId))
                 .fetch();
 
@@ -35,9 +36,12 @@ public class StudentQueryRepository {
 
     @Transactional
     public void updateName2 (long studentId, String name) {
+
         queryFactory.update(student)
                 .where(student.id.loe(studentId))
                 .set(student.name, name)
                 .execute();
+
+
     }
 }

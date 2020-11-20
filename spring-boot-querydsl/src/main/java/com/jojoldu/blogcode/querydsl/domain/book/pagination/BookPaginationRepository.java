@@ -138,6 +138,34 @@ public class BookPaginationRepository {
                 .fetch(); // where in id만 있어 결과 정렬이 보장되지 않는다.
     }
 
+    @SuppressWarnings("DuplicatedCode")
+    public List<BookPaginationDto> paginationCoveringIndex1(String name, int pageNo, int pageSize) {
+
+        List<Long> ids = queryFactory
+                .select(book.id)
+                .from(book)
+                .where(book.name.like(name + "%"))
+                .orderBy(book.id.desc())
+                .limit(pageSize)
+                .offset(pageNo * pageSize)
+                .fetch();
+
+        if (CollectionUtils.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+
+        return queryFactory
+                .select(Projections.fields(BookPaginationDto.class,
+                        book.id.as("bookId"),
+                        book.name,
+                        book.bookNo,
+                        book.bookType))
+                .from(book)
+                .where(book.id.in(ids))
+                .orderBy(book.id.desc())
+                .fetch();
+    }
+
     /**
      * 2. 커버링 인덱스 by JdbcTemplate
      */

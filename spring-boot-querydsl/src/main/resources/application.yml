@@ -15,7 +15,7 @@ spring:
       ddl-auto: update
   datasource:
     hikari:
-      jdbc-url: jdbc:h2:mem://localhost/~/acquire;MODE=MYSQL # MODE=MYSQL 없으면 h2가 mysql 모드로 실행이 안됨
+      jdbc-url: jdbc:h2:mem://localhost/~/jojoldu;MODE=MYSQL # MODE=MYSQL 없으면 h2가 mysql 모드로 실행이 안됨
       username: sa
       password:
       driver-class-name: org.h2.Driver
