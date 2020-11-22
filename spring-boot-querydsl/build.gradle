@@ -19,6 +19,8 @@ repositories {
 
 
 dependencies {
+    implementation('com.vladmihalcea:hibernate-types-52:2.10.0')
+
     compile("com.querydsl:querydsl-core") // querydsl
     compile("com.querydsl:querydsl-jpa") // querydsl
     annotationProcessor("com.querydsl:querydsl-apt:4.3.1:jpa") // querydsl JPAAnnotationProcessor 사용 지정
