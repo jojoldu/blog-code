@@ -1,6 +1,7 @@
 package com.jojoldu.blogcode.querydsl.domain.order;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * Github : http://github.com/jojoldu
  */
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class OrderService {
@@ -19,6 +21,7 @@ public class OrderService {
 
     @Transactional
     public void showPayDetailAmount (String orderNo) {
+        log.info(">>>>>> findAllByOrderNo");
         List<Order> orders = orderRepository.findAllByOrderNo(orderNo);
         for (Order order : orders) {
             order.getPays();

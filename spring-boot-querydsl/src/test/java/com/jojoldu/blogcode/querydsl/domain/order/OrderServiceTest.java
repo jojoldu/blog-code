@@ -13,6 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Arrays;
+import java.util.Collections;
+
+import static java.util.Collections.singletonList;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class OrderServiceTest {
@@ -22,14 +27,18 @@ public class OrderServiceTest {
 
     @AfterEach
     void after() {
-        orderRepository.deleteAll();
+        orderRepository.deleteAllInBatch();
     }
 
     @Test
     void 조회시에도_더티체킹이_발생한다() throws Exception {
         //given
-
+        String orderNo = "a";
+        orderRepository.save(new Order(orderNo, singletonList(
+                new Pay("code", 1000L, Arrays.asList(new Pay.PayDetail("d", 900L)))
+        )));
         //when
+        orderService.showPayDetailAmount(orderNo);
 
         //then
     }

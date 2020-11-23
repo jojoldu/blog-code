@@ -21,6 +21,12 @@ public class Pay {
     private Long amount;
     private List<PayDetail> details = new ArrayList<>();
 
+    public Pay(String code, Long amount, List<PayDetail> details) {
+        this.code = code;
+        this.amount = amount;
+        this.details = details;
+    }
+
     public Long sumDetailAmount(String salesType) {
         return details.stream()
                 .filter(d -> d.salesType.equals(salesType))
@@ -33,5 +39,10 @@ public class Pay {
     public static class PayDetail {
         private String salesType;
         private Long amount;
+
+        public PayDetail(String salesType, Long amount) {
+            this.salesType = salesType;
+            this.amount = amount;
+        }
     }
 }
