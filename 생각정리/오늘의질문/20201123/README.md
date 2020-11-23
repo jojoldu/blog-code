@@ -15,7 +15,7 @@ PHP, MySQL로 게시판만 만들줄 알면 취업하던 때에 들어간 선배
 지금 면접관으로 계신 분들이 본인들 올챙이 시절은 잊고 고스펙에 높은 기준치를 신입 분들에게 요구하는걸 보면 이해가 안됩니다.
 
 
-[![up](./images/up.jpg)](https://www.freepik.com/premium-vector/chart-line-concept-t-tiny-business-people-illustration_10140597.htm)
+![up](./images/up.png)
 
 A. 음 먼저 저 역시도 현재 면접관으로 들어가는 입장이다보니 아무래도 질문자분께서 이야기하는 기성세대(?) 의 입장에서 이야기할 수 밖에 없다는 점 미리 말씀드립니다.  
   
