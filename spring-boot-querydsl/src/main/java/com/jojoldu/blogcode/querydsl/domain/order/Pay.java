@@ -34,6 +34,7 @@ public class Pay {
                 .sum();
     }
 
+    @EqualsAndHashCode
     @Getter
     @NoArgsConstructor
     public static class PayDetail {
