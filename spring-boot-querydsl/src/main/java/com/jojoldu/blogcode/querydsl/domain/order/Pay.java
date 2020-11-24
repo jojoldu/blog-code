@@ -1,5 +1,6 @@
 package com.jojoldu.blogcode.querydsl.domain.order;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,34 +17,17 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 @NoArgsConstructor
+@AllArgsConstructor
 public class Pay {
     private String code;
     private Long amount;
     private List<PayDetail> details = new ArrayList<>();
 
-    public Pay(String code, Long amount, List<PayDetail> details) {
-        this.code = code;
-        this.amount = amount;
-        this.details = details;
-    }
-
-    public Long sumDetailAmount(String salesType) {
-        return details.stream()
-                .filter(d -> d.salesType.equals(salesType))
-                .mapToLong(d -> d.amount)
-                .sum();
-    }
-
-    @EqualsAndHashCode
     @Getter
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class PayDetail {
         private String salesType;
         private Long amount;
-
-        public PayDetail(String salesType, Long amount) {
-            this.salesType = salesType;
-            this.amount = amount;
-        }
     }
 }

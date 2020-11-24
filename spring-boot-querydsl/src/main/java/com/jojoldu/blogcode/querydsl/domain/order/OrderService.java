@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 /**
  * Created by jojoldu@gmail.com on 22/11/2020
  * Blog : http://jojoldu.tistory.com
@@ -22,9 +20,6 @@ public class OrderService {
     @Transactional
     public void showPayDetailAmount (String orderNo) {
         log.info(">>>>>> findAllByOrderNo");
-        List<Order> orders = orderRepository.findAllByOrderNo(orderNo);
-        for (Order order : orders) {
-            order.getPays();
-        }
+        orderRepository.findAllByOrderNo(orderNo);
     }
 }
