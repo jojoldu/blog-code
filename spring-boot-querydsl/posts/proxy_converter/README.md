@@ -1,5 +1,6 @@
 # JPA Entity Select에서 Update 쿼리 발생할 경우
 
+
 ```java
 @Getter
 @NoArgsConstructor
