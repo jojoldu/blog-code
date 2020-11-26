@@ -86,3 +86,7 @@ public class OrderService {
     }
 }
 ```
+
+* 필드는 ```org.hibernate.internal.util.compare.EqualsHelper.equals (Object, Object)``` 로 비교된다.
+
+* [Hibernate](https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html#basic-jpa-convert-type)
