@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.Period;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class OrderServiceTest {
@@ -31,6 +33,7 @@ public class OrderServiceTest {
         String orderNo = "a";
         orderRepository.save(new Order(
                 orderNo,
+                Period.of(2000,11,27),
                 new Member("memNo", "memName"),
                 new Pay("code", 1000L, new Pay.PayDetail("d", 900L))));
         //when
