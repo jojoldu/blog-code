@@ -23,7 +23,14 @@ public class Pay {
     private Long amount;
     private List<PayDetail> details = new ArrayList<>();
 
+    public Pay(String code, Long amount, PayDetail detail) {
+        this.code = code;
+        this.amount = amount;
+        this.details.add(detail);
+    }
+
     @Getter
+    @EqualsAndHashCode
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PayDetail {

@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Convert;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,11 +30,21 @@ public class Order {
 
     private String orderNo;
 
+    @Embedded
+    private Member member;
+
     @Convert(converter = PaysConverter.class)
     private List<Pay> pays = new ArrayList<>();
 
-    public Order(String orderNo, List<Pay> pays) {
+    public Order(String orderNo, Member member, List<Pay> pays) {
         this.orderNo = orderNo;
+        this.member = member;
         this.pays = pays;
+    }
+
+    public Order(String orderNo, Member member, Pay pay) {
+        this.orderNo = orderNo;
+        this.member = member;
+        this.pays.add(pay);
     }
 }
