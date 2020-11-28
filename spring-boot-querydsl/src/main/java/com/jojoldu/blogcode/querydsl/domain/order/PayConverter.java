@@ -13,7 +13,7 @@ import java.util.List;
  * Blog : http://jojoldu.tistory.com
  * Github : http://github.com/jojoldu
  */
-public class PaysConverter implements AttributeConverter<List<Pay>, String> {
+public class PayConverter implements AttributeConverter<List<Pay>, String> {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override

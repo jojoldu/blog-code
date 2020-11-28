@@ -8,7 +8,6 @@ package com.jojoldu.blogcode.querydsl.domain.order;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -36,10 +35,9 @@ public class Order {
     private Member member;
 
     @Convert(converter = PeriodStringConverter.class)
-    @Column()
     private Period period;
 
-    @Convert(converter = PaysConverter.class)
+    @Convert(converter = PayConverter.class)
     private List<Pay> pays = new ArrayList<>();
 
     public Order(String orderNo, Period period, Member member, Pay pay) {
