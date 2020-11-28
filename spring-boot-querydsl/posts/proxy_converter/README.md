@@ -233,5 +233,5 @@ Order 클래스를 보시면 Pay외에도 객체형 필드들이 여럿 있는�
 
 결론은 간단합니다.
 
-* 가변 객체 (mutable type)을 Entity 필드로 사용해야할 경우 (```@Convert```) 무분별한 Dirty Checking을 막기 위해 ```equals```를 **꼭 Override``` 해야한다.
+* 가변 객체 (mutable type)을 Entity 필드로 사용해야할 경우 (```@Convert```) 무분별한 Dirty Checking을 막기 위해 ```equals```를 **꼭 Override** 해야한다.
 * 그렇지 않을 경우 단순히 **조회 로직에서도 Dirty Checking이 발생**한다.
