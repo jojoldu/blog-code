@@ -2,6 +2,8 @@
 
 ## 1. EC2 생성
 
+![](./images/ec2_1.png)
+
 ## 2. Kafka Consumer 설치
 
 Amazon Linux2 로 진행할 경우 Java가 기본적으로 설치가 안되어있습니다.  
