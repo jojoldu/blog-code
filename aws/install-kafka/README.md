@@ -2,7 +2,7 @@
 
 ## 1. EC2 생성
 
-![](./images/ec2_1.png)
+![ec2_1](./images/ec2_1.png)
 
 ## 2. Kafka Consumer 설치
 
@@ -85,4 +85,82 @@ bin/kafka-topics.sh --list --zookeeper localhost:2181
 ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic twitter --from-beginning
 ```
 
-## 3. 2. Kafka Producer 설치
+## 3. Kafka Producer 설치
+
+```bash
+sudo yum update -y 
+sudo yum install -y java-1.8.0-openjdk-devel.x86_64
+java -version
+```
+
+```bash
+wget https://downloads.apache.org/kafka/2.6.0/kafka_2.13-2.6.0.tgz
+tar xvf kafka_2.13-2.6.0.tgz  
+ln -s kafka_2.13-2.6.0 kafka
+```
+
+```bash
+cd kafka
+bin/kafka-console-producer.sh --topic twitter --bootstrap-server 카프카서버privateIP:9092
+```
+
+해당 IP는 private IP로 아래와 같이 EC2 웹 콘솔 혹은 카프카 서버에서 직접 명령어를 실행해서 확인할 수 있습니다.
+
+```bash
+ifconfig -a
+```
+
+### Logstash 설치
+
+```bash
+wget https://artifacts.elastic.co/downloads/logstash/logstash-7.4.0.tar.gz
+
+tar xvzf logstash-7.4.0.tar.gz
+ln -s logstash-7.4.0 logstash
+```
+
+어느 위치에서도 logstash 명령어를 수행할 수 있도록 ```bash_profile```에 등록합니다.
+
+```bash
+vim ~/.bash_profile
+```
+
+
+```bash
+export LS_HOME=/home/ec2-user/logstash
+PATH=$PATH:$LS_HOME/bin
+```
+
+```bash
+source ~/.bash_profile
+```
+
+```bash
+logstash --version
+```
+
+```bash
+vim producer_test.conf
+```
+
+```js
+input {
+    twitter {
+        consumer_key => ""
+        consumer_secret => ""
+        oauth_token => ""
+        oauth_token_secret => ""
+        keywords => ["news","game","bigdata","부동산"]
+        full_tweet => true
+    }
+}
+output{
+    stdout{
+        codec => rubydebug
+    }
+}
+```
+
+```bash
+logstash -f producer_test.conf
+```
