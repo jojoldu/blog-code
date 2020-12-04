@@ -4,6 +4,28 @@
 
 ![ec2_1](./images/ec2_1.png)
 
+![ec2_2](./images/ec2_2.png)
+
+![ec2_3](./images/ec2_3.png)
+
+![ec2_4](./images/ec2_4.png)
+
+![ec2_5](./images/ec2_5.png)
+
+![ec2_6](./images/ec2_6.png)
+
+![ec2_7](./images/ec2_7.png)
+
+![ec2_8](./images/ec2_8.png)
+
+![ec2_9](./images/ec2_9.png)
+
+![ec2_10](./images/ec2_10.png)
+
+![ec2_11](./images/ec2_11.png)
+
+![ec2_12](./images/ec2_12.png)
+
 ## 2. Kafka Consumer 설치
 
 Amazon Linux2 로 진행할 경우 Java가 기본적으로 설치가 안되어있습니다.  
