@@ -1,30 +1,40 @@
 # EC2에 카프카 설치하기
 
+> 패스트캠퍼스의 [실무에 활용하는 데이터 파이프라인 구축 CAMP](https://www.fastcampus.co.kr/data_camp_pipeline) 내용을 기반으로 합니다.
+
+## 0. 개요
+
+원래는 아래와 같은 형태가 카프카를 구성하는 아키텍처입니다.
+
+![server1](./images/1/server1.png)
+
+하지만, 개인이 연습하기에는 Producer/Broker/Cosumer를 각각의 HA 구성을 하기가 어려우니 이번 시간에는 간단하게 아래와 같은 형태로 구성해보겠습니다.
+
 ## 1. EC2 생성
 
-![ec2_1](./images/ec2_1.png)
+![ec2_1](./images/1/ec2_1.png)
 
-![ec2_2](./images/ec2_2.png)
+![ec2_2](./images/1/ec2_2.png)
 
-![ec2_3](./images/ec2_3.png)
+![ec2_3](./images/1/ec2_3.png)
 
-![ec2_4](./images/ec2_4.png)
+![ec2_4](./images/1/ec2_4.png)
 
-![ec2_5](./images/ec2_5.png)
+![ec2_5](./images/1/ec2_5.png)
 
-![ec2_6](./images/ec2_6.png)
+![ec2_6](./images/1/ec2_6.png)
 
-![ec2_7](./images/ec2_7.png)
+![ec2_7](./images/1/ec2_7.png)
 
-![ec2_8](./images/ec2_8.png)
+![ec2_8](./images/1/ec2_8.png)
 
-![ec2_9](./images/ec2_9.png)
+![ec2_9](./images/1/ec2_9.png)
 
-![ec2_10](./images/ec2_10.png)
+![ec2_10](./images/1/ec2_10.png)
 
-![ec2_11](./images/ec2_11.png)
+![ec2_11](./images/1/ec2_11.png)
 
-![ec2_12](./images/ec2_12.png)
+![ec2_1](./images/1/ec2_12.png)
 
 ## 2. Kafka Consumer 설치
 
@@ -37,7 +47,7 @@ sudo yum install -y java-1.8.0-openjdk-devel.x86_64
 java -version
 ```
 
-![java](./images/java.png)
+![java](./images/1/java.png)
 
 Java가 설치된게 확인되셨으면 바로 카프카를 설치합니다.
 
@@ -52,7 +62,7 @@ tar xvf kafka_2.13-2.6.0.tgz
 ln -s kafka_2.13-2.6.0 kafka
 ```
 
-![kafka1](./images/kafka1.png)
+![kafka1](./images/1/kafka1.png)
 
 설치된 카프카를 실행해봅니다.
 
@@ -81,7 +91,7 @@ zookeeper와 카프카가 잘 실행되었는지 확인합니다.
 sudo netstat -anp | egrep "9092|2181"
 ```
 
-![netstat](./images/netstat.png)
+![netstat](./images/1/netstat.png)
 
 ### 카프카 토픽 생성
 
@@ -99,7 +109,7 @@ Topic 확인
 bin/kafka-topics.sh --list --zookeeper localhost:2181 
 ```
 
-![kafka2](./images/kafka2.png)
+![kafka2](./images/1/kafka2.png)
 
 카프카 consumer 실행
 
@@ -132,57 +142,6 @@ bin/kafka-console-producer.sh --topic twitter --bootstrap-server 카프카서버
 ifconfig -a
 ```
 
-### Logstash 설치
-
-```bash
-wget https://artifacts.elastic.co/downloads/logstash/logstash-7.4.0.tar.gz
-
-tar xvzf logstash-7.4.0.tar.gz
-ln -s logstash-7.4.0 logstash
-```
-
-어느 위치에서도 logstash 명령어를 수행할 수 있도록 ```bash_profile```에 등록합니다.
-
-```bash
-vim ~/.bash_profile
-```
+### Consumer & Producer 연동 테스트
 
 
-```bash
-export LS_HOME=/home/ec2-user/logstash
-PATH=$PATH:$LS_HOME/bin
-```
-
-```bash
-source ~/.bash_profile
-```
-
-```bash
-logstash --version
-```
-
-```bash
-vim producer_test.conf
-```
-
-```js
-input {
-    twitter {
-        consumer_key => ""
-        consumer_secret => ""
-        oauth_token => ""
-        oauth_token_secret => ""
-        keywords => ["news","game","bigdata","부동산"]
-        full_tweet => true
-    }
-}
-output{
-    stdout{
-        codec => rubydebug
-    }
-}
-```
-
-```bash
-logstash -f producer_test.conf
-```
