@@ -4,7 +4,7 @@
 
 ## 0. 개요
 
-원래는 아래와 같은 형태가 카프카를 구성하는 아키텍처입니다.
+일반적으로 직접 구성하는 카프카 환경은 아래와 같습니다.
 
 ![server1](./images/1/server1.png)
 
@@ -36,7 +36,14 @@
 
 ![ec2_1](./images/1/ec2_12.png)
 
+
 ## 2. Kafka Consumer 설치
+
+### 2-1. Hostname 설정
+
+```bash
+sudo hostnamectl set-hostname consumer
+```
 
 Amazon Linux2 로 진행할 경우 Java가 기본적으로 설치가 안되어있습니다.  
 그래서 아래 명령어를 차례로 입력하여 Java를 설치합니다.
@@ -118,6 +125,12 @@ bin/kafka-topics.sh --list --zookeeper localhost:2181
 ```
 
 ## 3. Kafka Producer 설치
+
+### 3-1. Hostname 설정
+
+```bash
+sudo hostnamectl set-hostname producer
+```
 
 ```bash
 sudo yum update -y 
