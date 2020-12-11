@@ -226,7 +226,7 @@ configure(querydslProjects) {
 
     dependencies {
         compile "com.querydsl:querydsl-jpa"
-        compile "com.querydsl:querydsl-apt"
+        compile "com.querydsl:querydsl-core"
         annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa" // querydsl JPAAnnotationProcessor 사용 지정
         annotationProcessor "jakarta.persistence:jakarta.persistence-api:2.2.3"
         annotationProcessor "jakarta.annotation:jakarta.annotation-api:1.3.5"
