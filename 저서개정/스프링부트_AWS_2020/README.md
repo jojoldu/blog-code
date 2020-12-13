@@ -110,3 +110,50 @@ test {
     useJUnitPlatform()
 }
 ```
+
+## JPA
+
+### application.properties
+
+**as-is**
+
+```properties
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+```
+
+**to-be**
+
+```properties
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL57Dialect
+spring.jpa.properties.hibernate.dialect.storage_engine=innodb
+spring.datasource.hikari.jdbc-url=jdbc:h2:mem:testdb;MODE=MYSQL
+spring.datasource.hikari.username=sa
+```
+
+* ```spring.datasource.hikari.jdbc-url```
+  * real-db를 사용할 경우 override 됩니다.
+
+### application-real-db.properties
+
+**as-is**
+
+```properties
+spring.jpa.hibernate.ddl-auto=none
+
+spring.datasource.url=jdbc:mariadb://rds주소:포트명(기본은 3306)/database명
+spring.datasource.username=db계정
+spring.datasource.password=db계정 비밀번호
+spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+```
+
+**to-be**
+
+```properties
+spring.jpa.hibernate.ddl-auto=none
+spring.jpa.show_sql=false
+
+spring.datasource.hikari.jdbc-url=jdbc:mariadb://rds주소:포트명(기본은 3306)/database명
+spring.datasource.hikari.username=db계정
+spring.datasource.hikari.password=db계정 비밀번호
+spring.datasource.hikari.driver-class-name=org.mariadb.jdbc.Driver
+```
