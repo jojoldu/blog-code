@@ -1,5 +1,7 @@
 # TravisCI에서 Github Action으로 교체하기
 
+## Github Action으로 Build 하기
+
 ![github1](./images/github1.png)
 
 [OS](https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on)
@@ -42,3 +44,9 @@ jobs:
 ![github3](./images/github3.png)
 
 ![github4](./images/github4.png)
+
+![github5](./images/github5.png)
+
+## IAM 인증키 발급받기
+
+## IAM 인증키 Github Action에서 사용하기
