@@ -50,3 +50,56 @@ jobs:
 ## IAM 인증키 발급받기
 
 ## IAM 인증키 Github Action에서 사용하기
+
+```yaml
+- name: Deploy to EB
+    uses: einaregilsson/beanstalk-deploy@v14
+    with:
+    aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    application_name: MyApplicationName
+    environment_name: MyApplication-Environment
+    version_label: 12345
+    region: ap-northeast-2
+    deployment_package: deploy.zip
+```
+
+```yaml
+name: Deploy master
+on:
+  push:
+    branches:
+    - master
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+
+        - name: Set up JDK 1.8
+          uses: actions/setup-java@v1.4.3
+          with:
+            java-version: 1.8
+
+        - name: Grant execute permission for gradlew
+          run: chmod +x ./gradlew
+          shell: bash
+
+        - name: Build with Gradle
+          run: ./gradlew clean build
+          shell: bash
+
+        - name: Generate deployment package
+          run: mkdir -p archive \
+          cp build/libs/*.jar archive/application.jar \
+          cp -r ./.ebextensions archive/.ebextensions \
+          cd archive \
+          ls -al
+          shell: bash
+        
+```
+
+
+[](https://github.com/marketplace/actions/beanstalk-deploy)
