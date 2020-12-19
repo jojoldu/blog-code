@@ -1,5 +1,8 @@
 # TravisCI에서 Github Action으로 교체하기
 
+
+![intro](./images/intro.jpeg)
+
 ## Github Action으로 Build 하기
 
 ![github1](./images/github1.png)
@@ -65,39 +68,41 @@ jobs:
 ```
 
 ```yaml
-name: Deploy master
+name: freelec-springboot2-webservice
+
 on:
   push:
     branches:
-    - master
-    
+      - version/2020-12-11 # 일반적으로는 master로 함 (저는 별도 브랜치로 지정)
+  workflow_dispatch: # 수동 실행
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-        - name: Checkout
-          uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-        - name: Set up JDK 1.8
-          uses: actions/setup-java@v1.4.3
-          with:
-            java-version: 1.8
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: 1.8
 
-        - name: Grant execute permission for gradlew
-          run: chmod +x ./gradlew
-          shell: bash
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
 
-        - name: Build with Gradle
-          run: ./gradlew clean build
-          shell: bash
+      - name: Build with Gradle
+        run: ./gradlew clean build
+        shell: bash
 
-        - name: Generate deployment package
-          run: mkdir -p archive \
-          cp build/libs/*.jar archive/application.jar \
-          cp -r ./.ebextensions archive/.ebextensions \
-          cd archive \
+      - name: Generate deployment package
+        run: |
+          mkdir -p archive
+          cp build/libs/*.jar archive/application.jar
+          cp -r .ebextensions archive/.ebextensions
+          cd archive
           ls -al
-          shell: bash
         
 ```
 
