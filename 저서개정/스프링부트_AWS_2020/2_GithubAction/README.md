@@ -123,3 +123,9 @@ jobs:
 [](https://github.com/marketplace/actions/beanstalk-deploy)
 
 
+
+![eb-log1](./images/eb-log1.png)
+
+```bash
+vim /var/log/eb-engine.log
+```
