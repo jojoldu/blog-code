@@ -12,7 +12,7 @@
 
 > Github Action & AWS Code Deploy 조합은 [wbluke님의 시리즈](https://wbluke.tistory.com/39)를 참고해주시면 됩니다.
 
-AWS Beanstalk의 경우 최근 버전업을 하면서 몇몇 설정들에는 변경도 있었어서 해당 설정들을 다시 정리할 수 있었습니다.  
+AWS Beanstalk의 경우 최근 버전업을 하면서 몇몇 변경된 설정들이 있어서 해당 부분 역시 다시 정리할 수 있었습니다.  
   
 혹시나 [제 저서](https://jojoldu.tistory.com/463)를 보고 AWS Code Deploy를 사용해오셨다면, 좀 더 편하게 서버를 배포할 수 있는 AWS Beanstalk을 이번 기회로 한번 배워보시길 바래봅니다.
 
@@ -30,14 +30,23 @@ CodeDeploy를 사용하던것과 달리 Beanstalk을 사용하면 **구현상에
 
 Beanstalk의 소개와 장점에 대해서는 이후에 좀 더 자세히 설명드릴것을 약속드리고, 바로 Github Action 설정으로 가보겠습니다.
 
-## 1-1. Github Action으로 Build 하기
+이 과정은 3개로 진행됩니다.
 
+1. Github Action으로 기본적인 Build하기
+2. Github Action으로 AWS Beanstalk에 간단하게 배포해보기
+3. AWS Beanstalk에 RDS정보/GoogleOAuth정보 등록해서 실제 배포하기
+
+## 1-1. Github Action yml 파일 생성하기
+
+Github 웹 사이트에서 템플릿을 만들어도 되지만, 굳이 필수 작업은 아니기에, 현재 프로젝트에서 바로 템플릿을 만들어 보겠습니다.  
+  
+아래와 같이 프로젝트 디렉토리에서 ```.github/workflows``` 디렉토리르 생성하고, 거기에 ```deploy.yml```을 만들어봅니다.
 
 ![github1](./images/github1.png)
 
-[OS](https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on)
+> 위 처럼 github 아이콘으로 노출되길 원하시면 [extra-icons 플러그인](https://plugins.jetbrains.com/plugin/11058-extra-icons)을 설치하시면 됩니다.
 
-![github2](./images/github2.png)
+해당 파일에는 아래와 같이 코드를 작성해봅니다.
 
 ```yaml
 name: freelec-springboot2-webservice
@@ -45,32 +54,50 @@ name: freelec-springboot2-webservice
 on:
   push:
     branches:
-      - version/2020-12-11 # 일반적으로는 master로 함 (저는 별도 브랜치로 지정)
-  workflow_dispatch: # 수동 실행
+      - version/2020-12-11 # (1) 실습하시는분들은 master로 하시면됩니다. (저는 별도 브랜치로 지정)
+  workflow_dispatch: # (2) 수동 실행
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # (3)
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2 # (4)
 
       - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v1 # (5)
         with:
           java-version: 1.8
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
+        run: chmod +x ./gradlew # (6)
         shell: bash
 
       - name: Build with Gradle
-        run: |
-          ./gradlew clean build
+        run: ./gradlew clean build # (7)
         shell: bash
 
 ```
+
+(1)
+(2)
+(3)
+
+[OS](https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on)
+
+![github2](./images/github2.png)
+
+(4)
+(5)
+(6)
+(7)
+
+
+
+## 1-2. Github Action 빌드하기
+
+
 
 ![github3](./images/github3.png)
 
@@ -78,82 +105,4 @@ jobs:
 
 ![github5](./images/github5.png)
 
-## IAM 인증키 발급받기
-
-## IAM 인증키 Github Action에서 사용하기
-
-책 p.239에서 설정한 보안그룹을 선택합니다.
-
-
-```yaml
-- name: Deploy to EB
-    uses: einaregilsson/beanstalk-deploy@v14
-    with:
-    aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    application_name: MyApplicationName
-    environment_name: MyApplication-Environment
-    version_label: 12345
-    region: ap-northeast-2
-    deployment_package: deploy.zip
-```
-
-```yaml
-name: freelec-springboot2-webservice
-
-on:
-  push:
-    branches:
-      - version/2020-12-11 # push되면 실행될 브랜치를 선택합니다. ex) master (저는 version/2020-12-11 브랜치로 지정)
-  workflow_dispatch: # 수동 실행
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-        - name: Checkout
-            uses: actions/checkout@v2
-
-        - name: Set up JDK 1.8
-            uses: actions/setup-java@v1.4.3
-            with:
-            java-version: 1.8
-
-        - name: Grant execute permission for gradlew
-            run: chmod +x ./gradlew
-            shell: bash
-
-        - name: Build with Gradle
-            run: ./gradlew clean build
-            shell: bash
-
-        - name: Generate deployment package
-            run: |
-            mkdir -p deploy
-            cp build/libs/*.jar deploy/application.jar
-            cp Procfile deploy/Procfile
-            cp -r .ebextensions deploy/.ebextensions
-            cd deploy && zip -r deploy.zip .
-
-        - name: Deploy to EB
-            uses: einaregilsson/beanstalk-deploy@v14
-            with:
-            aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            application_name: MyApplicationName
-            environment_name: MyApplication-Environment
-            version_label: 12345
-            region: ap-northeast-2
-            deployment_package: deploy.zip
-```
-
-
-[](https://github.com/marketplace/actions/beanstalk-deploy)
-
-
-
-![eb-log1](./images/eb-log1.png)
-
-```bash
-vim /var/log/eb-engine.log
-```
+## 1-3. Github Action 
