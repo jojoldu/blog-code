@@ -95,13 +95,23 @@ dependencies {
     implementation("org.mariadb.jdbc:mariadb-java-client")
     implementation('com.h2database:h2')
 
-    implementation('org.springframework.boot:spring-boot-starter-oauth2-client')
-    implementation('org.springframework.session:spring-session-jdbc')
+    implementation('org.springframework.boot:spring-boot-starter-oauth2-client') // 권한 관련
+    implementation('org.springframework. session:spring-session-jdbc') // 권한 관련
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
-    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.springframework.security:spring-security-test") // 권한 관련
 }
 ```
+
+**주의하실점은** ```// 권한 관련```으로 주석친 부분은 **Spring Security** 챕터를 진행하신분들만 넣으셔야 합니다.  
+즉, **챕터5까지 아직 안가신분들은** 아래 코드는 빼고, 나머지만 넣으셔야 합니다.
+
+```groovy
+implementation('org.springframework.boot:spring-boot-starter-oauth2-client')
+implementation('org.springframework.session:spring-session-jdbc')
+testImplementation("org.springframework.security:spring-security-test")
+```
+
 
 (1) ```plugins{..}```
 * Gradle 5부터는 Gradle Plugin 사용법에 변경이 있습니다.
