@@ -40,7 +40,7 @@ Beanstalk의 소개와 장점에 대해서는 이후에 좀 더 자세히 설명
 
 Github 웹 사이트에서 템플릿을 만들어도 되지만, 굳이 필수 작업은 아니기에, 현재 프로젝트에서 바로 템플릿을 만들어 보겠습니다.  
   
-아래와 같이 프로젝트 디렉토리에서 ```.github/workflows``` 디렉토리르 생성하고, 거기에 ```deploy.yml```을 만들어봅니다.
+아래와 같이 프로젝트 디렉토리에서 ```.github/workflows``` 디렉토리를 생성하고, 거기에 ```deploy.yml```을 만들어봅니다.
 
 ![github1](./images/github1.png)
 
@@ -54,7 +54,7 @@ name: freelec-springboot2-webservice
 on:
   push:
     branches:
-      - version/2020-12-11 # (1) 실습하시는분들은 master로 하시면됩니다. (저는 별도 브랜치로 지정)
+      - version/2020-12-11 # (1) 실습하시는분들은 master로 하시면 됩니다. (저는 별도 브랜치로 지정)
   workflow_dispatch: # (2) 수동 실행
 
 jobs:
@@ -80,15 +80,28 @@ jobs:
 
 ```
 
-(1)
-(2)
-(3)
+(1) ```on: push: branches: - version/2020-12-11```
 
-[OS](https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on)
+* 현재 만드는 Github Action의 **트리거 브랜치**를 지정합니다.
+* 즉, 여기서는 ```version/2020-12-11```브랜치가 push되면 현재 만들고 있는 Github Action이 실행됩니다.
+* ```master``` 브랜치가 트리거가 되길 원하시면 ```master```를 등록하시면 됩니다.
+
+(2) ```on: workflow_dispatch:```
+
+* 브랜치 push 이벤트외에, **수동으로 실행**하는 것도 가능하게 만드는 옵션입니다.
+
+(3) ```jobs: build: runs-on: ubuntu-latest```
+
+* 해당 Github Action 스크립트가 작동될 OS 환경을 지정합니다.
+* 일반적으로 웹 서비스의 OS는 Ubuntu 보다는 Centos를 많이들 쓰기 때문에 Centos는 없을까 생각해보실텐데요.
+* 아쉽게도 Github Action에서 공식지원하는 [OS 목록](https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on)에는 Centos가 없으니 Ubuntu를 사용합니다.
 
 ![github2](./images/github2.png)
 
-(4)
+(4) ```uses: actions/checkout@v2```
+
+* 프로젝트 코드를 checkout 합니다.
+
 (5)
 (6)
 (7)
