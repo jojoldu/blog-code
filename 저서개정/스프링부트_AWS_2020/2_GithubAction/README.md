@@ -33,8 +33,8 @@ Beanstalk의 소개와 장점에 대해서는 이후에 좀 더 자세히 설명
 이 과정은 3개로 진행됩니다.
 
 1. Github Action으로 기본적인 Build하기
-2. Github Action으로 AWS Beanstalk에 간단하게 배포해보기
-3. AWS Beanstalk에 RDS정보/GoogleOAuth정보 등록해서 실제 배포하기
+2. Github Action으로 AWS Beanstalk에 local profile로 배포하기
+3. Github Action으로 AWS Beanstalk에 real profile로 배포하기
 
 ## 1-1. Github Action yml 파일 생성하기
 
@@ -102,20 +102,116 @@ jobs:
 
 * 프로젝트 코드를 checkout 합니다.
 
-(5)
-(6)
-(7)
+(5) ```actions/setup-java@v1```
 
+* Github Action이 실행될 OS에 Java를 설치합니다.
+* ```with: java-version: 1.8``` 로 메이저 버전을 설치할 수 있으며 11, 13 등 버전들도 설치 가능합니다.
+* 자세한건 [마켓플레이스 Action](https://github.com/marketplace/actions/setup-java-jdk)을 참고하시면 좋습니다.
 
+(6) ```run: chmod +x ./gradlew```
+
+* gradle wrapper를 실행할 수 있도록 실행 권한 (```+x```)을 줍니다.
+* 해당 실행 권한이 있어야 아래 (7) 를 실행할 수 있습니다.
+
+(7) ```run: ./gradlew clean build```
+
+* gradle wrapper를 통해 해당 프로젝트를 build 합니다.
+
+파일 생성이 끝나셨으면, Github으로 Push를 실행해봅니다.
 
 ## 1-2. Github Action 빌드하기
 
-
+Github으로 Push를 하셨다면 Github 저장소로 갑니다.  
+Github 저장소 -> Actions 탭 -> 방금 push 한 flow를 클릭합니다.
 
 ![github3](./images/github3.png)
 
+그럼 아래와 같이 build가 진행되는 것을 볼 수 있습니다.
+
 ![github4](./images/github4.png)
+
+build가 끝나면, 아래처럼 status가 Success를 볼 수 있습니다.
 
 ![github5](./images/github5.png)
 
-## 1-3. Github Action 
+만약 workflow의 로그를 보고 싶으시면 build 버튼을 클릭합니다.
+
+![github6](./images/github6.png)
+
+그럼 아래와 같이 각 job 별로 로그를 확인할 수 있습니다.
+
+![github7](./images/github7.png)
+
+자 여기까지하면 Github Action을 이용한 Build 단계가 성공한 것입니다.
+
+## 1-3. Github Action에 Time Action 추가하기
+
+다음 단계를 위해서 한가지 job을 추가해볼텐데요.  
+build 시점의 **현재 시간**을 확인하는 기능입니다.  
+
+> 다음 포스팅에서 build 파일명에 현재시간을 추가하기 위함입니다.
+
+추가할 코드는 아래와 같습니다.  
+
+```yaml
+- name: Get current time
+  uses: 1466587594/get-current-time@v2 
+  id: current-time
+  with:
+    format: YYYY-MM-DDTHH-mm-ss # (1)
+    utcOffset: "+09:00"
+
+- name: Show Current Time
+  run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}" # (2)
+  shell: bash
+```
+
+(1) ```with: format: YYYY-MM-DDTHH-mm-ss```
+
+(2)
+
+```yaml
+name: freelec-springboot2-webservice
+
+on:
+  push:
+    branches:
+      - version/2020-12-11  # push되면 실행될 브랜치를 선택합니다.
+                            # ex) master (저는 version/2020-12-11 브랜치로 지정)
+  workflow_dispatch: # 수동 실행
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: 1.8
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+        shell: bash
+
+      - name: Get current time
+        uses: 1466587594/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00"
+
+      - name: Show Current Time
+        run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}"
+        shell: bash
+```
+
+![github8](./images/github8.png)
+
+
