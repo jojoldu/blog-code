@@ -168,7 +168,14 @@ build 시점의 **현재 시간**을 확인하는 기능입니다.
 
 (1) ```with: format: YYYY-MM-DDTHH-mm-ss```
 
-(2)
+* ```1466587594/get-current-time``` action의 경우 기존의 [Momentjs](https://momentjs.com/docs/#/displaying/format/)을 지원하기 때문에 동일한 포맷을 사용하면 됩니다.
+* ```utcOffset: "+09:00"```: 해당 action의 기준이 UTC이기 때문에 한국시간이 KST를 맞추기 위해서는 +9시간이 필요하여 offset을 추가합니다.
+
+(2) ```${{steps.current-time.outputs.formattedTime}}```
+
+* (1)의  ```get-current-time``` 에서 **지정한 포맷대로 현재 시간**을 노출하게 됩니다.
+
+이렇게 해서 위 코드까지 포함하게 되면 전체 ```deploy.yml```은 다음과 같이 됩니다.
 
 ```yaml
 name: freelec-springboot2-webservice
@@ -212,6 +219,12 @@ jobs:
         shell: bash
 ```
 
+이렇게 수정 후, Github에 Push하시고 다시 Github 로그를 보시면 현재 시간이 포맷대로 노출되는 것을 확인할 수 있습니다.
+
 ![github8](./images/github8.png)
 
+## 1-4. 마무리
+
+첫번째로 Github Action으로 Build 단계를 진행해보았습니다.  
+다음 시간에는 이번에 만든 Github Action과 AWS Beanstalk을 연동해보겠습니다.
 
