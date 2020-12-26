@@ -1,6 +1,22 @@
-# 
+# 2. Github Action & AWS Beanstalk 배포하기 - local profile로 배포하기
+
+## AWS Beanstalk 생성하기
+
+
 
 ## IAM 인증키 발급받기
+
+![iam1](./images/iam1.png)
+
+![iam2](./images/iam2.png)
+
+![iam3](./images/iam3.png)
+
+![iam4](./images/iam4.png)
+
+![iam5](./images/iam5.png)
+
+![iam6](./images/iam6.png)
 
 ## IAM 인증키 Github Action에서 사용하기
 
@@ -72,6 +88,53 @@ jobs:
 
 [](https://github.com/marketplace/actions/beanstalk-deploy)
 
+
+## Github Action과 Beanstalk 연동하기
+
+
+### application.properties 정리
+
+**application.properties**
+
+```properties
+spring.profiles.active=local
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL57Dialect
+spring.jpa.properties.hibernate.dialect.storage_engine=innodb
+spring.session.store-type=jdbc
+```
+
+**application-local.properties**
+
+```properties
+spring.jpa.show_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL57Dialect
+spring.jpa.properties.hibernate.dialect.storage_engine=innodb
+spring.datasource.hikari.jdbc-url=jdbc:h2:mem:testdb;MODE=MYSQL
+spring.datasource.hikari.username=sa
+
+spring.h2.console.enabled=true
+spring.session.store-type=jdbc
+
+# Test OAuth
+
+spring.security.oauth2.client.registration.google.client-id=test
+spring.security.oauth2.client.registration.google.client-secret=test
+spring.security.oauth2.client.registration.google.scope=profile,email
+```
+
+**application-local-real.properties**
+
+```properties
+spring.profiles.include=oauth
+spring.jpa.show_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL57Dialect
+spring.jpa.properties.hibernate.dialect.storage_engine=innodb
+spring.datasource.hikari.jdbc-url=jdbc:h2:mem:testdb;MODE=MYSQL
+spring.datasource.hikari.username=sa
+
+spring.h2.console.enabled=true
+spring.session.store-type=jdbc
+```
 
 
 ![eb-log1](./images/eb-log1.png)
