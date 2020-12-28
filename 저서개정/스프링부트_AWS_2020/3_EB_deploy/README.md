@@ -1,17 +1,24 @@
-# 2. Github Action & AWS Beanstalk 배포하기 - local profile로 배포하기
+# 2. Github Action & AWS Beanstalk 배포하기 - profile=local로 배포하기
 
+[지난 시간](https://jojoldu.tistory.com/543)에 만들어둔 Github Action을 통해 **profile=local**로 Beanstalk에 배포를 진행해보겠습니다.  
+  
+profile=local, 즉, 운영 DB정보나 구글&네이버 OAuth 토큰정보 없이 간단하게 테스트용도로만 배포합니다.  
+  
+실제 운영 배포는 Github Action과 Beanstalk 연동된 환경 (즉, 이번 시간에 설정된 환경)에서 추가 개선건이 될것이며, 이는 다음 시간에 진행할 예정입니다.  
+  
+지난 시간과 마찬가지로 모든 애플리케이션 코드 (Java & Gradle)는 저의 저서 [스프링 부트와 AWS로 혼자 구현하는 웹 서비스](https://jojoldu.tistory.com/463)를 기반으로 합니다.
 
 > **2020.12월 기준**이기 때문에 시간이 지나면 AWS의 UX 변경이 있을 수 있습니다.  
 > 최대한 **키워드** 중심으로 진행할테니, 혹시나 시간이 흘러 보시는 분들은 이점 감안해주시면 됩니다.
 
-## AWS Beanstalk 생성하기
+## 2-1. AWS Beanstalk 생성하기
 
 AWS Beanstalk 요금 소개
 
 EC2 프리티어 사용 가능?
 로드밸런서 사용 가능?
 
-### AWS Beanstalk 환경 생성하기
+### 2-1-1. AWS Beanstalk 환경 생성하기
 
 AWS 서비스 검색창에서 elasticbeanstalk을 검색합니다.
 
@@ -61,17 +68,67 @@ Java 11에서 잘 돌아가는지 검증이 안되어있기 때문에 선택하�
 
 > Java 9부터 [Jigsaw](https://greatkim91.tistory.com/197)가 적용되어, 일반적으로 사용할 수 있던 여러 기본 jar 패키지들을 추가 옵션을 넣어야만 쓸 수 있도록 변경되었습니다.  
 
-마지막 선택은 절대 **환경 생성을 선택하시면 안됩니다**.  
+마지막은 절대 **환경 생성을 선택하시면 안됩니다**.  
 **무중단 배포를 위한 설정** 작업이 추가로 필요합니다.  
 그래서 화면 아래와 같이 **추가 옵션 구성**을 선택합니다.
 
 ![eb7](./images/eb7.png)
 
-### 추가옵션 구성
+### 2-1-2. 추가 옵션 구성
 
+Beanstalk의 추가 옵션을 차례로 설정합니다.  
+  
+먼저 최상단에 사전 설정으로 되어있는 부분을 **사용자 지정 구성**으로 변경합니다.  
+  
 ![eb-config1](./images/eb-config1.png)
 
-## IAM 인증키 발급받기
+단일 인스턴스 등의 옵션으로 설정할 경우 **로드 밸런서**를 설정할 수 없어 **Beanstalk으로 무중단 배포**를 할 수가 없습니다.  
+그러니 꼭 사용자 지정 구성으로 진행합니다.  
+  
+이제 각 항목별로 설정을 해보겠습니다.
+
+#### 인스턴스
+
+![eb-config2](./images/eb-config2.png)
+
+책 p.239에서 설정한 보안그룹을 선택합니다.
+
+![eb-config3_1](./images/eb-config3_1.png)
+
+![eb-config3_2](./images/eb-config3_2.png)
+
+#### 용량
+
+![eb-config4](./images/eb-config4.png)
+
+![eb-config5](./images/eb-config5.png)
+
+### 롤링 업데이트와 배포
+
+![eb-config6](./images/eb-config6.png)
+
+![eb-config7](./images/eb-config7.png)
+
+#### 보안
+
+![eb-config8](./images/eb-config8.png)
+
+![eb-config9](./images/eb-config9.png)
+
+만약 pem키를 한번도 생성해보신적 없다면 (즉, EC2 생성을 한번도 못해봤거나, key가 분실된 경우) [이 글](https://jojoldu.tistory.com/540)을 참고하여 수동으로 pem키를 생성하시면 됩니다. 
+
+#### 로드 밸런서
+
+![eb-config10](./images/eb-config10.png)
+
+![eb-config11](./images/eb-config10.png)
+
+
+## IAM 인증키 Github Action에서 사용하기
+
+
+
+### IAM 인증키 발급받기
 
 ![iam1](./images/iam1.png)
 
@@ -85,10 +142,8 @@ Java 11에서 잘 돌아가는지 검증이 안되어있기 때문에 선택하�
 
 ![iam6](./images/iam6.png)
 
-## IAM 인증키 Github Action에서 사용하기
 
-책 p.239에서 설정한 보안그룹을 선택합니다.
-
+### IAM 인증키 Github Action 스크립트에 등록하기
 
 ```yaml
 - name: Deploy to EB
