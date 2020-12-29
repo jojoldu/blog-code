@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -130,5 +131,27 @@ public class QuerydslSqlInsertTest {
         assertThat(students).hasSize(2);
         assertThat(students.get(0).getAcademy().getId()).isEqualTo(academy.getId());
         assertThat(students.get(1).getAcademy().getId()).isEqualTo(academy.getId());
+    }
+
+    @Test
+    void superClass() throws Exception {
+        //given
+        Book entity = Book.builder()
+                .bookNo(1)
+                .bookType(BookType.IT)
+                .build();
+        entity.setCurrentTime(LocalDateTime.now());
+
+        //when
+        sqlQueryFactory.insert(qBook)
+                .populate(entity, EntityMapper.DEFAULT)
+                .execute();
+
+        //then
+        List<Book> results = bookRepository.findAll();
+        assertThat(results).hasSize(1);
+        assertThat(results.get(0).getBookType()).isEqualTo(BookType.IT);
+        assertThat(results.get(0).getCreatedDate()).isNotNull();
+
     }
 }

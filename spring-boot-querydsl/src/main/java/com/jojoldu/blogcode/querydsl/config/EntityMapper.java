@@ -40,14 +40,18 @@ public class EntityMapper implements Mapper<Object> {
                 columnToPath.put(ColumnMetadata.getName(column), column);
             }
             Map<Path<?>, Object> values = new HashMap<>();
-            for (Field field : ReflectionUtils.getFields(object.getClass())) {
-                putByEmbedded(object, columnToPath, values, field);
-                putByColumn(object, columnToPath, values, field);
-                putByJoinColumn(object, columnToPath, values, field);
-            }
+            setColumns(object, columnToPath, values);
             return values;
         } catch (IllegalAccessException e) {
             throw new QueryException(e);
+        }
+    }
+
+    private void setColumns(Object object, Map<String, Path<?>> columnToPath, Map<Path<?>, Object> values) throws IllegalAccessException {
+        for (Field field : ReflectionUtils.getFields(object.getClass())) {
+            putByEmbedded(object, columnToPath, values, field);
+            putByColumn(object, columnToPath, values, field);
+            putByJoinColumn(object, columnToPath, values, field);
         }
     }
 

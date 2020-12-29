@@ -6,6 +6,7 @@ package com.jojoldu.blogcode.querydsl.domain.book;
  * Github : https://github.com/jojoldu
  */
 
+import com.jojoldu.blogcode.querydsl.domain.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +29,7 @@ import javax.persistence.Table;
         name = "book",
         indexes = @Index(name = "idx_book_1", columnList = "name") // id는 클러스터인덱스라 인덱스에 자동 포함
 )
-public class Book {
+public class Book extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
