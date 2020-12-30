@@ -21,7 +21,8 @@ Jenkins 설치에는 크게 달라진 점은 없습니다.
 > Amazon Linux 1에서는 Java7이 기본 설치되어 있었습니다.
 
 Jenkins 설치를 위해서는 Java가 필수이니 [Java를 설치](https://jojoldu.tistory.com/261)합니다.  
-(설치법은 Linux1과 동일합니다.)
+(설치법은 Linux1과 동일합니다.)  
+  
 
 ```bash
 sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
