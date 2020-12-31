@@ -96,7 +96,7 @@ dependencies {
     implementation('com.h2database:h2')
 
     implementation('org.springframework.boot:spring-boot-starter-oauth2-client') // 권한 관련
-    implementation('org.springframework. session:spring-session-jdbc') // 권한 관련
+    implementation('org.springframework.session:spring-session-jdbc') // 권한 관련
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation("org.springframework.security:spring-security-test") // 권한 관련
@@ -203,23 +203,23 @@ org.junit.jupiter.api.extension.ExtendWith
 
 ### 2-3. SpringRunner
 
-3번째는 ```@SpringRunner``` 입니다.  
-앞서 ```@RunWith```와 마찬가지로 ```@SpringRunner``` 역시 ```@SpringExtension``` 로 변경되었기 때문에 **어노테이션과 패키지 위치** 2개다 변경이 필요합니다.
+3번째는 ```SpringRunner``` 입니다.  
+앞서 ```@RunWith```와 마찬가지로 ```SpringRunner``` 역시 ```SpringExtension``` 로 변경되었기 때문에 **클래스명과 패키지 위치** 2개다 변경이 필요합니다.
 
 ![test4](./images/test4.png)
 
-#### 어노테이션
+#### 클래스
   
 **as-is**
 
 ```java
-@SpringRunner
+SpringRunner
 ```
 
 **to-be**
 
 ```java
-@SpringExtension
+SpringExtension
 ```
 
 #### import패키지
