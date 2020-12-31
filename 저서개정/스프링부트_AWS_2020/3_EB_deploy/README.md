@@ -13,10 +13,31 @@ profile=local, 즉, 운영 DB정보나 구글&네이버 OAuth 토큰정보 없�
 
 ## 2-1. AWS Beanstalk 생성하기
 
-AWS Beanstalk 요금 소개
+저번 시간에도 간략하게 소개 드렸지만, AWS Beanstalk은 AWS에 지원하는 PaaS (Platform as a Service) 입니다.  
+  
+기존에 EC2를 직접 구성하고, Code Deploy를 통해 배포환경을 구성하고, 로드밸런서를 연결하고, 오토스케일링 그룹을 직접 생성해서 연결하는 등의 모든 행위가 이 Beanstalk에서는 자동으로 이루어지는데요.  
+  
+이로인해서 개발자는 코드를 업로드하기만 하면 Elastic Beanstalk가 프로비저닝, 로드 밸런싱, Auto Scaling부터 시작하여 애플리케이션 상태 모니터링에 이르기까지 배포를 자동으로 처리합니다.  
 
-EC2 프리티어 사용 가능?
-로드밸런서 사용 가능?
+![eb-intro](./images/eb-intro.png)
+
+다만, 이렇게 자동으로 해주는 형태로 인해서 **요금** 걱정을 하실 수가 있는데요.  
+Beanstalk는 추가 비용 없이 구성한 AWS 리소스에 대해서만 요금을 지불하면 됩니다.  
+
+![eb-price](./images/eb-price.png)
+
+([AWS 공식 문서](https://aws.amazon.com/ko/elasticbeanstalk/pricing/))  
+  
+이번에 저희가 사용할 AWS Beanstalk의 서비스는
+
+* EC2
+* LoadBalancer
+  
+입니다.  
+  
+아직 계정이 프리티어시라면 두 서비스 모두 월 750시간까지 무료이니 걱정 없이 실습을 진행하시면 됩니다.  
+  
+자 그럼 실제로 하나씩 구성해보겠습니다.
 
 ### 2-1-1. AWS Beanstalk 환경 생성하기
 
@@ -91,17 +112,30 @@ Beanstalk의 추가 옵션을 차례로 설정합니다.
 
 ![eb-config2](./images/eb-config2.png)
 
-책 p.239에서 설정한 보안그룹을 선택합니다.
+SSH 접속과 HTTP 접근이 가능하도록 보안그룹을 선택합니다.
+
+> 책 p.239에서 설정한 보안그룹이며, 생성을 해본적이 없으신 분들은 EC2로 가서 보안그룹 생성후 진행하시면 됩니다.
 
 ![eb-config3_1](./images/eb-config3_1.png)
+
+아래와 같이 보안그룹이 정상적으로 선택된 것을 확인하시면 됩니다.
 
 ![eb-config3_2](./images/eb-config3_2.png)
 
 #### 용량
 
+용량은 오토스케일링 그룹을 이야기합니다.  
+즉, 이 Beanstalk으로 운영될 인스턴스의 수를 몇대로 할 것인지 정한다고 보시면 되는데요.  
+  
 ![eb-config4](./images/eb-config4.png)
 
+프리티어로 사용할 것이기 때문에 1대로 유지합니다.
+
 ![eb-config5](./images/eb-config5.png)
+
+최대값을 1개 초과해서 적으시면 많은 트래픽이 들어올 경우 서버가 자동으로 증설되어 프리티어를 초과한 비용이 부담됩니다.  
+
+> 현재 설정으로 하시면 많은 트래픽이 오면 서버가 죽는 한이 있어도, 증설되진 않습니다.
 
 ### 롤링 업데이트와 배포
 
