@@ -98,7 +98,26 @@ PV와 애드센스의 비율은 1만PV당 $9 정도 되는 듯 하다.
 
 ### 발표
 
+**이노콘 - OKKY 커뮤니티 소개**
+
+[이노베이션 아카데미 컨퍼런스 (이하 이노콘)](https://youtu.be/Tp9w7TatzJQ?list=PLdaJq4f37m1p-0EEXIO7JDb3xXhlluWC4&t=25662)에서 OKKY 운영진으로 커뮤니티 소개를 하는 촬영을 가졌다.
+
+> 이노콘 전체 세션도 재밌지만, 사내 프론트엔드 개발리더이신 김민태님이 참여한 ["선배 개발자들이 말하는 실제 취업 현장과 개발문화"](https://www.youtube.com/watch?v=Tp9w7TatzJQ&list=PLdaJq4f37m1p-0EEXIO7JDb3xXhlluWC4&index=1) 세션은 취준생이라면 꼭 보길 추천한다.  
+> (06:01:30부터다)
+
+![okky1](./images/okky1.png)
+
+(07:07:42부터 OKKY 커뮤니티 소개 시작이다.)
+
+> 이 촬영이 끝나고 OKKY 10주년 행사 촬영이 있었는데, 그건 아직 영상이 안나와서 내년 상반기 회고때 자세히 쓸 예정이다.
+
+**JetBrains Productivity Day**
+
+[온/오프라인 인플루언서와 함께하는 IntelliJ IDEA와 생산성에 대한 이야기](https://www.youtube.com/watch?v=FCa4bTUowTY)
+
 **우아콘**
+
+[수십억건에서 Querydsl 활용하기](https://www.youtube.com/watch?v=zMAX7g6rO_Y)
 
 ### 코디미
 
@@ -109,6 +128,12 @@ PV와 애드센스의 비율은 1만PV당 $9 정도 되는 듯 하다.
 ## 5. 기타
 
 ### 5-1. 작업실
+
+### 5-2. 커피 없이 살기
+
+
+### 5-3. 
+
 
 ## 6. 교육
 
