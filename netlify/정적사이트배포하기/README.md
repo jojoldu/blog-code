@@ -6,7 +6,7 @@
   
 GithubAction이나 TravisCI와 같이 별도의 CI 서비스를 구축할 필요도 없다보니 한번쯤 익혀놓으시면 정말 요긴하게 쓰일데가 많습니다.  
   
-[가격](https://www.netlify.com/pricing/)역시 **개인이 무료로 쓰기에** 불편함이 없습니다.
+[가격](https://www.netlify.com/pricing/) 역시 **개인이 무료로 쓰기에** 불편함이 없습니다.
 
 ![price](./images/price.png)
 
