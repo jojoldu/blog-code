@@ -2,16 +2,17 @@
 
 [지난 시간](https://jojoldu.tistory.com/543)에 만들어둔 Github Action을 통해 **profile=local**로 Beanstalk에 배포를 진행해보겠습니다.  
   
-profile=local, 즉, 운영 DB정보나 구글&네이버 OAuth 토큰정보 없이 간단하게 테스트용도로만 배포합니다.  
+profile=local, 즉, 운영 DB정보나 구글&네이버 OAuth 토큰 정보 없이 간단하게 테스트 용도로만 배포할 예정입니다.  
   
-실제 운영 배포는 Github Action과 Beanstalk 연동된 환경 (즉, 이번 시간에 설정된 환경)에서 추가 개선건이 될것이며, 이는 다음 시간에 진행할 예정입니다.  
+실제 운영 배포는 다음 시간에 진행할 예정입니다.  
+Github Action과 Beanstalk 연동된 환경 (즉, 이번 시간에 설정된 환경)를 구성하고 이를 기반으로 개선하는 과정으로 진행할 예정입니다. 
   
 지난 시간과 마찬가지로 모든 애플리케이션 코드 (Java & Gradle)는 저의 저서 [스프링 부트와 AWS로 혼자 구현하는 웹 서비스](https://jojoldu.tistory.com/463)를 기반으로 합니다.
 
 > **2020.12월 기준**이기 때문에 시간이 지나면 AWS의 UX 변경이 있을 수 있습니다.  
 > 최대한 **키워드** 중심으로 진행할테니, 혹시나 시간이 흘러 보시는 분들은 이점 감안해주시면 됩니다.
 
-## 2-1. AWS Beanstalk 생성하기
+## 1. AWS Beanstalk 생성하기
 
 저번 시간에도 간략하게 소개 드렸지만, AWS Beanstalk은 AWS에 지원하는 PaaS (Platform as a Service) 입니다.  
   
@@ -28,18 +29,16 @@ Beanstalk는 추가 비용 없이 구성한 AWS 리소스에 대해서만 요금
 
 ([AWS 공식 문서](https://aws.amazon.com/ko/elasticbeanstalk/pricing/))  
   
-이번에 저희가 사용할 AWS Beanstalk의 서비스는
+이번에 저희가 사용할 AWS Beanstalk의 서비스는 2가지입니다.
 
 * EC2
 * LoadBalancer
-  
-입니다.  
   
 아직 계정이 프리티어시라면 두 서비스 모두 월 750시간까지 무료이니 걱정 없이 실습을 진행하시면 됩니다.  
   
 자 그럼 실제로 하나씩 구성해보겠습니다.
 
-### 2-1-1. AWS Beanstalk 환경 생성하기
+### 1-1. AWS Beanstalk 환경 생성하기
 
 AWS 서비스 검색창에서 elasticbeanstalk을 검색합니다.
 
@@ -95,7 +94,7 @@ Java 11에서 잘 돌아가는지 검증이 안되어있기 때문에 선택하�
 
 ![eb7](./images/eb7.png)
 
-### 2-1-2. 추가 옵션 구성
+### 1-2. 추가 옵션 구성
 
 Beanstalk의 추가 옵션을 차례로 설정합니다.  
   
@@ -153,16 +152,23 @@ SSH 접속과 HTTP 접근이 가능하도록 보안그룹을 선택합니다.
 
 #### 로드 밸런서
 
+마지막으로 로드밸런서까지 
+
 ![eb-config10](./images/eb-config10.png)
 
-![eb-config11](./images/eb-config10.png)
+![eb-config11](./images/eb-config11.png)
+
+### 1-3. 생성 
+
+![eb-start1](./images/eb-start1.png)
+
+![eb-start2](./images/eb-start2.png)
+
+## 2. IAM 인증키 Github Action에서 사용하기
 
 
-## IAM 인증키 Github Action에서 사용하기
 
-
-
-### IAM 인증키 발급받기
+### 2-1. IAM 인증키 발급받기
 
 ![iam1](./images/iam1.png)
 
@@ -177,7 +183,19 @@ SSH 접속과 HTTP 접근이 가능하도록 보안그룹을 선택합니다.
 ![iam6](./images/iam6.png)
 
 
-### IAM 인증키 Github Action 스크립트에 등록하기
+![secret1](./images/secret1.png)
+
+![secret2](./images/secret2.png)
+
+![secret3](./images/secret3.png)
+
+![secret4](./images/secret4.png)
+
+### 2-2. Github Action 스크립트 수정하기
+
+![plugin-eb1](./images/plugin-eb1.png)
+
+![plugin-eb2](./images/plugin-eb2.png)
 
 ```yaml
 - name: Deploy to EB
@@ -193,12 +211,12 @@ SSH 접속과 HTTP 접근이 가능하도록 보안그룹을 선택합니다.
 ```
 
 ```yaml
-name: freelec-springboot2-webservice
+name: freelec-springbootwebservice
 
 on:
   push:
     branches:
-      - version/2020-12-11 # push되면 실행될 브랜치를 선택합니다. ex) master (저는 version/2020-12-11 브랜치로 지정)
+      - version/2020-111 # push되면 실행될 브랜치를 선택합니다. ex) master (저는 version/2020-111 브랜치로 지정)
   workflow_dispatch: # 수동 실행
 
 jobs:
@@ -245,10 +263,10 @@ jobs:
 [](https://github.com/marketplace/actions/beanstalk-deploy)
 
 
-## Github Action과 Beanstalk 연동하기
+## 3. Github Action으로 Beanstalk 배포하기
 
 
-### application.properties 정리
+### 3-1. application.properties 정리
 
 **application.properties**
 
@@ -292,6 +310,8 @@ spring.h2.console.enabled=true
 spring.session.store-type=jdbc
 ```
 
+
+### 4-2. 
 
 ![eb-log1](./images/eb-log1.png)
 
