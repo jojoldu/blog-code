@@ -142,6 +142,7 @@ PV와 애드센스의 비율은 1만PV당 $9 정도 되는 듯 하다.
 
 ![oatmeal](./images/oatmeal.png)
 
+Salt Swag 이라는 단어를 
 
 ## 6. 교육
 

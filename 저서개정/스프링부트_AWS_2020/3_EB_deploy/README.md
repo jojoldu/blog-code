@@ -197,30 +197,69 @@ ELB의 경우 먼저 나온 로드밸런서다보니 이후에 나온 Applicatio
 
 ## 2. IAM 인증키 Github Action에서 사용하기
 
+같은 AWS 서비스가 아닌 외부 서비스인 Github Action에서는 TravisCI와 마찬가지로 AWS 서비스에 명령을 줄 수 있는 권한을 받아야 합니다.  
+  
+> [Travis CI와 AWS ElasticBeanstalk 연동하기](https://jojoldu.tistory.com/317)
 
+외부 서비스가 AWS 서비스에 대한 명령 권한을 받는 방법으로는 IAM 사용자를 이용한 인증키 (accessKey, secretKey)가 있습니다.  
+  
+그래서 해당 인증키를 먼저 발급 받겠습니다.
 
 ### 2-1. IAM 인증키 발급받기
 
+AWS Beanstalk 생성 페이지를 두고, 새 페이지를 열어서 ```iam```을 검색해봅니다.  
+그럼 아래와 같이 IAM 서비스가 나오는데요.  
+해당 페이지로 이동합니다.
+
 ![iam1](./images/iam1.png)
+
+좌측 사이드바의 **사용자** 항목을 선택합니다.  
 
 ![iam2](./images/iam2.png)
 
+accessKey, secretKey를 발급받을 수 있는 사용자 정보를 생성합니다.  
+
 ![iam3](./images/iam3.png)
+
+기존 정책 연결에서는 **AWS Beanstalk의 Access**를 할당 받습니다.
 
 ![iam4](./images/iam4.png)
 
+여러 사용자들 사이에서 식별 가능하도록 태그에는 Name을 지정합니다.
+
 ![iam5](./images/iam5.png)
+
+생성 되시면 아래와 같이 accessKey와 secretKey가 생성됩니다.
 
 ![iam6](./images/iam6.png)
 
+해당 내용을 복사를 하신 뒤 해당 프로젝트의 Github 페이지로 이동합니다.  
+  
+Github 에서 상단 탭을 보시면 **Settings**가 보입니다.  
+클릭하신뒤, 좌측 사이드바의 **Secrets** -> **New Repository secret** 버튼을 차례로 클릭합니다.
 
 ![secret1](./images/secret1.png)
 
+그럼 아래와 같이 생성된 IAM 인증키 항목을 등록하시면 되는데요.  
+
+* AWS_ACCESS_KEY_ID: IAM 엑세스키 ID
+* AWS_SECRET_ACCESS_KEY: IAM 비밀 엑세스 키
+
+로 채워주시면 됩니다.  
+  
+**AWS_ACCESS_KEY_ID**
+
 ![secret2](./images/secret2.png)
+
+**AWS_SECRET_ACCESS_KEY**
 
 ![secret3](./images/secret3.png)
 
+다 생성 되시면 아래와 같이 secrets 항목에 2개의 키가 추가된 것을 확인할 수 있습니다.
+
 ![secret4](./images/secret4.png)
+
+자 그럼 위에서 등록한 key들을 Github Action에서 사용할 수 있도록 스크립트에 코드를 심어보겠습니다.
 
 ### 2-2. Github Action 스크립트 수정하기
 
