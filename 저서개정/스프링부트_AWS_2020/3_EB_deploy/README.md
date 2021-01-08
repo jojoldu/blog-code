@@ -223,6 +223,9 @@ accessKey, secretKey를 발급받을 수 있는 사용자 정보를 생성합니
 
 기존 정책 연결에서는 **AWS Beanstalk의 Access**를 할당 받습니다.
 
+> Code Deploy때와 다르게 별도로 **S3에 대한 권한이 필요하지 않습니다**.  
+> 배포 파일을 그대로 Beanstalk으로 전달하기 때문에 S3를 통할 필요가 없습니다.
+
 ![iam4](./images/iam4.png)
 
 여러 사용자들 사이에서 식별 가능하도록 태그에는 Name을 지정합니다.
@@ -263,9 +266,9 @@ Github 에서 상단 탭을 보시면 **Settings**가 보입니다.
 
 ### 2-2. Github Action 스크립트 수정하기
 
-![plugin-eb1](./images/plugin-eb1.png)
-
-![plugin-eb2](./images/plugin-eb2.png)
+이번에 사용할 Github Action 플러그인은 [Beanstalk Deploy](https://github.com/marketplace/actions/beanstalk-deploy) 입니다.  
+  
+AWS CLI (커맨드라인)으로도 할 수 있지만, 해당 플러그인을 사용할 경우 아래와 같이 설정값만 채워주면 편하게 배포 코드를 작성할 수 있으니 이를 사용합니다.
 
 ```yaml
 - name: Deploy to EB
@@ -280,57 +283,74 @@ Github 에서 상단 탭을 보시면 **Settings**가 보입니다.
     deployment_package: deploy.zip
 ```
 
+사이트를 방문 해보시면 최신 버전 사용방법을 볼 수 있는데요.
+
+![plugin-eb1](./images/plugin-eb1.png)
+
+14버전이 최신이니 ```einaregilsson/beanstalk-deploy@v14``` 를 선언만 하면됩니다.
+
+![plugin-eb2](./images/plugin-eb2.png)
+
+자 그럼 위 플러그인을 [지난 시간](https://jojoldu.tistory.com/543)에 만든 Github Action 스크립트 파일에 적용해보겠습니다.
+
 ```yaml
-name: freelec-springbootwebservice
+name: freelec-springboot2-webservice
 
 on:
   push:
     branches:
-      - version/2020-111 # push되면 실행될 브랜치를 선택합니다. ex) master (저는 version/2020-111 브랜치로 지정)
+      - version/2020-12-11  # push되면 실행될 브랜치를 선택합니다.
+                            # ex) master (저는 version/2020-12-11 브랜치로 지정)
   workflow_dispatch: # 수동 실행
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-        - name: Checkout
-            uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-        - name: Set up JDK 1.8
-            uses: actions/setup-java@v1.4.3
-            with:
-            java-version: 1.8
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: 1.8
 
-        - name: Grant execute permission for gradlew
-            run: chmod +x ./gradlew
-            shell: bash
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
 
-        - name: Build with Gradle
-            run: ./gradlew clean build
-            shell: bash
+      - name: Build with Gradle
+        run: ./gradlew clean build
+        shell: bash
 
-        - name: Generate deployment package
-            run: |
-            mkdir -p deploy
-            cp build/libs/*.jar deploy/application.jar
-            cp Procfile deploy/Procfile
-            cp -r .ebextensions deploy/.ebextensions
-            cd deploy && zip -r deploy.zip .
+      - name: Get current time
+        uses: 1466587594/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00"
 
-        - name: Deploy to EB
-            uses: einaregilsson/beanstalk-deploy@v14
-            with:
-            aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            application_name: MyApplicationName
-            environment_name: MyApplication-Environment
-            version_label: 12345
-            region: ap-northeast-2
-            deployment_package: deploy.zip
+      - name: Generate deployment package # (1)
+        run: |
+          mkdir -p deploy
+          cp build/libs/*.jar deploy/application.jar
+          cp Procfile deploy/Procfile
+          cp -r .ebextensions deploy/.ebextensions
+          cp -r .platform deploy/.platform
+          cd deploy && zip -r deploy.zip .
+
+      - name: Deploy to EB # (2)
+        uses: einaregilsson/beanstalk-deploy@v14
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: freelec-springboot2-webervice
+          environment_name: freelec-springboot2-webervice
+          version_label: github-action-${{steps.current-time.outputs.formattedTime}}
+          region: ap-northeast-2
+          deployment_package: deploy/deploy.zip
 ```
 
-
-[](https://github.com/marketplace/actions/beanstalk-deploy)
 
 
 ## 3. Github Action으로 Beanstalk 배포하기
