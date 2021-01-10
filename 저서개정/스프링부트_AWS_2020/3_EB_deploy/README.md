@@ -102,7 +102,7 @@ Beanstalk의 추가 옵션을 차례로 설정합니다.
   
 ![eb-config1](./images/eb-config1.png)
 
-단일 인스턴스 등의 옵션으로 설정할 경우 **로드 밸런서**를 설정할 수 없어 **Beanstalk으로 무중단 배포**를 할 수가 없습니다.  
+단일 인스턴스 옵션으로 설정할 경우 **로드 밸런서**를 설정할 수 없어 **Beanstalk으로 무중단 배포**를 할 수가 없습니다.  
 그러니 꼭 사용자 지정 구성으로 진행합니다.  
   
 이제 각 항목별로 설정을 해보겠습니다.
@@ -357,6 +357,9 @@ jobs:
 (1) 
 
 * Gradle Build를 통해 만들어진 jar 파일을 Beanstalk에 배포하기 위한 zip 파일로 만들어줄 스크립트 입니다.
+* 빌드가 끝나면 해당 배포 Jar의 파일명을 ```application.jar```로 교체합니다.
+  * 매 빌드때마다 jar의 파일명이 버전과 타임스탬프로 파일명이 교체됩니다.
+  * 그래서 Beanstalk 배포시에 매번 달라질 파일명을 찾아내기 보다는 하나로 통일해서 사용하도록 변경하였습니다.
 * application.jar 외에 3개의 파일/디렉토리 ```Procfile```, ```.ebextensions```, ```.platform``` 도 함께 zip에 포함시킵니다.
 * 3개 파일/디렉토리에 대해서는 아래 2-3에서 좀 더 상세하게 설명 드리겠습니다.
 
@@ -366,14 +369,35 @@ jobs:
 * 미리 생성해둔 IAM 인증키를 사용합니다.
 * [이전 시간](https://jojoldu.tistory.com/543) 에 만들어준 **현재 시간** 플러그인을 통해 Beanstalk이 배포될때마다 유니크한 버저닝이 될 수 있도록 ```github-action-${{steps.current-time.outputs.formattedTime}}``` 코드를 추가하였습니다.
 
+여기까지 하셨다면 배포 인프라 환경 구성은 끝이납니다.  
+남은 작업은 **배포에 필요한 설정 파일**들을 만들어보겠습니다.  
+
+> 위에서 언급한대로  ```Procfile```, ```.ebextensions```, ```.platform``` 3개에 대한 설정들입니다.
+
 ### 2-3. Beanstalk 애플리케이션 구성
 
-**Procfile**
+3개 파일/디렉토리의 구조는 다음과 같이 됩니다.  
+(즉 셋 모두 프로젝트 루트에서 생성해주시면 됩니다.)
 
-```bash
-web: appstart
-```
+![dir](./images/dir.png)
 
+(deploy.yml은 저희가 기존에 만들어두었던 Github Action 스크립트 파일입니다.)  
+  
+위에서부터 차례로 생성해보겠습니다.  
+  
+첫번째는 ```.ebextensions``` 입니다.  
+Beanstalk은 시스템의 대부분을 AWS에서 자동으로 구성해주기 때문에 기존 EC2에 직접 설치할때처럼 사용할 순 없는데요.  
+그래서 직접 Custom 하게 사용할 수 있도록 설정할 수 있는 방법이 바로 ```.ebextensions``` 디렉토리입니다.  
+  
+해당 디렉토리에 ```.config``` 파일 확장명을 가진 YAML이나 JSON 형태의 설정 코드를 두면 그에 맞춰 Beanstalk 배포시/환경 재구성시 사용하게 됩니다.  
+  
+이번에 저희가 사용할 Custom 기능은 **애플리케이션 실행 스크립트 생성**입니다.  
+Beanstalk이 Github Action으로 전달 받은 zip파일 (배포 파일)이 압축이 풀리고 나서 어느 파일을 어떤 파라미터로 실행할지를 설정하는 스크립트라고 보시면 됩니다.  
+
+> ```java -jar application.jar``` 하는 코드를 스크립트로 만든다고 보시면 됩니다.
+  
+자 그래서 실제로 코드를 보시면 아래와 같습니다.  
+  
 **.ebextensions/00-makeFiles.config**
 
 ```vim
@@ -384,13 +408,36 @@ files:
         group: webapp
         content: |
             #!/usr/bin/env bash
-            # Pinpoint Conifg
             JAR_PATH=/var/app/current/application.jar
 
             # run app
             killall java
             java -Dfile.encoding=UTF-8 -jar $JAR_PATH
+```  
+
+* 아시다시피 ```/sbin``` 아래에 스크립트 파일을 두면 **전역에서 실행 가능**합니다.
+* 그래서 ```/sbin``` 아래에 ```appstart```란 이름의 스크립트 파일을 만들고,
+* 권한은 ```755```, 사용자는 ```webapp```으로 하여 ```content``` 내용을 가진 스크립트 파일이 생성된다고 보시면 됩니다.
+* 여기서 만들어진 ```/sbin/appstart``` 스크립트 파일이 Procfile에서 실행됩니다.
+
+> ```.ebextensions``` 의 ```config```에 대한 상세한 설명은 [우아한형제들의 기술 블로그](https://woowabros.github.io/woowabros/2017/08/07/ebextension.html)를 참고하시면 좋습니다.
+
+다음으로는 Procfile입니다.  
+Beanstalk은 배포 파일을 전달 받고나면 ```.ebextensions```를 비롯한 각종 설정파일들을 실행한 뒤에, 애플리케이션 실행 단계를 거치는데요.  
+이때 애플리케이션 실행 단계때 하는 행위는 이 Procfile을 실행하는 것 뿐입니다.  
+  
+즉, Beanstalk 입장에서의 배포 애플리케이션 실행이라는 것은 Procfile파일을 실행하는것과 다를바가 없는 것이죠.  
+  
+그래서 위에서 ```.ebextensions/00-makeFiles.config``` 으로 만들어진 ```/sbin/appstart``` 스크립트를 실행하도록 코드를 구성합니다.
+
+**Procfile**
+
+```bash
+web: appstart
 ```
+
+
+
 
 **.platform/nginx/nginx.conf**
 
@@ -455,6 +502,8 @@ http {
 
 ## 3. Github Action으로 Beanstalk 배포하기
 
+본인의 애플리케이션 코드가 있다면, 이를 그대로 사용하시면 됩니다.  
+만약 제 저서를 통해 애플리케이션 코드를 만들었던 분이라면 아래와 같이 application.properties 코드를 변경해주시면 됩니다.
 
 ### 3-1. application.properties 정리
 
