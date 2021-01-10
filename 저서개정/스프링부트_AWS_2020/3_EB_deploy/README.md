@@ -2,10 +2,10 @@
 
 [지난 시간](https://jojoldu.tistory.com/543)에 만들어둔 Github Action을 통해 **profile=local**로 Beanstalk에 배포를 진행해보겠습니다.  
   
-profile=local, 즉, 운영 DB정보나 구글&네이버 OAuth 토큰 정보 없이 간단하게 테스트 용도로만 배포할 예정입니다.  
+profile=local, 즉, **운영 DB와 구글&네이버 OAuth 를 사용하지 않는** 간단한 테스트 용도로만 배포할 예정입니다.  
   
 실제 운영 배포는 다음 시간에 진행할 예정입니다.  
-Github Action과 Beanstalk 연동된 환경 (즉, 이번 시간에 설정된 환경)를 구성하고 이를 기반으로 개선하는 과정으로 진행할 예정입니다. 
+Github Action과 Beanstalk 연동된 환경 (즉, 이번 시간에 설정된 환경)를 구성하고 이를 기반으로 개선하는 과정으로 진행할 예정입니다.  
   
 지난 시간과 마찬가지로 모든 애플리케이션 코드 (Java & Gradle)는 저의 저서 [스프링 부트와 AWS로 혼자 구현하는 웹 서비스](https://jojoldu.tistory.com/463)를 기반으로 합니다.
 
@@ -158,7 +158,7 @@ SSH 접속과 HTTP 접근이 가능하도록 보안그룹을 선택합니다.
 
 기존에 많이 사용한 로드밸런서는 Elastic Load Balancer (이하 ELB) 로 불리기도 했던 Class Load Balancer인데요.  
   
-ELB의 경우 먼저 나온 로드밸런서다보니 이후에 나온 Application Load Balancer (이하 ALB) 에 비해 **성능과 기능**면에서 부족한점이 많습니다. 
+ELB의 경우 먼저 나온 로드밸런서다보니 이후에 나온 Application Load Balancer (이하 ALB) 에 비해 **성능과 기능**면에서 부족한점이 많습니다.
 
 > 로드밸런서 라우팅 기능이 ELB는 거의 없다시피하며, ALB는 다양한 라우팅 기능을 지원합니다.
 
@@ -293,6 +293,9 @@ AWS CLI (커맨드라인)으로도 할 수 있지만, 해당 플러그인을 사
 
 자 그럼 위 플러그인을 [지난 시간](https://jojoldu.tistory.com/543)에 만든 Github Action 스크립트 파일에 적용해보겠습니다.
 
+> 몇번 언급드렸지만, 이 코드는 모두 **2021년 1월**을 기준으로 합니다.  
+> 이후에 플러그인/AWS 콘솔등의 변경이 있을 수 있음을 미리 말씀드립니다.
+
 ```yaml
 name: freelec-springboot2-webservice
 
@@ -351,7 +354,104 @@ jobs:
           deployment_package: deploy/deploy.zip
 ```
 
+(1) 
 
+* Gradle Build를 통해 만들어진 jar 파일을 Beanstalk에 배포하기 위한 zip 파일로 만들어줄 스크립트 입니다.
+* application.jar 외에 3개의 파일/디렉토리 ```Procfile```, ```.ebextensions```, ```.platform``` 도 함께 zip에 포함시킵니다.
+* 3개 파일/디렉토리에 대해서는 아래 2-3에서 좀 더 상세하게 설명 드리겠습니다.
+
+(2)
+
+* Beanstalk 플러그인을 사용하는 코드입니다.
+* 미리 생성해둔 IAM 인증키를 사용합니다.
+* [이전 시간](https://jojoldu.tistory.com/543) 에 만들어준 **현재 시간** 플러그인을 통해 Beanstalk이 배포될때마다 유니크한 버저닝이 될 수 있도록 ```github-action-${{steps.current-time.outputs.formattedTime}}``` 코드를 추가하였습니다.
+
+### 2-3. Beanstalk 애플리케이션 구성
+
+**Procfile**
+
+```bash
+web: appstart
+```
+
+**.ebextensions/00-makeFiles.config**
+
+```vim
+files:
+    "/sbin/appstart" :
+        mode: "000755"
+        owner: webapp
+        group: webapp
+        content: |
+            #!/usr/bin/env bash
+            # Pinpoint Conifg
+            JAR_PATH=/var/app/current/application.jar
+
+            # run app
+            killall java
+            java -Dfile.encoding=UTF-8 -jar $JAR_PATH
+```
+
+**.platform/nginx/nginx.conf**
+
+```vim
+user                    nginx;
+error_log               /var/log/nginx/error.log warn;
+pid                     /var/run/nginx.pid;
+worker_processes        auto;
+worker_rlimit_nofile    33282;
+
+events {
+    use epoll;
+    worker_connections  1024;
+}
+
+http {
+  include       /etc/nginx/mime.types;
+  default_type  application/octet-stream;
+
+  log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+
+  include       conf.d/*.conf;
+
+  map $http_upgrade $connection_upgrade {
+      default     "upgrade";
+  }
+
+  upstream springboot {
+    server 127.0.0.1:8080;
+    keepalive 1024;
+  }
+
+  server {
+      listen        80 default_server;
+
+      location / {
+          proxy_pass          http://springboot;
+          proxy_http_version  1.1;
+          proxy_set_header    Connection          $connection_upgrade;
+          proxy_set_header    Upgrade             $http_upgrade;
+
+          proxy_set_header    Host                $host;
+          proxy_set_header    X-Real-IP           $remote_addr;
+          proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
+      }
+
+      access_log    /var/log/nginx/access.log main;
+
+      client_header_timeout 60;
+      client_body_timeout   60;
+      keepalive_timeout     60;
+      gzip                  off;
+      gzip_comp_level       4;
+
+      # Include the Elastic Beanstalk generated locations
+      include conf.d/elasticbeanstalk/healthd.conf;
+  }
+}
+```
 
 ## 3. Github Action으로 Beanstalk 배포하기
 
