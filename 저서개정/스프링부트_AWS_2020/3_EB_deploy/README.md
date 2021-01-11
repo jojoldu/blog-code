@@ -426,7 +426,7 @@ files:
 Beanstalk은 배포 파일을 전달 받고나면 ```.ebextensions```를 비롯한 각종 설정파일들을 실행한 뒤에, 애플리케이션 실행 단계를 거치는데요.  
 이때 애플리케이션 실행 단계때 하는 행위는 이 Procfile을 실행하는 것 뿐입니다.  
   
-즉, Beanstalk 입장에서의 배포 애플리케이션 실행이라는 것은 Procfile파일을 실행하는것과 다를바가 없는 것이죠.  
+즉, Beanstalk 입장에서 **배포 애플리케이션 실행**이라는 것은 **Procfile파일을 실행**하는 것을 의미합니다.  
   
 그래서 위에서 ```.ebextensions/00-makeFiles.config``` 으로 만들어진 ```/sbin/appstart``` 스크립트를 실행하도록 코드를 구성합니다.
 
@@ -436,9 +436,16 @@ Beanstalk은 배포 파일을 전달 받고나면 ```.ebextensions```를 비롯�
 web: appstart
 ```
 
-
-
-
+마지막으로 리버스 프록시를 담당할 Nginx 설정을 합니다.  
+  
+여기서 Nginx는 **무중단 배포를 위한 것이 아닙니다**.  
+  
+제 [저서에서는](https://jojoldu.tistory.com/463) Nginx를 이용해서 무중단 배포를 하는 방법을 소개 드렸는데요.  
+  
+이 시리즈에서는 **로드밸런서**가 그 역할을 대신 하기 때문에 Nginx에서는 단순히 **임베디드 톰캣으로 요청을 보내는 역할**만 할 예정입니다.  
+  
+그래서 아래와 같이 config 파일을 생성합니다.  
+  
 **.platform/nginx/nginx.conf**
 
 ```vim
@@ -500,10 +507,32 @@ http {
 }
 ```
 
+> Beanstalk에서의 Nginx 설정이 왜 ```.platform```가 되었는지 궁금하신 분들은 [이전 포스팅](https://jojoldu.tistory.com/541)을 참고하시면 좋습니다.
+
+Beanstalk 배포를 위한 설정파일들도 모두 생성되었습니다.  
+  
+자 그럼 마지막으로 RDS 접속정보와 OAuth 인증 정보 없이 실행될 수 있도록 프로젝트 코드를 변경해보겠습니다.
+
 ## 3. Github Action으로 Beanstalk 배포하기
 
-본인의 애플리케이션 코드가 있다면, 이를 그대로 사용하시면 됩니다.  
-만약 제 저서를 통해 애플리케이션 코드를 만들었던 분이라면 아래와 같이 application.properties 코드를 변경해주시면 됩니다.
+제 저서를 그대로 하셨다면, profile=local로 실행할 경우에도 OAuth 정보가 필요할텐데요.  
+  
+이번 시간에는 OAuth 정보 없이도 애플리케이션이 실행 가능해야하기 때문에 profile을 상세하게 분리해볼 예정입니다.
+
+> 제 저서가 아닌 본인의 애플리케이션 코드가 있다면, 이를 그대로 사용하시면 됩니다.  
+
+* ```profile=local```
+  * 이번 시간에 사용될 배포환경
+  * RDS나 구글/네이버 등의 OAuth정보 없이 **단순히 실행만 가능한 상태**
+  * 테스트용 OAuth 토큰정보와 H2 DB만 사용하는 상태
+* ```profile=local-real```
+  * 로컬 PC에서 개발용으로 사용할 환경
+  * H2 DB를 사용하나, OAuth 정보는 실제 토큰 값을 사용하는 상태
+* ```profile=real```
+  * 서비스 배포 환경
+  * RDS와 OAuth 정보를 모두 사용하는 상태
+
+이렇게 나뉘는 이유는 
 
 ### 3-1. application.properties 정리
 
@@ -548,6 +577,7 @@ spring.datasource.hikari.username=sa
 spring.h2.console.enabled=true
 spring.session.store-type=jdbc
 ```
+
 
 
 ### 4-2. 
