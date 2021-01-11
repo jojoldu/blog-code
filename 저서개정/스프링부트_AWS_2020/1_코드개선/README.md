@@ -419,6 +419,49 @@ spring.datasource.hikari.driver-class-name=org.mariadb.jdbc.Driver
 
 > 테스트 코드가 있으니 버전업 이후 기능에 대해서 검증이 편하신게 느껴지신다면 제 책의 의도가 50% 이상은 성공했다고 생각합니다.
 
+## 4. spring.profiles.include
+
+Spring Boot가 2.4가 되면서 ```spring.profiles.include``` 옵션에 변경이 있었습니다.  
+
+* [Config file processing in Spring Boot 2.4](https://spring.io/blog/2020/08/14/config-file-processing-in-spring-boot-2-4)
+
+그래서 기존처럼 각 properties(yml) 에 ```spring.profiles.include=oauth``` 등으로 구성하신 분들은 정상작동을 안하실텐데요.  
+  
+![include1](./images/include1.png)
+
+![include2](./images/include2.png)
+
+(```local-real```로 실행시 ```real-oauth```도 함께 실행되어야 하나, ```local-real```만 실행)  
+  
+앞으로는 **특정 프로필 파일에서 설정하지 않고**, **Profile Group**을 만들어서 관리하라고 합니다.  
+  
+```properties
+spring.profiles.group.<group>=dev, auth
+```
+
+여기서 ```<group>``` 이 앞으로는 **실행될 profile을 대표하는 이름**이 됩니다.  
+  
+즉, ```-Dspring.profiles.active=local-group``` 로 실행하면 ```spring.profiles.group.local-group``` 으로 지정된 profile들이 실행된다는 의미입니다.  
+  
+자 그래서 이 Profile Group을 ```application.properties```에 일괄 등록해서 사용하겠습니다.  
+  
+**application.properties**
+
+```properties
+spring.profiles.group.local-real=local-real, oauth
+spring.profiles.group.real=real, real-db, oauth
+spring.profiles.group.real1=real1, real-db, oauth
+spring.profiles.group.real2=real2, real-db, oauth
+```
+
+![include3](./images/include3.png)
+
+이제 다시 시작해보면?  
+  
+아래와 같이 기존처럼 정상적으로 2개의 profile이 같이 실행되는 것을 볼 수 있습니다.
+
+![include4](./images/include4.png)
+
 ## 마무리
 
 끝까지 따라오시느라 고생하셨습니다.  
