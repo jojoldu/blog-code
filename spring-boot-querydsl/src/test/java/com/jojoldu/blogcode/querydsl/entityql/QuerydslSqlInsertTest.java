@@ -134,6 +134,32 @@ public class QuerydslSqlInsertTest {
     }
 
     @Test
+    void sqlManyToOneInsert() throws Exception {
+        //given
+        String academyName = "name1";
+        Academy academy = academyRepository.save(Academy.builder()
+                .address("address1")
+                .name(academyName)
+                .build());
+
+        Student student1 = new Student("student1", 1);
+        Student student2 = new Student("student2", 2);
+        academy.addStudent(Arrays.asList(student1, student2));
+
+        //when
+        SQLInsertClause insert = sqlQueryFactory.insert(qStudent);
+        insert.populate(student1, EntityMapper.DEFAULT).addBatch();
+        insert.populate(student2, EntityMapper.DEFAULT).addBatch();
+        insert.execute();
+
+        //then
+        List<Student> students = studentRepository.findAll();
+        assertThat(students).hasSize(2);
+        assertThat(students.get(0).getAcademy().getId()).isEqualTo(academy.getId());
+        assertThat(students.get(1).getAcademy().getId()).isEqualTo(academy.getId());
+    }
+
+    @Test
     void superClass() throws Exception {
         //given
         Book entity = Book.builder()
