@@ -519,12 +519,12 @@ Beanstalk 배포를 위한 설정파일들도 모두 생성되었습니다.
   
 이번 시간에는 OAuth 정보 없이도 애플리케이션이 실행 가능해야하기 때문에 profile을 상세하게 분리해볼 예정입니다.
 
-> 제 저서가 아닌 본인의 애플리케이션 코드가 있다면, 이를 그대로 사용하시면 됩니다.  
+> **제 저서로 프로젝트를 구성하신 분들만** 참고해주세요.
 
 * ```profile=local```
   * 이번 시간에 사용될 배포환경
   * RDS나 구글/네이버 등의 OAuth정보 없이 **단순히 실행만 가능한 상태**
-  * 테스트용 OAuth 토큰정보와 H2 DB만 사용하는 상태
+  * 테스트용 OAuth 토큰 정보와 H2 DB만 사용하는 상태
 * ```profile=local-real```
   * 로컬 PC에서 개발용으로 사용할 환경
   * H2 DB를 사용하나, OAuth 정보는 실제 토큰 값을 사용하는 상태
@@ -532,7 +532,13 @@ Beanstalk 배포를 위한 설정파일들도 모두 생성되었습니다.
   * 서비스 배포 환경
   * RDS와 OAuth 정보를 모두 사용하는 상태
 
-이렇게 나누는 이유는 
+이렇게 나누는 이유는 RDS (DB) 접속 정보나 구글/네이버 등의 OAuth Key를 이번 챕터에서 다루기에는 범위가 너무 크기 때문입니다.  
+  
+해당 정보들은 외부에 공개되면 안되기 때문에 별도의 우회하는 방법을 선택해야하는데요.  
+  
+이것까지 포함하기에는 이번 챕터의 범위가 너무 크기 때문에 **테스트용 정보만 갖고 있는 profile**을 만들어서 사용하겠습니다.
+
+> 기존의 ```local``` profile은 로컬 PC에서 개발한다는 의미로 구글/네이버 등의 OAuth Key를 사용하는 환경이였으나, 이를 제거하고 ```local-real```에서 구글/네이버 등의 OAuth Key를 가진다고 보시면 됩니다.
 
 ### 3-1. application.properties 정리
 
@@ -543,8 +549,20 @@ spring.profiles.active=local
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL57Dialect
 spring.jpa.properties.hibernate.dialect.storage_engine=innodb
 spring.session.store-type=jdbc
+
+spring.profiles.group.local-real=local-real, oauth
 ```
 
+기존의 ```profiles.include``` 옵션이 아닌 ```profiles.group.그룹명``` 이라는 생소한 옵션이 보이실텐데요.  
+  
+이는 Spring Boot 2.4 부터 profile 사용 방식이 변경되었기 때문입니다.  
+
+> 자세한 내용은 아래 2개글을 참고해주세요.
+> * [스프링 부트와 AWS로 혼자 구현하는 웹 서비스 최신 코드로 변경하기](https://jojoldu.tistory.com/539)
+> * [권남님의 Spring Boot 2.4 multi module properties & profile-group](https://github.com/kwon37xi/research-spring-boot-2.4/tree/master/profile-group?fbclid=IwAR2UJoItIrzo6NpmAn58x4wNDGxG5rsxbUFbIIzCRYxu10c5fgXKdTUOmQA)
+
+간단하게 정리하면 ```spring.profiles.group.local-real=local-real, oauth``` 로 선언되면 앞으로 ```local-real```로 실행할 경우 ```local-real```과 ```oauth``` profile이 묶음으로 포함되어 실행된다는 것입니다.  
+  
 **application-local.properties**
 
 ```properties
@@ -567,7 +585,6 @@ spring.security.oauth2.client.registration.google.scope=profile,email
 **application-local-real.properties**
 
 ```properties
-spring.profiles.include=oauth
 spring.jpa.show_sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL57Dialect
 spring.jpa.properties.hibernate.dialect.storage_engine=innodb
@@ -578,6 +595,7 @@ spring.h2.console.enabled=true
 spring.session.store-type=jdbc
 ```
 
+IntelliJ에서 기본 설정된 profile(```local```) 이 아닌 별도의 profile (```local-real```) 로 실행하는 방법에 대해서는 [다른 포스팅](https://jojoldu.tistory.com/547)에서 정리해두었으니 참고해주세요.
 
 
 ### 4-2. 
