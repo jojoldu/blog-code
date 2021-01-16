@@ -440,9 +440,9 @@ web: appstart
   
 여기서 Nginx는 **무중단 배포를 위한 것이 아닙니다**.  
   
-제 [저서에서는](https://jojoldu.tistory.com/463) Nginx를 이용해서 무중단 배포를 하는 방법을 소개 드렸는데요.  
+[제 저서에서는](https://jojoldu.tistory.com/463) Nginx를 이용해서 무중단 배포를 하는 방법을 소개 드렸는데요.  
   
-이 시리즈에서는 **로드밸런서**가 그 역할을 대신 하기 때문에 Nginx에서는 단순히 **임베디드 톰캣으로 요청을 보내는 역할**만 할 예정입니다.  
+이 시리즈에서는 **로드밸런서** (ALB) 가 그 역할을 대신 하기 때문에 Nginx에서는 단순히 **임베디드 톰캣으로 요청을 보내는 역할**만 할 예정입니다.  
   
 그래서 아래와 같이 config 파일을 생성합니다.  
   
@@ -519,7 +519,8 @@ Beanstalk 배포를 위한 설정파일들도 모두 생성되었습니다.
   
 이번 시간에는 OAuth 정보 없이도 애플리케이션이 실행 가능해야하기 때문에 profile을 상세하게 분리해볼 예정입니다.
 
-> **제 저서로 프로젝트를 구성하신 분들만** 참고해주세요.
+> [제 저서로 프로젝트를 구성하신 분들](https://jojoldu.tistory.com/463)만 참고해주세요.  
+> 개인 프로젝트가 별도로 있으신분들에겐 해당하지 않습니다.
 
 * ```profile=local```
   * 이번 시간에 사용될 배포환경
@@ -563,6 +564,8 @@ spring.profiles.group.local-real=local-real, oauth
 
 간단하게 정리하면 ```spring.profiles.group.local-real=local-real, oauth``` 로 선언되면 앞으로 ```local-real```로 실행할 경우 ```local-real```과 ```oauth``` profile이 묶음으로 포함되어 실행된다는 것입니다.  
   
+위 설정으로 이제 공통 설정들은 끝이나, 이번 Beanstalk에 테스트 용도로 배포할 profile 설정을 해보겠습니다.  
+  
 **application-local.properties**
 
 ```properties
@@ -582,6 +585,8 @@ spring.security.oauth2.client.registration.google.client-secret=test
 spring.security.oauth2.client.registration.google.scope=profile,email
 ```
 
+마지막으로 로컬 PC에서 실제 개발에 사용될 (OAuth정보를 사용하되, H2 DB를 사용하는) profile을 설정하겠습니다.  
+  
 **application-local-real.properties**
 
 ```properties
@@ -595,13 +600,55 @@ spring.h2.console.enabled=true
 spring.session.store-type=jdbc
 ```
 
-IntelliJ에서 기본 설정된 profile(```local```) 이 아닌 별도의 profile (```local-real```) 로 실행하는 방법에 대해서는 [다른 포스팅](https://jojoldu.tistory.com/547)에서 정리해두었으니 참고해주세요.
+> IntelliJ에서 기본 설정된 profile(```local```) 이 아닌 별도의 profile (```local-real```) 로 실행하는 방법에 대해서는 [다른 포스팅](https://jojoldu.tistory.com/547)에서 정리해두었으니 참고해주세요.
 
+여기까지 다 하셨으면, 이제 Github으로 Push를 해봅니다.
 
-### 4-2. 
+## 4. Beanstalk 배포
 
-![eb-log1](./images/eb-log1.png)
+Push를 하시면 아래와 같이 Github Action 빌드로그를 확인할 수 있습니다.  
+  
+**Generate deployment package**
+
+![ga-log1](./images/ga-log1.png)
+
+**Deploy to EB**
+
+![ga-log2](./images/ga-log2.png)
+
+Github Action 에서 성공 메세지를 확인하셨다면 AWS Beanstalk 페이지를 보시면 다음과 같이 배포가 성공된 것을 확인할 수 있습니다.
+
+![eb-log](./images/eb-log.png)
+
+성공하셨으면 Beanstalk의 대시보드에 있는 URL을 클릭해봅니다.
+
+![eb-url](./images/eb-url.png)
+
+H2 DB와 테스트용 OAuth 토큰이지만, 사이트가 정상적으로 실행되는 것을 확인할 수 있습니다.
+
+![success](./images/success.png)
+
+> 현재 상태로는 **로그인 기능을 사용할 수 없습니다**  
+> 테스트용 값들로 OAuth 토큰을 채웠기 때문이고, 다음 시간에 실제 토큰 값으로 배포하는 방법을 배워볼 예정입니다.
+
+혹시나 Beanstalk 배포가 실패하면 상세한 이슈를 확인하시려면 해당 Beanstalk의 EC2 서버로 접속하여 아래 경로에 있는 로그를 확인해봅니다.
 
 ```bash
 vim /var/log/eb-engine.log
 ```
+
+그럼 아래와 같이 배포 실패한 사유를 확인할 수 있습니다.
+
+![eb-error-log](./images/eb-error-log.png)
+
+(위 에러는 ```nginx.conf``` 파일이 배포 파일에 포함되어 있지 않음을 나타냅니다.)
+
+## 5. 마무리
+
+이번 시간에는 실제 운영 정보 (DB 접속정보, OAuth 토큰정보) 등을 제외하여 최대한 배포에만 초점을 맞췄습니다.  
+  
+이렇게 배포환경이 한번 구성되면, 이후에는 정보보안이 필요한 정보들에 대해서만 별도로 처리하면 운영 배포환경 구성이 됩니다.  
+
+한번에 다 해볼수도 있겠지만, 진행을 하다보면 한번에 너무 많은 일들이 진행되면 이슈가 발생할 때 **정확히 어디 지점이 문제인지 파악이 어렵다**고 생각합니다.  
+  
+이번 챕터까지 잘 진행되셨으면 다음 챕터 진행시에는 큰 무리 없이 가능하니, 꼭 차근차근 진행해보시길 추천드립니다.
