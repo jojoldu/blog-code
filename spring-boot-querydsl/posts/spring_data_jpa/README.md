@@ -249,6 +249,8 @@ public class QuerydslConfiguration {
   
 그럼 한번 간단하게 사용해볼까요?
 
+[[ad]]
+
 ### 2-2. 기본적인 사용법
 
 먼저 테스트로 사용할 Entity를 하나 생성해보겠습니다.
@@ -314,7 +316,7 @@ public class AcademyRepositorySupport extends QuerydslRepositorySupport {
 이건 Querydsl의 QClass인 ```academy```를 사용하고 싶은데 아직 찾을수 없다는 뜻인데요.  
 QClass를 생성해보겠습니다.  
 
-[[ad]]
+
 
 IntelliJ의 Gradle View를 열어서 **Tasks -> other -> compileQuerydsl**를 더블클릭으로 실행합니다.  
 (이 Task가 위 Gradle 설정에서 등록한 Task입니다.)
@@ -392,6 +394,8 @@ public class BasicTest {
 정상적으로 Queyrdsl이 설정된 것을 확인할 수 있습니다!  
 하지만!  
 여기서 끝이 아니라, 한 단계 더 나아가보겠습니다.
+
+[[ad]]
 
 ## 3. Spring Data Jpa Custom Repository 적용
 
