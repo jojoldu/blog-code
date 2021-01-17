@@ -187,10 +187,16 @@ sourceSets {
 > 즉, ```com.ewerk.gradle.plugins.querydsl``` 플러그인 사용하지 않습니다.
 
 ```groovy
+plugins {
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+}
+...
+
+apply plugin: "io.spring.dependency-management"
 dependencies {
     compile("com.querydsl:querydsl-core") // querydsl
     compile("com.querydsl:querydsl-jpa") // querydsl
-    annotationProcessor("com.querydsl:querydsl-apt:4.3.1:jpa") // querydsl JPAAnnotationProcessor 사용 지정
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa" // querydsl JPAAnnotationProcessor 사용 지정
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 

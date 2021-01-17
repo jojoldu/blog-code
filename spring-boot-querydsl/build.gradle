@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.3.6.RELEASE' apply false
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'pl.exsio.querydsl.entityql' version "0.0.12"
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'java'
     id 'idea'
     id 'maven'
@@ -23,7 +24,7 @@ dependencies {
 
     compile("com.querydsl:querydsl-core") // querydsl
     compile("com.querydsl:querydsl-jpa") // querydsl
-    annotationProcessor("com.querydsl:querydsl-apt:4.3.1:jpa") // querydsl JPAAnnotationProcessor 사용 지정
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa" // querydsl JPAAnnotationProcessor 사용 지정
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 
@@ -78,6 +79,7 @@ configurations {
         extendsFrom annotationProcessor
     }
 }
+
 
 // querydsl 적용
 def generated='src/main/generated'
