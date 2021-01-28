@@ -1,10 +1,11 @@
 const https = require('https');
+const UPSOURCE_HOST = 'http://upsource.test.com'; // 본인 Upsource 주소
 
 exports.handler = async (event) => {
     console.log('event: '+JSON.stringify(event));
 
     const webhook = event.params.querystring.webhook;
-    const message = exports.message(event.body);
+    const message = exports.message(event.body, UPSOURCE_HOST);
 
     return await exports.postSlack(message, webhook);
 };
@@ -25,10 +26,11 @@ exports.options = (slackUrl) => {
     };
 }
 
-exports.message = (event) => {
-    const reviewId = event.data.base.reviewId;
-    const title = exports.convert(event.dataType);
-    const user = event.data.base.actor.userName;
+exports.message = (eventBody, upsourceHost) => {
+    const reviewId = eventBody.data.base.reviewId;
+    const title = exports.convert(eventBody.dataType);
+    const user = eventBody.data.base.actor.userName;
+    const projectId = eventBody.projectId;
 
     return {
         attachments: [
@@ -37,7 +39,7 @@ exports.message = (event) => {
                 title: `${title}`,
                 fields: [
                     {
-                        value: `<http://cleancode.woowa.in/${event['projectId']}/review/${reviewId}|${reviewId}> Report By ${user}`,
+                        value: `<${upsourceHost}/${projectId}/review/${reviewId}|${reviewId}> Report By ${user}`,
                         short: false
                     }
                 ]
