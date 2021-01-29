@@ -1,6 +1,6 @@
 # Slack webhook 으로 Upsource 코드 리뷰 알람 받기
 
-
+현재 Upsource는 
 [Integration with slack is not working via webhook](https://youtrack.jetbrains.com/issue/UP-10213)
 
 ## Slack
@@ -270,6 +270,36 @@ test('slack 테스트', () => {
 }
 ```
 
+#### API Gateway 테스트
+
+```bash
+webhook=https://hooks.slack.com/services/......
+```
+
+```js
+{
+    "majorVersion": 3,
+    "minorVersion": 0,
+    "projectId": "settler",
+    "dataType": "ReviewCreatedFeedEventBean",
+    "data": {
+      "revisionId": "c1f4de8e6c5aca9b5615fa6656e1f26e4f26d0d0",
+      "branches": [
+        "master"
+      ],
+      "base": {
+        "reviewId": "ST-501",
+        "actor": {
+          "userName": "jojoldu"
+        },
+        "feedEventId": "created"
+      },
+      "author": "John Doe <john.doe@mycompany.com>",
+      "message": "#DSH-325 extract directives describes to top level\n",
+      "date": 1454432013000
+    }
+}
+```
 
 ## Upsource & API Gateway
 
