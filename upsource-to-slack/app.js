@@ -49,10 +49,12 @@ exports.message = (eventBody, upsourceHost) => {
 }
 
 exports.convert = (dataType) => {
-    if(dataType === 'NewRevisionEventBean') {
+    if(dataType === 'ReviewCreatedFeedEventBean') {
+        return '리뷰가 생성되었습니다.';
+    } else if (dataType === 'RevisionAddedToReviewFeedEventBean') {
         return '리뷰에 새 코드가 반영되었습니다.';
     } else {
-        return '리뷰가 생성되었습니다.';
+        return '리뷰에 변경 사항이 있습니다.';
     }
 }
 

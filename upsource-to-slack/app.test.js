@@ -8,6 +8,28 @@ test('request용 options 생성', () => {
     expect(method).toBe('POST');
 });
 
+describe('dataType에 맞게 메세지가 발행된다', () => {
+    test('ReviewCreatedFeedEventBean 이면 리뷰 생성이다.', () => {
+        const result = app.convert('ReviewCreatedFeedEventBean');
+
+        expect(result).toBe('리뷰가 생성되었습니다.');
+    });
+
+    test('RevisionAddedToReviewFeedEventBean 이면 리뷰에 신규 코드 반영이다.', () => {
+        const result = app.convert('RevisionAddedToReviewFeedEventBean');
+
+        expect(result).toBe('리뷰에 새 코드가 반영되었습니다.');
+    });
+
+    test('나머지는 모두 리뷰내용 변경이다.', () => {
+        const result = app.convert('ReviewCreatedFeedEventBean');
+
+        expect(result).toBe('리뷰가 생성되었습니다.');
+    });
+});
+
+
+
 test('request용 message 생성', () => {
     const projectId = "settler";
     const reviewId = "ST-501";
@@ -34,5 +56,6 @@ test('request용 message 생성', () => {
     expect(attachments[0].title).toBe('리뷰가 생성되었습니다.');
     expect(attachments[0].fields[0].value).toBe(`<${upsourceHost}/${projectId}/review/${reviewId}|${reviewId}> Report By ${user}`);
 });
+
 
 
