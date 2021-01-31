@@ -1,9 +1,25 @@
 # Slack webhook 으로 Upsource 코드 리뷰 알람 받기
 
-현재 Upsource는 
-[Integration with slack is not working via webhook](https://youtrack.jetbrains.com/issue/UP-10213)
+현재 Upsource는 Slack과의 통합 (Integration)을 지원하지 않습니다.  
 
-## Slack
+[Integration with slack is not working via webhook](https://youtrack.jetbrains.com/issue/UP-10213)  
+  
+그래서 어쩔 수 없이 Slack의 웹훅을 통해 직접 연동을 구현해야하는데요.  
+  
+여기서 문제는, **Upsource는 웹훅 URL 호출만** 지원합니다.  
+즉, Upsource의 메세지를 파싱해서 Slack 웹훅 포맷에 맞게 JSON을 만들어 보내는 등의 **로직이 있는 형태를 사용할 수가 없습니다**.  
+  
+그래서 Upsource -> Slack 사이에서 Upsource의 알람을 받아 파싱해서 Slack 웹훅을 호출해주는 중간 애플리케이션이 필수가 됩니다.  
+  
+단순히 코드리뷰 알람을 위해 별도의 서버를 구축하기는 아까우니, AWS API Gateway와 AWS Lambda를 이용해서 중간 애플리케이션을 구축해보겠습니다.  
+  
+그래서 전체 구조는 다음과 같이 됩니다.
+
+**Slack Webhook 생성은 필수**입니다.  
+  
+아직 생성안하셨다면 미리 생성하고 시작하시면 됩니다.
+
+> Slack Webhook 생성하기는 [기존 포스팅](https://jojoldu.tistory.com/552)을 참고해주세요.
 
 ## Upsource Webhook
 
@@ -77,6 +93,8 @@ http://본인들 Upsoure 도메인/~api_doc/integration/index.html
 
 ### Lambda
 
+> 전체 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/upsource-to-slack)에 있으니 참고하시면 됩니다.
+ 
 **app.js**
 
 ```js
@@ -131,10 +149,12 @@ exports.message = (eventBody, upsourceHost) => {
 }
 
 exports.convert = (dataType) => {
-    if(dataType === 'NewRevisionEventBean') {
+    if(dataType === 'ReviewCreatedFeedEventBean') {
+        return '리뷰가 생성되었습니다.';
+    } else if (dataType === 'RevisionAddedToReviewFeedEventBean') {
         return '리뷰에 새 코드가 반영되었습니다.';
     } else {
-        return '리뷰가 생성되었습니다.';
+        return '리뷰에 변경 사항이 있습니다.';
     }
 }
 
@@ -164,6 +184,10 @@ function request(options, data) {
 }
 ```
 
+저 코드를 그대로 복사하셔도 되는데, 혹시나 작업 중간중간 function의 단위 테스트가 필요하시면 아래를 참고해보셔도 좋습니다.
+
+> 테스트 도구로 Jest를 사용했습니다.
+  
 **app.test.js**
 
 ```js
@@ -175,6 +199,26 @@ test('request용 options 생성', () => {
     expect(hostname).toBe('hooks.slack.com');
     expect(path).toBe('/services/test1/test2/test3');
     expect(method).toBe('POST');
+});
+
+describe('dataType에 맞게 메세지가 발행된다', () => {
+    test('ReviewCreatedFeedEventBean 이면 리뷰 생성이다.', () => {
+        const result = app.convert('ReviewCreatedFeedEventBean');
+
+        expect(result).toBe('리뷰가 생성되었습니다.');
+    });
+
+    test('RevisionAddedToReviewFeedEventBean 이면 리뷰에 신규 코드 반영이다.', () => {
+        const result = app.convert('RevisionAddedToReviewFeedEventBean');
+
+        expect(result).toBe('리뷰에 새 코드가 반영되었습니다.');
+    });
+
+    test('나머지는 모두 리뷰내용 변경이다.', () => {
+        const result = app.convert('ReviewCreatedFeedEventBean');
+
+        expect(result).toBe('리뷰가 생성되었습니다.');
+    });
 });
 
 test('request용 message 생성', () => {
@@ -205,6 +249,10 @@ test('request용 message 생성', () => {
 });
 ```
 
+만약 실제 슬랙 발송을 테스트해보고 싶다면 아래 파일을 테스트코드로 생성해서 실행해보시면 됩니다.
+
+> 물론 이 파일은 실제 URL을 사용하니 ```.gitignore``` **로 Github 대상에서 제외**하셔야만 합니다.
+ 
 **app.real.test.js**
 
 ```js
@@ -250,6 +298,32 @@ test('slack 테스트', () => {
 
 ### API Gateway
 
+![api1](./images/api1.png)
+
+![api2](./images/api2.png)
+
+![api3](./images/api3.png)
+
+![api4](./images/api4.png)
+
+![api5](./images/api5.png)
+
+![api6](./images/api6.png)
+
+![api7](./images/api7.png)
+
+![api8](./images/api8.png)
+
+![api9](./images/api9.png)
+
+![api10](./images/api10.png)
+
+![api11](./images/api11.png)
+
+![api12](./images/api12.png)
+
+![api13](./images/api13.png)
+
 ```js
 #set($allParams = $input.params())
 {
@@ -271,6 +345,14 @@ test('slack 테스트', () => {
 ```
 
 #### API Gateway 테스트
+
+![api-test1](./images/api-test1.png)
+
+![api-test2](./images/api-test2.png)
+
+![api-test3](./images/api-test3.png)
+
+![api-test4](./images/api-test4.png)
 
 ```bash
 webhook=https://hooks.slack.com/services/......
@@ -300,6 +382,8 @@ webhook=https://hooks.slack.com/services/......
     }
 }
 ```
+
+#### API Gateway 배포
 
 ## Upsource & API Gateway
 
