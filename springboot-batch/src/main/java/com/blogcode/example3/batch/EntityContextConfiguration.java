@@ -6,9 +6,11 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
+import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,20 +56,26 @@ public class EntityContextConfiguration {
                 .build();
     }
 
-    private JpaPagingItemReader<? extends PurchaseOrder> reader() {
-        JpaPagingItemReader<PurchaseOrder> reader = new JpaPagingItemReader<>();
-        reader.setQueryString("select o from PurchaseOrder o");
-        reader.setEntityManagerFactory(entityManagerFactory);
-
-        return reader;
+    @Bean(name = JOB_NAME +"_reader")
+    @StepScope
+    public JpaPagingItemReader<PurchaseOrder> reader() {
+        return new JpaPagingItemReaderBuilder<PurchaseOrder>()
+                .name(JOB_NAME +"_reader")
+                .entityManagerFactory(entityManagerFactory)
+                .queryString("select o from PurchaseOrder o")
+                .pageSize(10)
+                .build();
     }
 
-    private JpaPagingItemReader<? extends PurchaseOrder> fixReader() {
-        JpaPagingItemReader<PurchaseOrder> reader = new JpaPagingItemReader<>();
-        reader.setQueryString("select o from PurchaseOrder o");
-        reader.setEntityManagerFactory(entityManagerFactory);
-        reader.setPageSize(100);
-        return reader;
+    @Bean(name = JOB_NAME +"_fixReader")
+    @StepScope
+    public JpaPagingItemReader<PurchaseOrder> fixReader() {
+        return new JpaPagingItemReaderBuilder<PurchaseOrder>()
+                .name(JOB_NAME +"_fixReader")
+                .entityManagerFactory(entityManagerFactory)
+                .queryString("select o from PurchaseOrder o")
+                .pageSize(100)
+                .build();
     }
 
     private ItemProcessor<PurchaseOrder, History> processor() {
