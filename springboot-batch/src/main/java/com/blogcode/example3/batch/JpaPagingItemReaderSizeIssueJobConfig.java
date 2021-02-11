@@ -2,6 +2,7 @@ package com.blogcode.example3.batch;
 
 import com.blogcode.example3.domain.History;
 import com.blogcode.example3.domain.PurchaseOrder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -17,40 +18,29 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.persistence.EntityManagerFactory;
 
-/**
- * Created by jojoldu@gmail.com on 2017. 4. 12.
- * Blog : http://jojoldu.tistory.com
- * Github : http://github.com/jojoldu
- */
-
+@RequiredArgsConstructor
 @Configuration
-@ConditionalOnProperty(name="job.name", havingValue = EntityContextConfiguration.JOB_NAME)
-public class EntityContextConfiguration {
-    public static final String JOB_NAME = "entityContextJob";
-    private static final String STEP_NAME = "entityContextStep";
+@ConditionalOnProperty(name="job.name", havingValue = JpaPagingItemReaderSizeIssueJobConfig.JOB_NAME)
+public class JpaPagingItemReaderSizeIssueJobConfig {
+    public static final String JOB_NAME = "jpaPagingItemReaderSizeIssueJob";
 
-    private EntityManagerFactory entityManagerFactory;
-    private JobBuilderFactory jobBuilderFactory;
-    private StepBuilderFactory stepBuilderFactory;
+    private final JobBuilderFactory jobBuilderFactory;
+    private final StepBuilderFactory stepBuilderFactory;
+    private final EntityManagerFactory entityManagerFactory;
 
-    public EntityContextConfiguration(EntityManagerFactory entityManagerFactory, JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
-        this.entityManagerFactory = entityManagerFactory;
-        this.jobBuilderFactory = jobBuilderFactory;
-        this.stepBuilderFactory = stepBuilderFactory;
-    }
-
-    @Bean
+    @Bean(name = JOB_NAME)
     public Job job() {
-        return jobBuilderFactory.get(STEP_NAME)
+        return jobBuilderFactory.get(JOB_NAME)
                 .start(step())
                 .build();
     }
 
-    private Step step() {
-        return stepBuilderFactory.get(STEP_NAME)
+    @Bean(name = JOB_NAME+"_step")
+    public Step step() {
+        return stepBuilderFactory.get(JOB_NAME+"_step")
                 .<PurchaseOrder, History>chunk(100)
-//                .reader(reader())
-                .reader(fixReader())
+                .reader(reader())
+//                .reader(fixReader())
                 .processor(processor())
                 .writer(writer())
                 .build();

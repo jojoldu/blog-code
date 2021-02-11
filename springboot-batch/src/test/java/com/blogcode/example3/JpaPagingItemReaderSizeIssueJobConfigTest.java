@@ -1,11 +1,12 @@
 package com.blogcode.example3;
 
-import com.blogcode.example3.batch.EntityContextConfiguration;
+import com.blogcode.example3.batch.JpaPagingItemReaderSizeIssueJobConfig;
 import com.blogcode.example3.domain.Product;
 import com.blogcode.example3.domain.PurchaseOrder;
 import com.blogcode.example3.domain.PurchaseOrderRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Created by jojoldu@gmail.com on 2017. 4. 12.
@@ -26,8 +27,8 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource(properties = {"job.name="+ EntityContextConfiguration.JOB_NAME})
-public class EntityContextTest {
+@TestPropertySource(properties = {"job.name="+ JpaPagingItemReaderSizeIssueJobConfig.JOB_NAME})
+public class JpaPagingItemReaderSizeIssueJobConfigTest {
 
     @Autowired
     private JobLauncherTestUtils jobLauncherTestUtils;
@@ -54,6 +55,6 @@ public class EntityContextTest {
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 
         //then
-        assertThat(jobExecution.getStatus(), is(org.springframework.batch.core.BatchStatus.COMPLETED));
+        assertThat(jobExecution.getStatus()).isEqualTo(BatchStatus.COMPLETED);
     }
 }
