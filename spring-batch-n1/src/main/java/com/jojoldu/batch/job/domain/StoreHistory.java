@@ -29,6 +29,13 @@ public class StoreHistory {
     private String productNames;
     private String employeeNames;
 
+    public StoreHistory(Store store, List<Product> products) {
+        this.storeName = store.getName();
+        this.productNames = products.stream()
+                .map(Product::getName)
+                .collect(Collectors.joining( "," ));
+    }
+
     public StoreHistory(Store store, List<Product> products, List<Employee> employees) {
         this.storeName = store.getName();
         this.productNames = products.stream()
