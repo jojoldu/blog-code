@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import static com.jojoldu.batch.job.StoreBackupBatchConfiguration.JOB_NAME;
+import static com.jojoldu.batch.job.StoreBackupBatchConfig.JOB_NAME;
 
 /**
  * Created by jojoldu@gmail.com on 2017. 10. 26.
