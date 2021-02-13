@@ -10,10 +10,10 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.database.JpaCursorItemReader;
 import org.springframework.batch.item.database.JpaItemWriter;
-import org.springframework.batch.item.database.JpaPagingItemReader;
+import org.springframework.batch.item.database.builder.JpaCursorItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
-import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -23,8 +23,7 @@ import javax.persistence.EntityManagerFactory;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.jojoldu.batch.job.StoreBackupBatchConfig.JOB_NAME;
-
+import static com.jojoldu.batch.job.n1.N1JpaCursorJobConfig.JOB_NAME;
 
 @RequiredArgsConstructor
 @Configuration
@@ -39,7 +38,7 @@ public class N1JpaCursorJobConfig {
 
     private int chunkSize;
 
-    @Value("${chunkSize:10}")
+    @Value("${chunkSize:2}")
     public void setChunkSize(int chunkSize) {
         this.chunkSize = chunkSize;
     }
@@ -64,24 +63,20 @@ public class N1JpaCursorJobConfig {
 
     @Bean(name = JOB_NAME+"_reader")
     @StepScope
-    public JpaPagingItemReader<Store> reader (
+    public JpaCursorItemReader<Store> reader (
             @Value("#{jobParameters[address]}") String address) {
 
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("address", address+"%");
 
-        return new JpaPagingItemReaderBuilder<Store>()
-                .pageSize(chunkSize)
+        return new JpaCursorItemReaderBuilder<Store>()
                 .parameterValues(parameters)
                 .queryString("SELECT s FROM Store s WHERE s.address LIKE :address order by s.id")
                 .entityManagerFactory(entityManagerFactory)
                 .name(JOB_NAME+"_reader")
-                .transacted(false)
                 .build();
     }
 
-    @Bean
-    @StepScope
     public ItemProcessor<Store, StoreHistory> processor() {
         return item -> new StoreHistory(item, item.getProducts(), item.getEmployees());
     }
