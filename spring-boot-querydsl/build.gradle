@@ -1,6 +1,5 @@
 plugins {
     id 'org.springframework.boot' version '2.3.6.RELEASE' apply false
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'pl.exsio.querydsl.entityql' version "0.0.12"
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'java'
@@ -51,12 +50,14 @@ test {
     useJUnitPlatform()
 }
 
+// entityQL
+def generatedSql='src/main/generated_sql'
 def defaultPackage = 'com.jojoldu.blogcode.querydsl.domain.'
 entityql {
     generators = [
             generator = {
                 type = 'JPA'
-//                sourcePackage = 'com.jojoldu.blogcode.querydsl.domain'
+//                sourcePackage = 'com.jojoldu.blogcode.querydsl.domain' //
                 sourceClasses = [
                         defaultPackage+'pointevent.PointEvent',
                         defaultPackage+'student.Student',
@@ -65,14 +66,20 @@ entityql {
                         defaultPackage+'book.store.BookStore',
                 ]
                 destinationPackage = defaultPackage+'sql'
-                //below parameters are optional and will be set with the following default values:
-                destinationPath = new StringBuilder(project.projectDir.absolutePath).append('/src/main/generated').toString()
+                destinationPath = file(generatedSql).absolutePath
                 filenamePattern = 'E%s.java'
             }
     ]
 }
 
-compileJava.finalizedBy generateModels
+sourceSets {
+    main.java.srcDirs += [ generatedSql ]
+}
+idea.module.generatedSourceDirs += file(generatedSql)
+
+clean.doLast {
+    file(generatedSql).deleteDir()
+}
 
 configurations {
     compileOnly {
@@ -80,19 +87,18 @@ configurations {
     }
 }
 
-
-// querydsl 적용
-def generated='src/main/generated'
+// querydsl-jpa 적용
+def generatedJpa='src/main/generated'
 sourceSets {
-    main.java.srcDirs += [ generated ]
+    main.java.srcDirs += [ generatedJpa ]
 }
 
 tasks.withType(JavaCompile) {
-    options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+    options.annotationProcessorGeneratedSourcesDirectory = file(generatedJpa)
 }
 
 clean.doLast {
-    file(generated).deleteDir()
+    file(generatedJpa).deleteDir()
 }
 
 dependencyManagement {
