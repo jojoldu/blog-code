@@ -6,6 +6,7 @@ package com.jojoldu.blogcode.querydsl.domain.academy;
  * Github : https://github.com/jojoldu
  */
 
+import com.jojoldu.blogcode.querydsl.domain.BaseTimeEntity;
 import com.jojoldu.blogcode.querydsl.domain.student.Student;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -27,12 +28,15 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "academy")
-public class Academy {
+public class Academy extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @Column(name = "match_key")
+    private String matchKey;
 
     @Column(name = "name")
     private String name;
@@ -51,6 +55,11 @@ public class Academy {
         this.address = address;
     }
 
+    public Academy(Long id, String matchKey) {
+        this.id = id;
+        this.matchKey = matchKey;
+    }
+
     @Builder
     public Academy(String name, String address, String phoneNumber) {
         this.name = name;
@@ -67,5 +76,9 @@ public class Academy {
     public void addStudent(Student student) {
         this.students.add(student);
         student.setAcademy(this);
+    }
+
+    public void setMatchKey(String matchKey) {
+        this.matchKey = matchKey;
     }
 }

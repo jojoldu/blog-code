@@ -6,6 +6,7 @@ package com.jojoldu.blogcode.querydsl.domain.student;
  * Github : https://github.com/jojoldu
  */
 
+import com.jojoldu.blogcode.querydsl.domain.BaseTimeEntity;
 import com.jojoldu.blogcode.querydsl.domain.academy.Academy;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -26,7 +27,7 @@ import javax.persistence.Table;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "student")
-public class Student {
+public class Student extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
