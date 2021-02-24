@@ -1,3 +1,9 @@
+buildscript {
+    ext {
+        querydslVersion = "4.3.1"
+    }
+}
+
 plugins {
     id 'org.springframework.boot' version '2.3.6.RELEASE' apply false
     id 'pl.exsio.querydsl.entityql' version "0.0.12"
@@ -17,20 +23,19 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-
 dependencies {
     implementation('com.vladmihalcea:hibernate-types-52:2.10.0')
 
     compile("com.querydsl:querydsl-core") // querydsl
     compile("com.querydsl:querydsl-jpa") // querydsl
-    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa" // querydsl JPAAnnotationProcessor 사용 지정
+    annotationProcessor "com.querydsl:querydsl-apt:${querydslVersion}:jpa" // querydsl JPAAnnotationProcessor 사용 지정
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     implementation('org.springframework.boot:spring-boot-starter-web')
 
-    implementation("com.querydsl:querydsl-sql-spring:4.3.1") // querydsl-sql
+    implementation("com.querydsl:querydsl-sql-spring:${querydslVersion}") // querydsl-sql
     implementation("com.github.eXsio:querydsl-entityql:3.1.0") // entityql
     implementation("org.reflections:reflections:0.9.11") // entityql
     implementation("joda-time:joda-time:2.9.4") // querydsl-sql
@@ -79,12 +84,6 @@ idea.module.generatedSourceDirs += file(generatedSql)
 
 clean.doLast {
     file(generatedSql).deleteDir()
-}
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
 }
 
 // querydsl-jpa 적용
