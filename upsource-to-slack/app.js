@@ -28,7 +28,7 @@ exports.options = (slackUrl) => {
 
 exports.message = (eventBody, upsourceHost) => {
     const reviewId = eventBody.data.base.reviewId;
-    const title = exports.convert(eventBody.dataType);
+    const title = exports.convert(eventBody);
     const user = eventBody.data.base.actor.userName;
     const projectId = eventBody.projectId;
 
@@ -48,11 +48,21 @@ exports.message = (eventBody, upsourceHost) => {
     };
 }
 
-exports.convert = (dataType) => {
+exports.convert = (eventBody) => {
+    const dataType = eventBody.dataType;
+    console.log(`[dataType] = ${dataType}`)
+
     if(dataType === 'ReviewCreatedFeedEventBean') {
         return '리뷰가 생성되었습니다.';
     } else if (dataType === 'RevisionAddedToReviewFeedEventBean') {
         return '리뷰에 새 코드가 반영되었습니다.';
+    } else if (dataType === 'ReviewStateChangedFeedEventBean') {
+        const newState = eventBody.data.newState;
+        if(newState === 1) {
+            return '리뷰가 종료되었습니다.';
+        } else {
+            return '리뷰가 다시 오픈되었습니다.';
+        }
     } else {
         return '리뷰에 변경 사항이 있습니다.';
     }
