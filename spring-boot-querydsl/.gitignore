@@ -3,6 +3,7 @@
 !gradle/wrapper/gradle-wrapper.jar
 application-real.yml
 generated
+generated_sql
 
 ### STS ###
 .apt_generated
