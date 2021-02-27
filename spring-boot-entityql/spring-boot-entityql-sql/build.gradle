@@ -1,0 +1,8 @@
+bootJar.enabled = false
+jar.enabled = true
+
+dependencies {
+    implementation project(':spring-boot-entityql-entity')
+
+    implementation('org.springframework:spring-web')
+}

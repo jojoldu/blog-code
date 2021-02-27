@@ -1,0 +1,52 @@
+buildscript {
+    ext {
+        querydslVersion = "4.3.1"
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.4.3' apply false
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'idea'
+    id 'maven'
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+def javaProjects = [project(':spring-boot-entityql-entity'), project(':spring-boot-entityql-sql')]
+
+configure(javaProjects) {
+    apply plugin: 'jacoco'
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+    apply plugin: 'groovy'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: "io.spring.dependency-management"
+
+    group = 'com.jojoldu.blogcode'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    dependencies {
+        implementation 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok' // 없으면 querydsl annotationProcessor로 인해서 lombok 컴파일 안됨
+        testAnnotationProcessor 'org.projectlombok:lombok'
+        testImplementation 'org.projectlombok:lombok'
+
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+
