@@ -8,7 +8,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
-import static com.jojoldu.blogcode.querydsl.domain.academy.QAcademy.academy;
+import static com.jojoldu.blogcode.entityql.entity.domain.academy.QAcademy.academy;
 import static com.querydsl.core.types.Projections.fields;
 
 @RequiredArgsConstructor

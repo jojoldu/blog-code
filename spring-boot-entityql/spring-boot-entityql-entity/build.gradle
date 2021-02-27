@@ -28,22 +28,14 @@ dependencies {
 }
 
 def generatedSql='src/main/generated_sql'
-def defaultPackage = 'com.woowabros.settler.domain.'
+def defaultPackage = 'com.jojoldu.blogcode.entityql.entity.domain.'
 entityql {
     generators = [
             generator = {
                 type = 'JPA'
                 sourceClasses = [
-                        defaultPackage+'billproof.eai.EaiBillProof',
-                        defaultPackage+'txitem.TxDetail',
-                        defaultPackage+'txitem.TxAddition',
-                        defaultPackage+'txitem.TxItem',
-                        defaultPackage+'txitem.daily.eai.TxItemSubKeySum',
-                        defaultPackage+'txitem.daily.eai.TxDetailSubKeySum',
-                        defaultPackage+'txitem.daily.eai.TxAdditionSubKeySum',
-                        defaultPackage+'txitem.daily.TxItemSum',
-                        defaultPackage+'txitem.daily.TxDetailSum',
-                        defaultPackage+'txitem.daily.TxAdditionSum',
+                        defaultPackage+'academy.Academy',
+                        defaultPackage+'student.Student',
                 ]
                 destinationPackage = defaultPackage+'sql'
                 destinationPath = file(generatedSql).absolutePath
@@ -57,11 +49,6 @@ entityql {
 
 clean.doLast {
     file(generatedSql).deleteDir()
-}
-
-// compileJava 실행시 SQL QClass 생성 자동 연계
-generateModels {
-    dependsOn('compileJava')
 }
 
 // querydsl 적용

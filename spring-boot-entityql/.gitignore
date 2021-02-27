@@ -3,3 +3,4 @@ generated
 generated_sql
 .idea
 .gradle
+build

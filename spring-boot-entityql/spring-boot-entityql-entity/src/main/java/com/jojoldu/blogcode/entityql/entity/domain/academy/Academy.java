@@ -6,8 +6,8 @@ package com.jojoldu.blogcode.entityql.entity.domain.academy;
  * Github : https://github.com/jojoldu
  */
 
-import com.jojoldu.blogcode.querydsl.domain.BaseTimeEntity;
-import com.jojoldu.blogcode.querydsl.domain.student.Student;
+import com.jojoldu.blogcode.entityql.entity.domain.BaseTimeEntity;
+import com.jojoldu.blogcode.entityql.entity.domain.student.Student;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,27 +44,22 @@ public class Academy extends BaseTimeEntity {
     @Column(name = "address")
     private String address;
 
-    @Column
+    @Column(name = "phone_number")
     private String phoneNumber;
+
+    @Column(name = "status")
+    private AcademyStatus status;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "academy")
     private List<Student> students = new ArrayList<>();
 
-    public Academy(String name, String address) {
-        this.name = name;
-        this.address = address;
-    }
-
-    public Academy(Long id, String matchKey) {
-        this.id = id;
-        this.matchKey = matchKey;
-    }
-
     @Builder
-    public Academy(String name, String address, String phoneNumber) {
+    public Academy(String matchKey, String name, String address, String phoneNumber, AcademyStatus status) {
+        this.matchKey = matchKey;
         this.name = name;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        this.status = status;
     }
 
     public void addStudent(List<Student> students) {

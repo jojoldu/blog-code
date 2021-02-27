@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Github : https://github.com/jojoldu
  */
 
-public interface AcademyRepository extends JpaRepository<Academy, Long>, AcademyRepositoryCustom {
+public interface AcademyRepository extends JpaRepository<Academy, Long>{
 }

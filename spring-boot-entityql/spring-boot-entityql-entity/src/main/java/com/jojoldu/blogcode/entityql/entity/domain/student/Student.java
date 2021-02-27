@@ -6,8 +6,8 @@ package com.jojoldu.blogcode.entityql.entity.domain.student;
  * Github : https://github.com/jojoldu
  */
 
-import com.jojoldu.blogcode.querydsl.domain.BaseTimeEntity;
-import com.jojoldu.blogcode.querydsl.domain.academy.Academy;
+import com.jojoldu.blogcode.entityql.entity.domain.BaseTimeEntity;
+import com.jojoldu.blogcode.entityql.entity.domain.academy.Academy;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
