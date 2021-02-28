@@ -22,6 +22,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -62,5 +63,12 @@ public class Student extends BaseTimeEntity {
 
     public void updateName(String name) {
         this.name = name;
+    }
+
+    public Student setBulkInsert (Academy academy, LocalDateTime now) {
+        setAcademy(academy);
+        setCurrentTime(now);
+
+        return this;
     }
 }

@@ -1,5 +1,6 @@
 package com.jojoldu.blogcode.entityql.sql.bulkinsert.academy;
 
+import com.jojoldu.blogcode.entityql.entity.domain.academy.Academy;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -18,12 +19,12 @@ public class AcademyBulkMatcherRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public List<AcademyUniqueKeyDto> findAllByIds(List<Long> ids) {
+    public List<Academy> findAllByIds(List<Long> ids) {
         if(CollectionUtils.isEmpty(ids)) {
             throw new IllegalArgumentException("조회할 id가 없습니다.");
         }
         return queryFactory
-                .select(fields(AcademyUniqueKeyDto.class,
+                .select(fields(Academy.class,
                         academy.id,
                         academy.matchKey
                 ))

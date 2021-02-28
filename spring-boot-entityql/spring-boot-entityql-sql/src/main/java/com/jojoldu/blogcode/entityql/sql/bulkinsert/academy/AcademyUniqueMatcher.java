@@ -1,14 +1,16 @@
 package com.jojoldu.blogcode.entityql.sql.bulkinsert.academy;
 
-import com.jojoldu.blogcode.querydsl.domain.academy.Academy;
+import com.jojoldu.blogcode.entityql.entity.domain.academy.Academy;
+import com.jojoldu.blogcode.entityql.entity.domain.student.Student;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Getter
@@ -28,7 +30,15 @@ public class AcademyUniqueMatcher {
         return new ArrayList<>(map.values());
     }
 
-    public Optional<Academy> get(String collectorMatchKey) {
-        return Optional.ofNullable(map.get(collectorMatchKey));
+    public List<Student> get(Academy idAcademy, LocalDateTime now) {
+        Academy academy = map.get(idAcademy.getMatchKey());
+
+        if(academy == null) {
+            return new ArrayList<>();
+        }
+
+        return academy.getStudents().stream()
+                .map(student -> student.setBulkInsert(idAcademy, now))
+                .collect(Collectors.toList());
     }
 }
