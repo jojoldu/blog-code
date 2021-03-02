@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Entity
 @Table(name = "academy")
 public class Academy extends BaseTimeEntity {
@@ -48,6 +50,7 @@ public class Academy extends BaseTimeEntity {
     private String phoneNumber;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private AcademyStatus status;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "academy")
@@ -56,6 +59,13 @@ public class Academy extends BaseTimeEntity {
     @Builder
     public Academy(String matchKey, String name, String address, String phoneNumber, AcademyStatus status) {
         this.matchKey = matchKey;
+        this.name = name;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+    }
+
+    public Academy(String name, String address, String phoneNumber, AcademyStatus status) {
         this.name = name;
         this.address = address;
         this.phoneNumber = phoneNumber;

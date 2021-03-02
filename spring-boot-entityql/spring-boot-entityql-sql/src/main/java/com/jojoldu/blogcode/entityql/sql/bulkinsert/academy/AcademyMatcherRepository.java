@@ -15,7 +15,7 @@ import static com.querydsl.core.types.Projections.fields;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Repository
-public class AcademyBulkMatcherRepository {
+public class AcademyMatcherRepository {
 
     private final JPAQueryFactory queryFactory;
 

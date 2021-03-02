@@ -25,7 +25,7 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Entity
 @Table(name = "student")
 public class Student extends BaseTimeEntity {

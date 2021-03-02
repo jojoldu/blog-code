@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class AcademyBulkRepository {
     private static final Integer DEFAULT_CHUNK_SIZE = 1_000; // MySQL 설정에 따라 조정한다.
 
-    private final AcademyBulkMatcherRepository txItemCollectorRepository;
+    private final AcademyMatcherRepository txItemCollectorRepository;
     private final SQLQueryFactory sqlQueryFactory;
 
     public void saveAll(List<Academy> entities) {
