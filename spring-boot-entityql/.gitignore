@@ -4,3 +4,4 @@ generated_sql
 .idea
 .gradle
 build
+out
