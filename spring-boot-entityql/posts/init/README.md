@@ -1,11 +1,12 @@
 # (MySQL) Auto Increment에서 TypeSafe Bulk Insert 진행하기 (feat.EntityQL, JPA)
 
+
 앞서 여러 글에서 언급하고 있지만, JPA환경에서 키 생성 전략을 Auto Increment로 할 경우 BulkInsert가 지원되지 않는다.
 
 * [Spring Batch Item Writer 성능 비교](https://jojoldu.tistory.com/507)
 * [MySQL 환경의 스프링부트에 하이버네이트 배치 설정 해보기](https://woowabros.github.io/experience/2020/09/23/hibernate-batch.html)
 
-모든 내용은 **MySQL** 기반 하에 이야기 합니다. 
+모든 내용은 **MySQL** 기반 하에 이야기 합니다.
 
 > 즉, 이외 DBMS 에서는 다를 수 있습니다.
 
@@ -55,6 +56,242 @@ Querydsl-SQL은 그럼 사용하기 편한가? - No
     * 제너레이트 클래스를 버저닝하고, 커밋 내역에 항상 반영하는건 전혀 좋은 패턴으로 보지 않는다.
 * 부가 설정이 너무 많이 필요하다.
     * Querydsl 버전 업데이트가 안되는 것도 큰 이유이다.
+
+## 설치
+
+**멀티모듈에서만 사용이 가능**합니다.  
+
+```groovy
+plugins {
+    id 'pl.exsio.querydsl.entityql' version "0.0.12"
+    id 'idea'
+}
+
+bootJar { enabled = false }
+jar { enabled = true }
+
+apply plugin: "io.spring.dependency-management"
+
+dependencies {
+
+    api("org.springframework.boot:spring-boot-starter-data-jpa")
+    api("com.querydsl:querydsl-jpa")
+    api("com.querydsl:querydsl-core")
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa" // querydsl JPAAnnotationProcessor 사용 지정
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api:2.2.3"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api:1.3.5"
+
+    //DB
+    implementation('com.h2database:h2')
+
+    implementation("org.reflections:reflections:0.9.11") // entityql
+    api("com.github.eXsio:querydsl-entityql:3.1.0") // entityql
+
+    implementation("joda-time:joda-time:2.9.4") // querydsl-sql
+    api("com.querydsl:querydsl-sql-spring:${dependencyManagement.importedProperties['querydsl.version']}") // querydsl-sql (Querydsl-JPA 버전과 통일)
+
+}
+
+// entityql start
+def generatedSql='src/main/generated_sql'
+def defaultPackage = 'com.jojoldu.blogcode.entityql.entity.domain.'
+entityql {
+    generators = [
+            generator = {
+                type = 'JPA'
+                sourceClasses = [
+                        defaultPackage+'academy.Academy',
+                        defaultPackage+'student.Student',
+                ]
+                destinationPackage = defaultPackage+'sql'
+                destinationPath = file(generatedSql).absolutePath
+                filenamePattern = 'E%s.java'
+            }
+    ]
+    sourceSets.main.java.srcDirs += [generatedSql]
+    idea.module.generatedSourceDirs += file(generatedSql)
+}
+
+clean.doLast {
+    file(generatedSql).deleteDir()
+}
+
+// entityql end
+
+// querydsl 적용
+def generated='src/main/generated'
+sourceSets.main.java.srcDirs += [generated]
+
+tasks.withType(JavaCompile) {
+    options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+}
+
+clean.doLast {
+    file(generated).deleteDir()
+}
+```
+
+
+```java
+import com.querydsl.sql.H2Templates;
+import com.querydsl.sql.MySQLTemplates;
+import com.querydsl.sql.SQLQueryFactory;
+import com.querydsl.sql.SQLTemplates;
+import com.querydsl.sql.spring.SpringExceptionTranslator;
+import com.querydsl.sql.types.DateTimeType;
+import com.querydsl.sql.types.LocalDateType;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import pl.exsio.querydsl.entityql.config.EntityQlQueryFactory;
+
+import javax.sql.DataSource;
+
+@Slf4j
+@RequiredArgsConstructor
+@Configuration
+public class EntityQlConfiguration {
+
+    @Bean
+    @Profile("local")
+    public SQLTemplates h2SqlTemplates() {
+        return new H2Templates();
+    }
+
+    @Bean
+    @Profile("!local")
+    public SQLTemplates mySqlTemplates() {
+        return new MySQLTemplates();
+    }
+
+    @Bean
+    public SQLQueryFactory sqlQueryFactory(DataSource dataSource, SQLTemplates sqlTemplates) {
+        com.querydsl.sql.Configuration configuration = new com.querydsl.sql.Configuration(sqlTemplates);
+        configuration.setExceptionTranslator(new SpringExceptionTranslator());
+        configuration.register(new DateTimeType());
+        configuration.register(new LocalDateType());
+
+        return new EntityQlQueryFactory(configuration, dataSource)
+                .registerEnumsByName("com.jojoldu.blogcode.entityql.entity.domain.academy");
+    }
+}
+```
+
+```java
+import com.querydsl.core.QueryException;
+import com.querydsl.core.types.Path;
+import com.querydsl.core.util.ReflectionUtils;
+import com.querydsl.sql.ColumnMetadata;
+import com.querydsl.sql.RelationalPath;
+import com.querydsl.sql.dml.Mapper;
+import com.querydsl.sql.types.Null;
+
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.JoinColumn;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by jojoldu@gmail.com on 19/07/2020
+ * Blog : http://jojoldu.tistory.com
+ * Github : http://github.com/jojoldu
+ */
+public class EntityMapper implements Mapper<Object> {
+    public static final EntityMapper DEFAULT = new EntityMapper(false);
+
+    public static final EntityMapper WITH_NULL_BINDINGS = new EntityMapper(true);
+
+    private final boolean withNullBindings;
+
+    public EntityMapper(boolean withNullBindings) {
+        this.withNullBindings = withNullBindings;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public Map<Path<?>, Object> createMap(RelationalPath<?> path, Object object) {
+        try {
+            Map<String, Path<?>> columnToPath = new HashMap<>();
+            for (Path<?> column : path.getColumns()) {
+                columnToPath.put(ColumnMetadata.getName(column), column);
+            }
+            Map<Path<?>, Object> values = new HashMap<>();
+            for (Field field : ReflectionUtils.getFields(object.getClass())) {
+                putByEmbedded(object, columnToPath, values, field);
+                putByColumn(object, columnToPath, values, field);
+                putByJoinColumn(object, columnToPath, values, field);
+            }
+            return values;
+        } catch (IllegalAccessException e) {
+            throw new QueryException(e);
+        }
+    }
+
+    void putByEmbedded(Object object, Map<String, Path<?>> columnToPath, Map<Path<?>, Object> values, Field field) throws IllegalAccessException {
+        Embedded ann = field.getAnnotation(Embedded.class);
+        if (ann != null) {
+            field.setAccessible(true);
+            Object embeddedObject = field.get(object);
+            if (embeddedObject != null) {
+                for (Field embeddedField : ReflectionUtils.getFields(embeddedObject.getClass())) {
+                    putByColumn(embeddedObject, columnToPath, values, embeddedField);
+                }
+            }
+        }
+    }
+
+    void putByColumn(Object object, Map<String, Path<?>> columnToPath, Map<Path<?>, Object> values, Field field) throws IllegalAccessException {
+        Column ann = field.getAnnotation(Column.class);
+        if (ann != null) {
+            field.setAccessible(true);
+            Object propertyValue = field.get(object);
+            String columnName = ann.name();
+            if (propertyValue != null) {
+                if (columnToPath.containsKey(columnName)) {
+                    values.put(columnToPath.get(columnName), propertyValue);
+                }
+            } else if (withNullBindings) {
+                values.put(columnToPath.get(columnName), Null.DEFAULT);
+            }
+        }
+    }
+
+    void putByJoinColumn(Object object, Map<String, Path<?>> columnToPath, Map<Path<?>, Object> values, Field field) throws IllegalAccessException {
+        JoinColumn ann = field.getAnnotation(JoinColumn.class);
+        if (ann != null) {
+            field.setAccessible(true);
+            Object joinObject = field.get(object);
+            String columnName = ann.name();
+            String joinColumnName = ann.referencedColumnName();
+            if (joinObject != null) {
+                if (columnToPath.containsKey(columnName)) {
+                    Object joinColumnValue = getJoinColumnValue(joinObject, joinColumnName);
+                    if(joinColumnValue != null) {
+                        values.put(columnToPath.get(columnName), joinColumnValue);
+                    }
+                }
+            } else if (withNullBindings) {
+                values.put(columnToPath.get(columnName), Null.DEFAULT);
+            }
+        }
+    }
+
+    private Object getJoinColumnValue(Object joinObject, String joinColumnName) throws IllegalAccessException {
+        for (Field field : ReflectionUtils.getFields(joinObject.getClass())){
+            Column ann = field.getAnnotation(Column.class);
+            if(ann != null && ann.name().equals(joinColumnName)) {
+                field.setAccessible(true);
+                return field.get(joinObject);
+            }
+        }
+        return null;
+    }
+}
+```
 
 ## 이슈 케이스
 
