@@ -62,9 +62,18 @@ INSERT INTO person (name) VALUES
       * 이건 JOOQ도 동일합니다.
 * 이렇게 Gradle을 통해 DB를 접근하는 방식이 힘들어 한번 만들어진 QClass를 버전관리 하여 재생성을 최소화 하려고 하는데 이러면 완전 안티패턴입니다.
     * 제너레이트 클래스를 버저닝하게 되면 불필요한 변경사항을 계속 커밋 로그로 관리하게 됩니다.
-    * 특히나 같은 Entity 클래스의 변경이 있다면 Conflict 난걸 수동으로 해소할 수가 없습니다. (제너레이트 되는 클래스를 직접 수정하기는 어렵습니다) 
+    * 특히나 같은 Entity 클래스의 변경이 있다면 Conflict 코드를 수동으로 해소하기가 어렵습니다.
 * 부가 설정이 너무 많이 필요합니다.
     * Querydsl의 버전 업데이트가 최근에는 자주 되지 못하는 것은 큰 단점중 하나입니다.
+
+결과적으로 MySQL Auto Increment 환경에서 대용량 Insert 처리를 안적적으로 사용하기 위해서는 다음의 2가지가 필요하다는 것을 알 수 있습니다.
+
+* Native SQL 문법 지원을 지원하는 Typesafe 개발
+* 테이블 Scan이 아닌 JPA와 유사한 **애플리케이션 코드 Scan**
+
+### QueryDSL-EntityQL
+
+![entityql](./images/entityql.png)
 
 ## 설치
 
