@@ -1,21 +1,25 @@
 # (MySQL) Auto Increment에서 TypeSafe Bulk Insert 진행하기 (feat.EntityQL, JPA)
 
-
-앞서 여러 글에서 언급하고 있지만, JPA환경에서 키 생성 전략을 Auto Increment로 할 경우 BulkInsert가 지원되지 않는다.
+여러 글에서 언급하고 있지만, JPA환경에서 키 생성 전략을 Auto Increment로 할 경우 BulkInsert가 지원되지 않습니다.
 
 * [Spring Batch Item Writer 성능 비교](https://jojoldu.tistory.com/507)
 * [MySQL 환경의 스프링부트에 하이버네이트 배치 설정 해보기](https://woowabros.github.io/experience/2020/09/23/hibernate-batch.html)
 
-모든 내용은 **MySQL** 기반 하에 이야기 합니다.
+그래서 수십만 ~ 수백만건의 Entity 를 insert 할 때는, 항상 `JdbcTemplate`를 이용하여 Insert합치기 구문을 이용한 BulkInsert 처리를 하는데요.  
+  
+이 방식은 기존 JPA와 Querydsl 을 이용한 Typesafe 방식을 전혀 활용하지 못해서 단점이 많아 항상 많은 고민을 하게 됩니다.  
+  
+그래서 이번 시간에서는 어떻게 하면 **Auto Increment에서 TypeSafe Bulk Insert**을 할 수 있는지 그 방안을 한번 이야기해볼까 합니다.
 
+> 모든 내용은 **MySQL** 기반 하에 이야기 합니다.  
 > 즉, 이외 DBMS 에서는 다를 수 있습니다.
 
 ## 1. (MySQL) JPA Bulk Insert 의 문제
 
 먼저 JPA Bulk Insert의 문제에 대해서 처음 들어보신 분들을 위해 정리하자면 다음과 같습니다.
 
-* BulkInsert란 Insert 쿼리를 한번에 처리하는 것을 의미한다.
-    * MySQL에서는 아래와 같이 Insert 합치기 옵션을 통하면 비약적인 성능 향상을 가진다. 
+* BulkInsert란 Insert 쿼리를 한번에 처리하는 것을 의미합니다.
+    * MySQL에서는 아래와 같이 Insert 합치기 옵션을 통하면 비약적인 성능 향상을 가집니다.
 
 ```sql
 INSERT INTO person (name) VALUES
@@ -24,38 +28,43 @@ INSERT INTO person (name) VALUES
 ('name3');
 ```
 
-* 이렇게 Insert 합치기를 하려면 JdbcUrl 옵션에 `rewriteBatchedStatements=true`이 필수로 설정 되어있어야 한다.
-* 단, **Id 채번(생성) 전략이 auto_increment**일 경우 JPA를 통한 save는 **Insert 합치기가 적용되지 않는다**.
-    * `Table Sequence` 로 채번 전략을 선택할 경우 JPA로도 Insert 합치기가 가능하다.
-    * 하지만 운영 환경에서는 사용이 어렵다. 
-        * 이미 auto_increment 로 수억~수십억건 쌓여있는 테이블에서 채번 전략을 변경/마이그레이션 하는 것에 대한 부담
+* Insert 합치기를 하려면 JdbcUrl 옵션에 `rewriteBatchedStatements=true`이 필수로 설정되어 있으면 바로 적용이 가능합니다.
+* 단, **Id 채번(생성) 전략이 auto_increment**일 경우 JPA를 통한 save는 **Insert 합치기가 적용되지 않습니다**.
+    * `Table Sequence` 로 채번 전략을 선택할 경우 JPA로도 Insert 합치기가 가능합니다.
+    * 하지만 운영 환경에서는 `Table Sequence` 사용이 쉽지 않습니다. 
+        * 이미 auto_increment 로 수억~수십억건 쌓여있는 테이블에서 채번 전략을 변경/마이그레이션 하는 것은 굉장히 부담스러운 작업이며
         * 데드락 이슈 케이스들 ([HikariCP Dead lock에서 벗어나기](https://woowabros.github.io/experience/2020/02/06/hikaricp-avoid-dead-lock-2.html))
-    
+        * 동일하게 Bulk Insert가 지원되는 환경에서는 Auto Increment가 더 성능이 뛰어나기 때문입니다.
 
-결론은 Auto_increment이면 JPA가 아닌 `JdbcTemplate`과 같은 네이티브 쿼리를 작성하는 경우에만 insert합치기를 통한 bulk insert가 지원된다.
+결론은 Auto_increment이면 JPA가 아닌 `JdbcTemplate`과 같은 네이티브 쿼리를 작성하는 경우에만 insert합치기를 통한 bulk insert가 지원됩니다.  
+  
+다만, `JdbcTemplate`와 같이 문자열 기반의 네이티브 쿼리 방식으로만 Bulk Insert 구현을 하기에는 부담스러운 점들은 다음과 같습니다.
 
+* JdbcTemplate (+ MyBatis)와 같이 문자열 기반의 SQL 프레임워크는 IDE 자동 지원이 제한적.
+* Entity (Table) 컬럼 추가/수정이 있을때마다 연관된 쿼리 문자열을 모두 찾아서 반영 필요. 
+    * 컬럼이 수십개인 테이블 다수를 동시에 고쳐야할 경우를 생각해보면 끔찍합니다.
+    * 잠재적 장애 발생 요인이며, 생산성 저하에 가장 큰 요인.
 
-다만, 그걸 계속 사용하기엔 단점들이 너무 강한데,
+[JOOQ](https://www.jooq.org/)나 [Querydsl-SQL](https://github.com/querydsl/querydsl/tree/master/querydsl-sql) 같은 **네이티비 쿼리 기반의 Typesafe 도구**를 선택해야만 컴파일체크/타입지원/IDE 자동완성 등의 TypeSafe한 Bulk Insert가 가능하다는 결론이 나옵니다.
 
-* JdbcTemplate (+ MyBatis)와 같이 문자열 기반의 SQL 프레임워크는 IDE 자동 지원이 제한적이다.
-* Entity (Table) 컬럼 추가/수정이 있을때마다 연관된 쿼리 문자열을 모두 찾아서 반영해야 한다. 
-    * 잠재적 장애 발생 요인이며, 생산성 저하에 가장 큰 요인이다.
+여기서 JOOQ의 경우 **무료 버전에서는 클라우드 DB를 지원하지 않습니다**.
 
-JOOQ나 Querydsl-SQL 같은 도구를 선택해야만 컴파일체크/타입지원/IDE 자동완성 등의 TypeSafe한 Bulk Insert가 가능하다.
+![jooq](./images/jooq.png)
 
+사실상 **DB에 관계없이 사용하려면 Querydsl-SQL**을 사용해야만 합니다.  
 
-그래서 일단은 Querydsl-SQL을 이용해서 BulkInsert를 구현하고 싶은데,
+라이센스 문제나 그동안의 사용성 (JPA에서는 Querydsl-JPA를 대부분 사용하고 있으니) 으로 인해 Querydsl-SQL을 이용하고 싶지만, 실제 운영 레벨에서 사용하기에 단점이 꽤 많습니다.
 
-Querydsl-SQL은 그럼 사용하기 편한가? - No
-
-* 일단 QClass 생성 과정이 괴랄
-    * JPA 기반이 아니라서 테이블 스캔해야만 한다.
-    * 즉, local이든 베타이든 DB를 실행해서, 테이블들을 Querydsl-SQL이 scan할 수 있도록 Gradle 설정이 들어간다.
-    * 이건 JOOQ도 마찬가지의 단점이다.
-* 이게 싫어서 QClass를 버전관리 하는데 이건 완전 안티패턴이다.
-    * 제너레이트 클래스를 버저닝하고, 커밋 내역에 항상 반영하는건 전혀 좋은 패턴으로 보지 않는다.
-* 부가 설정이 너무 많이 필요하다.
-    * Querydsl 버전 업데이트가 안되는 것도 큰 이유이다.
+* QClass 생성 과정이 복잡하고 과합니다.
+    * JPA 기반이 아니라서 **어노테이션 기반이 아닌 실제 테이블을 Scan**해야만 합니다.
+      * 애플리케이션이 실행되면 JPA 어노테이션 기반으로 자동으로 QClass가 생성되는 Querydsl-JPA 와 달리 SQL의 경우 
+    * 즉, 로컬 혹은 베타 DB를 **미리** 실행하고, Gradle 설정에는 **해당 DB의 접속 정보를 등록**해서 Querydsl-SQL이 테이블들을 scan 할 수 있도록 설정 되어야만 Gradle Task를 수행해서 QClass를 생성할 수 있습니다.
+      * 이건 JOOQ도 동일합니다.
+* 이렇게 Gradle을 통해 DB를 접근하는 방식이 힘들어 한번 만들어진 QClass를 버전관리 하여 재생성을 최소화 하려고 하는데 이러면 완전 안티패턴입니다.
+    * 제너레이트 클래스를 버저닝하게 되면 불필요한 변경사항을 계속 커밋 로그로 관리하게 됩니다.
+    * 특히나 같은 Entity 클래스의 변경이 있다면 Conflict 난걸 수동으로 해소할 수가 없습니다. (제너레이트 되는 클래스를 직접 수정하기는 어렵습니다) 
+* 부가 설정이 너무 많이 필요합니다.
+    * Querydsl의 버전 업데이트가 최근에는 자주 되지 못하는 것은 큰 단점중 하나입니다.
 
 ## 설치
 
