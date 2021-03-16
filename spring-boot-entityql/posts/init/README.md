@@ -69,11 +69,22 @@ INSERT INTO person (name) VALUES
 결과적으로 MySQL Auto Increment 환경에서 대용량 Insert 처리를 안적적으로 사용하기 위해서는 다음의 2가지가 필요하다는 것을 알 수 있습니다.
 
 * Native SQL 문법 지원을 지원하는 Typesafe 개발
-* 테이블 Scan이 아닌 JPA와 유사한 **애플리케이션 코드 Scan**
+* 테이블 Scan이 아닌 JPA와 같은 **애플리케이션 코드 기반** 코드 Generate
+
+자 그럼 이 문제를 어떻게 해결할 것인지 알아보겠습니다.
 
 ### QueryDSL-EntityQL
 
+위 문제는 JPA & MySQL를 사용하는 사람들이라면 모두다 경험하다보니 많은 분들이 이를 해결하기 위해 오픈소스를 만들었는데요.  
+  
+그 중에서 [QueryDSL-EntityQL](https://github.com/eXsio/querydsl-entityql) 가 있습니다.  
+  
+EntityQL은 **JPA의 어노테이션을 기반으로 Querydsl-SQL QClass를 생성**하는 역할을 합니다.
+즉, 네이티브 쿼리를 사용할 수 있는 Querydsl-SQL을 쓰려면 SQL용 QClass가 필요한데, 이 SQL QClass 생성을 테이블 스캔 방식이 아닌 JPA 어노테이션 기반으로 할 수 있도록 중간 컨버터 역할을 하는 오픈소스입니다.
+
 ![entityql](./images/entityql.png)
+
+
 
 ## 설치
 
@@ -310,6 +321,40 @@ public class EntityMapper implements Mapper<Object> {
     }
 }
 ```
+
+## 예제 코드
+
+
+### 성능 테스트
+
+![test1](./images/test1.png)
+**7.8초**
+
+![test2](./images/test2.png)
+
+**0.44초**
+
+## 제한 사항
+
+아래는 공식적으로 EntityQL에서 지원하지 않는 기능입니다.
+
+* 엔티티 @Table에는 테이블 이름과 (선택적으로) 스키마 이름이 포함 된 유효한 주석 이 있어야합니다.
+
+* 만 포함하는 필드 @Column, @JoinColumn또는 @JoinColumns주석 DB 메타 데이터 소스로 EntityQL에 볼 수 있습니다
+
+* JPA 관계를 처리 할 때 역 조인 열이 생성됩니다. 양방향 및 단방향 @OneToOne이며 @OneToMany 단순 및 복합 키 모두에 대해 완벽하게 지원됩니다.
+
+* 쿼리에서 자바 열거 형을 사용하려면, 열거 클래스는 QueryDSL의가에 등록해야 Configuration::register 사용 EnumType. 또는 제공된 EntityQlQueryFactory. 원하는 패키지의 모든 열거 형을 등록합니다.
+
+* UUID를 사용하려면 UtilUUIDTypeQueryDSL 에 등록해야합니다.Configuration::register
+
+* 부울을 사용하려면 BooleanTypeQueryDSL 에 등록해야합니다.Configuration::register
+
+* 복합 기본 키는로 Serializable @Entity주석이 추가 된 여러 필드 가있는 형태로만 지원됩니다 @Id. 포함 된 클래스 및 ID는 지원되지 않습니다.
+
+* 복합 외래 키는 @JoinColumns주석을 통해 지원됩니다 .
+
+* 유일하게 지원되지 않는 JPA 관계이다 @ManyToMany와 함께 @JoinTable. 그 이유는 자동 생성 된 조인 테이블에는 물리적 Entity 클래스가없고 내가 피하고 싶은 많은 마법 없이는 모델을 생성 할 가능성이 없기 때문입니다. @ManyToMany매핑 과 함께 EntityQL을 사용하려는 경우 @Immutable @Entity에서 구성된 테이블과 일치 하는를 만들 수 있습니다. @JoinTable예를 들면 다음과 같습니다.
 
 ## 이슈 케이스
 
