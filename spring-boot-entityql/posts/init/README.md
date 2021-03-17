@@ -47,7 +47,7 @@ INSERT INTO person (name) VALUES
 
 [JOOQ](https://www.jooq.org/)나 [Querydsl-SQL](https://github.com/querydsl/querydsl/tree/master/querydsl-sql) 같은 **네이티비 쿼리 기반의 Typesafe 도구**를 선택해야만 컴파일체크/타입지원/IDE 자동완성 등의 TypeSafe한 Bulk Insert가 가능하다는 결론이 나옵니다.
 
-여기서 JOOQ의 경우 **무료 버전에서는 클라우드 DB를 지원하지 않습니다**.
+여기서 JOOQ의 경우 **오픈소스 라이센스로는 클라우드 DB를 지원하지 않습니다**.  
 
 ![jooq](./images/jooq.png)
 
@@ -73,7 +73,7 @@ INSERT INTO person (name) VALUES
 
 자 그럼 이 문제를 어떻게 해결할 것인지 알아보겠습니다.
 
-### QueryDSL-EntityQL
+### 1-1. QueryDSL-EntityQL
 
 위 문제는 JPA & MySQL를 사용하는 사람들이라면 모두다 경험하다보니 많은 분들이 이를 해결하기 위해 오픈소스를 만들었는데요.  
   
@@ -84,11 +84,37 @@ EntityQL은 **JPA의 어노테이션을 기반으로 Querydsl-SQL QClass를 생�
 
 ![entityql](./images/entityql.png)
 
+아직까지 대중화된 프로젝트는 아니지만, [Querydsl Github Issue](https://github.com/querydsl/querydsl/issues/2459#issuecomment-567652568)에서 어느정도의 호응이 있음을 볼 수 있습니다.  
 
 
-## 설치
+## 2. 설치
 
-**멀티모듈에서만 사용이 가능**합니다.  
+일단 설치하기에 앞서 Gradle 환경에서 사용하기 위한 몇 가지 제약조건을 먼저 소개 드리겠습니다.
+
+### 2-1. Gradle 로 사용시 제약조건
+
+Gradle 기반 환경에서 EntityQL을 통해 Querydsl-SQL용 QClass를 생성한다면 크게 2가지 방법을 지원합니다.
+
+1) 특정 패키지를 지정해서 해당 패키지 하위의 모든 Entity들을 자동으로 Generate
+2) 개별 클래스 하나하나의 위치를 등록해서 수동으로 Generate
+
+여기서 누가봐도 1번을 쓸 것 같지만, 저는 2번을 선택했는데요.  
+
+* 특정 패키지를 지정해서 해당 패키지에 속해 있는 전체 클래스들을 대상으로 할 수는 있습니다.
+* 다만, 이렇게 하려면 **해당 패키지에는 Entity 클래스들만 존재해야만 합니다**. (하위 패키지 포함)
+* 지정된 패키지에 다른 클래스가 있으면 패키지 스캔이 실패합니다.
+  * 즉, Entity와 함께 쌍으로 묶이는 기본(확장하지 않은) JpaRepository , Enum 등을 모두 최상위 패키지부터 다르게 두어야만 합니다.
+* 이건 EntityQL 하나를 위해 시스템의 근간이 되는 도메인 Layer 분리를 해야되는 상황이라 저는 원하지 않는 방법입니다.
+  * 그래서 Querydsl-SQL이 필요한 특정 Entity 클래스들만 지정해서 개별 지정해서 사용하는 방식을 선택했습니다.
+
+또 다른 문제로 **멀티모듈에서만 사용이 가능**합니다.  
+Gradle 플러그인을 통하지 않았기 때문인지, 직접 클래스 위치를 등록해서 사용하는 방식은 단일 모듈에서 사용할 수가 없습니다.  
+  
+다음과 같은 문제가 발생하기 때문인데요.  
+EntityQL을 통해 생성된 (Querydsl-SQL) QClass를 사용하는 코드가 있으면 해당 QClass 삭제후 재생성을 진행할때 **컴파일 에러**가 발생합니다.  
+왜냐하면 
+
+### 2-2. Gradle 설정
 
 ```groovy
 plugins {
