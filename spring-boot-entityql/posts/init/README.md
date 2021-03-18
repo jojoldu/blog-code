@@ -96,7 +96,7 @@ EntityQL은 **JPA의 어노테이션을 기반으로 Querydsl-SQL QClass를 생�
 Gradle 기반 환경에서 EntityQL을 통해 Querydsl-SQL용 QClass를 생성한다면 크게 2가지 방법을 지원합니다.
 
 1) 특정 패키지를 지정해서 해당 패키지 하위의 모든 Entity들을 자동으로 Generate
-2) 개별 클래스 하나하나의 위치를 등록해서 수동으로 Generate
+2) **개별 클래스 하나하나의 위치를 등록해서 수동**으로 Generate
 
 여기서 누가봐도 1번을 쓸 것 같지만, 저는 2번을 선택했는데요.  
 
@@ -107,14 +107,25 @@ Gradle 기반 환경에서 EntityQL을 통해 Querydsl-SQL용 QClass를 생성�
 * 이건 EntityQL 하나를 위해 시스템의 근간이 되는 도메인 Layer 분리를 해야되는 상황이라 저는 원하지 않는 방법입니다.
   * 그래서 Querydsl-SQL이 필요한 특정 Entity 클래스들만 지정해서 개별 지정해서 사용하는 방식을 선택했습니다.
 
-또 다른 문제로 **멀티모듈에서만 사용이 가능**합니다.  
-Gradle 플러그인을 통하지 않았기 때문인지, 직접 클래스 위치를 등록해서 사용하는 방식은 단일 모듈에서 사용할 수가 없습니다.  
+또 다른 문제로 **멀티모듈에서만 사용이 가능**하고, 단일 모듈에서는 불가능 하다는 것입니다.  
+이는 앞서 Gradle 플러그인을 통하지 않았기 때문인데, 직접 클래스 위치를 등록해서 사용하는 방식은 단일 모듈에서 사용할 수가 없습니다.  
   
-다음과 같은 문제가 발생하기 때문인데요.  
-EntityQL을 통해 생성된 (Querydsl-SQL) QClass를 사용하는 코드가 있으면 해당 QClass 삭제후 재생성을 진행할때 **컴파일 에러**가 발생합니다.  
-왜냐하면 
+이유는 다음과 같습니다.  
+(EntityQL을 통해 생성된) Querydsl-SQL QClass를 사용하는 코드가 있으면 해당 QClass 삭제후 재생성을 진행할때 **컴파일 에러**가 발생합니다.  
+당연하게도 프로젝트 내에 사용되던 클래스가 없어지니 이후 compile이 모두 다 실패할 수 밖에 없습니다.  
+  
+![module1](./images/module1.png)
+
+그래서 멀티모듈로 구성하여, **실제 QClass 생성 모듈과 사용 모듈을 분리** 해서 QClass 생성 모듈을 통해 Generate 될때 컴파일 에러가 발생하지 않도록 해야 합니다.
 
 ### 2-2. Gradle 설정
+
+
+![module2](./images/module2.png)
+
+#### entity 모듈
+
+**entity 모듈 - build.gradle**
 
 ```groovy
 plugins {
@@ -186,6 +197,9 @@ clean.doLast {
 }
 ```
 
+![module3](./images/module3.png)
+
+**entity 모듈 - EntityQlConfiguration**
 
 ```java
 import com.querydsl.sql.H2Templates;
@@ -233,6 +247,9 @@ public class EntityQlConfiguration {
     }
 }
 ```
+
+
+**entity 모듈 - EntityMapper**
 
 ```java
 import com.querydsl.core.QueryException;
@@ -347,6 +364,8 @@ public class EntityMapper implements Mapper<Object> {
     }
 }
 ```
+
+#### sql 모듈
 
 ## 예제 코드
 
