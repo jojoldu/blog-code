@@ -124,13 +124,106 @@ Gradle 기반 환경에서 EntityQL을 통해 Querydsl-SQL용 QClass를 생성�
 
 먼저 프로젝트의 전체 구조를 보겠습니다.
 
-> 전체 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/spring-boot-entityql)에 있으니 참고하시면 됩니다.
+> 전체 코드는 [Github](https://github.com/jojoldu/blog-code/tree/master/spring-boot-entityql)에 있으니 참고하시면 됩니다.  
+> 모든 코드는 실제 현업에서 사용할 수 있도록 Querydsl-JPA 설정과 함께 진행됩니다.  
+> Querydsl-JPA 설정을 해보신적 없다면 [이전 포스팅](https://jojoldu.tistory.com/372)을 참고합니다.
 
 ![module2](./images/module2.png)
 
-#### entity 모듈
+위 모듈들을 하나씩 설정해보겠습니다.
+
+#### 2-2-1. entity 모듈
+
+먼저 entity 모듈입니다.  
+  
+build.gradle의 설정 먼저 해보겠습니다.
+
+> Gradle 6 기준입니다.
 
 **entity 모듈 - build.gradle**
+
+```groovy
+plugins {
+    ...
+    id 'pl.exsio.querydsl.entityql' version "0.0.12"
+}
+
+...
+apply plugin: "io.spring.dependency-management"
+
+dependencies {
+    ...
+    implementation("org.reflections:reflections:0.9.11") // entityql
+    api("com.github.eXsio:querydsl-entityql:3.1.0") // entityql
+
+    implementation("joda-time:joda-time:2.9.4") // querydsl-sql 
+    api("com.querydsl:querydsl-sql-spring:${dependencyManagement.importedProperties['querydsl.version']}") // querydsl-sql (Querydsl-JPA 버전과 통일)
+
+}
+
+// entityql start
+def generatedSql='src/main/generated_sql' // (1)
+def defaultPackage = 'com.jojoldu.blogcode.entityql.entity.domain.'
+entityql {
+    generators = [
+            generator = {
+                type = 'JPA'
+                sourceClasses = [
+                        defaultPackage+'academy.Academy', // (2)
+                        defaultPackage+'student.Student',
+                ]
+                destinationPackage = defaultPackage+'sql' // (3)
+                destinationPath = file(generatedSql).absolutePath
+                filenamePattern = 'E%s.java' // (4)
+            }
+    ]
+    sourceSets.main.java.srcDirs += [generatedSql] // (5)
+    idea.module.generatedSourceDirs += file(generatedSql) // (6)
+}
+
+clean.doLast { // (7)
+    file(generatedSql).deleteDir()
+}
+```
+
+(1) `generatedSql`
+
+* `'src/main/generated_sql'` 가 이후 설정들에서 모두 사용되기 때문에 변수로 만들어서 재사용합니다.
+* Querydsl-JPA가 일반적으로 `'src/main/generated` 에서 생성되니 Querydsl-SQL은 다른 디렉토리로 지정합니다.
+
+(2) `sourceClasses = [defaultPackage+'academy.Academy'..`
+
+* 2-1 에서 이야기한것 처럼 직접 Scan 대상이 되는 클래스들의 위치를 지정합니다.
+* Entity 클래스들이 모두 `defaultPackage` 하위에 있어 변수지정을 해서 재사용하도록 합니다.
+
+(3) `destinationPackage`
+
+* SQL QClass가 생성될 패키지명을 등록합니다.
+* EntityQL의 수동 scan 방식으로는 **클래스별 개별 패키지 지정이 안됩니다**.
+* 그래서 QClass 생성시 모두 같은 패키지에 위치하게 됩니다.
+
+(4) `filenamePattern`
+
+* Querydsl-JPA의 QClass 들을 보면 모두 앞에 `Q`가 붙어 있습니다. 
+* 대상이 되는 Entity 클래스와 이름이 충돌나지 않도록 하기 위함인데요.
+* 마찬가지로 SQL QClass 역시 맨 앞에 별도 문자를 붙일 수가 있습니다.
+* 저 같은 경우 `E` 를 사용했는데 `S` 등으로 사용해도 됩니다.
+* 대신 `Q` 를 붙일 경우 Querydsl-JPA로 생성된 QClass 이름과 충돌날 수 있으니 피하시는걸 추천드립니다.
+
+(5) `sourceSets.main.java.srcDirs`
+
+* 프로젝트에서 generate된 디렉토리를 소스 디렉토리로 인식할 수 있도록 지정합니다. 
+
+(6) `idea.module.generatedSourceDirs`
+
+* IntelliJ IDEA가 generate된 디렉토리를 소스 디렉토리로 인식할 수 있도록 지정합니다.
+* 이 설정이 없을 경우 매번 해당 디렉토리를 IDEA가 인식할 수 있도록 수동 작업을 해야하는데, 이를 방지해줍니다.
+
+(7) `clean.doLast`
+
+* Gradle `clean` 수행시 SQL QClass 생성 디렉토리도 함께 삭제되도록 설정합니다.
+
+이렇게 해서 전체 코드는 다음과 같습니다.
 
 ```groovy
 plugins {
@@ -202,7 +295,16 @@ clean.doLast {
 }
 ```
 
+위와 같이 설정할 경우 이후 **완전히 설정이 끝나고 QClass 생성하면** 아래와 같이 generate 디렉토리들이 생성됩니다.
+
+> 현재는 안됩니다.  
+> Java 설정이 별도로 필요합니다.
+
 ![module3](./images/module3.png)
+
+사진에 있던것 처럼 별도 Config 클래스들을 설정해보겠습니다.
+
+> QuerydslConfiguration은 Querydsl-JPA를 위한 것이니 이 글에서는 설정하지 않습니다.
 
 **entity 모듈 - EntityQlConfiguration**
 
