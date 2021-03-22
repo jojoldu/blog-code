@@ -331,13 +331,13 @@ import javax.sql.DataSource;
 public class EntityQlConfiguration {
 
     @Bean
-    @Profile("local")
+    @Profile("local") // (1)
     public SQLTemplates h2SqlTemplates() {
         return new H2Templates();
     }
 
     @Bean
-    @Profile("!local")
+    @Profile("!local") // (2)
     public SQLTemplates mySqlTemplates() {
         return new MySQLTemplates();
     }
@@ -350,11 +350,69 @@ public class EntityQlConfiguration {
         configuration.register(new LocalDateType());
 
         return new EntityQlQueryFactory(configuration, dataSource)
-                .registerEnumsByName("com.jojoldu.blogcode.entityql.entity.domain.academy");
+                .registerEnumsByName("com.jojoldu.blogcode.entityql.entity.domain.academy"); // (3)
     }
 }
 ```
 
+
+(1) `h2SqlTemplates`
+
+* Querydsl-SQL에서 필요한 SqlTemplate을 등록합니다.
+* 현재 제 환경에서는 Local에서는 H2 DB를 사용하고, 그 외 환경에서는 MySQL을 사용하니 이 둘을 분리하여 등록합니다.
+
+(2) `mySqlTemplates`
+
+* Local 환경 외에 사용할 MySQL용 SqlTemplate을 등록합니다.
+
+(3) `registerEnumsByName`
+
+* EntityQL은 Enum 인식을 위해서 별도로 해당 **Enum들이 위치한 패키지**를 등록 해야 합니다.
+* 도메인별로 사용하는 Enum 패키지들이 별도로 있다면 해당 패키지들을 모두 등록해야합니다.
+
+마지막으로 설정할 것은 `EntityMapper` 입니다.  
+Querydsl-SQL에서는 공식적으로 인스턴스의 필드와 테이블의 컬럼을 매핑하기 위해서 2가지를 지원합니다.
+
+* Map을 이용한 직접 등록
+* 오브젝트 단위의 매핑을 위한 `BeanMapper`
+
+당연히 오브젝트 단위의 코드 작성할 일이 많기 때문에 `BeanMapper` 을 사용해야하는데, 생각과는 다르게 작동하는 것을 알 수 있습니다.
+
+```java
+@Test
+void notSearchPropertyIfUsingBeanMapper() throws Exception {
+    String phoneNumber = "010-xxxx-xxxx";
+    Academy obj = Academy.builder().phoneNumber(phoneNumber).build();
+
+    BeanMapper mapper = BeanMapper.DEFAULT;
+    Map<Path<?>, Object> result = mapper.createMap(EAcademy.qAcademy, obj);
+
+    assertThat(result.containsValue(phoneNumber)).isFalse();
+}
+```
+
+위 테스트 코드는 `phoneNumber` 가 오브젝트에 등록되어있음에도 테스트가 통과합니다.  
+(`.isFalse()` 가 있어서 `phoneNumber`가 SQL 쿼리로 잘 생성되었다면 **테스트는 실패**해야만 하는데도 말이죠.) 
+
+![beanmapper](./images/beanmapper.png)
+
+실제 Javadoc을 보면 다음과 같이 **필드명과 컬럼명이 일치해야만 되는 것을 확인할 수 있습니다**.
+
+```
+Creates the mapping by inspecting object via bean inspection.
+Given bean doesn't need to have @Column metadata, but the fields need to have the same name as in the given relational path.
+```
+
+번역하면 다음과 같습니다.
+
+```
+Bean 검사를 통해 객체를 검사하여 매핑을 생성합니다. 
+주어진 bean은 @Column 메타 데이터를 가질 필요가 없지만 필드는 주어진 관계형 경로에서와 같은 이름을 가져야합니다.
+```
+
+하지만 JPA를 이용한 매핑에서는 일반적으로는 카멜케이스 (자바 오브젝트 필드)- 언더스코어(테이블 컬럼) 매핑이기 때문에 **카멜케이스 필드들은 무조건 테이블 쿼리에 포함되지 않게 됩니다**.  
+  
+그래서 이를 해결하기 위해 JPA의 `@Column`에 선언된 `name` 필드와 자바 오브젝트 필드를 매핑시킬 수 있는 별도의 Mapper를 만들어서 사용합니다.
 
 **entity 모듈 - EntityMapper**
 
@@ -474,12 +532,15 @@ public class EntityMapper implements Mapper<Object> {
 
 #### sql 모듈
 
-## 예제 코드
+## 테스트
+
+### EntityMapper 테스트
 
 
-### 성능 테스트
+### Bulk Insert 성능 테스트
 
 ![test1](./images/test1.png)
+
 **7.8초**
 
 ![test2](./images/test2.png)
@@ -510,13 +571,15 @@ public class EntityMapper implements Mapper<Object> {
 
 ## 이슈 케이스
 
+설정을 하다보면 다음과 같은 이슈가 발생할 수 있습니다.
 
 ```java
 Caused by: java.lang.NoSuchMethodError: com.google.common.collect.Sets$SetView.iterator()Lcom/google/common/collect/UnmodifiableIterator;
 ```
 
-이럴 경우 `reflections:0.9.11` 에서 필요한 Guava의 버전이 `20.0` 인데, 현재 프로젝트의 다른 의존성 때문에 Guava가 다른 버전으로 의존하고 있을 경우에 발생한다. 
-이럴 경우 아래와 같이 강제로 Guava 버전을 고정한다.
+이럴 경우 `reflections:0.9.11` 에서 필요한 Guava의 버전이 `20.0` 인데, 현재 프로젝트의 다른 의존성 때문에 Guava가 다른 버전으로 의존하고 있을 경우에 발생합니다.  
+
+이럴 경우 아래와 같이 강제로 **Guava 버전을 고정**하시면 됩니다.
 
 ```groovy
 configurations {
