@@ -410,9 +410,10 @@ Bean 검사를 통해 객체를 검사하여 매핑을 생성합니다.
 주어진 bean은 @Column 메타 데이터를 가질 필요가 없지만 필드는 주어진 관계형 경로에서와 같은 이름을 가져야합니다.
 ```
 
-하지만 JPA를 이용한 매핑에서는 일반적으로는 카멜케이스 (자바 오브젝트 필드)- 언더스코어(테이블 컬럼) 매핑이기 때문에 **카멜케이스 필드들은 무조건 테이블 쿼리에 포함되지 않게 됩니다**.  
+하지만 JPA를 이용한 매핑에서는 일반적으로는 카멜케이스 (자바 오브젝트 필드)- 언더스코어(테이블 컬럼) 매핑이기 때문에 **카멜케이스 필드들은 테이블 쿼리에 포함되지 않게 됩니다**.  
+(예를 들어 `phoneNo : phone_no` 로 된 경우가 됩니다.)  
   
-그래서 이를 해결하기 위해 JPA의 `@Column`에 선언된 `name` 필드와 자바 오브젝트 필드를 매핑시킬 수 있는 별도의 Mapper를 만들어서 사용합니다.
+그래서 이를 해결하기 위해 JPA의 `@Column`에 선언된 `name` 필드와 자바 오브젝트 필드를 매핑시킬 수 있는 **별도의 Mapper**를 만들어서 사용합니다.
 
 **entity 모듈 - EntityMapper**
 
@@ -468,6 +469,7 @@ public class EntityMapper implements Mapper<Object> {
         }
     }
 
+    // @Embedded 로 지정된 오브젝트들의 필드들을 테이블 컬럼으로 매핑한다.
     void putByEmbedded(Object object, Map<String, Path<?>> columnToPath, Map<Path<?>, Object> values, Field field) throws IllegalAccessException {
         Embedded ann = field.getAnnotation(Embedded.class);
         if (ann != null) {
@@ -481,6 +483,7 @@ public class EntityMapper implements Mapper<Object> {
         }
     }
 
+    // @Column (name) 값을 매핑할 수 있도록 한다.
     void putByColumn(Object object, Map<String, Path<?>> columnToPath, Map<Path<?>, Object> values, Field field) throws IllegalAccessException {
         Column ann = field.getAnnotation(Column.class);
         if (ann != null) {
@@ -497,6 +500,7 @@ public class EntityMapper implements Mapper<Object> {
         }
     }
 
+    // @JoinColumn 이 있을 경우 참조하는 오브젝트의 Key를 사용할 수 있도록 지정한다.
     void putByJoinColumn(Object object, Map<String, Path<?>> columnToPath, Map<Path<?>, Object> values, Field field) throws IllegalAccessException {
         JoinColumn ann = field.getAnnotation(JoinColumn.class);
         if (ann != null) {
@@ -529,6 +533,20 @@ public class EntityMapper implements Mapper<Object> {
     }
 }
 ```
+
+위 EntityMapper를 통해 다음의 Scan 규칙을 가지게 됩니다.
+
+* `@Column(name=)` 에 지정된 `name` 이 테이블의 컬럼이 됩니다.
+  * 선언된 어노테이션의 필드와 테이블의 컬럼이 매핑됩니다.
+* `@JoinColumn(name=, referencedColumnName=)` 으로 선언해서 사용합니다.
+  * `name`, `referencedColumnName` 은 **필수로 지정**되야 합니다.
+  * `name`은 테이블의 컬럼명이 됩니다.
+  * `referencedColumnName`은 **연관된 오브젝트의 어느 필드를 JoinKey로 사용할 지** 지정합니다.
+* `@Embedded` 로 선언된 오브젝트의 경우 다시 해당 오브젝트의 `@Column(name=)`, `@JoinColumn` 를 탐색하여 테이블의 컬럼으로 등록됩니다.
+
+
+여기까지 하셨으면 EntityQL에 대한 설정은 끝났습니다.  
+그럼 이제 EntityQL을 이용한 Repository 코드를 만들어보겠습니다.
 
 #### sql 모듈
 
