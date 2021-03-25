@@ -87,7 +87,7 @@ EntityQL은 **JPA의 어노테이션을 기반으로 Querydsl-SQL QClass를 생�
 아직까지 대중화된 프로젝트는 아니지만, [Querydsl Github Issue](https://github.com/querydsl/querydsl/issues/2459#issuecomment-567652568)에서 어느정도의 호응이 있음을 볼 수 있습니다.  
 
 
-## 2. 설치
+## 2. 적용
 
 일단 설치하기에 앞서 Gradle 환경에서 사용하기 위한 몇 가지 제약조건을 먼저 소개 드리겠습니다.
 
@@ -544,8 +544,145 @@ public class EntityMapper implements Mapper<Object> {
   * `referencedColumnName`은 **연관된 오브젝트의 어느 필드를 JoinKey로 사용할 지** 지정합니다.
 * `@Embedded` 로 선언된 오브젝트의 경우 다시 해당 오브젝트의 `@Column(name=)`, `@JoinColumn` 를 탐색하여 테이블의 컬럼으로 등록됩니다.
 
-
 여기까지 하셨으면 EntityQL에 대한 설정은 끝났습니다.  
+이제 EntityQL 스캔이 가능하도록 Entity 설정을 해보겠습니다.
+
+### 2-3. Entity 적용
+
+Entity 적용시에는 아래 유의사항들을 유의해주셔야 합니다.
+
+* 스캔대상으로 지정된 테이블 (`build.gradle`) 은 모두 `@Table`에 `name`이 선언되어있어야 합니다.
+* `@Column` 의 `name`이 모두 지정되어 있어야 합니다.
+* Index, Unique Key 선언문에서는 모두 `@Column(name)` 에 지정된 값을 써야합니다.
+  * ex) `@Index(name = "idx_academy_1", columnList = "phone_number")`
+* `@JoinColumn` 에는 `name` 과 `referencedColumnName` 이 모두 선언되어 있어야 합니다. 
+  * ex) `@JoinColumn(name = "academy_id", referencedColumnName = "id"`
+
+
+여기서는 2개의 Entity를 선언해서 사용해보겠습니다.
+
+**Academy**
+
+```java
+@Getter
+@NoArgsConstructor
+@Entity
+@Table(name = "academy",
+        indexes = {
+        @Index(name = "idx_academy_1", columnList = "phone_number")
+})
+public class Academy extends BaseTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "match_key")
+    private String matchKey;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private AcademyStatus status;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "academy")
+    private List<Student> students = new ArrayList<>();
+
+    @Builder
+    public Academy(String matchKey, String name, String address, String phoneNumber, AcademyStatus status) {
+        this.matchKey = matchKey;
+        this.name = name;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+    }
+
+    public Academy(String name, String address, String phoneNumber, AcademyStatus status) {
+        this.name = name;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+    }
+
+    public void addStudent(List<Student> students) {
+        for (Student student : students) {
+            addStudent(student);
+        }
+    }
+
+    public void addStudent(Student student) {
+        this.students.add(student);
+        student.setAcademy(this);
+    }
+
+    public void setMatchKey(String matchKey) {
+        this.matchKey = matchKey;
+    }
+}
+```
+
+**Student**
+
+```java
+@Getter
+@NoArgsConstructor
+@Entity
+@Table(name = "student")
+public class Student extends BaseTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
+    private Long id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "academy_no")
+    private Integer academyNo;
+
+    @ManyToOne
+    @JoinColumn(name = "academy_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_student_academy"))
+    private Academy academy;
+
+    @Builder
+    public Student(String name, int academyNo) {
+        this.name = name;
+        this.academyNo = academyNo;
+    }
+
+    public Student(String name, Integer academyNo, Academy academy) {
+        this.name = name;
+        this.academyNo = academyNo;
+        this.academy = academy;
+    }
+
+    public void setAcademy(Academy academy) {
+        this.academy = academy;
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public Student setBulkInsert (Academy academy, LocalDateTime now) {
+        setAcademy(academy);
+        setCurrentTime(now);
+
+        return this;
+    }
+}
+```
+
 그럼 이제 EntityQL을 이용한 Repository 코드를 만들어보겠습니다.
 
 #### sql 모듈
@@ -556,6 +693,9 @@ public class EntityMapper implements Mapper<Object> {
 
 
 ### Bulk Insert 성능 테스트
+
+> 성능 테스트시 주의할 점은 H2에서가 아닌 **MySQL**에서 테스트를 해봐야 합니다.  
+> 
 
 ![test1](./images/test1.png)
 

@@ -1,1 +1,9 @@
+# 아래 주소는 모두 임의입니다.
+# `rewriteBatchedStatements` 옵션만 봐주세요.
 
+spring:
+  datasource:
+    hikari:
+      jdbc-url: jdbc:mysql:aurora://test.cluster-test.ap-northeast-2.rds.amazonaws.com:3306/test?rewriteBatchedStatements=true
+      username: test
+      password: test
