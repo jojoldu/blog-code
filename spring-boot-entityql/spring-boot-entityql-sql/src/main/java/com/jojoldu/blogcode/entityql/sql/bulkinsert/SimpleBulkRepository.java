@@ -28,17 +28,17 @@ public abstract class SimpleBulkRepository<T> {
 
         int index = 1;
         for (List<T> subSet : subSets) {
-            insertTxItems(subSet);
+            insertItems(subSet);
             log.info("{}번째 처리 - {}건", index++, subSet.size());
         }
     }
 
-    private void insertTxItems(List<T> subSet) {
-        SQLInsertClause item = sqlQueryFactory.insert(relationalPath);
-        for (T txItem : subSet) {
-            item.populate(txItem, EntityMapper.DEFAULT).addBatch();
+    private void insertItems(List<T> subSet) {
+        SQLInsertClause insert = sqlQueryFactory.insert(relationalPath);
+        for (T item : subSet) {
+            insert.populate(item, EntityMapper.DEFAULT).addBatch();
         }
-        item.execute();
-        item.clear();
+        insert.execute();
+        insert.clear();
     }
 }
