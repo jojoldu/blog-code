@@ -398,14 +398,14 @@ void notSearchPropertyIfUsingBeanMapper() throws Exception {
 
 실제 Javadoc을 보면 다음과 같이 **필드명과 컬럼명이 일치해야만 되는 것을 확인할 수 있습니다**.
 
-```
+```bash
 Creates the mapping by inspecting object via bean inspection.
 Given bean doesn't need to have @Column metadata, but the fields need to have the same name as in the given relational path.
 ```
 
 번역하면 다음과 같습니다.
 
-```
+```bash
 Bean 검사를 통해 객체를 검사하여 매핑을 생성합니다. 
 주어진 bean은 @Column 메타 데이터를 가질 필요가 없지만 필드는 주어진 관계형 경로에서와 같은 이름을 가져야합니다.
 ```

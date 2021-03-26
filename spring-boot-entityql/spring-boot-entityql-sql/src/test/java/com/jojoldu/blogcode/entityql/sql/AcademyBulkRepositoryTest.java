@@ -3,16 +3,13 @@ package com.jojoldu.blogcode.entityql.sql;
 import com.jojoldu.blogcode.entityql.entity.domain.academy.Academy;
 import com.jojoldu.blogcode.entityql.entity.domain.academy.AcademyRepository;
 import com.jojoldu.blogcode.entityql.entity.domain.academy.AcademyStatus;
-import com.jojoldu.blogcode.entityql.sql.bulkinsert.academy.AcademyBulkRepository;
+import com.jojoldu.blogcode.entityql.sql.bulkinsert.academy.AcademyAndStudentBulkRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -23,10 +20,10 @@ import java.util.stream.IntStream;
  * Github : http://github.com/jojoldu
  */
 @SpringBootTest
-public class AcademyBulkRepositoryTest {
+class AcademyBulkRepositoryTest {
 
     @Autowired
-    private AcademyBulkRepository academyBulkRepository;
+    private AcademyAndStudentBulkRepository academyBulkRepository;
 
     @Autowired
     private AcademyRepository academyRepository;
@@ -52,7 +49,7 @@ public class AcademyBulkRepositoryTest {
     }
 
     @Test
-    void bulk_test() throws Exception {
+    void entytlql_bulk_test() throws Exception {
         academyBulkRepository.saveAll(academies);
     }
 }
