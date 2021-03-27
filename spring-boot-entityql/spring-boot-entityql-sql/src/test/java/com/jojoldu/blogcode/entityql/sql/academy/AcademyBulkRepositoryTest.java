@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.entityql.sql;
+package com.jojoldu.blogcode.entityql.sql.academy;
 
 import com.jojoldu.blogcode.entityql.entity.domain.academy.Academy;
 import com.jojoldu.blogcode.entityql.entity.domain.academy.AcademyRepository;
