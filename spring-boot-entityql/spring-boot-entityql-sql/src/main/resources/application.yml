@@ -1,1 +1,3 @@
-
+logging:
+  level:
+    org.springframework.jdbc.core: DEBUG

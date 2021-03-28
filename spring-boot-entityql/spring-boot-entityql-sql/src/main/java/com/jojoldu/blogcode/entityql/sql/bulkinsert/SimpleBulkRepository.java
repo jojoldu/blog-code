@@ -38,7 +38,10 @@ public abstract class SimpleBulkRepository<T> {
         for (T item : subSet) {
             insert.populate(item, EntityMapper.DEFAULT).addBatch();
         }
-        insert.execute();
-        insert.clear();
+
+        if(!insert.isEmpty()) {
+            insert.execute();
+            insert.clear();
+        }
     }
 }

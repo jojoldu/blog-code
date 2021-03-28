@@ -37,13 +37,14 @@ public class AcademyBulkRepository {
         // MySQL의 max_allowed_packet을 고려하여 1천건씩 끊어서 처리한다.
         List<List<Academy>> subSets = Lists.partition(entities, chunkSize);
 
-        int index=1;
+        int index = 1;
         for (List<Academy> subSet : subSets) {
             LocalDateTime now = LocalDateTime.now();
             for (Academy entity : subSet) {
                 entity.setCurrentTime(now); // audit가 지원 안되니 직접 구현한다.
                 insert.populate(entity, EntityMapper.DEFAULT).addBatch();
             }
+
             insert.execute();
             insert.clear(); // clear하지 않으면 앞의 데이터가 그대로 저장되어있다.
             log.info("Academy {}번째 처리 - {}건", index++, subSet.size());

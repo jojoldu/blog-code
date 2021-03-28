@@ -12,11 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -77,12 +75,13 @@ public class AcademyAndStudentBulkRepository {
     void insertChildren(AcademyUniqueMatcher matcher, List<Academy> idAcademies, LocalDateTime now) {
         SQLInsertClause insert = sqlQueryFactory.insert(EStudent.qStudent);
 
-        List<Student> students = idAcademies.stream()
-                .flatMap(idAcademy -> matcher.get(idAcademy, now).stream())
-                .peek(student -> insert.populate(student, EntityMapper.DEFAULT).addBatch())
-                .collect(Collectors.toList());
+        for (Academy idAcademy : idAcademies) {
+            for (Student student : matcher.get(idAcademy, now)) {
+                insert.populate(student, EntityMapper.DEFAULT).addBatch();
+            }
+        }
 
-        if(!CollectionUtils.isEmpty(students)) { // count가 없을때 insert가 실행되면 values가 없는 쿼리가 수행되어 Exception 발생으로 트랜잭션 롤백 된다.
+        if(!insert.isEmpty()) { // count가 없을때 insert가 실행되면 values가 없는 쿼리가 수행되어 Exception 발생으로 트랜잭션 롤백 된다.
             insert.execute();
             insert.clear();
         }

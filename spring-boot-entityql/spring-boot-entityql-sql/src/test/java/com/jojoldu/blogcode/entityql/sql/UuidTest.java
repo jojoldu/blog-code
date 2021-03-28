@@ -6,14 +6,14 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 @Slf4j
-public class UuidTest {
+class UuidTest {
 
     /**
      *
      * 1000개 생성하는데 24ms (0.024초)
      */
     @Test
-    public void uuid_생성속도() throws Exception {
+    void uuid_생성속도() throws Exception {
         //given
         long t0 = System.currentTimeMillis();
         for (int i = 0; i < 1_000; i++) {

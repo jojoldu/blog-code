@@ -59,7 +59,7 @@ INSERT INTO person (name) VALUES
     * JPA 기반이 아니라서 **어노테이션 기반이 아닌 실제 테이블을 Scan**해야만 합니다.
       * 애플리케이션이 실행되면 JPA 어노테이션 기반으로 자동으로 QClass가 생성되는 Querydsl-JPA 와 달리 SQL의 경우 
     * 즉, 로컬 혹은 베타 DB를 **미리** 실행하고, Gradle 설정에는 **해당 DB의 접속 정보를 등록**해서 Querydsl-SQL이 테이블들을 scan 할 수 있도록 설정 되어야만 Gradle Task를 수행해서 QClass를 생성할 수 있습니다.
-      * 이건 JOOQ도 동일합니다.
+      * 이건 마찬가지로 테이블 Scan 방식을 사용하는 **JOOQ도 똑같은 단점**입니다.
 * 이렇게 Gradle을 통해 DB를 접근하는 방식이 힘들어 한번 만들어진 QClass를 버전관리 하여 재생성을 최소화 하려고 하는데 이러면 완전 안티패턴입니다.
     * 제너레이트 클래스를 버저닝하게 되면 불필요한 변경사항을 계속 커밋 로그로 관리하게 됩니다.
     * 특히나 같은 Entity 클래스의 변경이 있다면 Conflict 코드를 수동으로 해소하기가 어렵습니다.
@@ -95,6 +95,8 @@ EntityQL은 **JPA의 어노테이션을 기반으로 Querydsl-SQL QClass를 생�
 
 Gradle 기반 환경에서 EntityQL을 통해 Querydsl-SQL용 QClass를 생성한다면 크게 2가지 방법을 지원합니다.
 
+#### 수동 Generate
+
 1) 특정 패키지를 지정해서 해당 패키지 하위의 모든 Entity들을 자동으로 Generate
 2) **개별 클래스 하나하나의 위치를 등록해서 수동**으로 Generate
 
@@ -107,13 +109,17 @@ Gradle 기반 환경에서 EntityQL을 통해 Querydsl-SQL용 QClass를 생성�
 * 이건 EntityQL 하나를 위해 시스템의 근간이 되는 도메인 Layer 분리를 해야되는 상황이라 저는 원하지 않는 방법입니다.
   * 그래서 Querydsl-SQL이 필요한 특정 Entity 클래스들만 지정해서 개별 지정해서 사용하는 방식을 선택했습니다.
 
-또 다른 문제로 **멀티모듈에서만 사용이 가능**하고, 단일 모듈에서는 불가능 하다는 것입니다.  
+#### 멀티모듈 강제화
+
+위 1번 문제로 인해서 수동으로 생성이 필요할 경우 **멀티모듈에서만 사용이 가능**하고, 단일 모듈에서는 불가능 하다는 것입니다.  
 이는 앞서 Gradle 플러그인을 통하지 않았기 때문인데, 직접 클래스 위치를 등록해서 사용하는 방식은 단일 모듈에서 사용할 수가 없습니다.  
   
 이유는 다음과 같습니다.  
 (EntityQL을 통해 생성된) Querydsl-SQL QClass를 사용하는 코드가 있으면 해당 QClass 삭제후 재생성을 진행할때 **컴파일 에러**가 발생합니다.  
 당연하게도 프로젝트 내에 사용되던 클래스가 없어지니 이후 compile이 모두 다 실패할 수 밖에 없습니다.  
   
+즉, QClass를 생성하는 `generateModel` Task는 `compileJava` Task를 우선 수행하는데, 이 `compileJava` Task가 실패하여 `generateModel` 가 수행되지 못하고, 결국엔 QClass 생성이 못하게 됩니다.  
+
 ![module1](./images/module1.png)
 
 그래서 멀티모듈로 구성하여, **실제 QClass 생성 모듈과 사용 모듈을 분리** 해서 QClass 생성 모듈을 통해 Generate 될때 컴파일 에러가 발생하지 않도록 해야 합니다.  
@@ -558,8 +564,12 @@ Entity 적용시에는 아래 유의사항들을 유의해주셔야 합니다.
 * `@JoinColumn` 에는 `name` 과 `referencedColumnName` 이 모두 선언되어 있어야 합니다. 
   * ex) `@JoinColumn(name = "academy_id", referencedColumnName = "id"`
 
+이렇게 Entity마다 해줘야할 설정들이 너무 많아서 저는 **BulkInsert가 필요한 Entity만** Scan 대상에 포함시킵니다.  
+  
+> EntityQL은 Bulk Insert 뿐만 아니라 JPQL로 표현하지 못하는 네이티브 쿼리를 Querydsl-SQL 용으로 전환하기 위한 용도입니다.  
+> 그래서 Bulk Insert만을 위해 이렇게 까지 해야하나? 라는 생각 보다는, 다른 네이티브 쿼리까지 호환하기 위해 이렇게 하는구나 로 보시는게 맞습니다.
 
-여기서는 2개의 Entity를 선언해서 사용해보겠습니다.
+여기서는 1개의 Entity를 선언해서 사용해보겠습니다.
 
 **Academy**
 
@@ -630,62 +640,78 @@ public class Academy extends BaseTimeEntity {
 }
 ```
 
-**Student**
+> 이번 포스팅에선 단일 Entity의 Bulk Insert만 보여드리고, 다음 포스팅에서 1:N 관계의 Bulk Insert를 보여드리겠습니다.
+  
+그럼 이제 EntityQL을 이용한 Repository 코드를 만들어보겠습니다.
+
+#### AcademyBulkRepository
+
+지금까지 core 모듈에서 모든 작업들을 진행해왔는데요.  
+이제 sql 모듈에서 Bulk Repository를 진행해보겠습니다.
+
+> 앞서 이야기한대로 QClass 생성되는 모듈과 QClass를 사용하는 Repository가 생성되는 모듈은 분리해야됩니다.
+> QClass를 생성하는 `generateModel` Task는 `compileJava` Task를 우선 수행하는데, 이 `compileJava` Task가 실패하여 `generateModel` 가 수행되지 못하고, 결국엔 QClass 생성이 못하게 되기 때문입니다.
+
+자 그럼 실제로 한번 Academy 를 Bulk Insert 할 수 있는 Repository를 생성해보겠습니다.
 
 ```java
-@Getter
-@NoArgsConstructor
-@Entity
-@Table(name = "student")
-public class Student extends BaseTimeEntity {
+import com.google.common.collect.Lists;
+...
+import com.querydsl.sql.SQLQueryFactory;
+import com.querydsl.sql.dml.SQLInsertClause;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private Long id;
+import java.time.LocalDateTime;
+import java.util.List;
 
-    @Column(name = "name")
-    private String name;
+@Slf4j
+@RequiredArgsConstructor
+@Repository
+@Transactional
+public class AcademyBulkRepository {
+    private static final Integer DEFAULT_CHUNK_SIZE = 1_000;
 
-    @Column(name = "academy_no")
-    private Integer academyNo;
+    private final SQLQueryFactory sqlQueryFactory;
 
-    @ManyToOne
-    @JoinColumn(name = "academy_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_student_academy"))
-    private Academy academy;
-
-    @Builder
-    public Student(String name, int academyNo) {
-        this.name = name;
-        this.academyNo = academyNo;
+    public void saveAll(List<Academy> entities) {
+        saveAll(entities, DEFAULT_CHUNK_SIZE);
     }
 
-    public Student(String name, Integer academyNo, Academy academy) {
-        this.name = name;
-        this.academyNo = academyNo;
-        this.academy = academy;
-    }
+    public void saveAll(List<Academy> entities, int chunkSize) {
+        SQLInsertClause insert = sqlQueryFactory.insert(EAcademy.qAcademy); // (1)
+        // MySQL의 max_allowed_packet을 고려하여 1천건씩 끊어서 처리한다.
+        List<List<Academy>> subSets = Lists.partition(entities, chunkSize);
 
-    public void setAcademy(Academy academy) {
-        this.academy = academy;
-    }
-
-    public void updateName(String name) {
-        this.name = name;
-    }
-
-    public Student setBulkInsert (Academy academy, LocalDateTime now) {
-        setAcademy(academy);
-        setCurrentTime(now);
-
-        return this;
+        int index=1;
+        for (List<Academy> subSet : subSets) {
+            LocalDateTime now = LocalDateTime.now();
+            for (Academy entity : subSet) {
+                entity.setCurrentTime(now); // audit가 지원 안되니 직접 구현한다.
+                insert.populate(entity, EntityMapper.DEFAULT).addBatch(); // (2)
+            }
+            insert.execute(); // (3)
+            insert.clear(); // (4) clear하지 않으면 앞의 데이터가 그대로 저장되어있다.
+            log.info("Academy {}번째 처리 - {}건", index++, subSet.size());
+        }
     }
 }
 ```
 
-그럼 이제 EntityQL을 이용한 Repository 코드를 만들어보겠습니다.
+(1) `sqlQueryFactory.insert(EAcademy.qAcademy)`
 
-#### sql 모듈
+(2) `insert.populate(entity, EntityMapper.DEFAULT).addBatch()`
+
+(3) `insert.execute()`
+
+(4) `insert.clear()`
+
+
+이렇게 생성되고 나서 마지막은 결국 다음과 같습니다.
+
+![module4](./images/module4.png)
 
 ## 테스트
 
@@ -707,25 +733,21 @@ public class Student extends BaseTimeEntity {
 
 ## 제한 사항
 
-아래는 공식적으로 EntityQL에서 지원하지 않는 기능입니다.
+아래는 공식적으로 **EntityQL에서 지원하지 않는 기능**입니다.  
 
-* 엔티티 @Table에는 테이블 이름과 (선택적으로) 스키마 이름이 포함 된 유효한 주석 이 있어야합니다.
+> 좀 더 자세한 내용은 [공식 저장소](https://github.com/eXsio/querydsl-entityql#Limits)를 참고해주세요.
 
-* 만 포함하는 필드 @Column, @JoinColumn또는 @JoinColumns주석 DB 메타 데이터 소스로 EntityQL에 볼 수 있습니다
+여러 제약이 있지만, 그 중에 꼭 알고 가셔야할 것은 다음과 같습니다.
 
-* JPA 관계를 처리 할 때 역 조인 열이 생성됩니다. 양방향 및 단방향 @OneToOne이며 @OneToMany 단순 및 복합 키 모두에 대해 완벽하게 지원됩니다.
+* `@ManyToMany`를 지원하지 않습니다.
+* `@JoinTable`를 지원하지 않습니다.
 
-* 쿼리에서 자바 열거 형을 사용하려면, 열거 클래스는 QueryDSL의가에 등록해야 Configuration::register 사용 EnumType. 또는 제공된 EntityQlQueryFactory. 원하는 패키지의 모든 열거 형을 등록합니다.
+이유는 이 두 어노테이션은 **중간 조인 테이블을 선언해서 사용하지 않기** 때문입니다.  
+즉, 프로젝트 코드 상에서 중간 조인 테이블과 매핑될 Entity 클래스 (물리적 Entity 클래스) 가 없고, JPA의 마법같은 코드의 힘을 빌리지 않고서는 **Querydsl-SQL 모델을 생성할 방법이 없기** 때문입니다.  
+  
+그래서 `@ManyToMany`와 `@JoinTable` 은 EntityQL이 지원하지 않으니, 이 점 유의해서 `@OneToOne`, `@ManyToOne`, `@OneToMany` 에서만 Bulk Insert를 적용하시면 됩니다.
 
-* UUID를 사용하려면 UtilUUIDTypeQueryDSL 에 등록해야합니다.Configuration::register
-
-* 부울을 사용하려면 BooleanTypeQueryDSL 에 등록해야합니다.Configuration::register
-
-* 복합 기본 키는로 Serializable @Entity주석이 추가 된 여러 필드 가있는 형태로만 지원됩니다 @Id. 포함 된 클래스 및 ID는 지원되지 않습니다.
-
-* 복합 외래 키는 @JoinColumns주석을 통해 지원됩니다 .
-
-* 유일하게 지원되지 않는 JPA 관계이다 @ManyToMany와 함께 @JoinTable. 그 이유는 자동 생성 된 조인 테이블에는 물리적 Entity 클래스가없고 내가 피하고 싶은 많은 마법 없이는 모델을 생성 할 가능성이 없기 때문입니다. @ManyToMany매핑 과 함께 EntityQL을 사용하려는 경우 @Immutable @Entity에서 구성된 테이블과 일치 하는를 만들 수 있습니다. @JoinTable예를 들면 다음과 같습니다.
+> 위 2개의 경우에는 `JdbcTemplate`으로 직접 구현하시면 됩니다.
 
 ## 이슈 케이스
 
