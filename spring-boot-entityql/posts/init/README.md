@@ -641,7 +641,26 @@ public class Academy extends BaseTimeEntity {
 ```
 
 > 이번 포스팅에선 단일 Entity의 Bulk Insert만 보여드리고, 다음 포스팅에서 1:N 관계의 Bulk Insert를 보여드리겠습니다.
-  
+
+#### generateModels
+
+자 모든 설정이 되었으니 한번 QClass를 생성해보겠습니다.  
+Gradle Task 창을 열어 `entity 모듈` -> `Tasks` -> `build` -> `generateModels` 를 실행합니다.
+
+![generateModels](./images/generateModels.png)
+
+아래와 같이 생성이 성공하게 되면
+
+```bash
+BUILD SUCCESSFUL in 7s
+1 actionable task: 1 executed
+9:07:30 오후: Task execution finished 'generateModels'.
+```
+
+core 모듈의 `generated_sql` 디렉토리에는 다음과 같이 `E` 클래스 (Querydsl-SQL의 QClass) 가 생성됩니다. 
+
+![generateModels2](./images/generateModels2.png)
+
 그럼 이제 EntityQL을 이용한 Repository 코드를 만들어보겠습니다.
 
 #### AcademyBulkRepository
@@ -702,36 +721,198 @@ public class AcademyBulkRepository {
 
 (1) `sqlQueryFactory.insert(EAcademy.qAcademy)`
 
+* Insert 쿼리를 수행하는 `SQLInsertClause` 인스턴스를 생성합니다.
+* 메소드 인자로는 어느 테이블을 대상으로 할지 SQL QClass를 지정합니다.
+
 (2) `insert.populate(entity, EntityMapper.DEFAULT).addBatch()`
+
+* `EntityMapper`를 통해 SQL 쿼리를 생성하여 Insert 합치기 (`addBatch`) 를 합니다.
 
 (3) `insert.execute()`
 
+* 합쳐진 Insert 쿼리를 실행합니다.
+
 (4) `insert.clear()`
 
+* 실행된 쿼리를 `SQLInsertClause` 인스턴스에서 초기화를 시킵니다.
+* 이렇게 하지 않으면 `SQLInsertClause` 인스턴스에 해당 쿼리들이 그대로 남아 **다음 실행시 앞의 쿼리들까지 중복** 포함됩니다.
 
-이렇게 생성되고 나서 마지막은 결국 다음과 같습니다.
+해당 Repository까지 생성하고나면 프로젝트 구조는 아래와 같이 됩니다.
 
 ![module4](./images/module4.png)
 
-## 테스트
+자 그럼 해당 기능이 정상적으로 되는지 테스트 해보겠습니다.
 
-### EntityMapper 테스트
+## 3. 테스트
 
+신규 추가된 클래스들을 차례로 테스트 해보겠습니다.
 
-### Bulk Insert 성능 테스트
+### 3-1. EntityMapper 테스트
 
-> 성능 테스트시 주의할 점은 H2에서가 아닌 **MySQL**에서 테스트를 해봐야 합니다.  
-> 
+먼저 QClass를 SQL 쿼리로 전환해주는 EntityMapper를 테스트 해보겠습니다.
+
+> 해당 테스트는 `core` 모듈에서 진행됩니다.
+ 
+```java
+class EntityMapperTest {
+
+    @Test
+    void notSearchPropertyIfUsingBeanMapper() throws Exception {
+        String phoneNumber = "010-xxxx-xxxx";
+        Academy obj = Academy.builder().phoneNumber(phoneNumber).build();
+
+        BeanMapper mapper = BeanMapper.DEFAULT;
+        Map<Path<?>, Object> result = mapper.createMap(EAcademy.qAcademy, obj);
+
+        assertThat(result.containsValue(phoneNumber)).isFalse();
+    }
+
+    @Test
+    void searchPropertyIfUsingBeanMapper() throws Exception {
+        String phoneNumber = "010-xxxx-xxxx";
+        Academy obj = Academy.builder().phoneNumber(phoneNumber).build();
+
+        EntityMapper mapper = EntityMapper.DEFAULT;
+        Map<Path<?>, Object> result = mapper.createMap(EAcademy.qAcademy, obj);
+
+        assertThat(result).containsValue(phoneNumber);
+    }
+
+    @Test
+    void nullBindingIfUsingBeanMapper() throws Exception {
+        String phoneNumber = "010-xxxx-xxxx";
+        Academy obj = Academy.builder().phoneNumber(phoneNumber).build();
+
+        EntityMapper mapper = EntityMapper.WITH_NULL_BINDINGS;
+        Map<Path<?>, Object> result = mapper.createMap(EAcademy.qAcademy, obj);
+
+        assertThat(result)
+                .containsValue(phoneNumber)
+                .containsValue(Null.DEFAULT);
+    }
+}
+```
+
+![mappertest](./images/mappertest.png)
+
+EntityMapper의 기능 확인이 모두 되셨다면, 이제 대망의 성능 테스트를 진행해보겠습니다.
+
+### 3-2. Bulk Insert 성능 테스트
+
+성능 테스트시 주의할 점은 Insert 합치기 옵션 활성화를 위해 H2가 아닌 **MySQL**에서 테스트를 해봐야 합니다.  
+
+> 해당 테스트는 `sql` 모듈에서 진행됩니다.
+
+JPA와 비교를 위해 테스트는 `JPA.saveAll`과 `BulkRepository.saveAll` 2개를 모두 수행합니다.
+
+```java
+    @Autowired
+    private AcademyBulkRepository academyBulkRepository;
+
+    @Autowired
+    private AcademyRepository academyRepository;
+
+    List<Academy> academies;
+
+    @BeforeEach
+    void setUp() {
+        academies = IntStream.rangeClosed(1, 10_000)
+                .boxed()
+                .map(i -> new Academy("name"+i, "address"+i, "010-0000-0000", AcademyStatus.ON))
+                .collect(Collectors.toList());
+    }
+
+    @AfterEach
+    void after() {
+        academyRepository.deleteAll();
+    }
+
+    @Test
+    void jpa_saveAll_test() throws Exception {
+        academyRepository.saveAll(academies);
+    }
+
+    @Test
+    void entytlql_bulk_test() throws Exception {
+        academyBulkRepository.saveAll(academies);
+    }
+```
+
+**JPA.saveAll**
 
 ![test1](./images/test1.png)
 
-**7.8초**
+**BulkRepository.saveAll**
 
 ![test2](./images/test2.png)
 
-**0.44초**
+비교해보면 총 7.8초 vs **0.44초**로 대략 20배 정도 나는데, 실상 데이터수가 많으면 수백배 차이가 나기도 합니다.
 
-## 제한 사항
+## 4. 추가 Tip
+
+아래는 EntityQL을 사용하면서 알고 가시면 좋을 Tip들의 모음입니다.
+
+### 4-1. 단일 Entity들을 위한 추상화 Repository
+
+단일 Entity들의 Bulk Insert 기능이 계속 추가가 필요하다면 아래와 같이 추상화된 Bulk Repository를 만들어 편하게 추가할 수 있습니다.
+
+> 이 방식은 `@OneToMany` 등에서는 사용할 수 없습니다.  
+> **단일 Entity** 들에서만 쓸 수 있습니다.
+
+**SimpleBulkRepository**
+
+```java
+@Slf4j
+@RequiredArgsConstructor
+public abstract class SimpleBulkRepository<T> {
+
+    private static final Integer DEFAULT_CHUNK_SIZE = 1_000;
+
+    private final SQLQueryFactory sqlQueryFactory;
+    private final RelationalPath<?> relationalPath;
+
+    public void saveAll(List<T> entities) {
+        saveAll(entities, DEFAULT_CHUNK_SIZE);
+    }
+
+    public void saveAll(List<T> entities, int chunkSize) {
+        List<List<T>> subSets = Lists.partition(entities, chunkSize);
+
+        int index = 1;
+        for (List<T> subSet : subSets) {
+            insertItems(subSet);
+            log.info("{}번째 처리 - {}건", index++, subSet.size());
+        }
+    }
+
+    private void insertItems(List<T> subSet) {
+        SQLInsertClause insert = sqlQueryFactory.insert(relationalPath);
+        for (T item : subSet) {
+            insert.populate(item, EntityMapper.DEFAULT).addBatch();
+        }
+
+        if(!insert.isEmpty()) { 
+            insert.execute();
+            insert.clear();
+        }
+    }
+}
+```
+
+이렇게 추상화된 Repository는 아래와 같이 확장(`extends`)해서 사용할 수 있습니다.
+
+```java
+@Repository
+@Transactional
+public class AcademySimpleBulkRepository extends SimpleBulkRepository {
+
+    public AcademySimpleBulkRepository(SQLQueryFactory sqlQueryFactory) {
+        super(sqlQueryFactory, EAcademy.qAcademy);
+    }
+}
+```
+
+### 4-2. 제한 사항
 
 아래는 공식적으로 **EntityQL에서 지원하지 않는 기능**입니다.  
 
@@ -749,7 +930,7 @@ public class AcademyBulkRepository {
 
 > 위 2개의 경우에는 `JdbcTemplate`으로 직접 구현하시면 됩니다.
 
-## 이슈 케이스
+### 4-3. 이슈 케이스
 
 설정을 하다보면 다음과 같은 이슈가 발생할 수 있습니다.
 
@@ -772,3 +953,12 @@ configurations {
     }
 }
 ```
+
+## 5. 마무리
+
+JPA와 Querydsl-JPA에 비해서 너무 과한 설정으로 인해 부담감이 있으실텐데요.  
+저 역시도 이런 단점들이 너무 크게 느껴져 웬만해선 주변에 꼭 써야할 기술이라고 소개하진 않습니다.  
+다만, `JdbcTemplate`으로 매번 Bulk Insert 구현의 어지러움을 느끼는 분이라면 과하지만 한번만 설정하면 이후엔 운영하기가 너무 쉬운 EntityQL을 한번 고민해보셔도 좋을것 같습니다.  
+  
+이번 편에서는 EntityQL로 **단일 엔티티**의 Bulk Insert만 구현해보았는데요.    
+다음 시간에는 `@OneToMany` 등에서 어떻게 Bulk Insert 구현이 가능한지 소개드리겠습니다.

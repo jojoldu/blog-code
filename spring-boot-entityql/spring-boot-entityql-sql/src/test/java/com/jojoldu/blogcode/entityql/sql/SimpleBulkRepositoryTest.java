@@ -1,16 +1,17 @@
-package com.jojoldu.blogcode.entityql.sql.academy;
+package com.jojoldu.blogcode.entityql.sql;
 
 import com.jojoldu.blogcode.entityql.entity.domain.academy.Academy;
 import com.jojoldu.blogcode.entityql.entity.domain.academy.AcademyRepository;
 import com.jojoldu.blogcode.entityql.entity.domain.academy.AcademyStatus;
 import com.jojoldu.blogcode.entityql.sql.bulkinsert.academy.AcademyBulkRepository;
+import com.jojoldu.blogcode.entityql.sql.bulkinsert.academy.AcademySimpleBulkRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -21,11 +22,10 @@ import java.util.stream.IntStream;
  * Github : http://github.com/jojoldu
  */
 @SpringBootTest
-@ActiveProfiles("dev")
-class DevAcademyBulkRepositoryTest {
+class SimpleBulkRepositoryTest {
 
     @Autowired
-    private AcademyBulkRepository academyBulkRepository;
+    private AcademySimpleBulkRepository academySimpleBulkRepository;
 
     @Autowired
     private AcademyRepository academyRepository;
@@ -46,12 +46,12 @@ class DevAcademyBulkRepositoryTest {
     }
 
     @Test
-    void jpa_saveAll_test() throws Exception {
-        academyRepository.saveAll(academies);
+    void entytlql_bulk_test() throws Exception {
+        academySimpleBulkRepository.saveAll(academies);
     }
 
     @Test
-    void entytlql_bulk_test() throws Exception {
-        academyBulkRepository.saveAll(academies);
+    void 데이터가_없을경우_insert쿼리가_실행되지않는다() throws Exception {
+        academySimpleBulkRepository.saveAll(new ArrayList<>());
     }
 }

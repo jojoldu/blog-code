@@ -51,14 +51,14 @@ public class AcademyAndStudentBulkRepository {
         for (List<Academy> subSet : subSets) { // 10만건 save가 필요하면 1천건씩 나눠서 bulk insert
 
             LocalDateTime now = LocalDateTime.now(); // 1천건 단위로 audit time 갱신
-            List<Academy> savedItems = insertParents(subSet, now);
-            insertChildren(matcher, savedItems, now);
+            List<Academy> savedItems = insertAcademies(subSet, now);
+            insertStudents(matcher, savedItems, now);
             log.info("{}번째 처리 - {}건", index++, subSet.size());
         }
     }
 
     // id가 발급된 Academy
-    public List<Academy> insertParents(List<Academy> academies, LocalDateTime now) {
+    public List<Academy> insertAcademies(List<Academy> academies, LocalDateTime now) {
         SQLInsertClause insert = sqlQueryFactory.insert(EAcademy.qAcademy);
 
         for (Academy academy : academies) {
@@ -72,7 +72,7 @@ public class AcademyAndStudentBulkRepository {
         return txItemCollectorRepository.findAllByIds(ids);
     }
 
-    void insertChildren(AcademyUniqueMatcher matcher, List<Academy> idAcademies, LocalDateTime now) {
+    void insertStudents(AcademyUniqueMatcher matcher, List<Academy> idAcademies, LocalDateTime now) {
         SQLInsertClause insert = sqlQueryFactory.insert(EStudent.qStudent);
 
         for (Academy idAcademy : idAcademies) {
@@ -81,7 +81,8 @@ public class AcademyAndStudentBulkRepository {
             }
         }
 
-        if(!insert.isEmpty()) { // count가 없을때 insert가 실행되면 values가 없는 쿼리가 수행되어 Exception 발생으로 트랜잭션 롤백 된다.
+        // count가 없을때 insert가 실행되면 values가 없는 쿼리가 수행되어 Exception 발생으로 트랜잭션 롤백 된다.
+        if(!insert.isEmpty()) {
             insert.execute();
             insert.clear();
         }
