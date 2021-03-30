@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.springbootjpa.domain;
+package com.jojoldu.blogcode.springbootjpa.domain.store;
 
 import com.jojoldu.blogcode.springbootjpa.querydsl.store.StoreQuerydslRepository;
 import lombok.RequiredArgsConstructor;

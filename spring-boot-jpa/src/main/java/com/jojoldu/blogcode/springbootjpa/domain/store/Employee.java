@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.springbootjpa.domain;
+package com.jojoldu.blogcode.springbootjpa.domain.store;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

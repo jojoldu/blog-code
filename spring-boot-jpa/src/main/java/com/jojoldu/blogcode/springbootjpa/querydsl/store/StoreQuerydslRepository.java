@@ -1,6 +1,6 @@
 package com.jojoldu.blogcode.springbootjpa.querydsl.store;
 
-import com.jojoldu.blogcode.springbootjpa.domain.StoreRepository;
+import com.jojoldu.blogcode.springbootjpa.domain.store.StoreRepository;
 
 /**
  * Created by jojoldu@gmail.com on 03/11/2019

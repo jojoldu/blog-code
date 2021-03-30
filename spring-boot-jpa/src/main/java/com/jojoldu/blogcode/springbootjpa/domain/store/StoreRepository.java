@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.springbootjpa.domain;
+package com.jojoldu.blogcode.springbootjpa.domain.store;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
