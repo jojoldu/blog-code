@@ -1,13 +1,13 @@
 package com.jojoldu.blogcode.springbootjpa.querydsl.store;
 
-import com.jojoldu.blogcode.springbootjpa.domain.QStore;
 import com.jojoldu.blogcode.springbootjpa.domain.store.Store;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static com.jojoldu.blogcode.springbootjpa.domain.QStore.store;
+import static com.jojoldu.blogcode.springbootjpa.domain.store.QStore.store;
+
 
 /**
  * Created by jojoldu@gmail.com on 03/11/2019
