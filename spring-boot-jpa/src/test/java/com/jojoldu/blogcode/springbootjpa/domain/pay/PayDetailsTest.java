@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 
 @ExtendWith(MockitoExtension.class)
-public class PayDetailsTest {
+class PayDetailsTest {
 
     @Test
     void PayDetails_EMPTY는_같은객체다() throws Exception {
@@ -22,7 +22,7 @@ public class PayDetailsTest {
         Pay pay2 = new Pay();
 
         //then
-        System.out.printf("pay1=%s, pay2=%s%n", pay1.getPayDetails(), pay2.getPayDetails());
+        System.out.printf("pay1=%s\n pay2=%s\n", pay1.getPayDetails(), pay2.getPayDetails());
         assertThat(pay1.getPayDetails()).isEqualTo(pay2.getPayDetails());
     }
 
@@ -33,7 +33,7 @@ public class PayDetailsTest {
         Pay pay2 = new Pay();
 
         //then
-        System.out.printf("pay1=%s, pay2=%s%n", pay1.getPayEvents(), pay2.getPayEvents());
+        System.out.printf("pay1=%s\n pay2=%s\n", pay1.getPayEvents(), pay2.getPayEvents());
         assertThat(pay1.getPayEvents()).isNotEqualTo(pay2.getPayEvents());
     }
 }

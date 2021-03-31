@@ -18,8 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 @Embeddable
 public class PayEvents {
-    public static final PayEvents EMPTY = new PayEvents();
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pay")
     private List<PayEvent> payEvents = new ArrayList<>();
 
