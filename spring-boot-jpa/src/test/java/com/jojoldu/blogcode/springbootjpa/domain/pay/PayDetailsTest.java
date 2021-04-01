@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PayDetailsTest {
 
     @Test
-    void PayDetails_EMPTY는_같은객체다() throws Exception {
+    void PayDetails_test() throws Exception {
         //given
         Pay pay1 = new Pay();
         Pay pay2 = new Pay();
@@ -27,7 +27,7 @@ class PayDetailsTest {
     }
 
     @Test
-    void PayEvents는_매번_새로생성된다() throws Exception {
+    void PayEvents_test() throws Exception {
         //given
         Pay pay1 = new Pay();
         Pay pay2 = new Pay();

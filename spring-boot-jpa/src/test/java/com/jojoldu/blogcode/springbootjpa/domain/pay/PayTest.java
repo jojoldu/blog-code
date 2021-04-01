@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class PayTest {
+class PayTest {
 
     @Autowired
     private PayRepository payRepository;
@@ -34,6 +34,20 @@ public class PayTest {
         String payName = "testPay";
         pay1.addPayDetail(new PayDetail(payName));
 
+        payRepository.save(pay1);
+
+        //when
+        Pay pay2 = new Pay();
+
+        //then
+        assertThat(pay2.getPayDetails().getPayDetails().size()).isEqualTo(1);
+        assertThat(pay2.getPayDetail(0).getPayName()).isEqualTo(payName);
+    }
+
+    @Test
+    void newEmbedded사용시_정상진행() throws Exception {
+        // given
+        Pay pay1 = new Pay();
         String eventName = "testEvent";
         pay1.addPayEvent(new PayEvent(eventName));
 
@@ -43,10 +57,6 @@ public class PayTest {
         Pay pay2 = new Pay();
 
         //then
-        assertThat(pay2.getPayDetails().getPayDetails().size()).isEqualTo(1);
-        assertThat(pay2.getPayDetail(0).getPayName()).isEqualTo(payName);
-
         assertThat(pay2.getPayEvents().getPayEvents().size()).isZero();
-
     }
 }
