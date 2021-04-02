@@ -22,7 +22,7 @@ class PayDetailsTest {
         Pay pay2 = new Pay();
 
         //then
-        System.out.printf("pay1=%s\n pay2=%s\n", pay1.getPayDetails(), pay2.getPayDetails());
+        System.out.printf("empty=%s\n pay1=%s\n pay2=%s\n", PayDetails.EMPTY, pay1.getPayDetails(), pay2.getPayDetails());
         assertThat(pay1.getPayDetails()).isEqualTo(pay2.getPayDetails());
     }
 
