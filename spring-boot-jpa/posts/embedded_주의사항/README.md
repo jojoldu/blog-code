@@ -4,7 +4,7 @@
   
 이번 시간에는 `@Embedded` 를 사용하면서 주의해야할 점을 알아보겠습니다.
 
-> 꼭 `@Embedded` 만의 문제는 아니며, **Entity 내부에 객체형 필드가 선언되어있으면 주의할 필요가 있습니다.
+> 꼭 `@Embedded` 만의 문제는 아니며, **Entity 내부에 객체형 필드가 선언**되어 있으면 주의할 필요가 있습니다.
 
 ## 문제 상황
 
@@ -24,16 +24,20 @@ public class Pay {
     private String orderNo;
 
     @Embedded
-    private PayDetails payDetails = PayDetails.EMPTY;
+    private PayDetails payDetails = PayDetails.EMPTY; // (1)
 
     @Embedded
-    private PayEvents payEvents = new PayEvents();
+    private PayEvents payEvents = new PayEvents(); // (2)
 ```
 
 내부에는 일급 컬렉션 객체로 2개의 `@Embedded` 객체들이 있는데요.  
-payEvents는 `new PayEvents`를 통해서 Entity가 생성되면 즉시 기본 객체가 생성될 수 있도록 사용했습니다.  
 
-payDetails 역시 동일한 기능을 하지만, `new` 키워드를 매번 사용하기 귀찮아서 **전역 변수**인 `PayDetails.EMPTY;` 를 사용하도록 하였습니다.  
+(1) payDetails 는 Entity가 생성되면 즉시 기본 객체가 생성될 수 있도록 기본 값을 할당했습니다.  
+다만, **new 키워드를 매번** 사용하기 귀찮아서 **전역 변수**인 `PayDetails.EMPTY;` 를 사용하도록 하였습니다.
+
+(2) payEvents는 기존처럼 `new PayEvents`를 통해서 Entity가 생성되면 즉시 기본 객체가 생성될 수 있도록 사용했습니다.  
+
+  
   
 각각의 Embedded 클래스와 전역 변수는 다음과 같이 작업되어있습니다.  
   
@@ -97,9 +101,9 @@ Java의 객체에 대해 조금이라도 아시는 분들은 왜 **독립된 객
 1) `PayDetails.EMPTY` 는 전역 변수로 (`static`) 선언되어 **애플리케이션 실행시 딱 한번 생성**되고, 이후로는 이를 계속 재사용합니다.
 2) `Pay` Entity의 멤버 변수인 `payDetails`는 `PayDetails.EMPTY` 를 객체를 참조 (`payDetails = PayDetails.EMPTY`) 받습니다.
 
-즉, 아래와 같이 `=`로 참조만 전달한 것 뿐이지 **객체 복사가 된 건 아닙니다**.  
+즉, 아래와 같이 `=`로 **참조만 전달한 것 뿐**이지 **객체 복사가 된 건 아닙니다**.  
   
-그래서 **모든 생성되는 Pay들**은 `PayDetails.EMPTY`를 참조하는 `payDetails` 을 갖고 있게 됩니다.  
+그래서 생성되는 **모든 Pay들**은 `PayDetails.EMPTY`를 참조하는 `payDetails` 을 갖고 있게 됩니다.  
   
 이렇게 되면 실제 운영 환경에선 어떤 이슈가 될까요?  
 A Pay가 payDetail a를 `add` 하고나면, 새롭게 추가되는 B Pay는 payDetail을 생성하지 않더라도 **payDetail a를 갖게 됩니다**.  
@@ -124,12 +128,15 @@ void passByReference() throws Exception {
 }
 ```
 
+위 코드의 예상결과는 너무 당연하게도 `PayDetails.EMPTY`, `details1` 과 `details2` 는 같은 객체라는 것이겠죠?
+
 ```java
 empty=com.jojoldu.blogcode.springbootjpa.domain.pay.PayDetails@c730b35
  details1=com.jojoldu.blogcode.springbootjpa.domain.pay.PayDetails@c730b35
  details2=com.jojoldu.blogcode.springbootjpa.domain.pay.PayDetails@c730b35
 ```
 
+이어서 진행해보면 다음의 테스트 결과가 어떨지 미리 예상해봅니다.
 
 ```java
 @Test
@@ -144,17 +151,12 @@ void passByReference2() throws Exception {
 }
 ```
 
-```java
-@Test
-void PayEvents는_매번_새로생성된다() throws Exception {
-    //given
-    Pay pay1 = new Pay();
-    Pay pay2 = new Pay();
+details1의 참조가 details2로 전달만 된 것이기 때문에 **details1과 details2는 같은 객체**입니다.
 
-    //then
-    System.out.printf("pay1=%s, pay2=%s%n", pay1.getPayEvents(), pay2.getPayEvents());
-    assertThat(pay1.getPayEvents()).isNotEqualTo(pay2.getPayEvents());
-}
+```java
+empty=com.jojoldu.blogcode.springbootjpa.domain.pay.PayDetails@c730b35
+ details1=com.jojoldu.blogcode.springbootjpa.domain.pay.PayDetails@206a70ef
+ details2=com.jojoldu.blogcode.springbootjpa.domain.pay.PayDetails@206a70ef
 ```
 
 ### Jpa Test
@@ -162,13 +164,41 @@ void PayEvents는_매번_새로생성된다() throws Exception {
 실제 JPA 환경에서 수행한다면 영속성 컨텍스트 문제가 발생하는 것을 볼 수 있습니다.
 
 ```java
-detached entity passed to persist: com.jojoldu.blogcode.springbootjpa.domain.pay.PayDetail
+    @Test
+    void 동일Embedded사용시_중복이슈_발생() throws Exception {
+        // given
+        Pay pay1 = new Pay();
+
+        String payName = "testPay";
+        pay1.addPayDetail(new PayDetail(payName));
+
+        payRepository.save(pay1);
+
+        //when
+        Pay pay2 = new Pay();
+
+        payRepository.save(pay2); // 아무것도 없는 pay2를 save시 에러 발생
+    }
 ```
+
+```java
+org.hibernate.PersistentObjectException: detached entity passed to persist: com.jojoldu.blogcode.springbootjpa.domain.pay.PayDetail
+```
+
+이유는 당연하게도 영속성 컨텍스트에 아직 등록되어있지 않은, pay2에 **pay1로 인해 등록된 payDetails가 포함**되어 있기 때문입니다.
+
+![pay](./images/pay.png)
 
 ## 해결책
 
 해결책은 간단 합니다.  
+굳이 전역 상수화 시키지 말고, `PayEvents` 처럼 `new` 키워드로 **매번 생성하는 코드**를 작성하시면 됩니다.  
+  
+```java
+@Embedded
+private PayEvents payEvents = new PayEvents();
+```
 
-
-어떻게 보면 Java의 기본기에 해당할 수 있지만, JPA에 매몰되다 보면 이런 점들을 놓칠 수 있다고 생각되기도 하는데요.  
-
+사실 이런 문제는 JPA 이전에 Java의 기본기를 전혀 모르기 때문에 발생한다고 보는데요.  
+  
+만약 위 문제가 되는 코드처럼 사용을 했다면, **프레임워크를 이용한 CRUD에만** 너무 집중하는건 아닌지 고민해볼 필요가 있을것 같습니다.

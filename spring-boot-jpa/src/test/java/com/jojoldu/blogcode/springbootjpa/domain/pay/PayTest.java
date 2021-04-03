@@ -1,10 +1,13 @@
 package com.jojoldu.blogcode.springbootjpa.domain.pay;
 
+import org.hibernate.PersistentObjectException;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,24 +42,7 @@ class PayTest {
         //when
         Pay pay2 = new Pay();
 
-        //then
-        assertThat(pay2.getPayDetails().getPayDetails().size()).isEqualTo(1);
-        assertThat(pay2.getPayDetail(0).getPayName()).isEqualTo(payName);
+        payRepository.save(pay2);
     }
 
-    @Test
-    void newEmbedded사용시_정상진행() throws Exception {
-        // given
-        Pay pay1 = new Pay();
-        String eventName = "testEvent";
-        pay1.addPayEvent(new PayEvent(eventName));
-
-        payRepository.save(pay1);
-
-        //when
-        Pay pay2 = new Pay();
-
-        //then
-        assertThat(pay2.getPayEvents().getPayEvents().size()).isZero();
-    }
 }
