@@ -94,14 +94,13 @@ return 타입으로 int[]만 가능하여 반영된 row 수만 받을 수 있습
 (2) 별도의 컬렉션에 UUID를 가진 부모 Entity들 (자식 Entity들 포함)을 저장한다.
 
 * 이렇게 컬렉션에 UUID를 가진 부모 Entity들에는 **자식 Entity들을 갖고 있어야만** 합니다.
-* 이후
+* 이후 UUID 기반으로 (1)에서 저장된 부모 Entity들과 (2) 에서 컬렉션에 저장된 부모 Entity들을 매칭시킵니다.
 
-(3) 부모만 먼저 BulkInsert 한다.
+(3) 부모 Entity만 먼저 BulkInsert 한다.
 
 (4) BulkInsert하고 나온 부모의 PK 를 통해 **PK와 UUID 값을 별도로 조회**한다.
 
-* `getGeneratedKeys()` 메소드는 **PK값만 return** 하기 때문에 PK값과 UUID값의 매칭을 확인하기 위해서는 둘을 함께 조회해야 합니다.
-
+* `getGeneratedKeys()` 메소드는 **PK값만 return** 하기 때문에 (5) 의 매칭을 위해서는 **PK와 UUID**를 같이 조회하여 둘의 연결을 확인합니다.
 
 (5) 조회된 UUID를 컬렉션에 미리 담아둔 부모의 UUID와 매칭해서 자식/부가정보등 다른 Entity를 찾는다
 
