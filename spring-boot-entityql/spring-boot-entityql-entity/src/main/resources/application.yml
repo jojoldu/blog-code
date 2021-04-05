@@ -7,3 +7,4 @@ spring:
       jdbc-url: jdbc:mysql:aurora://test.cluster-test.ap-northeast-2.rds.amazonaws.com:3306/test?rewriteBatchedStatements=true
       username: test
       password: test
+

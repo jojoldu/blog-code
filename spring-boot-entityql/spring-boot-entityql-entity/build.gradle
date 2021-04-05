@@ -19,6 +19,7 @@ dependencies {
 
     //DB
     implementation('com.h2database:h2')
+    implementation('org.mariadb.jdbc:mariadb-java-client')
 
     implementation("org.reflections:reflections:0.9.11") // entityql
     api("com.github.eXsio:querydsl-entityql:3.1.0") // entityql
