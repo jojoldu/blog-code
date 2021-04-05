@@ -42,7 +42,7 @@ class DevAcademyAndStudentBulkRepositoryTest {
 
     @AfterEach
     void after() {
-        academyRepository.deleteAll();
+        academies = null;
     }
 
     @Test

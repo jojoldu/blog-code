@@ -49,5 +49,6 @@ public class AcademyBulkRepository {
             insert.clear(); // clear하지 않으면 앞의 데이터가 그대로 저장되어있다.
             log.info("Academy {}번째 처리 - {}건", index++, subSet.size());
         }
+        log.info("Academy Bulk 종료");
     }
 }
