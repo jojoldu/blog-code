@@ -3,7 +3,8 @@ package com.jojoldu.blogcode.entityql.sql.academy;
 import com.jojoldu.blogcode.entityql.entity.domain.academy.Academy;
 import com.jojoldu.blogcode.entityql.entity.domain.academy.AcademyRepository;
 import com.jojoldu.blogcode.entityql.entity.domain.academy.AcademyStatus;
-import com.jojoldu.blogcode.entityql.sql.bulkinsert.academy.AcademyBulkRepository;
+import com.jojoldu.blogcode.entityql.entity.domain.student.Student;
+import com.jojoldu.blogcode.entityql.sql.bulkinsert.academy.AcademyAndStudentBulkRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ import java.util.stream.IntStream;
 class DevAcademyAndStudentBulkRepositoryTest {
 
     @Autowired
-    private AcademyBulkRepository academyBulkRepository;
+    private AcademyAndStudentBulkRepository academyAndStudentBulkRepository;
 
     @Autowired
     private AcademyRepository academyRepository;
@@ -36,7 +37,7 @@ class DevAcademyAndStudentBulkRepositoryTest {
     void setUp() {
         academies = IntStream.rangeClosed(1, 10_000)
                 .boxed()
-                .map(i -> new Academy("name"+i, "address"+i, "010-0000-0000", AcademyStatus.ON))
+                .map(i -> new Academy("name"+i, "address"+i, "010-0000-0000", AcademyStatus.ON, new Student("student"+i, i)))
                 .collect(Collectors.toList());
     }
 
@@ -52,6 +53,6 @@ class DevAcademyAndStudentBulkRepositoryTest {
 
     @Test
     void entytlql_bulk_test() throws Exception {
-        academyBulkRepository.saveAll(academies);
+        academyAndStudentBulkRepository.saveAll(academies);
     }
 }
