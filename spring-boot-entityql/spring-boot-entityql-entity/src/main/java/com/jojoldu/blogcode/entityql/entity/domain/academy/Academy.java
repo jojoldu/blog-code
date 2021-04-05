@@ -75,6 +75,14 @@ public class Academy extends BaseTimeEntity {
         this.status = status;
     }
 
+    public Academy(String name, String address, String phoneNumber, AcademyStatus status, Student student) {
+        this.name = name;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.addStudent(student);
+    }
+
     public void addStudent(List<Student> students) {
         for (Student student : students) {
             addStudent(student);
