@@ -1,9 +1,9 @@
-package com.jojoldu.blogcode.entityql.sql.academy;
+package com.jojoldu.blogcode.entityql.sql.academy.onetomany;
 
 import com.jojoldu.blogcode.entityql.entity.domain.academy.Academy;
 import com.jojoldu.blogcode.entityql.entity.domain.academy.AcademyStatus;
 import com.jojoldu.blogcode.entityql.entity.domain.student.Student;
-import com.jojoldu.blogcode.entityql.sql.bulkinsert.academy.AcademyUniqueMatcher;
+import com.jojoldu.blogcode.entityql.sql.bulkinsert.academy.onetomany.AcademyUniqueMatcher;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.entityql.sql.bulkinsert.academy;
+package com.jojoldu.blogcode.entityql.sql.bulkinsert.academy.onetomany;
 
 import com.jojoldu.blogcode.entityql.entity.domain.academy.Academy;
 import com.jojoldu.blogcode.entityql.entity.domain.student.Student;

@@ -1,4 +1,4 @@
-package com.jojoldu.blogcode.entityql.sql.bulkinsert.academy;
+package com.jojoldu.blogcode.entityql.sql.bulkinsert.academy.onetomany;
 
 import com.google.common.collect.Lists;
 import com.jojoldu.blogcode.entityql.entity.config.EntityMapper;

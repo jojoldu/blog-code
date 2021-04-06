@@ -1,10 +1,10 @@
-package com.jojoldu.blogcode.entityql.sql.academy;
+package com.jojoldu.blogcode.entityql.sql.academy.onetomany;
 
 import com.jojoldu.blogcode.entityql.entity.domain.academy.Academy;
 import com.jojoldu.blogcode.entityql.entity.domain.academy.AcademyRepository;
 import com.jojoldu.blogcode.entityql.entity.domain.academy.AcademyStatus;
 import com.jojoldu.blogcode.entityql.entity.domain.student.Student;
-import com.jojoldu.blogcode.entityql.sql.bulkinsert.academy.AcademyAndStudentBulkRepository;
+import com.jojoldu.blogcode.entityql.sql.bulkinsert.academy.onetomany.AcademyAndStudentBulkRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
