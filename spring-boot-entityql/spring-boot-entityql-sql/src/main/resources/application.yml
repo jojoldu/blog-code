@@ -2,12 +2,13 @@ logging:
   level:
     org.springframework.jdbc.core: DEBUG
 spring:
-  datasource:
-    hikari:
-      jdbc-url: jdbc:mysql:aurora://test.cluster-test.ap-northeast-2.rds.amazonaws.com:3306/test?rewriteBatchedStatements=true
-      username: test
-      password: test
+#  datasource:
+#    hikari:
+#      jdbc-url: jdbc:mysql:aurora://test.cluster-test.ap-northeast-2.rds.amazonaws.com:3306/test?rewriteBatchedStatements=true
+#      username: test
+#      password: test
   profiles:
     group.dev: dev, rds
+
 ---
 spring.config.activate.on-profile: dev

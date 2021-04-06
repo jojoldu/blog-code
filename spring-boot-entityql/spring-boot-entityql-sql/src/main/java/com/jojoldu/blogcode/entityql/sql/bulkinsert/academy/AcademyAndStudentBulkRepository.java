@@ -23,7 +23,7 @@ import java.util.List;
 public class AcademyAndStudentBulkRepository {
     private static final Integer DEFAULT_CHUNK_SIZE = 1_000; // MySQL 설정에 따라 조정한다.
 
-    private final AcademyMatcherRepository txItemCollectorRepository;
+    private final AcademyMatcherRepository academyMatcherRepository;
     private final SQLQueryFactory sqlQueryFactory;
 
     public void saveAll(List<Academy> entities) {
@@ -69,7 +69,7 @@ public class AcademyAndStudentBulkRepository {
         // executeWithKeys: BulkInsert한 결과 중 단일 컬럼에 한해서 반환해준다.
         List<Long> ids = insert.executeWithKeys(EAcademy.qAcademy.id);
 
-        return txItemCollectorRepository.findAllByIds(ids);
+        return academyMatcherRepository.findAllByIds(ids);
     }
 
     void insertStudents(AcademyUniqueMatcher matcher, List<Academy> idAcademies, LocalDateTime now) {

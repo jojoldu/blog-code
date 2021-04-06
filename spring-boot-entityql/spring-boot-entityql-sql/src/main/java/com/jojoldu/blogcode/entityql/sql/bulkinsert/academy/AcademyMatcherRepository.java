@@ -23,8 +23,9 @@ public class AcademyMatcherRepository {
         if(CollectionUtils.isEmpty(ids)) {
             throw new IllegalArgumentException("조회할 id가 없습니다.");
         }
+
         return queryFactory
-                .select(fields(Academy.class,
+                .select(fields(Academy.class, // 이렇게 할 경우 Entity가 아닌 Dto로 조회됨
                         academy.id,
                         academy.matchKey
                 ))
