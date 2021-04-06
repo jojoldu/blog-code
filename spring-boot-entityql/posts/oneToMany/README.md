@@ -71,7 +71,9 @@ return 타입으로 int[]만 가능하여 반영된 row 수만 받을 수 있습
 
 자 그럼 EntityQL로 생성된 Querydsl-SQL 코드들을 어떻게 활용하여 OneToMany Bulk Insert를 할지 자세히 코드로 확인해보겠습니다.
 
-## 2. 구현 코드
+## 2. 구현
+
+### 2-1. 구현 방식
 
 위에서 잡은 컨셉을 다시 한번 돌아보겠습니다.
 
@@ -104,11 +106,155 @@ return 타입으로 int[]만 가능하여 반영된 row 수만 받을 수 있습
 
 (5) 조회된 UUID를 컬렉션에 미리 담아둔 부모의 UUID와 매칭해서 자식/부가정보등 다른 Entity를 찾는다
 
-(6) 매칭 결과로 찾아낸 자식/부가정보에 부모 PK값을 담아서 bulk insert한다. 
+(6) 매칭 결과로 찾아낸 자식/부가정보에 부모 PK값을 담아서 bulk insert한다.
 
+전체 시나리오를 봤으니 이걸 기반으로 코드를 한번 구현해보겠습니다.  
+
+### 2-2. 구현 코드
+
+위 6단계의 시나리오를 위해 총 3개의 파일이 필요합니다.
+
+* AcademyAndStudentBulkRepository
+  * OneToMany Bulk Insert를 수행할 Repository 입니다.
+  * Bulk Insert 전체 Flow를 담당합니다.
+  * 실제 운영에서는 `AcademyBulkRepository` 로 이름을 짓고 사용합니다.
+  * 현재는 포스팅을 위해 단일 Entity용 Bulk repository 로 해당 이름을 사용했기 때문에 임시로 지은 이름입니다.
+* AcademyMatcherRepository
+  * Bulk Insert 되고 return 된 Academy.id를 통해 Academy.UUID를 조회합니다.
+* AcademyUniqueMatcher
+  * AcademyMatcherRepository를 통해 조회된 Academy.UUID 를 통해 Academy와 Student 간 연관관계를 맺어줍니다.
+
+**AcademyAndStudentBulkRepository**
+
+```java
+@Slf4j
+@RequiredArgsConstructor
+@Repository
+@Transactional // 조회는 사용하지 않는다.
+public class AcademyAndStudentBulkRepository {
+    private static final Integer DEFAULT_CHUNK_SIZE = 1_000; // MySQL 설정에 따라 조정한다.
+
+    private final AcademyMatcherRepository academyMatcherRepository;
+    private final SQLQueryFactory sqlQueryFactory;
+
+    public void saveAll(List<Academy> entities) {
+        saveAll(entities, DEFAULT_CHUNK_SIZE);
+    }
+
+    public void saveAll(List<Academy> entities, int chunkSize) {
+        AcademyUniqueMatcher matcher = new AcademyUniqueMatcher(entities);
+        List<List<Academy>> subSets = Lists.partition(matcher.getAcademies(), chunkSize);
+
+        int index=1;
+        for (List<Academy> subSet : subSets) { // 10만건 save가 필요하면 1천건씩 나눠서 bulk insert
+
+            LocalDateTime now = LocalDateTime.now(); // 1천건 단위로 audit time 갱신
+            List<Academy> savedItems = insertAcademies(subSet, now);
+            insertStudents(matcher, savedItems, now);
+            log.info("{}번째 처리 - {}건", index++, subSet.size());
+        }
+    }
+
+    // id가 발급된 Academy
+    public List<Academy> insertAcademies(List<Academy> academies, LocalDateTime now) {
+        SQLInsertClause insert = sqlQueryFactory.insert(EAcademy.qAcademy);
+
+        for (Academy academy : academies) {
+            academy.setCurrentTime(now);
+            insert.populate(academy, EntityMapper.DEFAULT).addBatch();
+        }
+
+        // executeWithKeys: BulkInsert한 결과 중 단일 컬럼에 한해서 반환해준다.
+        List<Long> ids = insert.executeWithKeys(EAcademy.qAcademy.id);
+
+        return academyMatcherRepository.findAllByIds(ids);
+    }
+
+    void insertStudents(AcademyUniqueMatcher matcher, List<Academy> idAcademies, LocalDateTime now) {
+        SQLInsertClause insert = sqlQueryFactory.insert(EStudent.qStudent);
+
+        for (Academy idAcademy : idAcademies) {
+            for (Student student : matcher.get(idAcademy, now)) {
+                insert.populate(student, EntityMapper.DEFAULT).addBatch();
+            }
+        }
+
+        // count가 없을때 insert가 실행되면 values가 없는 쿼리가 수행되어 Exception 발생으로 트랜잭션 롤백 된다.
+        if(!insert.isEmpty()) {
+            insert.execute();
+            insert.clear();
+        }
+    }
+}
+```
+
+
+**AcademyMatcherRepository**
+
+```java
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+@Repository
+public class AcademyMatcherRepository {
+
+    private final JPAQueryFactory queryFactory;
+
+    public List<Academy> findAllByIds(List<Long> ids) {
+        if(CollectionUtils.isEmpty(ids)) {
+            throw new IllegalArgumentException("조회할 id가 없습니다.");
+        }
+
+        return queryFactory
+                .select(fields(Academy.class, // 이렇게 할 경우 Entity가 아닌 Dto로 조회됨
+                        academy.id,
+                        academy.matchKey
+                ))
+                .from(academy)
+                .where(academy.id.in(ids))
+                .fetch();
+    }
+}
+```
+
+**AcademyUniqueMatcher**
+
+```java
+@Getter
+public class AcademyUniqueMatcher {
+
+    private final Map<String, Academy> map = new LinkedHashMap<>();
+
+    public AcademyUniqueMatcher(List<Academy> items) {
+        for (Academy academy : items) {
+            String collectorMatchKey = UUID.randomUUID().toString();
+            academy.setMatchKey(collectorMatchKey);
+            map.put(collectorMatchKey, academy);
+        }
+    }
+
+    public List<Academy> getAcademies() {
+        return new ArrayList<>(map.values());
+    }
+
+    public List<Student> get(Academy idAcademy, LocalDateTime now) {
+        Academy academy = map.get(idAcademy.getMatchKey());
+
+        if(academy == null) {
+            return new ArrayList<>();
+        }
+
+        return academy.getStudents().stream()
+                .map(student -> student.setBulkInsert(idAcademy, now))
+                .collect(Collectors.toList());
+    }
+}
+```
 
 ## 3. 테스트
 
+![jpa1](./images/jpa1.png)
+
+![entityql1](./images/entityql1.png)
 
 ## ManyToMany
 

@@ -29,19 +29,6 @@ public class AcademyAndStudentBulkRepository {
     public void saveAll(List<Academy> entities) {
         saveAll(entities, DEFAULT_CHUNK_SIZE);
     }
-    /**
-     * 컨셉은 다음과 같다.
-     * Academy을 BulkInsert 하면 Student가 어떤 Academy과 매칭되야할지 알 수가 없다.
-     * 그래서 Academy을 BulkInsert하기전에 유니크키를 발급하여 임시 컬럼에 보관, save후 반환된 Academy의 ID를 가지고 Student과 을 BulkInsert 한다.
-     *
-     * 로직)
-     *
-     * 1. Academy을 save하기 전에 UUID를 발급한다 (해당 UUID는 **트랜잭션 내에서만** 유니크하면 된다)
-     * 2. 유니크 키를 가진 Academy을 **복사하여** 별도의 컬렉션 (AcademyUniqueMatcher)에 저장한다. (복사본이 아니면 레퍼런스 관계가 된다)
-     * 3. Academy의 Student를 clear하여 Academy만 BulkInsert 한다.
-     * 4. BulkInsert하고 나온 Academy의 유니크키와 컬렉션에 담긴 유니크키를 비교하여 Student 을 찾는다
-     * 5. Student과 Academy을 연관시킨 후, Bulk Insert한다.
-     */
 
     public void saveAll(List<Academy> entities, int chunkSize) {
         AcademyUniqueMatcher matcher = new AcademyUniqueMatcher(entities);

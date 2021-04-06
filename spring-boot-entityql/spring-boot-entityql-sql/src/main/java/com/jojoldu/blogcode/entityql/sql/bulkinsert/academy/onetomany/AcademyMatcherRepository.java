@@ -33,5 +33,4 @@ public class AcademyMatcherRepository {
                 .where(academy.id.in(ids))
                 .fetch();
     }
-
 }
