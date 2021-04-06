@@ -87,5 +87,4 @@ public class AcademyAndStudentBulkRepository {
             insert.clear();
         }
     }
-
 }
