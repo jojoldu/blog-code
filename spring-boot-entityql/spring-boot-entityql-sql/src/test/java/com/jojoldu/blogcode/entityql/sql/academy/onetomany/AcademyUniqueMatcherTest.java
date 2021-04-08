@@ -36,7 +36,7 @@ class AcademyUniqueMatcherTest {
         //given
         List<Academy> academies = IntStream.rangeClosed(1, 100)
                 .boxed()
-                .map(i -> new Academy(String.valueOf(i), "address"+i, "010-0000-0000", AcademyStatus.ON, new Student("student"+i, i)))
+                .map(i -> new Academy(String.valueOf(i), "address"+i, "010-0000-0000", AcademyStatus.ON, new Student(String.valueOf(i), i)))
                 .collect(Collectors.toList());
 
         AcademyUniqueMatcher matcher = new AcademyUniqueMatcher(academies);
@@ -47,7 +47,7 @@ class AcademyUniqueMatcherTest {
 
             Student student = students.get(0);
             assertThat(student.getAcademy().getName()).isEqualTo(academy.getName());
-            assertThat(student.getAcademyNo()).isEqualTo(Integer.parseInt(academy.getName()));
+            assertThat(student.getName()).isEqualTo(academy.getName());
         }
 
     }
