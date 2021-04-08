@@ -250,7 +250,90 @@ public class AcademyUniqueMatcher {
 }
 ```
 
+각각의 클래스에 대한 단위 테스트와 성능 테스트를 진행해보겠습니다.
+
 ## 3. 테스트
+
+### 3-1. 단위 테스트
+
+```java
+class AcademyUniqueMatcherTest {
+
+    @Test
+    void Academy마다_유니크키가_생성된다() throws Exception {
+        //given
+        int size = 1_000;
+        List<Academy> academies = IntStream.rangeClosed(1, size)
+                .mapToObj(i -> new Academy())
+                .collect(Collectors.toList());
+
+        //when
+        AcademyUniqueMatcher matcher = new AcademyUniqueMatcher(academies);
+
+        //then
+        assertThat(matcher.getMap()).hasSize(size);
+        assertThat(matcher.getAcademies().get(0)).isNotNull();
+    }
+
+    @Test
+    void academyId로_student를_찾는다() throws Exception {
+        //given
+        List<Academy> academies = IntStream.rangeClosed(1, 100)
+                .boxed()
+                .map(i -> new Academy(String.valueOf(i), "address"+i, "010-0000-0000", AcademyStatus.ON, new Student("student"+i, i)))
+                .collect(Collectors.toList());
+
+        AcademyUniqueMatcher matcher = new AcademyUniqueMatcher(academies);
+
+        for (Academy academy : academies) {
+            List<Student> students = matcher.get(academy, LocalDateTime.now());
+            assertThat(students.size()).isEqualTo(1);
+
+            Student student = students.get(0);
+            assertThat(student.getAcademy().getName()).isEqualTo(academy.getName());
+            assertThat(student.getAcademyNo()).isEqualTo(Integer.parseInt(academy.getName()));
+        }
+    }
+}
+
+```
+
+```java
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+public class AcademyMatcherRepositoryTest {
+
+    @Autowired
+    private AcademyRepository academyRepository;
+
+    @Autowired
+    private AcademyMatcherRepository academyMatcherRepository;
+
+    @AfterEach
+    void after() {
+        academyRepository.deleteAll();
+    }
+
+    @Test
+    void Entity가_아닌_Dto로_조회된다() throws Exception {
+        //given
+        String matchKey = "matchKey";
+        Academy saved = academyRepository.save(new Academy(matchKey, "name", "address", "010-0000-0000", AcademyStatus.ON));
+        Long savedId = saved.getId();
+
+        //when
+        List<Academy> result = academyMatcherRepository.findAllByIds(Arrays.asList(savedId));
+
+        //then
+        assertThat(result.get(0).getId()).isEqualTo(savedId);
+        assertThat(result.get(0).getMatchKey()).isEqualTo(matchKey);
+        assertThat(result.get(0).getName()).isNull();
+    }
+}
+```
+
+### 3-2. 성능 테스트
+
 
 ![jpa1](./images/jpa1.png)
 
