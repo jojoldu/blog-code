@@ -7,12 +7,12 @@ import com.jojoldu.blogcode.entityql.entity.domain.student.Student;
 import com.jojoldu.blogcode.entityql.entity.domain.student.StudentRepository;
 import com.jojoldu.blogcode.entityql.sql.bulkinsert.academy.onetomany.AcademyAndStudentBulkRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -39,6 +39,41 @@ class AcademyAndStudentBulkRepositoryTest {
     @AfterEach
     void after() {
         academyRepository.deleteAll();
+    }
+
+    @Test
+    void oneToMany_단건_insert() throws Exception {
+        //given
+        String name = "1";
+        Academy academy = new Academy(name, "address", "010-0000-0000", AcademyStatus.ON, new Student(name, 1));
+
+        //when
+        academyAndStudentBulkRepository.saveAll(Arrays.asList(academy));
+
+        //then
+        List<Academy> academies = academyRepository.findAll();
+        List<Student> students = studentRepository.findAll();
+
+        assertThat(academies).hasSize(1);
+        assertThat(students).hasSize(1);
+
+        Academy savedAcademy = academies.get(0);
+        Student savedStudent = students.get(0);
+        assertThat(savedAcademy.getName()).isEqualTo(name);
+        assertThat(savedStudent.getName()).isEqualTo(name);
+    }
+
+    @Test
+    void EmptyList_에러가_발생하지않는다() throws Exception {
+        //when
+        academyAndStudentBulkRepository.saveAll(new ArrayList<>());
+
+        //then
+        List<Academy> academies = academyRepository.findAll();
+        List<Student> students = studentRepository.findAll();
+
+        assertThat(academies).hasSize(0);
+        assertThat(students).hasSize(0);
     }
 
     @Test
