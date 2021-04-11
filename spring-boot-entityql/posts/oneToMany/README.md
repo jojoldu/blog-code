@@ -188,33 +188,7 @@ public class AcademyAndStudentBulkRepository {
 }
 ```
 
-
-**AcademyMatcherRepository**
-
-```java
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
-@Repository
-public class AcademyMatcherRepository {
-
-    private final JPAQueryFactory queryFactory;
-
-    public List<Academy> findAllByIds(List<Long> ids) {
-        if(CollectionUtils.isEmpty(ids)) {
-            throw new IllegalArgumentException("조회할 id가 없습니다.");
-        }
-
-        return queryFactory
-                .select(fields(Academy.class, // 이렇게 할 경우 Entity가 아닌 Dto로 조회됨
-                        academy.id,
-                        academy.matchKey
-                ))
-                .from(academy)
-                .where(academy.id.in(ids))
-                .fetch();
-    }
-}
-```
+전체 로직은 기존의 BulkRepository와 크게 다르진 않지만, 아래 2개의 클래스를 통해서 **자동생성된 PK를 가진 부모와 자식들간의 관계를 맺는**코드가 추가되었습니다.  
 
 **AcademyUniqueMatcher**
 
@@ -249,6 +223,40 @@ public class AcademyUniqueMatcher {
     }
 }
 ```
+
+
+**AcademyMatcherRepository**
+
+```java
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+@Repository
+public class AcademyMatcherRepository {
+
+    private final JPAQueryFactory queryFactory;
+
+    public List<Academy> findAllByIds(List<Long> ids) {
+        if(CollectionUtils.isEmpty(ids)) {
+            throw new IllegalArgumentException("조회할 id가 없습니다.");
+        }
+
+        return queryFactory
+                .select(fields(Academy.class, // 이렇게 할 경우 Entity가 아닌 Dto로 조회됨
+                        academy.id,
+                        academy.matchKey
+                ))
+                .from(academy)
+                .where(academy.id.in(ids))
+                .fetch();
+    }
+}
+```
+
+* Entity 클래스를 선언은 했지만, 위와 같이 특정 필드만 선언하게 되면 **Dto처럼** 조회가 됩니다.
+  * 즉, 1차캐시, `oneToOne` Eager Loading 같이 JPA Entity로서의 기능이 적용되지 않습니다.
+* 상황에 맞게 ID와 MatchKey만 가진 Dto를 만드셔도 됩니다.
+  * 저는 굳이 Dto를 만들 필요가 없어 Entity 클래스를 그대로 사용했습니다.
+
 
 각각의 클래스에 대한 단위 테스트와 성능 테스트를 진행해보겠습니다.
 
