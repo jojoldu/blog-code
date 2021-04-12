@@ -20,9 +20,9 @@ public class AcademyUniqueMatcher {
 
     public AcademyUniqueMatcher(List<Academy> items) {
         for (Academy academy : items) {
-            String collectorMatchKey = UUID.randomUUID().toString();
-            academy.setMatchKey(collectorMatchKey);
-            map.put(collectorMatchKey, academy);
+            String matchKey = UUID.randomUUID().toString();
+            academy.setMatchKey(matchKey);
+            map.put(matchKey, academy);
         }
     }
 

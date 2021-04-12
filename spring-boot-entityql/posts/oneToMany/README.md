@@ -188,6 +188,10 @@ public class AcademyAndStudentBulkRepository {
 }
 ```
 
+주의하실 점은 `insertStudents` 메소드의 `if(!insert.isEmpty())` 입니다.  
+이게 없으면, **student가 없는 경우** `insert into values` 만 쿼리가 수행되어 **Exception**이 발생합니다.  
+그래서 별도의 Exception이 발생하지 않도록 **values에 1개이상이 들어가있는지** 확인하는 로직 (`!insert.isEmpty()`) 을 넣어서 실행합니다.  
+  
 전체 로직은 기존의 BulkRepository와 크게 다르진 않지만, 아래 2개의 클래스를 통해서 **자동생성된 PK를 가진 부모와 자식들간의 관계를 맺는**코드가 추가되었습니다.  
 
 **AcademyUniqueMatcher**
@@ -200,9 +204,9 @@ public class AcademyUniqueMatcher {
 
     public AcademyUniqueMatcher(List<Academy> items) {
         for (Academy academy : items) {
-            String collectorMatchKey = UUID.randomUUID().toString();
-            academy.setMatchKey(collectorMatchKey);
-            map.put(collectorMatchKey, academy);
+            String matchKey = UUID.randomUUID().toString();
+            academy.setMatchKey(matchKey);
+            map.put(matchKey, academy);
         }
     }
 
@@ -224,6 +228,10 @@ public class AcademyUniqueMatcher {
 }
 ```
 
+Matcher는 아래의 역할들을 합니다.
+
+* `academy.setMatchKey(matchKey)`: 각각의 Academy에 `UUID` 를 등록하여 **Insert시에 UUID도 함께 저장**할 수 있도록 합니다.  
+* `get`: matchKey를 기반으로 Matcher 클래스에 보관되어 있는 **Student**를 반환합니다.
 
 **AcademyMatcherRepository**
 
@@ -257,12 +265,15 @@ public class AcademyMatcherRepository {
 * 상황에 맞게 ID와 MatchKey만 가진 Dto를 만드셔도 됩니다.
   * 저는 굳이 Dto를 만들 필요가 없어 Entity 클래스를 그대로 사용했습니다.
 
-
-각각의 클래스에 대한 단위 테스트와 성능 테스트를 진행해보겠습니다.
+여기까지 구현이 모두 되었으니, 이제 각각의 클래스에 대한 단위 테스트와 성능 테스트를 진행해보겠습니다.
 
 ## 3. 테스트
 
+기능별 테스트와 실제 성능 테스트로 나눠서 진행해보겠습니다.
+
 ### 3-1. 단위 테스트
+
+가장 먼저 단순한 Matcher 부터 테스트해보겠습니다.
 
 ```java
 class AcademyUniqueMatcherTest {
@@ -306,6 +317,8 @@ class AcademyUniqueMatcherTest {
 
 ```
 
+Repository의 경우에는 H2 DB와 SQL를 직접 수행해야하니, 간편하게 스프링부트 테스트로 진행합니다.
+
 ```java
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -340,28 +353,191 @@ public class AcademyMatcherRepositoryTest {
 }
 ```
 
+마지막으로 BulkRepository의 단위 테스트들을 진행해보겠습니다.
+
+```java
+@SpringBootTest
+class AcademyAndStudentBulkRepositoryTest {
+
+    @Autowired
+    private AcademyAndStudentBulkRepository academyAndStudentBulkRepository;
+
+    @Autowired
+    private AcademyRepository academyRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @AfterEach
+    void after() {
+        academyRepository.deleteAll();
+    }
+
+    @Test
+    void oneToMany_단건_insert() throws Exception {
+        //given
+        String name = "1";
+        Academy academy = new Academy(name, "address", "010-0000-0000", AcademyStatus.ON, new Student(name, 1));
+
+        //when
+        academyAndStudentBulkRepository.saveAll(Arrays.asList(academy));
+
+        //then
+        List<Academy> academies = academyRepository.findAll();
+        List<Student> students = studentRepository.findAll();
+
+        assertThat(academies).hasSize(1);
+        assertThat(students).hasSize(1);
+
+        Academy savedAcademy = academies.get(0);
+        Student savedStudent = students.get(0);
+        assertThat(savedAcademy.getName()).isEqualTo(name);
+        assertThat(savedStudent.getName()).isEqualTo(name);
+    }
+
+    @Test
+    void EmptyList_에러가_발생하지않는다() throws Exception {
+        //when
+        academyAndStudentBulkRepository.saveAll(new ArrayList<>());
+
+        //then
+        List<Academy> academies = academyRepository.findAll();
+        List<Student> students = studentRepository.findAll();
+
+        assertThat(academies).hasSize(0);
+        assertThat(students).hasSize(0);
+    }
+
+    @Test
+    void academy만있고_student는없어도_정상등록된다() throws Exception {
+        //given
+        String name = "1";
+        Academy academy = new Academy(name, "address", "010-0000-0000", AcademyStatus.ON);
+
+        //when
+        academyAndStudentBulkRepository.saveAll(Arrays.asList(academy));
+
+        //then
+        List<Academy> academies = academyRepository.findAll();
+        List<Student> students = studentRepository.findAll();
+
+        assertThat(academies).hasSize(1);
+        assertThat(students).isEmpty();
+
+        Academy savedAcademy = academies.get(0);
+        assertThat(savedAcademy.getName()).isEqualTo(name);
+    }
+
+    @Test
+    void oneToMany가_모두_insert된다() throws Exception {
+        //given
+        //when
+        academyAndStudentBulkRepository.saveAll(IntStream.rangeClosed(1, 10)
+                .boxed()
+                .map(i -> new Academy(String.valueOf(i), "address"+i, "010-0000-0000", AcademyStatus.ON, new Student(String.valueOf(i), i)))
+                .collect(Collectors.toList()));
+
+        //then
+        List<Academy> academies = academyRepository.findAll();
+        List<Student> students = studentRepository.findAll();
+
+        assertThat(academies).hasSize(10);
+        assertThat(students).hasSize(10);
+
+        for (int i = 0, academiesSize = academies.size(); i < academiesSize; i++) {
+            Academy academy = academies.get(i);
+            Student student = students.get(i);
+            assertThat(academy.getName()).isEqualTo(student.getName());
+        }
+    }
+}
+```
+
+각 케이스에 대해서 모두 통과해야만, 정상적으로 oneToMany 테스트가 통과된 것이니, 꼭 참고합니다.
+
 ### 3-2. 성능 테스트
 
+마지막으로 성능 테스트를 진행해보겠습니다.  
+성능 테스트의 대상이 되는 RDS는 다음의 사양을 가집니다.
+
+* AWS Aurora MySQL 5.7 r5.large
+
+성능 테스트용 코드는 다음과 같습니다.
+
+```java
+@SpringBootTest
+@ActiveProfiles("dev")
+class DevAcademyAndStudentBulkRepositoryTest {
+
+    @Autowired
+    private AcademyAndStudentBulkRepository academyAndStudentBulkRepository;
+
+    @Autowired
+    private AcademyRepository academyRepository;
+
+    List<Academy> academies;
+
+    @BeforeEach
+    void setUp() {
+        academies = IntStream.rangeClosed(1, 10_000)
+                .boxed()
+                .map(i -> new Academy("name"+i, "address"+i, "010-0000-0000", AcademyStatus.ON, new Student("student"+i, i)))
+                .collect(Collectors.toList());
+    }
+
+    @AfterEach
+    void after() {
+        academies = null;
+    }
+
+    @Test
+    void jpa_saveAll_test() throws Exception {
+        academyRepository.saveAll(academies);
+    }
+
+    @Test
+    void entytlql_bulk_test() throws Exception {
+        academyAndStudentBulkRepository.saveAll(academies);
+    }
+}
+```
+
+1만개의 Academy와 1만개의 Student를 BulkInsert 하는 테스트입니다.  
+  
+먼저 JpaRepository로 테스트를 해보면?
 
 ![jpa1](./images/jpa1.png)
 
+**2분 39초**입니다.  
+  
+반면에 EntityQL을 이용한 BulkRepository를 이용한다면?
+
 ![entityql1](./images/entityql1.png)
 
-## ManyToMany
+**2.7초**로, JpaRepository에 비해 **수십배**빠른 성능을 보여줍니다.  
+실제로 10만건으로 데이터를 더 늘릴 경우 **수백배의 차이까지도 발생**합니다.  
+  
+과한 설정을 한 보람이 있죠?
 
-oneToMany 방식을 더 풀어서 ManyToMany도 마찬가지로 구현할수도 있겠지만, 코드 복잡도가 너무 괴랄하다. 
-중간 매핑 테이블까지 BulkInsert 대상으로 만들어서 처리해야하는데, 
+## 4. ManyToMany
+
+oneToMany 방식을 더 풀어서 ManyToMany도 마찬가지로 구현할수도 있겠지만, 코드 복잡도가 너무 높아집니다.  
+**중간 매핑 테이블까지** BulkInsert 대상으로 만들어서 처리해야하는데, 
 
 (1) 처음 부모 Entity BulkInsert
 (2) BulkInsert된 부모 Entity Key조회
 (3) 부모에 포함되어 있는 자식 Entity BulkInsert
-4) BulkInsert된 자식 Entity Key조회
-5) 2와 4에서 조회된 Key들을 서로 매칭 (멀티쓰레드상에서 키 매칭에 문제가 없어야 함) 
-6) 
+(4) BulkInsert된 자식 Entity Key조회
+(5) 2와 4에서 조회된 Key들을 서로 매칭 (멀티쓰레드상에서 키 매칭에 문제가 없어야 함) 
+(6) 부모와 자식간 **매핑 테이블** BulkInsert
+(7) ManyToMany 관계는 모두 1~6과정을 다시 한번 진행
   
-일단은 JPA saveAll을 선택했다.
+코드 복잡도가 너무 높아서, ManyToMany 관계에서는 JpaRepository를 통해 Save하고, 단일 Entity / ManyToOne / OneToMany 에서는 EntityQL의 BulkRepository를 선택하게 되었습니다.  
+  
+> 약간 개선한다면, 부모 Many 쪽은 JPA SaveAll하고, 생성된 Entity를 통해 나머지 하위 ToMany쪽은 BulkInsert하는 방식으로 하면 기존 대비해서는 **수행 시간이 절반이하**로 줄어들 수 있을것 같습니다.
 
-약간 개선한다면, Many 쪽은 JPA SaveAll하고, 생성된 Entity를 통해 나머지 하위 ToMany쪽은 BulkInsert하는 방식으로 하게 되면
+## 5. 마무리
 
-수행 시간이 절반이하로 줄어들 정도로 향상이 가능하다.
-
+EntityQL을 통한 JPA + AutoIncrement 환경에서의 Bulk Insert를 진행해보았습니다.  
+OneToMany 환경에서는 위와 같이 설정이 추가로 더 많이 필요하게되어, **저희팀 역시 모든 Entity에 사용하진 않습니다**.  
+하루 발생되는 데이터가 수백만건 정도 되는 데이터에 한해서만 적용하고 있으니, 이 점 역시 꼭 인지하시길 바랍니다.
