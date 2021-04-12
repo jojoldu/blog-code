@@ -77,6 +77,26 @@ class AcademyAndStudentBulkRepositoryTest {
     }
 
     @Test
+    void academy만있고_student는없어도_정상등록된다() throws Exception {
+        //given
+        String name = "1";
+        Academy academy = new Academy(name, "address", "010-0000-0000", AcademyStatus.ON);
+
+        //when
+        academyAndStudentBulkRepository.saveAll(Arrays.asList(academy));
+
+        //then
+        List<Academy> academies = academyRepository.findAll();
+        List<Student> students = studentRepository.findAll();
+
+        assertThat(academies).hasSize(1);
+        assertThat(students).isEmpty();
+
+        Academy savedAcademy = academies.get(0);
+        assertThat(savedAcademy.getName()).isEqualTo(name);
+    }
+
+    @Test
     void oneToMany가_모두_insert된다() throws Exception {
         //given
         //when
