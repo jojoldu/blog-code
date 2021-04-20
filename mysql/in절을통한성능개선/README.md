@@ -11,6 +11,13 @@ MySQL의 IN절은 UNION으로 처리
 * UNI_TX_ITEM_SUM_1: tx_date, settle_code, give_cycle_code, customer_id
 * IDX_TX_ITEM_SUM_1: settle_code, customer_id, tx_date
 
+![1-1](./images/1-1.png)
+
+![1-2](./images/1-2.png)
+
+![1-3](./images/1-3.png)
+
+![1-4](./images/1-4.png)
 
 범위 검색 (BETWEEN) 의 비효율을 동등 비교 검색 (IN) 으로 개선하여 인덱스 최적화
 결과) 33분 -> 0.1초로 개선
@@ -18,6 +25,14 @@ MySQL의 IN절은 UNION으로 처리
 ## 2. Loose Index Scan
 
 * IDX_GIVE_1: settle_code, cycle_date
+
+![2-1](./images/2-1.png)
+
+![2-2](./images/2-2.png)
+
+![2-3](./images/2-3.png)
+
+![2-4](./images/2-4.png)
 
 settle_code 조회 조건이 없어 
 인덱스를 사용하지 못하고, 
@@ -27,6 +42,9 @@ index scan을 유도
 
 ## 3. 적정 개수
 
+* [MySQL5.6 IN(val1, ..., valN) 를 index range scan 작동원리](http://small-dbtalk.blogspot.com/2016/02/)
+
+`eq_range_index_dive_limit` 
 IN의 적정 사이즈는 200이하이며, 
 네트워크 비용까지 고려해도 500정도가 적당.
 1000개 이상할 경우 범위 검색 (between, <>, like 등) 으로 인덱스가 작동될 수 있다.
@@ -38,5 +56,6 @@ IN의 적정 사이즈는 200이하이며,
 
 ## 4. 5.7 업데이트시 주의사항
 
-MySQL 5.6에서 5.7로 업데이트시 
+MySQL 5.6에서 5.7로 업데이트시 아래와 같이 IN절 개수에 따라 갑자기 테이블 풀 스캔이 될 수 있음을 주의해야 합니다.
+
 https://jobc.tistory.com/216
