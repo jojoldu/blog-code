@@ -15,7 +15,7 @@ gyp ERR! stack Error: `gyp` failed with exit code: 1
 간단하게 아래 2개 커맨드를 차례로 실행시키시면 됩니다.
 
 ```bash
-sudo rm -rf  /Library/Developer/CommandLineTools
+sudo rm -rf /Library/Developer/CommandLineTools
 xcode-select --install
 ```
 
