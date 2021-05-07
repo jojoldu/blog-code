@@ -1,6 +1,12 @@
 # PostgreSQL RDS Slow log Slack으로 알람 보내기
 
-## Slow Log 남기기
+
+## 1. Slow Log 남기기
+
+> RDS의 파라미터를 변경하게 되면 자동으로 DB가 부팅되버립니다.  
+> HA가 되어있지 않고 단일 DB만 사용하신다면, **재부팅되는 동안 서비스 전체가 정지**될 수 있으니, 주의가 필요합니다.
+
+![parameter](./images/parameter.png)
 
 * log_statement
   * none, ddl, mod, all
@@ -8,15 +14,24 @@
 * log_min_duration_statement
   * 1000 (1초)
 
+![rds-log](./images/rds-log.png)
+
 ### 강제 Slow쿼리
 
 ```sql
 SELECT pg_sleep(2);
 ```
 
+```bash
+/aws/rds/instance/{RDS이름}/postgresql
+```
+
+![slow-log](./images/slow-log.png)
 
 
-## Lambda
+## 2. Lambda
+
+> 아직 Slack Webhook을 생성하지 않으셨다면 [기존 포스팅-Slack Webhook API 생성하기](https://jojoldu.tistory.com/552)을 참고해서 만들어주세요
 
 ### 테스트 환경 구성
 
@@ -86,7 +101,7 @@ function toYyyymmddhhmmss(timestamp) {
 ```
 
 
-## 전체
+### 전체
 
 ```javascript
 const https = require('https');
@@ -103,7 +118,7 @@ exports.handler = (input, context) => {
         } 
         
         result = JSON.parse(result.toString('ascii'));
-        const log = toJson(result.logEvents[0]);
+        const log = toJson(result.logEvents[0], result.logStream);
         const message = slackMessage(log);
         console.log(`slackMessage = ${JSON.stringify(message)}`);
         
@@ -112,7 +127,7 @@ exports.handler = (input, context) => {
     });
 };
 
-function toJson(logEvent) {
+function toJson(logEvent, logLocation) {
     const message = logEvent.message;
     const currentTime = toYyyymmddhhmmss(logEvent.timestamp);
     const dateTimeRegex = new RegExp('(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2}) UTC:');
@@ -123,6 +138,7 @@ function toJson(logEvent) {
     
     return {
         "currentTime": currentTime,
+        "logLocation": logLocation,
         "userIp": messages[0].trim(),
         "user": messages[1].trim(),
         "pid": messages[2].trim().replace('[', '').replace(']', ''),
@@ -151,7 +167,7 @@ function toYyyymmddhhmmss(timestamp) {
 
 function slackMessage(messageJson) {
     const title = `[${SLOW_TIME_LIMIT}초이상 실행된 쿼리]`;
-    const message = `언제: ${messageJson.currentTime}\n계정: ${messageJson.user}\n계정IP: ${messageJson.userIp}\npid: ${messageJson.pid}\nQueryTime: ${messageJson.queryTime}초\n쿼리: ${messageJson.query}`;
+    const message = `언제: ${messageJson.currentTime}\n로그위치:${messageJson.logLocation}\n계정: ${messageJson.user}\n계정IP: ${messageJson.userIp}\npid: ${messageJson.pid}\nQueryTime: ${messageJson.queryTime}초\n쿼리: ${messageJson.query}`;
     
     return {
         attachments: [
@@ -212,3 +228,5 @@ function request(options, data) {
     });
 }
 ```
+
+## 3. CloudWatch & Lambda 연동
