@@ -147,15 +147,34 @@ exports.handler = function(input, context) {
 
 ### 2-2. PostgreSQL 테스트 로그 생성
 
-[gzip 압축](https://www.multiutil.com/text-to-gzip-compress/)
+Lambda에서 기본으로 제공하는 CloudWatch 테스트 데이터를 **PostgreSQL 로그 데이터가 아닙니다**.  
+그래서 PostgreSQL 의 쿼리 로그 형태로 테스트 데이터를 변경해주어야 하는데요.  
+RDS PostgreSQL의 쿼리 로그는 아래와 같은 형태로 전달됩니다.
 
-[https://jsonformatter.org/](https://jsonformatter.org/)
+```bash
+2021-05-07 08:28:23 UTC:127.0.0.1(56644):test@test:[7221]:LOG:  duration: 10045.607 ms  execute <unnamed>: SELECT pg_sleep(10)
+```
+
+로그가 육안으로 보기에는 좋으나, **파싱해서 사용하기에는 불편합니다**.  
+하지만, 아쉽게도 **RDS PostgreSQL에서는 이 로그 포맷을 변경할 수는 없습니다**
+
+> PostgreSQL을 설치해서 쓴다면 변경 가능하나, 관리형 서비스인 RDS에서는 해당 설정에 대해서는 변경을 못하도록 막아두었습니다.
+
+여튼 위 로그 데이터를 테스트 데이터에 넣어서 Gzip압축을 해야하는데요.  
+  
+압축 전 JSON 형태는 다음과 같습니다.
 
 ```json
 {"messageType":"DATA_MESSAGE","owner":"123456789123","logGroup":"testLogGroup","logStream":"testLogStream","subscriptionFilters":["testFilter"],"logEvents":[{"id":"eventId1","timestamp":1440442987000,"message":"2021-05-07 08:28:23 UTC:127.0.0.1(56644):test@test:[7221]:LOG:  duration: 10045.607 ms  execute <unnamed>: SELECT pg_sleep(10)"}]}
 ```
 
-위 데이터를 **추가 가공 없이 그대로 테스트 데이터로** 쓰고 싶으시면 아래 JSON을 복사해서 그대로 테스트 데이터로 쓰시면 됩니다.
+* 기존 메세지 포맷에서 `logEvents.[].message`에만 PostgreSQL 로그를 넣은 형태입니다.
+
+이 JSON을 [온라인 gzip 압축](https://www.multiutil.com/text-to-gzip-compress/) 사이트에서 압축하시면 테스트 데이터를 얻을 수 있습니다.
+
+![lambda-test-data](./images/lambda-test-data.png)
+
+만약 이 과정이 귀찮다면 (혹은 **추가 가공 없이 그대로 쓰고싶다면**) 아래 JSON을 복사해서 그대로 테스트 데이터로 쓰시면 됩니다.
 ```bash
 {
   "awslogs": {
@@ -164,14 +183,17 @@ exports.handler = function(input, context) {
 }
 ```
 
-### 테스트1
+변경된 테스트 데이터도 잘 노출되는지 확인해봅니다.  
+  
+Lambda 콘솔에서도 결과를 바로 볼 수도 있지만 **CloudWatch에서 Lambda 로그를 보고 싶으시면** 아래와 같이 확인해보실 수 도 있습니다.
 
 ![lambda1](./images/lambda-log1.png)
 
 ![lambda2](./images/lambda-log2.png)
 
-CloudWatch -> 로그 -> 로그그룹 -> `/aws/lambda/{Lambda명}` 으로 이동해서 볼 수 있습니다.
+> CloudWatch -> 로그 -> 로그그룹 -> `/aws/lambda/{Lambda명}` 으로 이동해서 볼 수도 있습니다.
 
+로그를 확인해보시면 다음과 같은 데이터를 볼 수 있습니다.
 
 ```json
 2021-05-07T07:38:30.496Z	2ebb61a4-12cd-4adc-9d60-2fdef3c2bfca	INFO	Event Data: {
@@ -186,14 +208,17 @@ CloudWatch -> 로그 -> 로그그룹 -> `/aws/lambda/{Lambda명}` 으로 이동�
         {
             "id": "id명",
             "timestamp": 1620373109000,
-            "message": "2021-05-07 07:38:29 UTC:121.135.139.43(56644):계정:[7221]:LOG:  duration: 2010.073 ms  execute <unnamed>: SELECT pg_sleep(2)"
+            "message": "2021-05-07 07:38:29 UTC:127.0.0.1(56644):계정:[7221]:LOG:  duration: 2010.073 ms  execute <unnamed>: SELECT pg_sleep(2)"
         }
     ]
 }
 ```
 
+자 그럼 테스트 데이터도 생성되었으니, 바로 이 데이터를 통해 **슬랙 발송 함수**를 만들어보겠습니다.
 
 ### 2-3. Lambda 함수 코드 작성
+
+Lambda 함수의 전체 코드는 다음과 같습니다.
 
 ```javascript
 const https = require('https');
@@ -294,7 +319,6 @@ exports.options = (slackUrl) => {
     };
 }
 
-
 function request(options, data) {
 
     return new Promise((resolve, reject) => {
@@ -325,30 +349,68 @@ function request(options, data) {
 각각의 function들은 다음과 같은 역할을 합니다.
 
 * `toJson`
-  * CloudWatch에서 넘겨준 
+  * CloudWatch에서 넘겨준 Log 데이터를 가공하기 쉽도록 JSON으로 파싱하는 역할을 합니다.
+  * PostgreSQL 로그가 한줄의 text로 나열된 형태라서 `:`를 구분자로 두어 불필요한 데이터는 버리고 필요한 데이터만 가공합니다.
 * `toYyyymmddhhmmss`
+  * UTC 시간 데이터를 식별가능한 KST로 전환합니다.
 * `slackMessage`
+  * `toJson` 을 통해 받은 JSON 데이터를 Slack 노출용 메세지로 변환합니다.
 * `postSlack`
+  * `request` function을 통해 Slack으로 메세지를 발송합니다.
 * `options`
+  * `https` 모듈에서 인식 가능한 HTTP Options을 만들어줍니다.
 * `request`
+  * callback만 지원하는 `https` 모듈을 `async/await`를 사용할 수 있도록 Promise 객체로 만들어줍니다.
 
 > 코드 중간중간 function 중에는 `exports` 되어있는 것들이 있습니다.  
 > 이들은 제가 테스트 코드로 해당 function만 테스트하기 위해 `exports`를 한것이라 **기능 자체는 일반 function과 차이가 없습니다**
 
+이렇게 Lambda 함수가 생성되었다면, Slack까지 잘 전송되는지 한번 테스트를 해봅니다.  
+위의 테스트 데이터를 사용해서 그대로 다시 테스트를 수행하시면?  
+아래와 같이 테스트용 데이터를 기반으로 한 슬랙 메세지가 오는 것을 볼 수 있습니다.
+
+![slack1](./images/slack1.png)
+
+여기까지 하셨다면 거의다 하셨습니다!  
+바로 CloudWatch 연동을 진행해보겠습니다.
+
 ## 3. CloudWatch & Lambda 연동
+
+CloudWatch와 Lambda 연동은 쉽습니다.  
+이미 구독기능이 AWS에서는 지원하기 때문인데요.  
+  
+먼저 RDS PostgreSQL의 로그 그룹으로 이동해서 해당 로그그룹 선택 -> 작업 -> 구독필터 -> Lambda 구독 필터 생성 을 차례로 선택합니다.
 
 ![cloudwatch1](./images/cloudwatch1.png)
 
+구독 필터 생성 화면에 들어가시게 되면, 2-1에서 만든 Lambda 함수를 대상에 등록합니다.
+
 ![cloudwatch2](./images/cloudwatch2.png)
+
+아래로 내려가보시면 로그형식이 나오는데, 여기서 로그형식은 기타를 선택합니다.  
+  
+구독 필터 퍁너의 경우 **정규표현식이 아직 미지원**하여서 사용하지 않습니다.  
+  
+구독 필터 이름이 없을 경우 생성이 불가능하니 꼭 식별 가능한 이름으로 입력합니다.
 
 ![cloudwatch3](./images/cloudwatch3.png)
 
+기존의 데이터에 대한 패턴 테스트까지 끝나셨다면 **스트리밍 시작** 버튼을 클릭하여 구독을 활성화 시킵니다.
+
 ![cloudwatch4](./images/cloudwatch4.png)
 
-그럼 아래와 같이
+그럼 아래와 같이 로그그룹의 구독 필터에 1개의 구독이 추가된 것을 볼 수 있습니다.
 
 ![cloudwatch5](./images/cloudwatch5.png)
 
-## 4. 전체 테스트
+모든 설정이 끝났습니다.  
+이제 전체 테스트를 한번 해보겠습니다.  
+Database 도구를 통해 아래 쿼리로 슬로우 쿼리를 강제로 발생시켜봅니다.
 
-![slack](./images/slack.png)
+```sql
+SELECT pg_sleep(5);
+```
+
+그럼 아래와 같이 슬랙 채널에 정식 알람이 오는 것을 확인할 수 있습니다.
+
+![slack2](./images/slack2.png)
