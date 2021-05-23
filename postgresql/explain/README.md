@@ -1,4 +1,5 @@
-# PostgreSQL 실행 계획 보는 법
+# (기본적인) PostgreSQL 실행 계획 보는 법
+
 
 
 ## 실행 순서
@@ -109,5 +110,45 @@ GROUP BY product_id;
 
 ## 상황별 실행 계획
 
-### 테이블 풀 스캔
+### 기본적인 실행계획 보는법 (feat. 테이블 풀 스캔)
 
+**실행 쿼리**
+
+```sql
+select * from test_order;
+```
+
+**실행 계획**
+
+```sql
+Seq Scan on test_order  (cost=0.00..17353.00 rows=1000000 width=30)
+```
+
+* `Seq Scan`
+  * 객체에 어떤 방식으로 조작하는지를 나타냄
+  * `Seq Scan` 은 **파일을 순차적으로 접근**해서 해당 테이블의 전체 데이터를 읽음을 의미 (즉, 테이블 풀 스캔)
+* `on test_order`
+  * 조작 대상 객체
+    * 테이블, View 등
+  * 여기서는 `test_order` 테이블을 대상으로 한다는 것을 의미
+* `rows=1000000`
+  * 조작 대상 row 수
+  * 즉, 현 조건에 해당하는 `test_order` 에서 조회될 예상 건수를 의미
+
+### 인덱스 스캔
+
+
+```sql
+select * from test_order where id between 1 and 10000;
+```
+
+```sql
+Index Scan using test_order_pk on test_order  (cost=0.42..422.13 rows=10885 width=30)
+  Index Cond: ((id >= 1) AND (id <= 10000))
+```
+
+### Table Join
+
+* Nested Loop
+* Sort Merge
+* Hash
