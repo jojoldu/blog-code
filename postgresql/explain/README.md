@@ -1,5 +1,7 @@
 # (기본적인) PostgreSQL 실행 계획 보는 법
 
+* AWS RDS PostgreSQL 10.14
+* m4.2xlarge
 
 
 ## 실행 순서
@@ -53,8 +55,9 @@
 
 실행순서 : 2 -> 5 -> 4 -> 3 -> 1
 
-* 1 아래에 2 3이 동등한 위치에 있으므로 2가 먼저 실행되고 3은 아래에 4,5가 있습니다. 
-* 4는 역시 5를 아래에 두고 있기 때문에 5 -> 4 -> 3 실행후 마지막으로 1이 실행됩니다.
+* 1 아래에 2 3이 동등한 위치에 있으므로 2가 먼저 실행되고 
+* 3은 같은 그룹으로 4,5 가 있어서 5 -> 4 -> 3 이 되고
+* 마지막으로 1이 실행됩니다.
 
 
 ## 실습 환경
@@ -112,13 +115,13 @@ GROUP BY product_id;
 
 ### 기본적인 실행계획 보는법 (feat. 테이블 풀 스캔)
 
-**실행 쿼리**
+**실행쿼리**
 
 ```sql
 select * from test_order;
 ```
 
-**실행 계획**
+**실행계획**
 
 ```sql
 Seq Scan on test_order  (cost=0.00..17353.00 rows=1000000 width=30)
@@ -137,18 +140,74 @@ Seq Scan on test_order  (cost=0.00..17353.00 rows=1000000 width=30)
 
 ### 인덱스 스캔
 
+**실행쿼리**
 
 ```sql
 select * from test_order where id between 1 and 10000;
 ```
+
+**실행계획**
 
 ```sql
 Index Scan using test_order_pk on test_order  (cost=0.42..422.13 rows=10885 width=30)
   Index Cond: ((id >= 1) AND (id <= 10000))
 ```
 
+* `Index Scan using test_order_pk on test_order`
+  * 인덱스를 이용해 Scan을 했음을 의미
+  * 사용한 인덱스는 `test_order_pk` 이며, 대상 객체는 `test_order` 가 되었음을 알 수 있음 
+* `Index Cond`
+  * 인덱스 스캔에 사용된 조회 조건
+
+만약 여러 조회조건이 섞여 있고, 이 중 인덱스를 사용하는 조건과 그렇지 않은 조건이 같이 있다면 다음과 같이 결과가 나온다.
+
+**실행쿼리**
+
+```sql
+select *
+from test_order
+where id between 1 and 10000
+  and order_date > '2020-01-01 00:00:00';
+```
+
+**실행계획**
+
+```sql
+Index Scan using test_order_pk on test_order  (cost=0.42..449.34 rows=1 width=30)
+  Index Cond: ((id >= 1) AND (id <= 10000))
+  Filter: (order_date > '2020-01-01 00:00:00+09'::timestamp with time zone)
+```
+
+* `Filter`
+  * 인덱스가 아닌 일반적인 조건을 통해 데이터를 걸렀음을 의미
+* 실행 순서
+
 ### Table Join
 
 * Nested Loop
 * Sort Merge
 * Hash
+
+```sql
+select p.name
+from test_order_detail d
+join test_product p on d.product_id = p.id;
+```
+
+```sql
+Hash Join  (cost=17.20..220072.69 rows=9999987 width=218) (1)
+  Hash Cond: (d.product_id = p.id) (2)
+  ->  Seq Scan on test_order_detail d  (cost=0.00..193457.87 rows=9999987 width=8) (3)
+  ->  Hash  (cost=13.20..13.20 rows=320 width=226) (4)
+        ->  Seq Scan on test_product p  (cost=0.00..13.20 rows=320 width=226) (5)
+```
+
+실행 순서
+
+(3) `Seq Scan on test_order_detail d`
+(5) `Seq Scan on test_product p`
+(4) `Hash  (cost=13.20..13.20 rows=320 width=226)`
+(2) `Hash Cond: (d.product_id = p.id)`
+(1) `Hash Join  (cost=17.20..220072.69 rows=9999987 width=218)`
+
+* 결합 (`HashJoin`) 전에 테이블 접근이 먼저 수행
