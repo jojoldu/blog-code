@@ -57,7 +57,7 @@
 ```javascript
 where is_leave = false;
 
-where leaved_at is nut null; // 인덱스 사용 불가
+where leaved_at is not null; // 인덱스 사용 불가
 
 where leave_status = 'ACTIVE';
 ```
