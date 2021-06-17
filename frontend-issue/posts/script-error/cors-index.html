@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>-->
+<script src="https://cors-public.s3.ap-northeast-2.amazonaws.com/sdk.js" crossorigin="anonymous"></script>
+  <p id="a"> test </p>
+  <script>
+      /**
+       * APM 내부 구현
+       */
+      window.onerror = function (message) {
+          console.log(`APM Catch Error message = ${message}`);
+      }
+
+      /**
+       * 비지니스 로직
+       */
+      foo();
+  </script>
+</body>
+</html>
