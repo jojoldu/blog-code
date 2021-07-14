@@ -1,0 +1,15 @@
+{
+  "name": "cloudwatch-alarm",
+  "version": "1.0.0",
+  "description": "```js 'use strict'",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "aws-sdk": "^2.945.0",
+    "jest": "^27.0.6"
+  }
+}

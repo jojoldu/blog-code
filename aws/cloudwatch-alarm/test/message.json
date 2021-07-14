@@ -1,0 +1,45 @@
+{
+  "AlarmName": "RDS-CPUUtilization-high",
+  "AlarmDescription": "RDS CPUUtilization HIGH",
+  "AWSAccountId": "123123123",
+  "NewStateValue": "ALARM",
+  "NewStateReason": "Thresholds Crossed: 10 out of the last 10 datapoints were greater than the upper thresholds. Recent datapoints [19.583333333333336 (07/06/21 11:29:00), 18.82031367189453 (07/06/21 11:28:00), 19.175 (07/06/21 11:27:00), 18.926351227479543 (07/06/21 11:26:00), 19.873333333333335 (07/06/21 11:25:00)] crossed the upper thresholds [17.451341070908924, 17.45471388768494, 17.129468501805864, 16.479530618173683, 17.461457983816153] (minimum 10 datapoints for OK -> ALARM transition).",
+  "StateChangeTime": "2021-06-07T11:31:17.332+0000",
+  "Region": "Asia Pacific (Seoul)",
+  "AlarmArn": "arn:aws:cloudwatch:ap-northeast-2:123123123:alarm:RDS-CPUUtilization-high",
+  "OldStateValue": "OK",
+  "Trigger": {
+    "Period": 60,
+    "EvaluationPeriods": 10,
+    "ComparisonOperator": "GreaterThanUpperThreshold",
+    "ThresholdMetricId": "ad1",
+    "TreatMissingData": "- TreatMissingData:                    missing",
+    "EvaluateLowSampleCountPercentile": "",
+    "Metrics": [
+      {
+        "Id": "m1",
+        "MetricStat": {
+          "Metric": {
+            "Dimensions": [
+              {
+                "value": "test",
+                "name": "DBInstanceIdentifier"
+              }
+            ],
+            "MetricName": "CPUUtilization",
+            "Namespace": "AWS/RDS"
+          },
+          "Period": 60,
+          "Stat": "Average"
+        },
+        "ReturnData": true
+      },
+      {
+        "Expression": "ANOMALY_DETECTION_BAND(m1, 3)",
+        "Id": "ad1",
+        "Label": "CPUUtilization (expected)",
+        "ReturnData": true
+      }
+    ]
+  }
+}
