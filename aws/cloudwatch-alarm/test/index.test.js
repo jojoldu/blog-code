@@ -1,7 +1,8 @@
-const testObject = require('./message2.json');
-
 process.env.webhook = 'test';
-const {buildSlackMessage, toYyyymmddhhmmss, buildThresholdMessage} = require("../src");
+
+const testObject = require('./message2.json');
+const {createLink} = require("../src");
+const {buildSlackMessage, toYyyymmddhhmmss, buildThresholdMessage, exportRegionCode} = require("../src");
 
 describe('index.js', () => {
 
@@ -23,6 +24,18 @@ describe('index.js', () => {
     it('threshold 메시지', () => {
         const message = buildThresholdMessage(testObject);
         console.log(message);
+    });
+
+    it('region code 추출', () => {
+        const arn = "arn:aws:cloudwatch:ap-northeast-2:123123:alarm:Aurora PostgreSQL CPU 알람 (60%이상시)";
+        const result = exportRegionCode(arn);
+
+        expect(result).toBe('ap-northeast-2');
+    });
+
+    it('link', () => {
+        const result = createLink(testObject);
+        expect(result).toBe('https://console.aws.amazon.com/cloudwatch/home?region=ap-northeast-2#alarm:alarmFilter=ANY;name=Aurora%20PostgreSQL%20CPU%20%EC%95%8C%EB%9E%8C%20(60%25%EC%9D%B4%EC%83%81%EC%8B%9C)');
     });
 
 });

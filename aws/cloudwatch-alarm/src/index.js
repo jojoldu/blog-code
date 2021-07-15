@@ -34,7 +34,6 @@ exports.buildSlackMessage = (data) => {
     const oldState = statusColorsAndMessage[data.OldStateValue];
     const executeTime = exports.toYyyymmddhhmmss(data.StateChangeTime);
     const description = exports.buildThresholdMessage(data);
-    const link = `https://console.aws.amazon.com/cloudwatch/home?region=ap-northeast-2#alarm:alarmFilter=ANY;name=${encodeURIComponent(data.AlarmName)}`;
 
     return {
         attachments: [
@@ -62,12 +61,20 @@ exports.buildSlackMessage = (data) => {
                     },
                     {
                         title: '바로가기',
-                        value: link
+                        value: exports.createLink(data)
                     }
                 ]
             }
         ]
     }
+}
+
+exports.createLink = (data) => {
+    return `https://console.aws.amazon.com/cloudwatch/home?region=${exports.exportRegionCode(data.AlarmArn)}#alarm:alarmFilter=ANY;name=${encodeURIComponent(data.AlarmName)}`;
+}
+
+exports.exportRegionCode = (arn) => {
+    return  arn.replace("arn:aws:cloudwatch:", "").split(":")[0];
 }
 
 exports.buildThresholdMessage = (data) => {
