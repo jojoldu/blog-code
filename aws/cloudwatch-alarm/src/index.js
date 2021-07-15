@@ -1,82 +1,68 @@
-'use strict'
-
 const ENV = process.env
 if (!ENV.webhook) throw new Error('Missing environment variable: webhook')
 
 const webhook = ENV.webhook;
-
-const AWS = require('aws-sdk')
 const https = require('https')
 
-const statusColors = {
-    ALARM: 'danger',
-    INSUFFICIENT_DATA: 'warning',
-    OK: 'good'
+const statusColorsAndMessage = {
+    ALARM: {"color": "danger", "message":"위험"},
+    INSUFFICIENT_DATA: {"color": "warning", "message":"데이터 부족"},
+    OK: {"color": "good", "message":"정상"}
 }
 
-exports.handler = (event, context, callback) => {
-    processEvent(event, context, callback);
+const comparisonOperator = {
+    "GreaterThanOrEqualToThreshold": ">=",
+    "GreaterThanUpperThreshold": ">",
+    "LowerThanOrEqualToThreshold": "<=",
+    "LowerThanUnderThreshold": "<",
 }
 
-function processEvent(event, context, callback) {
+exports.handler = async (event) => {
+    await exports.processEvent(event);
+}
+
+exports.processEvent = async (event) => {
     console.log('Event:', JSON.stringify(event))
-    const snsMessage = parseSNSMessage(event.Records[0].Sns.Message)
-    const postData = buildSlackMessage(snsMessage)
-    post(webhook, postData, callback)
+    const snsMessage = event.Records[0].Sns.Message;
+    console.log('SNS Message:', snsMessage);
+    const postData = exports.buildSlackMessage(JSON.parse(snsMessage))
+    await exports.postSlack(postData, webhook);
 }
 
-function handleResponse(response, callback) {
-    const statusCode = response.statusCode
-    console.log('Status code:', statusCode)
-    let responseBody = ''
-    response
-        .on('data', chunk => {
-            responseBody += chunk
-        })
-        .on('end', () => {
+exports.buildSlackMessage = (data) => {
+    const newState = statusColorsAndMessage[data.NewStateValue];
+    const oldState = statusColorsAndMessage[data.OldStateValue];
+    const executeTime = exports.toYyyymmddhhmmss(data.StateChangeTime);
+    const description = exports.buildThresholdMessage(data);
+    const link = `https://console.aws.amazon.com/cloudwatch/home?region=ap-northeast-2#alarm:alarmFilter=ANY;name=${encodeURIComponent(data.AlarmName)}`;
 
-            console.log('Response:', responseBody)
-            if (statusCode >= 200 && statusCode < 300) {
-                callback(null, 'Request completed successfully.')
-            } else {
-                callback(new Error(`Request failed with status code ${statusCode}.`))
-            }
-        })
-}
-
-function post(requestURL, data, callback) {
-    const body = JSON.stringify(data)
-    const options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(body)
-        }
-    }
-
-    https
-        .request(requestURL, options, response => {
-            handleResponse(response, callback)
-        })
-        .on('error', err => {
-            callback(err)
-        })
-        .end(body)
-}
-
-function buildSlackMessage(data) {
     return {
         attachments: [
             {
-                fallback: data.AlarmName,
-                title: data.AlarmName,
-                text: data.AlarmDescription,
-                color: statusColors[data.NewStateValue],
+                title: `[${data.AlarmName}]`,
+                color: newState.color,
                 fields: [
                     {
-                        title: 'Status',
-                        value: data.NewStateValue,
+                        title: '언제',
+                        value: executeTime
+                    },
+                    {
+                        title: '원인',
+                        value: description
+                    },
+                    {
+                        title: '이전 상태',
+                        value: oldState.message,
                         short: true
+                    },
+                    {
+                        title: '현재 상태',
+                        value: `*${newState.message}*`,
+                        short: true
+                    },
+                    {
+                        title: '바로가기',
+                        value: link
                     }
                 ]
             }
@@ -84,7 +70,75 @@ function buildSlackMessage(data) {
     }
 }
 
-function parseSNSMessage(message) {
-    console.log('SNS Message:', message)
-    return JSON.parse(message)
+exports.buildThresholdMessage = (data) => {
+    const trigger = data.Trigger;
+    const threshold = trigger.Threshold;
+    const metric = trigger.MetricName;
+    const evaluationPeriods = trigger.EvaluationPeriods;
+    const minutes = Math.floor(trigger.Period / 60);
+    const operator = comparisonOperator[trigger.ComparisonOperator];
+
+    return `${evaluationPeriods * minutes} 분 동안 ${evaluationPeriods} 회 이상 ${metric} ${operator} ${threshold}%`;
 }
+
+// 타임존 UTC -> KST
+exports.toYyyymmddhhmmss = (timeString) => {
+
+    if(!timeString){
+        return '';
+    }
+
+    const kstDate = new Date(new Date(timeString).getTime() + 32400000);
+
+    function pad2(n) { return n < 10 ? '0' + n : n }
+
+    return kstDate.getFullYear().toString()
+        + '-'+ pad2(kstDate.getMonth() + 1)
+        + '-'+ pad2(kstDate.getDate())
+        + ' '+ pad2(kstDate.getHours())
+        + ':'+ pad2(kstDate.getMinutes())
+        + ':'+ pad2(kstDate.getSeconds());
+}
+
+exports.postSlack = async (message, slackUrl) => {
+    return await request(exports.options(slackUrl), message);
+}
+
+exports.options = (slackUrl) => {
+    const {host, pathname} = new URL(slackUrl);
+    return {
+        hostname: host,
+        path: pathname,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    };
+}
+
+function request(options, data) {
+
+    return new Promise((resolve, reject) => {
+        const req = https.request(options, (res) => {
+            res.setEncoding('utf8');
+            let responseBody = '';
+
+            res.on('data', (chunk) => {
+                responseBody += chunk;
+            });
+
+            res.on('end', () => {
+                resolve(responseBody);
+            });
+        });
+
+        req.on('error', (err) => {
+            console.error(err);
+            reject(err);
+        });
+
+        req.write(JSON.stringify(data));
+        req.end();
+    });
+}
+

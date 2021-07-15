@@ -4,7 +4,7 @@ module.exports = {
         "<rootDir>/node_modules/"
     ],
     testMatch: [
-        '<rootDir>/test/**/*.test.ts',
+        '<rootDir>/test/*.test.js',
     ],
     testEnvironment: 'node'
 };

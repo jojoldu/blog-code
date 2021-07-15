@@ -1,9 +1,9 @@
 {
-  "AlarmName": "RDS-CPUUtilization-high",
-  "AlarmDescription": "RDS CPUUtilization HIGH",
+  "AlarmName": "Aurora PostgreSQL CPU 알람 (60%이상시)",
+  "AlarmDescription": "Aurora PostgreSQL CPU 알람 (60%이상시)",
   "AWSAccountId": "123123123",
   "NewStateValue": "ALARM",
-  "NewStateReason": "Thresholds Crossed: 10 out of the last 10 datapoints were greater than the upper thresholds. Recent datapoints [19.583333333333336 (07/06/21 11:29:00), 18.82031367189453 (07/06/21 11:28:00), 19.175 (07/06/21 11:27:00), 18.926351227479543 (07/06/21 11:26:00), 19.873333333333335 (07/06/21 11:25:00)] crossed the upper thresholds [17.451341070908924, 17.45471388768494, 17.129468501805864, 16.479530618173683, 17.461457983816153] (minimum 10 datapoints for OK -> ALARM transition).",
+  "NewStateReason": "Threshold Crossed: 3 out of the last 3 datapoints [8.891518474692088 (14/07/21 23:18:00), 9.72 (14/07/21 23:17:00), 9.18241509182415 (14/07/21 23:16:00)] were greater than or equal to the threshold (7.0) (minimum 3 datapoints for OK -> ALARM transition).",
   "StateChangeTime": "2021-06-07T11:31:17.332+0000",
   "Region": "Asia Pacific (Seoul)",
   "AlarmArn": "arn:aws:cloudwatch:ap-northeast-2:123123123:alarm:RDS-CPUUtilization-high",
