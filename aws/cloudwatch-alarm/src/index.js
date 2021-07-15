@@ -85,7 +85,7 @@ exports.buildThresholdMessage = (data) => {
     const minutes = Math.floor(trigger.Period / 60);
     const operator = comparisonOperator[trigger.ComparisonOperator];
 
-    return `${evaluationPeriods * minutes} 분 동안 ${evaluationPeriods} 회 이상 ${metric} ${operator} ${threshold}%`;
+    return `${evaluationPeriods * minutes} 분 동안 ${evaluationPeriods} 회 ${metric} ${operator} ${threshold}`;
 }
 
 // 타임존 UTC -> KST

@@ -1,6 +1,6 @@
 {
-  "AlarmName": "Aurora PostgreSQL CPU 알람 (60%이상시)",
-  "AlarmDescription": "Aurora PostgreSQL CPU 알람 (60%이상시)",
+  "AlarmName": "Aurora PostgreSQL CPU 알람",
+  "AlarmDescription": "Aurora PostgreSQL CPU 알람",
   "AWSAccountId": "123123",
   "NewStateValue": "ALARM",
   "NewStateReason": "Threshold Crossed: 3 out of the last 3 datapoints [8.891518474692088 (14/07/21 23:18:00), 9.72 (14/07/21 23:17:00), 9.18241509182415 (14/07/21 23:16:00)] were greater than or equal to the threshold (7.0) (minimum 3 datapoints for OK -> ALARM transition).",
