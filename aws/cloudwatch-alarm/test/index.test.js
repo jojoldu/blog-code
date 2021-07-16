@@ -22,7 +22,7 @@ describe('index.js', () => {
     });
 
     it('threshold 메시지', () => {
-        const message = buildThresholdMessage(testObject);
+        const message = buildThresholdMessage(testObject, 1, 1);
         console.log(message);
     });
 

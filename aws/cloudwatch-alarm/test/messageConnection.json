@@ -1,0 +1,30 @@
+{
+  "AlarmName": "Aurora PostgreSQL Connection 알람 (ant-man-rds-live)",
+  "AlarmDescription": "DB의 Connection이 갑자기 빠졌습니다. ECS 서버가 죽었는지 확인이 필요합니다.",
+  "AWSAccountId": "123123",
+  "NewStateValue": "OK",
+  "NewStateReason": "Threshold Crossed: 2 out of the last 2 datapoints [109.0 (15/07/21 22:41:00), 133.0 (15/07/21 22:40:00)] were not less than the threshold (50.0) (minimum 1 datapoint for ALARM -> OK transition).",
+  "StateChangeTime": "2021-07-15T22:42:52.868+0000",
+  "Region": "Asia Pacific (Seoul)",
+  "AlarmArn": "arn:aws:cloudwatch:ap-northeast-2:123123:alarm:Aurora PostgreSQL Connection 알람",
+  "OldStateValue": "ALARM",
+  "Trigger": {
+    "MetricName": "DatabaseConnections",
+    "Namespace": "AWS/RDS",
+    "StatisticType": "Statistic",
+    "Statistic": "MINIMUM",
+    "Unit": null,
+    "Dimensions": [
+      {
+        "value": "ant-man-rds-live",
+        "name": "DBInstanceIdentifier"
+      }
+    ],
+    "Period": 60,
+    "EvaluationPeriods": 2,
+    "ComparisonOperator": "LessThanThreshold",
+    "Threshold": 50,
+    "TreatMissingData": "- TreatMissingData:                    ignore",
+    "EvaluateLowSampleCountPercentile": ""
+  }
+}

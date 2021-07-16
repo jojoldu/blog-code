@@ -12,9 +12,9 @@ const statusColorsAndMessage = {
 
 const comparisonOperator = {
     "GreaterThanOrEqualToThreshold": ">=",
-    "GreaterThanUpperThreshold": ">",
+    "GreaterThanThreshold": ">",
     "LowerThanOrEqualToThreshold": "<=",
-    "LowerThanUnderThreshold": "<",
+    "LessThanThreshold": "<",
 }
 
 exports.handler = async (event) => {
@@ -33,7 +33,8 @@ exports.buildSlackMessage = (data) => {
     const newState = statusColorsAndMessage[data.NewStateValue];
     const oldState = statusColorsAndMessage[data.OldStateValue];
     const executeTime = exports.toYyyymmddhhmmss(data.StateChangeTime);
-    const description = exports.buildThresholdMessage(data);
+    const description = data.AlarmDescription;
+    const cause = exports.getCause(data);
 
     return {
         attachments: [
@@ -46,8 +47,12 @@ exports.buildSlackMessage = (data) => {
                         value: executeTime
                     },
                     {
-                        title: '원인',
+                        title: '설명',
                         value: description
+                    },
+                    {
+                        title: '원인',
+                        value: cause
                     },
                     {
                         title: '이전 상태',
@@ -77,12 +82,32 @@ exports.exportRegionCode = (arn) => {
     return  arn.replace("arn:aws:cloudwatch:", "").split(":")[0];
 }
 
-exports.buildThresholdMessage = (data) => {
+exports.getCause = (data) => {
+    const trigger = data.Trigger;
+    const evaluationPeriods = trigger.EvaluationPeriods;
+    const minutes = Math.floor(trigger.Period / 60);
+
+    if(data.Trigger.Metrics) {
+        return exports.buildAnomalyDetectionBand(data, evaluationPeriods, minutes);
+    }
+
+    return exports.buildThresholdMessage(data, evaluationPeriods, minutes);
+
+}
+
+exports.buildAnomalyDetectionBand = (data, evaluationPeriods, minutes) => {
+    const metrics = data.Trigger.Metrics;
+    const metric = metrics.find(metric => metric.Id === 'm1').MetricStat.Metric.MetricName;
+    const expression = metrics.find(metric => metric.Id === 'ad1').Expression;
+    const width = expression.split(',')[1].replace(')', '').trim();
+
+    return `${evaluationPeriods * minutes} 분 동안 ${evaluationPeriods} 회 ${metric} 지표가 범위(약 ${width}배)를 벗어났습니다.`;
+}
+
+exports.buildThresholdMessage = (data, evaluationPeriods, minutes) => {
     const trigger = data.Trigger;
     const threshold = trigger.Threshold;
     const metric = trigger.MetricName;
-    const evaluationPeriods = trigger.EvaluationPeriods;
-    const minutes = Math.floor(trigger.Period / 60);
     const operator = comparisonOperator[trigger.ComparisonOperator];
 
     return `${evaluationPeriods * minutes} 분 동안 ${evaluationPeriods} 회 ${metric} ${operator} ${threshold}`;

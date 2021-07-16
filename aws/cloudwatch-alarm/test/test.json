@@ -3,7 +3,7 @@
     {
       "EventSource": "aws:sns",
       "EventVersion": "1.0",
-      "EventSubscriptionArn": "arn:aws:sns:ap-northeast-2:981604548033:alarm-topic:test",
+      "EventSubscriptionArn": "arn:aws:sns:ap-northeast-2:123123:alarm-topic:test",
       "Sns": {
         "Type": "Notification",
         "MessageId": "test",

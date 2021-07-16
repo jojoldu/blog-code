@@ -9,6 +9,12 @@
   "AlarmArn": "arn:aws:cloudwatch:ap-northeast-2:123123:alarm:Aurora PostgreSQL CPU 알람 (60%이상시)",
   "OldStateValue": "OK",
   "Trigger": {
+    "Period": 60,
+    "EvaluationPeriods": 3,
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Threshold": 7.0,
+    "TreatMissingData": "- TreatMissingData:                    ignore",
+    "EvaluateLowSampleCountPercentile": "",
     "MetricName": "CPUUtilization",
     "Namespace": "AWS/RDS",
     "StatisticType": "Statistic",
@@ -19,12 +25,6 @@
         "value": "aurora-postgresql",
         "name": "EngineName"
       }
-    ],
-    "Period": 60,
-    "EvaluationPeriods": 3,
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Threshold": 7.0,
-    "TreatMissingData": "- TreatMissingData:                    ignore",
-    "EvaluateLowSampleCountPercentile": ""
+    ]
   }
 }

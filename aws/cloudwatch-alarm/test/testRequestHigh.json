@@ -1,0 +1,19 @@
+{
+  "Records": [
+    {
+      "EventSource": "aws:sns",
+      "EventVersion": "1.0",
+      "EventSubscriptionArn": "arn:aws:sns:ap-northeast-2:123123:test-alarm-topic:747d0be9-a5c1-4486-bd93-496d2e42e46f",
+      "Sns": {
+        "Type": "Notification",
+        "MessageId": "ae4c9774-2b86-528d-9353-ce43d7fd2484",
+        "TopicArn": "arn:aws:sns:ap-northeast-2:123123:test-alarm-topic",
+        "Subject": "ALARM: \"ant-man-live-ALB-RequestCount-high\" in Asia Pacific (Seoul)",
+        "Message": "{\"AlarmName\":\"ant-man-live-ALB-RequestCount-high\",\"AlarmDescription\":\"Ant-man live ALB RequestCount HIGH\",\"AWSAccountId\":\"123123\",\"NewStateValue\":\"ALARM\",\"NewStateReason\":\"Thresholds Crossed: 5 out of the last 5 datapoints were greater than the upper thresholds. Recent datapoints [15400.0 (07/06/21 10:49:00), 15150.0 (07/06/21 10:48:00), 13651.0 (07/06/21 10:47:00), 12634.0 (07/06/21 10:46:00), 11740.0 (07/06/21 10:45:00)] crossed the upper thresholds [10241.536059854789, 10302.19231472166, 10211.569372726624, 10185.639551345677, 10280.57161282437] (minimum 5 datapoints for OK -> ALARM transition).\",\"StateChangeTime\":\"2021-06-07T10:51:39.467+0000\",\"Region\":\"Asia Pacific (Seoul)\",\"AlarmArn\":\"arn:aws:cloudwatch:ap-northeast-2:123123:alarm:ant-man-live-ALB-RequestCount-high\",\"OldStateValue\":\"OK\",\"Trigger\":{\"Period\":60,\"EvaluationPeriods\":5,\"ComparisonOperator\":\"GreaterThanUpperThreshold\",\"ThresholdMetricId\":\"ad1\",\"TreatMissingData\":\"- TreatMissingData: missing\",\"EvaluateLowSampleCountPercentile\":\"\",\"Metrics\":[{\"Id\":\"m1\",\"MetricStat\":{\"Metric\":{\"Dimensions\":[{\"value\":\"test\",\"name\":\"LoadBalancer\"}],\"MetricName\":\"RequestCount\",\"Namespace\":\"AWS/ApplicationELB\"},\"Period\":60,\"Stat\":\"Sum\"},\"ReturnData\":true},{\"Expression\":\"ANOMALY_DETECTION_BAND(m1, 2)\",\"Id\":\"ad1\",\"Label\":\"RequestCount (expected)\",\"ReturnData\":true}]}}",
+        "Timestamp": "2021-06-07T10:51:39.536Z",
+        "SignatureVersion": "1",
+        "MessageAttributes": {}
+      }
+    }
+  ]
+}
