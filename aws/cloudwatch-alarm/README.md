@@ -12,7 +12,9 @@ AWS 서비스를 이용하면 CloudWatch를 통해 서비스의 이상 지표를
   
 그래서 위와 같이 이상지표가 발생하면 즉시 Slack 등 메신저를 통해 알람을 받아야만 하는데요.  
 AWS에서는 SNS와 Lambda를 통해 CloudWatch의 이상 지표를 손쉽게 알람을 받을 수 있습니다.  
-  
+
+![intro](./images/intro.png)
+
 이번 시간에는 CloudWatch와 SNS, Lambda를 활용해 이상 지표 알람 서비스를 만들어보겠습니다.
 
 ## 1. SNS 토픽 생성
