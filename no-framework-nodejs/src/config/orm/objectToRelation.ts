@@ -12,8 +12,9 @@ export function toUpsertQuery<T extends BaseEntity>(entity: T): string {
 
 export function toInsertQuery<T extends BaseEntity>(entity: T): string {
     const tableName = getTableName(entity);
-    const columnNames = new EntityProperties(entity).properties.map(p => p.getColumnName()).join(',');
-    const columnValues = new EntityProperties(entity).properties.map(p => p.value).join(',');
+    const entityProperties = new EntityProperties(entity);
+    const columnNames = entityProperties.getColumnNamesString();
+    const columnValues = entityProperties.getInsertValuesString();
     return `insert into ${tableName}(${columnNames}) values(${columnValues})`;
 }
 
@@ -21,7 +22,7 @@ export function toUpdateQuery<T extends BaseEntity>(entity: T): string {
     entity.validateExistId();
     entity.renewUpdateAt();
     const tableName = getTableName(entity);
-    const setQuery = new EntityProperties(entity).properties.map(p => `${p.getColumnName()}=${p.value}`).join(', ');
+    const setQuery = new EntityProperties(entity).getUpdateValuesString();
     return `update ${tableName} set ${setQuery} where id=${entity.id}`;
 }
 

@@ -7,4 +7,22 @@ export class EntityProperties {
         const keys = Object.getOwnPropertyNames(entity);
         this.properties = keys.map(name => new EntityProperty(name, entity[name]));
     }
+
+    getColumnNamesString() {
+        return this.properties
+            .map(p => p.getColumnName())
+            .join(',');
+    }
+
+    getInsertValuesString() {
+        return this.properties
+            .map(p => p.value)
+            .join(',');
+    }
+
+    getUpdateValuesString() {
+        return this.properties
+            .map(p => `${p.getColumnName()}=${p.value}`)
+            .join(', ');
+    }
 }
