@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start": "ts-node-dev src/app.ts"
   },
   "author": "",
   "license": "MIT",
@@ -15,11 +16,14 @@
     "jest": "^27.0.6",
     "ts-jest": "^27.0.3",
     "ts-node": "^10.1.0",
+    "ts-node-dev": "^1.1.8",
     "typescript": "^4.3.5"
   },
   "dependencies": {
+    "dayjs": "^1.10.6",
     "express": "^4.17.1",
     "mysql": "^2.18.1",
-    "dayjs": "^1.10.6"
+    "reflect-metadata": "^0.1.13",
+    "typedi": "^0.10.0"
   }
 }
