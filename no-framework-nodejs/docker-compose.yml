@@ -2,12 +2,11 @@ version: '3.8'
 
 services:
   db:
-    platform: linux/x86_64
-    image: mysql
+    image: postgres
     ports:
-      - "3306:3306"
+      - "5432:5432"
     environment:
-      - MYSQL_DB=test
-      - MYSQL_USER=test
-      - MYSQL_PASSWORD=test
-      - MYSQL_INITDB_ARGS=--encoding=UTF-8
+      - POSTGRES_DB=test
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
