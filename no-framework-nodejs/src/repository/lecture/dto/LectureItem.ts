@@ -1,4 +1,5 @@
 import {LectureCategory} from "../../../entity/lecture/LectureCategory";
+import {LectureStudentItem} from "./LectureStudentItem";
 
 export class LectureItem {
     readonly name: string;
@@ -8,7 +9,7 @@ export class LectureItem {
     readonly studentCount: number;
     readonly createdAt: string;
     readonly updatedAt: string;
-    readonly stuents: object[];
+    readonly students: LectureStudentItem[];
 
     constructor(queryResult, studentQueryResult) {
         this.name = queryResult.name;
@@ -18,7 +19,7 @@ export class LectureItem {
         this.studentCount = queryResult.student_count;
         this.createdAt = queryResult.created_at;
         this.updatedAt = queryResult.updated_at;
-
+        this.students = studentQueryResult.map(s => new LectureStudentItem(s));
     }
 
 }

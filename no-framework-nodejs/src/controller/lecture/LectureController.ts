@@ -22,4 +22,15 @@ export class LectureController {
     async getLectureOne(reqParams) {
 
     }
+
+    async register(reqQuery) {
+        try {
+            const studentId = reqQuery.studentId;
+            const lectureId = reqQuery.lectureId;
+            const body = await this.lectureService.register(studentId, lectureId);
+            return BaseResponse.OK(body);
+        } catch (e) {
+            return BaseResponse.ERROR(e);
+        }
+    }
 }
