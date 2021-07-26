@@ -1,9 +1,9 @@
 import {Service} from "typedi";
 import dayjs from "dayjs";
-import {NodeTemplate} from "../config/database/NodeTemplate";
+import {NodeTemplate} from "../../config/database/NodeTemplate";
 
 @Service()
-export class SampleRepository {
+export class InstructorRepository {
 
     constructor(private nodeTemplate: NodeTemplate) {}
 
