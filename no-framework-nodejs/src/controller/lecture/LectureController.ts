@@ -19,16 +19,22 @@ export class LectureController {
         }
     }
 
-    async getLectureOne(reqParams) {
-
+    async getLecture(reqParams) {
+        try {
+            const lectureId = reqParams.lectureId;
+            const result = await this.lectureService.getLecture(lectureId);
+            return BaseResponse.OK(result);
+        } catch (e) {
+            return BaseResponse.ERROR(e);
+        }
     }
 
-    async register(reqQuery) {
+    async register(body) {
         try {
-            const studentId = reqQuery.studentId;
-            const lectureId = reqQuery.lectureId;
-            const body = await this.lectureService.register(studentId, lectureId);
-            return BaseResponse.OK(body);
+            const studentId = body.studentId;
+            const lectureId = body.lectureId;
+            const result = await this.lectureService.register(studentId, lectureId);
+            return BaseResponse.OK(result);
         } catch (e) {
             return BaseResponse.ERROR(e);
         }

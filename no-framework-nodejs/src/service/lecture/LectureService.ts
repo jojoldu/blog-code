@@ -2,12 +2,15 @@ import {Service} from "typedi";
 import {LectureRepository} from "../../repository/lecture/LectureRepository";
 import {LecturesRequest} from "../../controller/lecture/dto/LecturesRequest";
 import {Page} from "../Page";
-import {StudentLectureMap} from "../../entity/student/StudentLectureMap";
+import {NodeTemplate} from "../../config/database/NodeTemplate";
 
 @Service()
 export class LectureService {
 
-    constructor(private lectureRepository: LectureRepository) {
+    constructor(
+        private lectureRepository: LectureRepository,
+        private nodeTemplate: NodeTemplate
+        ) {
     }
 
     async getLectures (param: LecturesRequest) {
@@ -20,7 +23,12 @@ export class LectureService {
     }
 
     async register (studentId: number, lectureId: number) {
-        return await this.lectureRepository.register(StudentLectureMap.register(studentId, lectureId));
+        const lecture = await this.lectureRepository.findEntity(lectureId);
+        const result = lecture.register(studentId);
+
+        const poolClient = await this.nodeTemplate.startTransaction();
+        await this.lectureRepository.register(result);
+        await this.nodeTemplate.commit(poolClient);
     }
 
 }

@@ -1,0 +1,8 @@
+### 수강신청
+POST http://localhost:3000/api/v1/lecture/register
+Content-Type: application/json
+
+{
+  "studentId": 1,
+  "lectureId": 1
+}

@@ -21,6 +21,7 @@ export class NodeTemplate {
             console.debug(`query(): query=${sql}, resultCount=${result.rowCount}`);
             return result.rows;
         } catch (e) {
+            console.error(`query(): query=${sql}`, e);
             throw new Error(e.message);
         }
     }

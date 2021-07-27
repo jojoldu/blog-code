@@ -5,6 +5,7 @@ import {LecturesItem} from "./dto/LecturesItem";
 import {LectureItem} from "./dto/LectureItem";
 import {StudentLectureMap} from "../../entity/student/StudentLectureMap";
 import {toInsertQuery} from "../../config/orm/objectToRelation";
+import {Lecture} from "../../entity/lecture/Lecture";
 
 @Service()
 export class LectureRepository {
@@ -21,12 +22,12 @@ export class LectureRepository {
         }
     }
 
-    private getLecturesQuery (param: LecturesRequest) {
+    private getLecturesQuery (param: LecturesRequest): string {
         const condition = param.getWhereCondition();
         return `FROM lecture ${condition} ${param.getPageQuery()}`;
     }
 
-    async getLecture (lectureId: number) {
+    async getLecture (lectureId: number): Promise<LectureItem> {
         const items = await this.nodeTemplate.query(`SELECT * FROM lecture WHERE id = '${lectureId}'`);
         const students = await this.nodeTemplate.query(
             `SELECT s.name, m.created_at FROM student_lecture_map m 
@@ -37,9 +38,13 @@ export class LectureRepository {
         return new LectureItem(items[0], students);
     }
 
+    async findEntity (lectureId: number): Promise<Lecture>  {
+        const items = await this.nodeTemplate.query(`SELECT * FROM lecture WHERE id = '${lectureId}'`);
+        return Lecture.byJson(items[0]);
+    }
+
     async register (studentLectureMap :StudentLectureMap) {
         const query = toInsertQuery(studentLectureMap);
-        const result = await this.nodeTemplate.query(query);
-        return result;
+        return await this.nodeTemplate.query(query);
     }
 }

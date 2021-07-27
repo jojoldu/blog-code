@@ -10,6 +10,7 @@ const app = express();
 const port = 3000;
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.listen(port, () => {
     console.info(`Server is running on http://localhost:${port}`);
@@ -27,5 +28,15 @@ app.get('/now', async (req, res) => {
 
 app.get('/api/v1/lectures', async (req, res) => {
     const response = await Container.get(LectureController).getLectures(req.params);
+    res.send(response);
+})
+
+app.get('/api/v1/lecture', async (req, res) => {
+    const response = await Container.get(LectureController).getLecture(req.params);
+    res.send(response);
+})
+
+app.post('/api/v1/lecture/register', async (req, res) => {
+    const response = await Container.get(LectureController).register(req.body);
     res.send(response);
 })

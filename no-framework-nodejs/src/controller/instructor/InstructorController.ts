@@ -10,7 +10,6 @@ export class InstructorController {
         return await this.instructorService.getNow();
     }
 
-
     getInstructors() {
         return this.instructorService.getInstructors();
     }

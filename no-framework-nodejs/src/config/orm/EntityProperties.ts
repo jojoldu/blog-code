@@ -16,7 +16,7 @@ export class EntityProperties {
 
     getInsertValuesString() {
         return this.properties
-            .map(p => p.value)
+            .map(p => p.getColumnValue())
             .join(',');
     }
 
