@@ -1,17 +1,19 @@
 import {BaseEntity} from "../BaseEntity";
 
 export class Student extends BaseEntity {
-    readonly name: string;
-    readonly email: string;
+    name: string;
+    email: string;
 
-    constructor(name: string, email: string) {
+    constructor() {
         super();
-        this.name = name;
-        this.email = email;
     }
 
     static signup (name: string, email: string): Student {
-        return new Student (name, email);
+        const student = new Student();
+        student.name = name;
+        student.email = email;
+        return student;
     }
+
 
 }

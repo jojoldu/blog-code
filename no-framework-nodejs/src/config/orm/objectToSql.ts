@@ -1,6 +1,6 @@
 import {BaseEntity} from "../../entity/BaseEntity";
 import {EntityProperties} from "./EntityProperties";
-import {camelToSnake} from "./camelToSnake";
+import {camelToSnake} from "./converter/camelToSnake";
 
 export function toUpsertQuery<T extends BaseEntity>(entity: T): string {
     if(entity.isInsertTarget()) {

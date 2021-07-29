@@ -4,7 +4,7 @@ import {LecturesRequest} from "../../controller/lecture/dto/LecturesRequest";
 import {LecturesItem} from "./dto/LecturesItem";
 import {LectureItem} from "./dto/LectureItem";
 import {StudentLectureMap} from "../../entity/student/StudentLectureMap";
-import {toInsertQuery, toUpdateQuery} from "../../config/orm/objectToRelation";
+import {toInsertQuery, toUpdateQuery} from "../../config/orm/objectToSql";
 import {Lecture} from "../../entity/lecture/Lecture";
 
 @Service()

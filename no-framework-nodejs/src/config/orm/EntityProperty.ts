@@ -1,4 +1,4 @@
-import {camelToSnake} from "./camelToSnake";
+import {camelToSnake} from "./converter/camelToSnake";
 import dayjs = require("dayjs");
 
 export class EntityProperty {

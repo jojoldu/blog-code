@@ -1,8 +1,8 @@
 import {LectureCategory} from "../../../src/entity/lecture/LectureCategory";
 import {Lecture} from "../../../src/entity/lecture/Lecture";
-import {toDeleteQuery, toInsertQuery, toUpdateQuery} from "../../../src/config/orm/objectToRelation";
+import {toDeleteQuery, toInsertQuery, toUpdateQuery} from "../../../src/config/orm/objectToSql";
 
-describe('objectToRelation', () => {
+describe('objectToSql', () => {
     it('insert query', () => {
         const name = "name1";
         const description = "description1";
