@@ -4,7 +4,7 @@ import {LecturesRequest} from "../../controller/lecture/dto/LecturesRequest";
 import {LecturesItem} from "./dto/LecturesItem";
 import {LectureItem} from "./dto/LectureItem";
 import {StudentLectureMap} from "../../entity/student/StudentLectureMap";
-import {toInsertQuery} from "../../config/orm/objectToRelation";
+import {toInsertQuery, toUpdateQuery} from "../../config/orm/objectToRelation";
 import {Lecture} from "../../entity/lecture/Lecture";
 
 @Service()
@@ -13,7 +13,7 @@ export class LectureRepository {
     constructor(private nodeTemplate: NodeTemplate) {}
 
     async getLectures (param: LecturesRequest) {
-        const queryBody = this.getLecturesQuery(param);
+        const queryBody = `FROM lecture ${param.getWhereCondition()} ${param.getPageQuery()}`;
         const count = await this.nodeTemplate.query(`SELECT COUNT(1) ${queryBody}`);
         const items = await this.nodeTemplate.query(`SELECT * ${queryBody}`);
         return {
@@ -22,13 +22,10 @@ export class LectureRepository {
         }
     }
 
-    private getLecturesQuery (param: LecturesRequest): string {
-        const condition = param.getWhereCondition();
-        return `FROM lecture ${condition} ${param.getPageQuery()}`;
-    }
-
     async getLecture (lectureId: number): Promise<LectureItem> {
+        // noinspection SqlResolve
         const items = await this.nodeTemplate.query(`SELECT * FROM lecture WHERE id = '${lectureId}'`);
+        // noinspection SqlResolve
         const students = await this.nodeTemplate.query(
             `SELECT s.name, m.created_at FROM student_lecture_map m 
             JOIN student s ON m.student_id = s.id 
@@ -39,12 +36,18 @@ export class LectureRepository {
     }
 
     async findEntity (lectureId: number): Promise<Lecture>  {
+        // noinspection SqlResolve
         const items = await this.nodeTemplate.query(`SELECT * FROM lecture WHERE id = '${lectureId}'`);
         return Lecture.byJson(items[0]);
     }
 
-    async register (studentLectureMap :StudentLectureMap) {
+    async insertStudentLectureMap (studentLectureMap :StudentLectureMap) {
         const query = toInsertQuery(studentLectureMap);
+        return await this.nodeTemplate.query(query);
+    }
+
+    async update(lecture: Lecture) {
+        const query = toUpdateQuery(lecture);
         return await this.nodeTemplate.query(query);
     }
 }

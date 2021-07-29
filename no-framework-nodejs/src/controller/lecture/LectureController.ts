@@ -15,6 +15,7 @@ export class LectureController {
             const body = await this.lectureService.getLectures(params);
             return BaseResponse.OK(body);
         } catch (e) {
+            console.error(`getLectures Error=${reqParams}`, e);
             return BaseResponse.ERROR(e);
         }
     }
@@ -25,17 +26,30 @@ export class LectureController {
             const result = await this.lectureService.getLecture(lectureId);
             return BaseResponse.OK(result);
         } catch (e) {
+            console.error(`getLecture Error=${reqParams}`, e);
             return BaseResponse.ERROR(e);
         }
     }
 
-    async register(body) {
+    async register(reqBody) {
         try {
-            const studentId = body.studentId;
-            const lectureId = body.lectureId;
+            const studentId = reqBody.studentId;
+            const lectureId = reqBody.lectureId;
             const result = await this.lectureService.register(studentId, lectureId);
             return BaseResponse.OK(result);
         } catch (e) {
+            console.error(`register Error=${reqBody}`, e);
+            return BaseResponse.ERROR(e);
+        }
+    }
+
+    async publish(reqBody) {
+        try {
+            const lectureId = reqBody.lectureId;
+            const result = await this.lectureService.publish(lectureId);
+            return BaseResponse.OK(result);
+        } catch (e) {
+            console.error(`publish Error=${reqBody}`, e);
             return BaseResponse.ERROR(e);
         }
     }

@@ -19,15 +19,28 @@ export class LectureService {
     }
 
     async getLecture(lectureId: number) {
-        const item = await this.lectureRepository.getLecture(lectureId);
+        return await this.lectureRepository.getLecture(lectureId);
     }
 
     async register (studentId: number, lectureId: number) {
         const lecture = await this.lectureRepository.findEntity(lectureId);
-        const result = lecture.register(studentId);
+        const studentLectureMap = lecture.register(studentId);
+        if(!studentLectureMap) {
+            throw new Error("공개 강좌가 아닙니다.");
+        }
 
         const poolClient = await this.nodeTemplate.startTransaction();
-        await this.lectureRepository.register(result);
+        await this.lectureRepository.update(lecture);
+        await this.lectureRepository.insertStudentLectureMap(studentLectureMap);
+        await this.nodeTemplate.commit(poolClient);
+    }
+
+    async publish (lectureId: number) {
+        const lecture = await this.lectureRepository.findEntity(lectureId);
+        lecture.publish();
+
+        const poolClient = await this.nodeTemplate.startTransaction();
+        await this.lectureRepository.update(lecture);
         await this.nodeTemplate.commit(poolClient);
     }
 
