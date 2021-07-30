@@ -7,12 +7,15 @@ export class NodeTemplate {
     pool: Pool;
 
     constructor() {
+        this.init();
+    }
+
+    protected init() {
         this.pool = new Pool(dbProperties);
 
         this.pool.on('error', (e: Error) => {
             console.error(`idle client error= ${e.message}`, e);
         });
-
     }
 
     async query(sql: string): Promise<any[]> {

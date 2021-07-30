@@ -6,6 +6,7 @@ import {LectureItem} from "./dto/LectureItem";
 import {StudentLectureMap} from "../../entity/student/StudentLectureMap";
 import {toInsertQuery, toUpdateQuery} from "../../config/orm/objectToSql";
 import {Lecture} from "../../entity/lecture/Lecture";
+import {transform} from "../../config/orm/sqlToObject";
 
 @Service()
 export class LectureRepository {
@@ -24,7 +25,7 @@ export class LectureRepository {
 
     async getLecture (lectureId: number): Promise<LectureItem> {
         // noinspection SqlResolve
-        const items = await this.nodeTemplate.query(`SELECT * FROM lecture WHERE id = '${lectureId}'`);
+        const lecture:Lecture = await this.findEntity(lectureId);
         // noinspection SqlResolve
         const students = await this.nodeTemplate.query(
             `SELECT s.name, m.created_at FROM student_lecture_map m 
@@ -32,13 +33,13 @@ export class LectureRepository {
             WHERE s.lecture_id = '${lectureId}'`
         );
 
-        return new LectureItem(items[0], students);
+        return new LectureItem(lecture, students);
     }
 
     async findEntity (lectureId: number): Promise<Lecture>  {
         // noinspection SqlResolve
         const items = await this.nodeTemplate.query(`SELECT * FROM lecture WHERE id = '${lectureId}'`);
-        return Lecture.byJson(items[0]);
+        return transform(items[0], Lecture);
     }
 
     async insertStudentLectureMap (studentLectureMap :StudentLectureMap) {
