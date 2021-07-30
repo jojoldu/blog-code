@@ -30,9 +30,14 @@ export class LectureService {
         }
 
         const poolClient = await this.nodeTemplate.startTransaction();
-        await this.lectureRepository.update(lecture);
-        await this.lectureRepository.insertStudentLectureMap(studentLectureMap);
-        await this.nodeTemplate.commit(poolClient);
+        try {
+            await this.lectureRepository.update(lecture);
+            await this.lectureRepository.insertStudentLectureMap(studentLectureMap);
+            await this.nodeTemplate.commit(poolClient);
+        } catch (e) {
+            await this.nodeTemplate.rollback(poolClient);
+        }
+
     }
 
     async publish (lectureId: number) {
@@ -40,8 +45,14 @@ export class LectureService {
         lecture.publish();
 
         const poolClient = await this.nodeTemplate.startTransaction();
-        await this.lectureRepository.update(lecture);
-        await this.nodeTemplate.commit(poolClient);
+
+        try{
+            await this.lectureRepository.update(lecture);
+            await this.nodeTemplate.commit(poolClient);
+        } catch (e) {
+          await this.nodeTemplate.rollback(poolClient);
+        }
+
     }
 
 }

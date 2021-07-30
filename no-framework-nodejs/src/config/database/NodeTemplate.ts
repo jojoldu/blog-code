@@ -33,13 +33,14 @@ export class NodeTemplate {
             await client.query('BEGIN');
             return client;
         } catch (e) {
+            console.error('Transaction 생성 실패', e);
             throw new Error(e.message);
         }
     }
 
     async rollback(client: PoolClient) {
         if (typeof client == 'undefined' || !client) {
-            console.warn(`rollback() 실패`);
+            console.warn(`rollback() 유효하지 않은 PoolClient`);
             return;
         }
 
@@ -47,6 +48,7 @@ export class NodeTemplate {
             console.info(`sql transaction rollback`);
             await client.query('ROLLBACK');
         } catch (e) {
+            console.error('rollback 실패', e);
             throw new Error(e.message);
         } finally {
             client.release();
@@ -58,6 +60,7 @@ export class NodeTemplate {
         try {
             await client.query('COMMIT');
         } catch (e) {
+            console.error('commit 실패', e);
             throw new Error(e.message);
         } finally {
             client.release();
