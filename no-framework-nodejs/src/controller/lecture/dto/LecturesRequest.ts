@@ -2,7 +2,7 @@ import {LectureCategory} from "../../../entity/lecture/LectureCategory";
 import {PageRequest} from "../../PageRequest";
 import {LecturePublishStatus} from "../../../entity/lecture/LecturePublishStatus";
 
-export class LecturesRequest extends PageRequest{
+export class LecturesRequest extends PageRequest {
     private _name: string;
     private _lectureName: string;
     private _studentId: number;
@@ -50,6 +50,11 @@ export class LecturesRequest extends PageRequest{
         return this._isAsc;
     }
 
+    /**
+     * 원래는 HTTP Request Dto와 Repository Dto는 분리해야한다.
+     * 다만, 작업 시간을 고려해서 둘을 같이 두었으나
+     * 이후 엔터프라이즈 환경이 된다면 분리할 예정
+     */
     getWhereCondition() {
         const statusCondition = `publish_status = '${LecturePublishStatus.PUBLIC}'`;
 
@@ -75,7 +80,7 @@ export class LecturesRequest extends PageRequest{
     }
 
     getOrderBy() {
-        const asc = this._isAsc? 'asc' : 'desc';
+        const asc = this._isAsc? 'ASC' : 'DESC';
         return `ORDER BY ${this._order} ${asc}`;
     }
 

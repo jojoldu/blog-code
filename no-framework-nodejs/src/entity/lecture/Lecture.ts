@@ -16,21 +16,6 @@ export class Lecture extends BaseEntity {
         super();
     }
 
-    static byJson (json) {
-        const lecture = new Lecture();
-        lecture.id = json.id;
-        lecture.createdAt = json.created_at;
-        lecture.updatedAt = json.updated_at;
-        lecture.name = json.name;
-        lecture.description = json.description;
-        lecture.category = json.category;
-        lecture.price = json.price;
-        lecture.studentCount = json.student_count;
-        lecture.publishStatus = json.publish_status;
-        lecture.instructorId = json.instructor_id;
-        return lecture;
-    }
-
     static create(name: string, description: string, category: LectureCategory, price: number, instructorId: number): Lecture {
         const lecture = new Lecture();
         lecture.name = name;
@@ -48,10 +33,12 @@ export class Lecture extends BaseEntity {
         this.description = description;
         this.category = category;
         this.price = price;
+        this.renewUpdateAt();
     }
 
     publish(): void {
         this.publishStatus = LecturePublishStatus.PUBLIC;
+        this.renewUpdateAt();
     }
 
     isPublish(): boolean {
@@ -64,6 +51,7 @@ export class Lecture extends BaseEntity {
         }
 
         this.studentCount++;
+        this.renewUpdateAt();
         return StudentLectureMap.register(studentId, this.id);
     }
 
