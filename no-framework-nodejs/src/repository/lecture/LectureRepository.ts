@@ -26,7 +26,7 @@ export class LectureRepository {
     }
 
     async getLecture (lectureId: number): Promise<LectureItem> {
-        const lecture:Lecture = await this.findEntity(lectureId);
+        const lecture:Lecture = await this.findOne(lectureId);
         // noinspection SqlResolve
         const students = await this.nodePgTemplate.query(
             `SELECT s.name, m.created_at FROM student_lecture_map m 
@@ -37,7 +37,7 @@ export class LectureRepository {
         return new LectureItem(lecture, students);
     }
 
-    async findEntity (lectureId: number): Promise<Lecture>  {
+    async findOne (lectureId: number): Promise<Lecture>  {
         // noinspection SqlResolve
         const items = await this.nodePgTemplate.query(`SELECT * FROM lecture WHERE id = '${lectureId}'`);
         return transform(items[0], Lecture);

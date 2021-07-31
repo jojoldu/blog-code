@@ -13,7 +13,7 @@ describe('objectToSql', () => {
 
         const result = toInsertQuery(lecture);
 
-        expect(result).toContain('insert into lecture');
+        expect(result).toContain('INSERT INTO lecture');
         console.log(result);
     });
 
@@ -28,7 +28,7 @@ describe('objectToSql', () => {
 
         const result = toUpdateQuery(lecture);
 
-        expect(result).toContain('update lecture set');
+        expect(result).toContain('UPDATE lecture SET');
     });
 
     it('delete query', () => {

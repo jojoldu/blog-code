@@ -33,12 +33,10 @@ export class Lecture extends BaseEntity {
         this.description = description;
         this.category = category;
         this.price = price;
-        this.renewUpdateAt();
     }
 
     publish(): void {
         this.publishStatus = LecturePublishStatus.PUBLIC;
-        this.renewUpdateAt();
     }
 
     isPublish(): boolean {
@@ -47,11 +45,10 @@ export class Lecture extends BaseEntity {
 
     register(studentId: number): StudentLectureMap {
         if(!this.isPublish()) {
-            return null;
+            throw new Error("공개 강좌가 아닙니다.")
         }
 
         this.studentCount++;
-        this.renewUpdateAt();
         return StudentLectureMap.register(studentId, this.id);
     }
 

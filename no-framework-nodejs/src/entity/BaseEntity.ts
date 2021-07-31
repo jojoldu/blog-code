@@ -9,8 +9,13 @@ export abstract class BaseEntity {
         this.updatedAt = this.updatedAt ? this.updatedAt : new Date();
     }
 
-    renewUpdateAt() {
-        this.updatedAt = new Date();
+    renewCreatedAt(date: Date) {
+        this.createdAt = date;
+        this.renewUpdatedAt(date);
+    }
+
+    renewUpdatedAt(date: Date) {
+        this.updatedAt = date;
     }
 
     isInsertTarget() {

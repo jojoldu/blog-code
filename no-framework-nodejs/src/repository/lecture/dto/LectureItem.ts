@@ -11,7 +11,7 @@ export class LectureItem {
     readonly studentCount: number;
     readonly createdAt: string;
     readonly updatedAt: string;
-    readonly students: LectureStudentItem[];
+    readonly students: LectureStudentItem[] = [];
 
     constructor(lecture: Lecture, studentQueryResult) {
         this.name = lecture.name;

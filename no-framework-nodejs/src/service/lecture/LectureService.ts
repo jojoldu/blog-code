@@ -29,7 +29,7 @@ export class LectureService {
     }
 
     async update (lectureId: number, param: LectureUpdateRequest) {
-        const lecture = await this.lectureRepository.findEntity(lectureId);
+        const lecture = await this.lectureRepository.findOne(lectureId);
         lecture.updateContent(
             param.name,
             param.description,
@@ -40,11 +40,8 @@ export class LectureService {
     }
 
     async register (studentId: number, lectureId: number) {
-        const lecture = await this.lectureRepository.findEntity(lectureId);
+        const lecture = await this.lectureRepository.findOne(lectureId);
         const studentLectureMap = lecture.register(studentId);
-        if(!studentLectureMap) {
-            throw new Error("공개 강좌가 아닙니다.");
-        }
 
         const poolClient = await this.nodePgTemplate.startTransaction();
         try {
@@ -57,7 +54,7 @@ export class LectureService {
     }
 
     async publish (lectureId: number) {
-        const lecture = await this.lectureRepository.findEntity(lectureId);
+        const lecture = await this.lectureRepository.findOne(lectureId);
         lecture.publish();
 
         const poolClient = await this.nodePgTemplate.startTransaction();

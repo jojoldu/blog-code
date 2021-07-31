@@ -4,7 +4,7 @@ import {Service} from "typedi";
 import {NodeTemplate} from "./NodeTemplate";
 
 @Service()
-export class NodePgTemplate implements NodeTemplate{
+export class NodePgTemplate implements NodeTemplate {
     pool: Pool;
 
     constructor() {
@@ -18,7 +18,6 @@ export class NodePgTemplate implements NodeTemplate{
             console.error(`idle client error= ${e.message}`, e);
         });
     }
-
 
     async close(): Promise<void> {
         await this.pool.end();

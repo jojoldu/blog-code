@@ -1,23 +1,13 @@
-import {Lecture} from "../../src/entity/lecture/Lecture";
-import {LectureCategory} from "../../src/entity/lecture/LectureCategory";
 import {Service} from "typedi";
-import {LectureRepository} from "../../src/repository/lecture/LectureRepository";
+import {StudentRepository} from "../../src/repository/student/StudentRepository";
+import {Student} from "../../src/entity/student/Student";
 
 @Service()
 export class TestStudentCreator {
-    constructor(private lectureRepository: LectureRepository) {
+    constructor(private studentRepository: StudentRepository) {
     }
 
     async create(name: string): Promise<number>{
-        const lecture = Lecture.create(
-            name,
-            "",
-            LectureCategory.WEB,
-            1000,
-            1
-        );
-
-        lecture.publish();
-        return await this.lectureRepository.insert(lecture);
+        return await this.studentRepository.insert(Student.signup(name, "test@inflearn.com"));
     }
 }

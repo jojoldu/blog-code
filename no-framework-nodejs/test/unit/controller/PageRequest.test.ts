@@ -16,7 +16,6 @@ class MockPageRequest extends PageRequest {
 
     constructor(pageNo: number, pageSize: number) {
         super();
-        super.pageNo = pageNo;
-        super.pageSize = pageSize;
+        super.setPageNoAndSize(pageNo, pageSize);
     }
 }

@@ -22,7 +22,7 @@ describe('LectureRepository', () => {
 
         lectureRepository = new LectureRepository(instance(mockNodePgTemplateClass));
 
-        const result = await lectureRepository.findEntity(1);
+        const result = await lectureRepository.findOne(1);
 
         expect(result.name).toBe("test");
         expect(result.category).toBe(LectureCategory.WEB);
@@ -43,7 +43,7 @@ describe('LectureRepository', () => {
         }
         lectureRepository = new LectureRepository(mockNodePgTemplate);
 
-        const result = await lectureRepository.findEntity(1);
+        const result = await lectureRepository.findOne(1);
 
         expect(result.name).toBe("test");
         expect(result.category).toBe(LectureCategory.WEB);

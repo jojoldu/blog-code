@@ -11,6 +11,7 @@ export function toUpsertQuery<T extends BaseEntity>(entity: T): string {
 }
 
 export function toInsertQuery<T extends BaseEntity>(entity: T): string {
+    entity.renewCreatedAt(new Date());
     const tableName = getTableName(entity);
     const entityProperties = new EntityProperties(entity);
     const columnNames = entityProperties.getColumnNamesString();
@@ -20,7 +21,7 @@ export function toInsertQuery<T extends BaseEntity>(entity: T): string {
 
 export function toUpdateQuery<T extends BaseEntity>(entity: T): string {
     entity.validateExistId();
-    entity.renewUpdateAt();
+    entity.renewUpdatedAt(new Date());
     const tableName = getTableName(entity);
     const setQuery = new EntityProperties(entity).getUpdateValuesString();
     return `UPDATE ${tableName} SET ${setQuery} WHERE id=${entity.id} RETURNING id`;
