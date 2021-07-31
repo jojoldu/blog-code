@@ -1,7 +1,7 @@
-import {LectureRepository} from "../../src/repository/lecture/LectureRepository";
-import {NodePgTemplate} from "../../src/config/database/NodePgTemplate";
+import {LectureRepository} from "../../../src/repository/lecture/LectureRepository";
+import {NodePgTemplate} from "../../../src/config/database/NodePgTemplate";
 import {anyString, instance, mock, when} from "ts-mockito";
-import {LectureCategory} from "../../src/entity/lecture/LectureCategory";
+import {LectureCategory} from "../../../src/entity/lecture/LectureCategory";
 
 describe('LectureRepository', () => {
     let lectureRepository:LectureRepository;

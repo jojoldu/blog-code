@@ -7,8 +7,6 @@ export class LecturesRequest extends PageRequest {
     private _lectureName: string;
     private _studentId: number;
     private _category: LectureCategory;
-    private _order: string;
-    private _isAsc: boolean;
 
     constructor() {
         super();
@@ -20,9 +18,8 @@ export class LecturesRequest extends PageRequest {
         result._lectureName = queryParam.lectureName;
         result._studentId = queryParam.studentId;
         result._category = queryParam.category;
-        result._order = queryParam.order;
-        result._isAsc = queryParam.isAsc;
-
+        result.setOrderBy(queryParam.order, queryParam.isAsc);
+        result.setPageNoAndSize(queryParam.pageNo, queryParam.pageSize);
         return result;
     }
 
@@ -40,14 +37,6 @@ export class LecturesRequest extends PageRequest {
 
     get category(): LectureCategory {
         return this._category;
-    }
-
-    get order(): string {
-        return this._order;
-    }
-
-    get isAsc(): boolean {
-        return this._isAsc;
     }
 
     /**
@@ -79,9 +68,5 @@ export class LecturesRequest extends PageRequest {
         return `where ${condition.join(' AND ')}`
     }
 
-    getOrderBy() {
-        const asc = this._isAsc? 'ASC' : 'DESC';
-        return `ORDER BY ${this._order} ${asc}`;
-    }
 
 }

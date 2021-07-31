@@ -1,4 +1,4 @@
-import {Page} from "../../src/service/Page";
+import {Page} from "../../../src/service/Page";
 
 describe('Page', () => {
     it.each([

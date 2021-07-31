@@ -1,7 +1,7 @@
-import {Lecture} from "../../../src/entity/lecture/Lecture";
-import {LectureCategory} from "../../../src/entity/lecture/LectureCategory";
-import {EntityProperty} from "../../../src/config/orm/EntityProperty";
-import {EntityProperties} from "../../../src/config/orm/EntityProperties";
+import {Lecture} from "../../../../src/entity/lecture/Lecture";
+import {LectureCategory} from "../../../../src/entity/lecture/LectureCategory";
+import {EntityProperty} from "../../../../src/config/orm/EntityProperty";
+import {EntityProperties} from "../../../../src/config/orm/EntityProperties";
 
 describe('EntityProperties', () => {
     it('lecture의 key / value가 반환된다', () => {

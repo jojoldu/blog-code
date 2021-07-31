@@ -1,6 +1,6 @@
-import {EntityProperty} from "../../../src/config/orm/EntityProperty";
+import {EntityProperty} from "../../../../src/config/orm/EntityProperty";
 import dayjs = require("dayjs");
-import {LectureCategory} from "../../../src/entity/lecture/LectureCategory";
+import {LectureCategory} from "../../../../src/entity/lecture/LectureCategory";
 
 describe('EntityProperty', () => {
     it('getColumnValue Date', () => {

@@ -1,6 +1,6 @@
-import {transform} from "../../../src/config/orm/sqlToObject";
-import {Student} from "../../../src/entity/student/Student";
-import {Instructor} from "../../../src/entity/instructor/Instructor";
+import {transform} from "../../../../src/config/orm/sqlToObject";
+import {Student} from "../../../../src/entity/student/Student";
+import {Instructor} from "../../../../src/entity/instructor/Instructor";
 
 describe('sqlToObject', () => {
     it('json to Student', () => {

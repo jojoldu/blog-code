@@ -1,6 +1,27 @@
 export abstract class PageRequest {
-    pageNo: number;
-    pageSize: number;
+    private _pageNo: number;
+    private _pageSize: number;
+    private _order: string;
+    private _isAsc: boolean;
+
+    setPageNoAndSize(pageNo: number, pageSize: number) {
+        this._pageNo = pageNo? pageNo: 1;
+        this._pageSize = pageSize? pageSize: 10;
+    }
+
+    setOrderBy(order: string, isAsc: boolean) {
+        this._order = order;
+        this._isAsc = isAsc;
+    }
+
+    getOrderByQuery(): string {
+        if(!this._order) {
+            return '';
+        }
+
+        const asc = this._isAsc? 'ASC' : 'DESC';
+        return `ORDER BY ${this._order} ${asc}`;
+    }
 
     getPageQuery(): string {
         if(!this.getLimit() && !this.getOffset()) {
@@ -11,22 +32,30 @@ export abstract class PageRequest {
     }
 
     getOffset(): number {
-        return (this.pageNo-1) * this.pageSize;
+        return (this._pageNo-1) * this._pageSize;
     }
 
     getLimit(): number {
-        return this.pageSize;
+        return this._pageSize;
     }
 
     getLimitWithNext(): number {
-        return this.pageSize + 1;
+        return this._pageSize + 1;
     }
 
-    getPageNo(): number {
-        return this.pageNo? this.pageNo: 1;
+    get order(): string {
+        return this._order;
     }
 
-    getPageSize(): number {
-        return this.pageSize? this.pageSize: 10;
+    get isAsc(): boolean {
+        return this._isAsc;
+    }
+
+    get pageNo(): number {
+        return this._pageNo;
+    }
+
+    get pageSize(): number {
+        return this._pageSize;
     }
 }

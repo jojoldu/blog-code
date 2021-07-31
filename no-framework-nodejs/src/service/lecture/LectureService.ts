@@ -17,7 +17,7 @@ export class LectureService {
 
     async getLectures (param: LecturesRequest) {
         const {items, count} = await this.lectureRepository.getLectures(param);
-        return new Page(count, param.getPageSize(), items);
+        return new Page(count, param.pageSize, items);
     }
 
     async getLecture(lectureId: number) {

@@ -1,4 +1,4 @@
-create table lecture
+create table if not exists lecture
 (
     id serial not null
         constraint pk_lecture_id
@@ -18,7 +18,7 @@ create table lecture
 alter table lecture owner to test;
 
 
-create table student_lecture_map
+create table if not exists student_lecture_map
 (
     id serial not null
         constraint pk_student_lecture_map_id
@@ -32,7 +32,7 @@ create table student_lecture_map
 
 alter table student_lecture_map owner to test;
 
-create table student
+create table if not exists student
 (
     id serial not null
         constraint pk_student_id
@@ -46,8 +46,3 @@ create table student
 
 alter table student owner to test;
 
-
-insert into lecture(name, description, category, price, student_count, publish_status, instructor_id)
-values ('test', 'test강좌', 'WEB', 1000, 10, 'PUBLIC', 1);
-
-insert into student (name, email) values ('jojoldu', 'jojoldu@inflearn.com');

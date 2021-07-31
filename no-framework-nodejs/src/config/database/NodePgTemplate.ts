@@ -19,6 +19,11 @@ export class NodePgTemplate implements NodeTemplate{
         });
     }
 
+
+    async close(): Promise<void> {
+        await this.pool.end();
+    }
+
     async query(sql: string): Promise<any[]> {
         try {
             const result: QueryResult = await this.pool.query(sql);
@@ -70,6 +75,7 @@ export class NodePgTemplate implements NodeTemplate{
             client.release();
         }
     }
+
 }
 
 

@@ -15,7 +15,7 @@ export function toInsertQuery<T extends BaseEntity>(entity: T): string {
     const entityProperties = new EntityProperties(entity);
     const columnNames = entityProperties.getColumnNamesString();
     const columnValues = entityProperties.getInsertValuesString();
-    return `insert into ${tableName}(${columnNames}) values(${columnValues})`;
+    return `INSERT INTO ${tableName}(${columnNames}) VALUES(${columnValues}) RETURNING id`;
 }
 
 export function toUpdateQuery<T extends BaseEntity>(entity: T): string {
@@ -23,14 +23,14 @@ export function toUpdateQuery<T extends BaseEntity>(entity: T): string {
     entity.renewUpdateAt();
     const tableName = getTableName(entity);
     const setQuery = new EntityProperties(entity).getUpdateValuesString();
-    return `update ${tableName} set ${setQuery} where id=${entity.id}`;
+    return `UPDATE ${tableName} SET ${setQuery} WHERE id=${entity.id} RETURNING id`;
 }
 
 export function toDeleteQuery<T extends BaseEntity>(entity: T): string {
     entity.validateExistId();
     const tableName = getTableName(entity);
 
-    return `delete from ${tableName} where id=${entity.id}`;
+    return `DELETE FROM ${tableName} WHERE id=${entity.id}`;
 }
 
 function getTableName(entity) {

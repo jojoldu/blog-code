@@ -1,4 +1,4 @@
-import {PageRequest} from "../../src/controller/PageRequest";
+import {PageRequest} from "../../../src/controller/PageRequest";
 
 describe('PageRequest', () => {
     it.each([

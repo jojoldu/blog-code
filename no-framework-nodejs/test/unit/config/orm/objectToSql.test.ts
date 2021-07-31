@@ -1,6 +1,6 @@
-import {LectureCategory} from "../../../src/entity/lecture/LectureCategory";
-import {Lecture} from "../../../src/entity/lecture/Lecture";
-import {toDeleteQuery, toInsertQuery, toUpdateQuery} from "../../../src/config/orm/objectToSql";
+import {LectureCategory} from "../../../../src/entity/lecture/LectureCategory";
+import {Lecture} from "../../../../src/entity/lecture/Lecture";
+import {toDeleteQuery, toInsertQuery, toUpdateQuery} from "../../../../src/config/orm/objectToSql";
 
 describe('objectToSql', () => {
     it('insert query', () => {

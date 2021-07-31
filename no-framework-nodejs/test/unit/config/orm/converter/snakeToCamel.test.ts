@@ -1,4 +1,4 @@
-import {snakeToCamel} from "../../../../src/config/orm/converter/snakeToCamel";
+import {snakeToCamel} from "../../../../../src/config/orm/converter/snakeToCamel";
 
 describe('SnakeCase to CamelCase', () => {
     it('name_case는 nameCase가 된다', () => {

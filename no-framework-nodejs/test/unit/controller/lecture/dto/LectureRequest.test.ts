@@ -1,6 +1,6 @@
-import {LecturesRequest} from "../../../../src/controller/lecture/dto/LecturesRequest";
-import {LectureCategory} from "../../../../src/entity/lecture/LectureCategory";
-import {LecturePublishStatus} from "../../../../src/entity/lecture/LecturePublishStatus";
+import {LecturesRequest} from "../../../../../src/controller/lecture/dto/LecturesRequest";
+import {LectureCategory} from "../../../../../src/entity/lecture/LectureCategory";
+import {LecturePublishStatus} from "../../../../../src/entity/lecture/LecturePublishStatus";
 
 describe('LectureRequest', () => {
     describe('getWhereCondition', () => {
@@ -31,14 +31,14 @@ describe('LectureRequest', () => {
             const order = "name";
             const request = LecturesRequest.byQueryParam({order: order, isAsc: true});
 
-            expect(request.getOrderBy()).toBe(`ORDER BY ${order} ASC`);
+            expect(request.getOrderByQuery()).toBe(`ORDER BY ${order} ASC`);
         });
 
         it('isAsc가 false인 경우엔 ORDER BY DESC로 출력된다', () => {
             const order = "name";
             const request = LecturesRequest.byQueryParam({order: order, isAsc: false});
 
-            expect(request.getOrderBy()).toBe(`ORDER BY ${order} DESC`);
+            expect(request.getOrderByQuery()).toBe(`ORDER BY ${order} DESC`);
         });
 
     });
