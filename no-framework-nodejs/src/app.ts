@@ -5,6 +5,7 @@ import {Container} from "typedi";
 import {InstructorController} from "./controller/instructor/InstructorController";
 import bodyParser from "body-parser";
 import {LectureController} from "./controller/lecture/LectureController";
+import {NumberUtil} from "./util/NumberUtil";
 
 const app = express();
 const port = 3000;
@@ -36,7 +37,25 @@ app.get('/api/v1/lecture', async (req, res) => {
     res.send(response);
 })
 
-app.post('/api/v1/lecture/register', async (req, res) => {
-    const response = await Container.get(LectureController).register(req.body);
+app.post('/api/v1/lecture', async (req, res) => {
+    const response = await Container.get(LectureController).create(req.body);
+    res.send(response);
+})
+
+app.patch('/api/v1/lecture/:lectureId/update', async (req, res) => {
+    const lectureId = NumberUtil.toNumber(req.params.lectureId);
+    const response = await Container.get(LectureController).update(lectureId, req.body);
+    res.send(response);
+})
+
+app.patch('/api/v1/lecture/:lectureId/register', async (req, res) => {
+    const lectureId = NumberUtil.toNumber(req.params.lectureId);
+    const response = await Container.get(LectureController).register(lectureId, req.body);
+    res.send(response);
+})
+
+app.patch('/api/v1/lecture/:lectureId/publish', async (req, res) => {
+    const lectureId = NumberUtil.toNumber(req.params.lectureId);
+    const response = await Container.get(LectureController).publish(lectureId);
     res.send(response);
 })

@@ -43,11 +43,19 @@ export class LectureRepository {
 
     async insertStudentLectureMap (studentLectureMap :StudentLectureMap) {
         const query = toInsertQuery(studentLectureMap);
-        return await this.nodePgTemplate.query(query);
+        const result = await this.nodePgTemplate.query(query);
+        return result[0];
+    }
+
+    async insert (lecture: Lecture) {
+        const query = toInsertQuery(lecture);
+        const result = await this.nodePgTemplate.query(query);
+        return result[0];
     }
 
     async update(lecture: Lecture) {
         const query = toUpdateQuery(lecture);
-        return await this.nodePgTemplate.query(query);
+        const result = await this.nodePgTemplate.query(query);
+        return result[0];
     }
 }

@@ -3,6 +3,8 @@ import {LectureRepository} from "../../repository/lecture/LectureRepository";
 import {LecturesRequest} from "../../controller/lecture/dto/LecturesRequest";
 import {Page} from "../Page";
 import {NodePgTemplate} from "../../config/database/NodePgTemplate";
+import {LectureCreateRequest} from "../../controller/lecture/dto/LectureCreateRequest";
+import {LectureUpdateRequest} from "../../controller/lecture/dto/LectureUpdateRequest";
 
 @Service()
 export class LectureService {
@@ -22,14 +24,20 @@ export class LectureService {
         return await this.lectureRepository.getLecture(lectureId);
     }
 
-    async create () {
-
+    async create (param: LectureCreateRequest) {
+        return await this.lectureRepository.insert(param.toEntity());
     }
 
-    async update () {
-
+    async update (lectureId: number, param: LectureUpdateRequest) {
+        const lecture = await this.lectureRepository.findEntity(lectureId);
+        lecture.updateContent(
+            param.name,
+            param.description,
+            param.category,
+            param.price
+        )
+        return await this.lectureRepository.update(lecture);
     }
-
 
     async register (studentId: number, lectureId: number) {
         const lecture = await this.lectureRepository.findEntity(lectureId);

@@ -2,6 +2,8 @@ import {Service} from "typedi";
 import {BaseResponse} from "../BaseResponse";
 import {LectureService} from "../../service/lecture/LectureService";
 import {LecturesRequest} from "./dto/LecturesRequest";
+import {LectureCreateRequest} from "./dto/LectureCreateRequest";
+import {LectureUpdateRequest} from "./dto/LectureUpdateRequest";
 
 @Service()
 export class LectureController {
@@ -31,7 +33,27 @@ export class LectureController {
         }
     }
 
-    async register(reqBody) {
+    async create(reqBody) {
+        try {
+            const result = await this.lectureService.create(LectureCreateRequest.byReqBody(reqBody));
+            return BaseResponse.OK(result);
+        } catch (e) {
+            console.error(`create Error=${reqBody}`, e);
+            return BaseResponse.ERROR(e);
+        }
+    }
+
+    async update(lectureId:number, reqBody) {
+        try {
+            const result = await this.lectureService.update(lectureId, LectureUpdateRequest.byReqBody(reqBody));
+            return BaseResponse.OK(result);
+        } catch (e) {
+            console.error(`update Error=${reqBody}`, e);
+            return BaseResponse.ERROR(e);
+        }
+    }
+
+    async register(lectureId:number, reqBody) {
         try {
             const studentId = reqBody.studentId;
             const lectureId = reqBody.lectureId;
@@ -43,13 +65,12 @@ export class LectureController {
         }
     }
 
-    async publish(reqBody) {
+    async publish(lectureId: number) {
         try {
-            const lectureId = reqBody.lectureId;
             const result = await this.lectureService.publish(lectureId);
             return BaseResponse.OK(result);
         } catch (e) {
-            console.error(`publish Error=${reqBody}`, e);
+            console.error(`publish Error=${lectureId}`, e);
             return BaseResponse.ERROR(e);
         }
     }
