@@ -1,8 +1,8 @@
-import {transform} from "../../../../src/config/orm/sqlToObject";
+import {transform} from "../../../../src/config/orm/transform";
 import {Student} from "../../../../src/entity/student/Student";
 import {Instructor} from "../../../../src/entity/instructor/Instructor";
 
-describe('sqlToObject', () => {
+describe('transform', () => {
     it('json to Student', () => {
         const json = {
             "id": 1,

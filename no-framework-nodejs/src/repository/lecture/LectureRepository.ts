@@ -6,7 +6,7 @@ import {LectureItem} from "./dto/LectureItem";
 import {StudentLectureMap} from "../../entity/student/StudentLectureMap";
 import {toInsertQuery, toUpdateQuery} from "../../config/orm/objectToSql";
 import {Lecture} from "../../entity/lecture/Lecture";
-import {transform} from "../../config/orm/sqlToObject";
+import {transform} from "../../config/orm/transform";
 import {NumberUtil} from "../../util/NumberUtil";
 
 @Service()
