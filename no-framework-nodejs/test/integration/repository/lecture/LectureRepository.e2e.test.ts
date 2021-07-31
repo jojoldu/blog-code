@@ -25,7 +25,7 @@ describe('LectureRepository', () => {
     });
 
     afterAll(async () => {
-        await nodePgTemplate.close();
+        await testSupportRepository.closeConnection();
     });
 
     it('testSupportRepository test', async () => {

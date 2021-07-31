@@ -17,6 +17,10 @@ export class TestSupportRepository {
         await this.nodePgTemplate.query(sql);
     }
 
+    async closeConnection(): Promise<void> {
+        await this.nodePgTemplate.close();
+    }
+
     async dropAll(): Promise<void> {
         await this.nodePgTemplate.query("DROP TABLE IF EXISTS student_lecture_map");
         await this.nodePgTemplate.query("DROP TABLE IF EXISTS student");

@@ -4,10 +4,7 @@ export abstract class BaseEntity {
     createdAt: Date;
     updatedAt: Date;
 
-    constructor() {
-        this.createdAt = this.createdAt ? this.createdAt : new Date();
-        this.updatedAt = this.updatedAt ? this.updatedAt : new Date();
-    }
+    constructor() {}
 
     renewCreatedAt(date: Date) {
         this.createdAt = date;
