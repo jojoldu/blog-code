@@ -1,3 +1,5 @@
+// noinspection SqlResolve
+
 import "reflect-metadata"
 
 import {LectureRepository} from "../../../../src/repository/lecture/LectureRepository";

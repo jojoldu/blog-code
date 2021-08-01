@@ -5,13 +5,15 @@ import {Page} from "../Page";
 import {NodePgTemplate} from "../../config/database/NodePgTemplate";
 import {LectureCreateRequest} from "../../controller/lecture/dto/LectureCreateRequest";
 import {LectureUpdateRequest} from "../../controller/lecture/dto/LectureUpdateRequest";
+import {StudentLectureMapRepository} from "../../repository/student/StudentLectureMapRepository";
 
 @Service()
 export class LectureService {
 
     constructor(
+        private nodePgTemplate: NodePgTemplate,
         private lectureRepository: LectureRepository,
-        private nodePgTemplate: NodePgTemplate
+        private studentLectureMapRepository:StudentLectureMapRepository
         ) {
     }
 
@@ -46,7 +48,7 @@ export class LectureService {
         const poolClient = await this.nodePgTemplate.startTransaction();
         try {
             await this.lectureRepository.update(lecture);
-            await this.lectureRepository.insertStudentLectureMap(studentLectureMap);
+            await this.studentLectureMapRepository.insert(studentLectureMap);
             await this.nodePgTemplate.commit(poolClient);
         } catch (e) {
             await this.nodePgTemplate.rollback(poolClient);

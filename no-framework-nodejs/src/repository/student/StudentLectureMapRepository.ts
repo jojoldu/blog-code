@@ -1,15 +1,13 @@
 import {Service} from "typedi";
 import {NodePgTemplate} from "../../config/database/NodePgTemplate";
-import {toInsertQuery, toUpdateQuery} from "../../config/orm/objectToSql";
-import {transform} from "../../config/orm/transform";
-import {Student} from "../../entity/student/Student";
 import {BaseRepository} from "../BaseRepository";
+import {StudentLectureMap} from "../../entity/student/StudentLectureMap";
 
 @Service()
-export class StudentLectureMapRepository extends BaseRepository {
+export class StudentLectureMapRepository extends BaseRepository<StudentLectureMap> {
 
     constructor(nodePgTemplate: NodePgTemplate) {
-        super(nodePgTemplate);
+        super(nodePgTemplate, StudentLectureMap);
     }
 
 }

@@ -14,5 +14,5 @@ docker-compose up
 ## Test
 
 ```bash
-jest
+npm run test
 ```

@@ -9,12 +9,13 @@ import {Lecture} from "../../entity/lecture/Lecture";
 import {transform} from "../../config/orm/transform";
 import {NumberUtil} from "../../util/NumberUtil";
 import {BaseRepository} from "../BaseRepository";
+import {StudentLectureMapRepository} from "../student/StudentLectureMapRepository";
 
 @Service()
-export class LectureRepository extends BaseRepository{
+export class LectureRepository extends BaseRepository<Lecture> {
 
     constructor(nodePgTemplate: NodePgTemplate) {
-        super(nodePgTemplate);
+        super(nodePgTemplate, Lecture);
     }
 
     async getLectures (param: LecturesRequest) {
@@ -38,17 +39,5 @@ export class LectureRepository extends BaseRepository{
         );
 
         return new LectureItem(lecture, students);
-    }
-
-    async findOne (lectureId: number): Promise<Lecture>  {
-        // noinspection SqlResolve
-        const items = await this.nodePgTemplate.query(`SELECT * FROM lecture WHERE id = '${lectureId}'`);
-        return transform(items[0], Lecture);
-    }
-
-    async insertStudentLectureMap (studentLectureMap :StudentLectureMap) {
-        const query = toInsertQuery(studentLectureMap);
-        const result = await this.nodePgTemplate.query(query);
-        return result[0].id;
     }
 }

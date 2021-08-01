@@ -1,11 +1,16 @@
 import {Service} from "typedi";
 import dayjs from "dayjs";
 import {NodePgTemplate} from "../../config/database/NodePgTemplate";
+import {BaseRepository} from "../BaseRepository";
+import {Lecture} from "../../entity/lecture/Lecture";
+import {Instructor} from "../../entity/instructor/Instructor";
 
 @Service()
-export class InstructorRepository {
+export class InstructorRepository extends BaseRepository<Instructor>{
 
-    constructor(private nodePgTemplate: NodePgTemplate) {}
+    constructor(nodePgTemplate: NodePgTemplate) {
+        super(nodePgTemplate, Instructor);
+    }
 
     async now(): Promise<string> {
         const sql = "SELECT NOW()";

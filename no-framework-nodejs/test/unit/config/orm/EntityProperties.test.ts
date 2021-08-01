@@ -24,6 +24,7 @@ describe('EntityProperties', () => {
     it("BaseEntity의 시간값도 반환된다", () => {
         const now = new Date();
         const lecture = Lecture.create(null, null, null, 0, 0);
+        lecture.renewCreatedAt(now);
 
         const properties = new EntityProperties(lecture).properties;
 
