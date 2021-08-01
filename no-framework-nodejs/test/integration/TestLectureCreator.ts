@@ -9,6 +9,17 @@ export class TestLectureCreator {
     }
 
     async create(name: string): Promise<number>{
+        const lecture = TestLectureCreator.createEntityObject(name);
+        return await this.lectureRepository.insert(lecture);
+    }
+
+    async createAndReturn(name: string): Promise<Lecture>{
+        const lecture = TestLectureCreator.createEntityObject(name);
+        lecture.id = await this.lectureRepository.insert(lecture);
+        return lecture;
+    }
+
+    private static createEntityObject(name: string) {
         const lecture = Lecture.create(
             name,
             "",
@@ -18,6 +29,6 @@ export class TestLectureCreator {
         );
 
         lecture.publish();
-        return await this.lectureRepository.insert(lecture);
+        return lecture;
     }
 }

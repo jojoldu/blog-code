@@ -8,6 +8,7 @@ import {NumberUtil} from "../../../../src/util/NumberUtil";
 import {TestLectureCreator} from "../../TestLectureCreator";
 import {LecturesRequest} from "../../../../src/controller/lecture/dto/LecturesRequest";
 import {LectureCategory} from "../../../../src/entity/lecture/LectureCategory";
+import {Lecture} from "../../../../src/entity/lecture/Lecture";
 
 describe('LectureRepository', () => {
     const lectureRepository:LectureRepository = Container.get(LectureRepository);
@@ -32,6 +33,36 @@ describe('LectureRepository', () => {
         const result = await nodePgTemplate.query(`SELECT COUNT(*) FROM lecture`);
         const count = NumberUtil.toNumber(result[0].count);
         expect(count).toBe(0);
+    });
+
+    it('insert test', async () => {
+        //given
+        const name = "test";
+        const entity = Lecture.create(name, "", LectureCategory.WEB, 1000, 1);
+        entity.publish();
+
+        //when
+        await lectureRepository.insert(entity);
+
+        //then
+        const result = await nodePgTemplate.query("SELECT * FROM lecture");
+        expect(result).toHaveLength(1);
+        expect(result[0].name).toBe(name);
+    });
+
+    it('update test', async () => {
+        //given
+        const name = "test2";
+        const lecture = await testLectureCreator.createAndReturn("test");
+
+        //when
+        lecture.name = name;
+        await lectureRepository.update(lecture);
+
+        //then
+        const result = await nodePgTemplate.query("SELECT * FROM lecture");
+        expect(result).toHaveLength(1);
+        expect(result[0].name).toBe(name);
     });
 
     it('getLectures를 통해 count와 Lecture Array가 반환된다', async () => {

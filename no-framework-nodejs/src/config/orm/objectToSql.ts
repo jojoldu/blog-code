@@ -10,6 +10,17 @@ export function toUpsertQuery<T extends BaseEntity>(entity: T): string {
     return toUpdateQuery(entity);
 }
 
+export function toSelectAllQuery<T extends BaseEntity>(entity: T): string {
+    const tableName = getTableName(entity);
+    return `SELECT * FROM ${tableName}`;
+}
+
+export function toSelectOneQuery<T extends BaseEntity>(entity: T): string {
+    entity.validateExistId();
+    const tableName = getTableName(entity);
+    return `SELECT * FROM ${tableName} WHERE id='${entity.id}'`;
+}
+
 export function toInsertQuery<T extends BaseEntity>(entity: T): string {
     entity.renewCreatedAt(new Date());
     const tableName = getTableName(entity);

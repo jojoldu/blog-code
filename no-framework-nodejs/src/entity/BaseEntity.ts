@@ -21,7 +21,7 @@ export abstract class BaseEntity {
 
     validateExistId() {
         if (!this.id) {
-            throw new Error('수정/삭제시 ID값은 필수입니다.');
+            throw new Error('단건조회/수정/삭제시 ID값은 필수입니다.');
         }
     }
 }

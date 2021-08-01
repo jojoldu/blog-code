@@ -22,7 +22,8 @@ export class EntityProperties {
 
     getUpdateValuesString() {
         return this.properties
-            .map(p => `${p.getColumnName()}=${p.value}`)
+            .filter(p => p.getColumnName() !== "id")
+            .map(p => `${p.getColumnName()}=${p.getColumnValue()}`)
             .join(', ');
     }
 }

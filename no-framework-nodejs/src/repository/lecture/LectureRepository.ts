@@ -4,15 +4,18 @@ import {LecturesRequest} from "../../controller/lecture/dto/LecturesRequest";
 import {LecturesItem} from "./dto/LecturesItem";
 import {LectureItem} from "./dto/LectureItem";
 import {StudentLectureMap} from "../../entity/student/StudentLectureMap";
-import {toInsertQuery, toUpdateQuery} from "../../config/orm/objectToSql";
+import {toInsertQuery} from "../../config/orm/objectToSql";
 import {Lecture} from "../../entity/lecture/Lecture";
 import {transform} from "../../config/orm/transform";
 import {NumberUtil} from "../../util/NumberUtil";
+import {BaseRepository} from "../BaseRepository";
 
 @Service()
-export class LectureRepository {
+export class LectureRepository extends BaseRepository{
 
-    constructor(private nodePgTemplate: NodePgTemplate) {}
+    constructor(nodePgTemplate: NodePgTemplate) {
+        super(nodePgTemplate);
+    }
 
     async getLectures (param: LecturesRequest) {
         const queryBody = `FROM lecture ${param.getWhereCondition()}`;
@@ -45,18 +48,6 @@ export class LectureRepository {
 
     async insertStudentLectureMap (studentLectureMap :StudentLectureMap) {
         const query = toInsertQuery(studentLectureMap);
-        const result = await this.nodePgTemplate.query(query);
-        return result[0].id;
-    }
-
-    async insert (lecture: Lecture) {
-        const query = toInsertQuery(lecture);
-        const result = await this.nodePgTemplate.query(query);
-        return result[0].id;
-    }
-
-    async update(lecture: Lecture) {
-        const query = toUpdateQuery(lecture);
         const result = await this.nodePgTemplate.query(query);
         return result[0].id;
     }
