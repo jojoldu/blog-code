@@ -6,7 +6,7 @@ export const dbProperties = {
     password: "test",
     host: "localhost",
     port: 5432,
-    max: 20,
+    max: 50,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 30000,
+    connectionTimeoutMillis: 5000,
 }
