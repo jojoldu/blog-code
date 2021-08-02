@@ -52,6 +52,7 @@ export class LectureService {
             await this.nodePgTemplate.commit(poolClient);
         } catch (e) {
             await this.nodePgTemplate.rollback(poolClient);
+            throw e;
         }
     }
 
@@ -66,6 +67,7 @@ export class LectureService {
             await this.nodePgTemplate.commit(poolClient);
         } catch (e) {
           await this.nodePgTemplate.rollback(poolClient);
+          throw e;
         }
 
     }

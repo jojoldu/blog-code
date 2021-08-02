@@ -1,7 +1,7 @@
+// noinspection SqlResolve
+
 import {Service} from "typedi";
 import {NodePgTemplate} from "../../config/database/NodePgTemplate";
-import {toInsertQuery, toUpdateQuery} from "../../config/orm/objectToSql";
-import {transform} from "../../config/orm/transform";
 import {Student} from "../../entity/student/Student";
 import {BaseRepository} from "../BaseRepository";
 
@@ -12,8 +12,14 @@ export class StudentRepository extends BaseRepository<Student> {
         super(nodePgTemplate, Student);
     }
 
-    async isSignup (studentId: number): Promise<boolean> {
-        const items = await this.nodePgTemplate.query(`SELECT 1 FROM student WHERE id = '${studentId}' limit 1`);
-        return items[0];
+    async exist (email: string): Promise<boolean> {
+        const sql = `SELECT 1 FROM student WHERE email= '${email}' limit 1`;
+        try {
+            const rows = await this.nodePgTemplate.query(sql);
+            return rows[0] === 1;
+        } catch (e) {
+            console.error(`해당 Email 조회에 실패하였습니다. email=${email}`, e);
+            throw new Error(e.message);
+        }
     }
 }

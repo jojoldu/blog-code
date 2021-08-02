@@ -6,6 +6,7 @@ import {InstructorController} from "./controller/instructor/InstructorController
 import bodyParser from "body-parser";
 import {LectureController} from "./controller/lecture/LectureController";
 import {NumberUtil} from "./util/NumberUtil";
+import {StudentController} from "./controller/student/StudentController";
 
 const app = express();
 const port = 3000;
@@ -27,6 +28,7 @@ app.get('/now', async (req, res) => {
     res.send(response);
 })
 
+// lecture
 app.get('/api/v1/lectures', async (req, res) => {
     const response = await Container.get(LectureController).getLectures(req.params);
     res.send(response);
@@ -57,5 +59,17 @@ app.patch('/api/v1/lecture/:lectureId/register', async (req, res) => {
 app.patch('/api/v1/lecture/:lectureId/publish', async (req, res) => {
     const lectureId = NumberUtil.toNumber(req.params.lectureId);
     const response = await Container.get(LectureController).publish(lectureId);
+    res.send(response);
+})
+
+// student
+app.post('/api/v1/student/signup', async (req, res) => {
+    const response = await Container.get(StudentController).signup(req.body);
+    res.send(response);
+})
+
+// instructor
+app.post('/api/v1/instructor/signup', async (req, res) => {
+    const response = await Container.get(InstructorController).signup(req.body);
     res.send(response);
 })
