@@ -38,6 +38,7 @@ where body like '%튜닝%'
 지금처럼 검색어 (`튜닝`) 앞에 `%`가 붙은 경우에는 인덱스를 사용할 수가 없게 됩니다.  
   
 뿐만 아니라 B-Tree 인덱스는 **짧은 문자열 혹은 숫자** 타입의 컬럼에서 효과적인데, 대량의 문자열이 있는 (`TEXT`)의 경우에 B-Tree 인덱스는 효과적이지 못합니다.  
+(이를테면 블로그의 본문에서 `like` 검색을 해야한다면 **HTML과 텍스트가 섞여있다**보니 엄청나게 많은 문자열이 있는 컬럼에서 해야하는것이죠.)  
   
 그래서 기존 하위 버전에서는 이 문제를 `pg_trgm`을 통해 전체 텍스트 검색 기능에 대한 성능 문제와 인덱스 문제를 해결하곤 했는데요.  
   
@@ -97,18 +98,43 @@ SELECT indexname, indexdef
  WHERE tablename = 'posts';
 ```
 
+
+전체 텍스트 검색에있어서 pg_bigm을 도입하여 효과가있는 것은 나름대로 데이터의 양이 많거나 자주 액세스가있어 한번의 검색 당 처리량을 줄이는 데 의의가있는 경우라고 할 수 있습니다. 인덱스가 더 해지면 INSERT 또는 UPDATE에는 인덱스 업데이트 처리가 가해지게되므로 도입 할 것인지 신중한 판단이 필요합니다.
+
 ![index1](./images/index1.png)
 
 ![index2](./images/index2.png)
 
 ![index3](./images/index3.png)
 
+### 4-1. 성능
+
 ![index4](./images/index4.png)
 
 ![index5](./images/index5.png)
 
 
+### 4-2. likequery
+
+```sql
+select * from posts where body like '%pg_bigm은 전체 텍스트 검색 성능을 200% 향상시켰습니다%';
+```
+
+![likequery1](./images/likequery1.png)
+
+```sql
+select * from posts where body like '%pg_bigm은 전체 텍스트 검색 성능을 200\% 향상시켰습니다%';
+```
+
+![likequery2](./images/likequery2.png)
+
+
+```sql
+select * from posts where body like likequery('pg_bigm은 전체 텍스트 검색 성능을 200% 향상시켰습니다');
+```
+
+![likequery3](./images/likequery3.png)
 
 ## 참고
 
-* [pg_bigm 1.1 공식 문서](https://pgbigm.osdn.jp/pg_bigm_en-1-1.html)
+* [pg_bigm 1.2 공식 문서](https://pgbigm.osdn.jp/pg_bigm_en-1-2.html)
