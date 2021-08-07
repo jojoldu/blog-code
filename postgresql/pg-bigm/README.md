@@ -39,14 +39,27 @@ where body like '%튜닝%'
   
 뿐만 아니라 B-Tree 인덱스는 **짧은 문자열 혹은 숫자** 타입의 컬럼에서 효과적인데, 대량의 문자열이 있는 (`TEXT`)의 경우에 B-Tree 인덱스는 효과적이지 못합니다.  
   
-그래서 기존 하위 버전에서는 이 문제를 `pg_trgm`을 통해 해결하곤 했는데요.  
+그래서 기존 하위 버전에서는 이 문제를 `pg_trgm`을 통해 전체 텍스트 검색 기능에 대한 성능 문제와 인덱스 문제를 해결하곤 했는데요.  
+  
+그럼 이번 버전부터 사용가능한 `pg_bigm`과 기존에도 사용가능했던 `pg_trgm` 는 어떤 차이가 있을까요?
+
+### 2-1. pg_trgm vs pg_bigm
+
+3-gram(trigram) 모델을 이용한 전체 텍스트 검색 기능을 제공 하는 pg_trgm contrib 모듈이 포함되어 있습니다. pg_bigm은 pg_trgm을 기반으로 개발되었습니다. 다음과 같은 차이점이 있습니다.
 
 
+| 기능                                   | `pg_grgm`       | `pg_bigm`       |
+| -------------------------------------- | --------------- | --------------- |
+| 전체 텍스트 검색에 필요한 최소 단어수  | 3단어           | 2단어           |
+| 사용 가능한 인덱스                     | `GIN`,  `GiST`  | `GIN`           |
+| 사용 가능한 검색 연산자                | `like`, `ilike` | `like`          |
+| 한국어 지원 여부                       | X               | O               |
+| 1-2자 키워드로 전체 텍스트 검색시 성능 | 느림            | 빠름            |
+| 유사성 검색                            | O               | O (1.1버전부터) |
+| 최대 인덱스 컬럼 사이즈                | ~228MB          | ~102MB          |
 
 
-### pg_tram vs pg_bigm
-
-
+2-gram
 
 pg_bigm 모듈은 PostgreSQL 에서 전체 텍스트 검색 기능을 제공 합니다.  
 이 모듈을 사용하면 더 빠른 전체 텍스트 검색 을 위해 2그램 (빅 그램 ) 인덱스 를 만들 수 있습니다.  
@@ -88,6 +101,14 @@ SELECT indexname, indexdef
 
 ![index2](./images/index2.png)
 
+![index3](./images/index3.png)
+
+![index4](./images/index4.png)
+
+![index5](./images/index5.png)
 
 
 
+## 참고
+
+* [pg_bigm 1.1 공식 문서](https://pgbigm.osdn.jp/pg_bigm_en-1-1.html)
