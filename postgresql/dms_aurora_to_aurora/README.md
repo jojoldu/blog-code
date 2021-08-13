@@ -30,3 +30,12 @@ grant rds_replication to dms_migration;
 * https://aws.amazon.com/ko/blogs/aws/amazon-rds-for-postgresql-new-minor-versions-logical-replication-dms-and-more/
 
 
+## 소스 DB 업데이트시
+
+```bash
+FATAL: logical replication slot "xxxxxx" exists, but wal_level < logical
+```
+
+```bash
+HINT: Change wal_level to be logical or higher
+```
