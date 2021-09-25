@@ -1,5 +1,6 @@
 # Mac에서 vscode 한글 자/모음 분리 입력될 경우
 
+
 ![1](./images/1.png)
 
 ![2](./images/2.png)
