@@ -1,56 +1,58 @@
-# 애플리케이션 계층화
-
-> 마틴 파울러의 책, PoEAA ([Pattern of Enterprise Application Architecture: 엔터프라이즈 애플리케이션 아키텍처 패턴](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=9791158390174&orderClick=LEa&Kc=) 을 기반으로 합니다.
+# 계층형 아키텍처
 
 학교 다닐때 잠깐 JAVA 관련 수업을 들은적이 있다.  
 그때 수업 내용은 [넷빈즈(Netbeans) IDE](https://namu.wiki/w/%EB%84%B7%EB%B9%88%EC%A6%88)를 통해 JAVA로 윈도우 애플리케이션을 만드는 것이였다.  
 
-간단한 시간표 관리 프로그램을 만드는 과제는 얼핏보면 웹과 크게 달라보이지 않았다.  
+간단한 시간표 관리 프로그램을 만드는 과제는 얼핏보면 웹과 크게 다르지않다.  
 
 ![timetable](./images/timetable.png)
 
 (이미지 출처: [blog.asata.pe.kr](https://blog.asata.pe.kr/486))  
-
-당시의 개발은 간단했다.  
-JAVA (Swing)로 애플리케이션 UI와 로직을 작성하고, Database에 접근해서 시간표를 저장하고 불러오는 방식이였다.  
-
+  
+개발 자체는 꽤나 간단해서 JAVA (Swing)로 애플리케이션 UI와 로직을 작성하고, Database에 접근해서 시간표를 저장하고 불러오는 방식이였다.  
+  
 당시에는 계층 (Layer) 혹은 모듈화라는 개념이 없어서 **UI를 담당하는 클래스에서 검증, 계산, DB 접근등을 모두 처리**했었다.  
-
+  
 기능 자체는 잘 작동했고, 실제로 과목 점수도 잘 받았다.  
-
+  
 하지만 이게 실제 회사의 서비스였다면 이야기가 달라진다.  
-서비스가 계속해서 발전되고 변화가 있기 때문이다.  
-
+서비스가 계속해서 발전되고 변화를 요구 받기 때문이다.  
+  
 시대의 흐름에 따라 이 프로그램을 윈도우 애플리케이션에서 **웹으로 전환**해야한다면 어떻게 될까?  
-JAVA Swing 코드를 걷어내고, JSP 혹은 Thymeleaf 등의 템플릿 엔진만 적용해서 WAS에 올리면 될까?  
-아니면 전체를 다 새롭게 만들어야만 할까?    
-
+비지니스 로직은 동일하고 (테이블 스키마까지도 동일), UI만 다를뿐이니 JAVA Swing 코드를 걷어내고, JSP 혹은 Thymeleaf 등의 템플릿 엔진만 적용해서 WAS에 올리면 될까?  
+아니면 전체를 다 새롭게 만들어야만 할까?  
+  
 당시 작성했던 코드라면 **전체를 새로 만들어야만 했다**.  
-
-**주요 비지니스 로직들은 웹이나 윈도우 애플리케이션이나 동일**함에도 계층화 (혹은 모듈화)가 전혀 안되어있기 때문에(UI 영역과 비지니스 로직, 영속성 영역이 모두 한곳에) **UI 영역이 변경된다는 것은 모든 코드의 변화**가 필요함을 의미했다.    
-
-비단 윈도우 애플리케이션에서 웹으로 생태계 변화뿐만 아니라, 좀 더 작은 범위에서는 프레임워크 (React <-> Vue) / 저장소(RDBMS <-> NoSQL or Messge Queue) / HTTP 라이브러리 (request <-> Axios) 등의 교체를 해야할때 얼마나 많은 코드의 변화가 필요한지 생각해보면 알 수 있다.
+  
+**주요 비지니스 로직들은 웹이나 윈도우 애플리케이션이나 동일**함에도 계층화 (혹은 모듈화)가 전혀 안되어있기 때문에(UI 영역과 비지니스 로직, 영속성 영역이 모두 한곳에) **UI 영역이 변경된다는 것은 모든 코드의 변화**가 필요하기 때문이다.  
+  
+비단 윈도우 애플리케이션에서 웹으로의 변화뿐만 아니라, 좀 더 작은 범위인 React <-> Vue / 저장소(RDBMS <-> NoSQL or Messge Queue or 외부 API) / HTTP 라이브러리 (request <-> Axios) 등의 교체를 해야할때도 마찬가지다.  
+  
+각 **계층에 대한 분리가 없다면** 언제나 변화가 필요할때마다 대대적인 코드 변경이 필요하다.  
+이런 상태라면 그만큼의 오류 발생율이 높아지고, 어느 부분을 변경해야할지 파악하기도 쉽지 않다.  
+  
+즉, 개발자의 심미적인 이유 때문이 아니더라도 계층화는 꼭 필요한 작업이다.
 
 ## 1. 주요 계층
 
+마틴 파울러의 책, PoEAA ([Pattern of Enterprise Application Architecture: 엔터프라이즈 애플리케이션 아키텍처 패턴](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=9791158390174&orderClick=LEa&Kc=)) 을 보면 대표적인 3계층을 소개한다.
 
 ![1](./images/1.png)
 
-* 프레젠테이션 (UI) 계층
-   * HTTP 요청 처리
-   * HTML 렌더링과 같은 뷰 처리
-   * CLI 라면 CLI 명령줄 호출 등
-* 도메인 로직 (비지니스 로직) 계층
+* Presentation 계층
+  * 
+* Domain(Business) 계층 
   * 서비스/시스템의 핵심 로직
   * 일반적으로 다음과 같은 역할을 한다.
     * 데이터를 저장
     * 저장된 데이터를 이용한 연산
     * 프레젠테이션 계층에서 받은 데이터의 유효성 검사
     * 작업 대상이 될 데이터 (Data) 로직 수행
-* 데이터 접근 (Data access) 계층
-  * Database
-  * Message Queue
-  * 외부 API와의 통신 등
+* Data access(Persistence) 계층
+  * DAO 계층
+  * Database / Message Queue / 외부 API와의 통신 등 처리
+
+![2](./images/2.png)
 
 일반적인 웹 애플리케이션이라고 한다면,
 
@@ -61,11 +63,10 @@ JAVA Swing 코드를 걷어내고, JSP 혹은 Thymeleaf 등의 템플릿 엔진�
 프레젠테이션 계층 - 도메인 로직 계층 - 데이터 접근 계층
 
 
+* [Fundamentals of Software Architecture](https://www.amazon.com/Fundamentals-Software-Architecture-Comprehensive-Characteristics/dp/1492043451)
 
-### Spring 계층
 
-
-## 서비스 계층
+### 서비스 계층
 
 
 * 토비의 스프링
@@ -83,10 +84,45 @@ JAVA Swing 코드를 걷어내고, JSP 혹은 Thymeleaf 등의 템플릿 엔진�
       *
 
 
+### 데이터 계층
+
+
+> DataMapper와 Repository 두 패턴간에는 기본적으로 내세우는 기능이 다를뿐 [패턴이 지향하는 바는 다르지 않습니다](https://stackoverflow.com/questions/27996119/what-exactly-is-the-difference-between-a-data-mapper-and-a-repository).  
+> 물론 DataMapper와 Repository를 완전히 분리해서 사용하는 것이 어렵지는 않지만, TypeORM이나 Spring Data JPA와 같이 이 패턴들을 지원하는 프레임워크들도 굳이 DataMapper와 Repository를 구분해서 가이드 하지 않기 때문에 이 글에서도 굳이 엄격히 구분하진 않습니다.
+
+
+> Active Record 패턴과 DataMapper 패턴에 대한 [마틴 파울러의 대화](https://martinfowler.com/articles/badri-hexagonal/)도 한번 보시면 좋습니다.
+
+
+### DTO
+
+DTO (Data Transfer Object) 는 도메인 오브젝트가 도메인 계층을 벗어나지 못하도록 지원한다.  
+DTO 계층이 없다면 대표적으로 다음과 같은 경우에 도메인 오브젝트가 오염될 여지
+
+
+## 계층화의 원칙
+
+(예제는 `Typescript`와 `@type/pg` 코드를 기반으로 했다.)  
+
+```javascript
+async findById(id: number): Promise<QueryResult> 
+```
+
+
+  
+```javascript
+async findById(id:number): Promise<User>
+```
+
+
 
 ## 계층화 해야하는 이유
 
+서두에서 언급했지만, 계층화는 크게 3가지 이유로 필요하다
 
+(1) 관심 범위 축소 (관심사 분리)
+(2) 모듈 교체의 용이성
+(3) 좀 더 용이한 테스트
 
 ### 관심 범위 축소 (관심사 분리)
 
@@ -143,7 +179,8 @@ UI 코드는 테스트하기 까다로운 경우가 많으므로 UI를 통해 �
 변경 용이성과 용이한 테스트는 확실히 계층화의 장점이다.  
 하지만 이 2가지 이유중 하나가 없더라도 **관심 범위 축소**라는 이유만으로도 계층화는 적용해야만 한다.
 
-### 도메인 로직을 구분하는 방법
+
+## 도메인 로직을 구분하는 방법
 
 이 로직이 **도메인 로직인지 아닌지** 구분하는 것은 꽤나 어렵다.  
 그래서 이럴때는 마틴파울러의 PEAA (엔터프라이즈 애플리케이션 아키텍처 패턴)에 나온 방법을 주로 사용하면 좋다.  
