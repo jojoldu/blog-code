@@ -1,6 +1,6 @@
-import {Service} from "typedi";
-import {StudentRepository} from "../../repository/student/StudentRepository";
-import {StudentCreateRequest} from "../../controller/student/dto/StudentCreateRequest";
+import { Service } from "typedi";
+import { StudentRepository } from "../../repository/student/StudentRepository";
+import { StudentCreateRequest } from "../../controller/student/dto/StudentCreateRequest";
 
 @Service()
 export class StudentService {
@@ -17,5 +17,6 @@ export class StudentService {
 
         await this.studentRepository.insert(param.toEntity());
     }
+
 
 }
