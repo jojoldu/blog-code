@@ -2,6 +2,8 @@
 
 WebStorm (웹스톰)의 경우 VSCode와 달리 
 
+> 기본적인 .env, .ignore 플러그인은 다 설치되어있다고 가정했다.
+
 ### CamelCase
 
 단축키 하나로 지정된 코드를 각종 네이밍 규칙들로 전환해주는 플러그인
@@ -22,9 +24,6 @@ https://plugins.jetbrains.com/plugin/7160-camelcase
 
 https://plugins.jetbrains.com/plugin/2162-string-manipulation
 
-### .env
-
-### .ignore
 
 ### Json Parser
 
@@ -34,10 +33,19 @@ https://plugins.jetbrains.com/plugin/10650-json-parser
 
 https://plugins.jetbrains.com/plugin/10113-react-snippets
 
+### IDEA Mind Map
+
+https://plugins.jetbrains.com/plugin/8045-idea-mind-map
+
+### Randomness
+
+프로젝트에 대한 임의의 데이터가 항상 문제가 되는 경우 이 플러그인이 적합합니다. 난수, 문자열 및 UUID를 삽입할 수 있습니다.
+임의의 데이터를 삽입하려면 Alt + R을 누르고 삽입할 데이터 유형을 선택하세요. 액션을 사용할 때마다 다른 값이 삽입됩니다.
+https://plugins.jetbrains.com/plugin/9836-randomness
+
 ### ESLint Restart Service Action
 
 https://plugins.jetbrains.com/plugin/14119-eslint-restart-service-action
-
 
 ### Git Toolbox
 
