@@ -40,7 +40,7 @@ WebStorm (웹스톰)의 경우 **JavaScript 개발을 목적으로한 IDE**이�
 단축키 하나로 지정된 코드를 각종 네이밍 규칙들로 전환해주는 플러그인입니다.  
 바로 위의 String Manipulation 플러그인이 있는데도 굳이 이 플러그인을 설치해야하는 이유가 바로 **단축키** 때문인데요.  
 
-* 단축키: `option` (`Alt`) + `Shift` + `U`
+* 단축키: `Option` (`Alt`) + `Shift` + `U`
 
 위 단축키를 수행하면 **지정된 영역의 문자열이 다음의 순서로 변환**됩니다.
 
@@ -52,6 +52,31 @@ WebStorm (웹스톰)의 경우 **JavaScript 개발을 목적으로한 IDE**이�
 * space case
 
 JSON으로 `user_name` 의 필드가 넘어오고, 이를 `userName` 으로 맵핑해야할 경우 CamelCase 단축키로 편하게 변환하는 등 개발하는데 있어 굉장히 자주 사용하는 단축키입니다.
+
+### Translation
+
+* [플러그인 링크](https://plugins.jetbrains.com/plugin/8579-translation)
+
+IDE 내에서 구글 번역기와 같은 사용성을 지원하는 플러그인입니다.  
+내부적으로 구글/알리바바/바이두 등의 번역 엔진을 사용하다보니 퀄리티가 굉장히 좋습니다.  
+특히 구글 번역처럼 **언어 자동 인식**이 되다보니 한국어로 자동인식 되는 등 사용하기가 굉장히 편합니다.
+
+> 특히 플러그인 메인 스폰서가 JetBrains 라서 잘 운영될 것 같습니다.
+
+많은 다양한 기능들을 지원하다보니,  
+**매번 웹브라우저로 화면 이동하는 횟수를 획기적으로 줄일수 있었습니다**
+
+* 선택된 단어 번역: `Ctrl` + `Command` + `U`
+
+![trans1](./images/trans1.png)
+
+* 번역창 오픈: `Ctrl` + `Command` + `U`
+
+![trans2](./images/trans2.png)
+
+* 문서 전체 번역
+
+![trans3](./images/trans3.gif)
 
 ### Json Parser
 
@@ -111,8 +136,8 @@ IDE의 Git 기능을 확장 시켜주는 플러그인입니다.
 
 * Git Status 보여주기
 * 에디터 내에 Git Blame 실시간 보여주기
-* 현재 브랜치에서 자동 Git Fetch
-*
+* 현재 브랜치 Auto Git Fetch
+
 ![git1](./images/git1.png)
 
 ![git2](./images/git2.png)
@@ -123,5 +148,9 @@ IDE의 Git 기능을 확장 시켜주는 플러그인입니다.
 
 * [플러그인 링크](https://plugins.jetbrains.com/plugin/13308-indent-rainbow)
 
-들여쓰기의 깊이를 서로 다른 색으로 구별하기 쉽게 해주는 Plugin
-주된 목표는 들여쓰기를 더 읽기 쉽게 만드는 것입니다. 잘못된 들여쓰기를 사용하면 플러그인이 빨간색 줄을 강조 표시하여 들여쓰기 문제를 더 빨리 찾을 수 있게 도와줍니다.
+들여쓰기의 깊이를 서로 다른 색으로 구별하기 쉽게 해주는 Plugin 입니다.  
+
+주된 목표는 들여쓰기를 더 읽기 쉽게 만드는 것입니다.  
+잘못된 들여쓰기를 사용하면 **빨간색 줄을 강조** 표시하여 들여쓰기 문제를 더 빨리 찾을 수 있게 도와줍니다.
+
+![indent](./images/indent.png)
