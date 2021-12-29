@@ -58,6 +58,8 @@
 
 ### EO 커리어콘
 
+![eo](./images/eo.png)
+
 * [EO 커리어콘 발표](https://jojoldu.tistory.com/notice/554)
 
 ### SAFFY 발표
@@ -68,14 +70,25 @@
 
 ![kaist](./images/kaist.png)
 
-형주님 (대표님)께 먼저 이런 이런 자리에서 나에게 발표 요쳥이 왔다는 이야기를 듣고, 전태연 파트너님을 통해서 상세하게 이야기를 들었다.  
+형주님 (대표님) 을 통해 먼저 발표 요쳥이 왔다는 이야기를 듣고, 전태연 파트너님을 통해서 상세하게 이야기를 들었다.  
 지금도 바쁘지만, 당시에도 대형 
 사족이지만, [인프랩 Seed 투자사인 본엔젤스](https://www.hyungjoo.me/%ec%9d%b8%ed%94%84%eb%9e%a9-%ec%9e%ac%eb%ac%b4%ec%a0%81-log-2/) 가 후원하는 캠프라서 다른 발표보다 훨씬 더 감사한 마음으로 준비했다.  
 
 
+그리고 이때의 인연으로 몰입캠프 학생분들과 온라인 화상 토크를 하는 시간도 가졌다.
+
+* [[주간 인프런 #34] 랜선에서 만나요! 인프런 개발 파트 Q&A (1)](https://www.inflearn.com/pages/weekly-inflearn-34-20211019)
+* [[주간 인프런 #35] 랜선에서 만나요! 인프런 개발 파트 Q&A (2)](https://www.inflearn.com/pages/weekly-inflearn-35-20211026)
+
 ### 워키도키
 
 * [워키도키 1편](https://www.youtube.com/watch?v=wfInwxT0UUA)
+
+### 이코노미스트 인터뷰
+
+![eco](./images/eco.png)
+
+* [인터뷰 본문](https://n.news.naver.com/article/243/0000019746)
 
 ## 4. 개발바닥
 
