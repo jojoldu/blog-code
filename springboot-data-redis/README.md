@@ -50,6 +50,14 @@ H2처럼 Redis도 **프로젝트에 의존**하는 로컬 환경을 구성하게
 3년동안 업데이트가 없어 kstyrc.embedded-redis를 Fork해서 만들어진 모듈입니다.  
 현재 많은 분들이 위 모듈을 대신해서 사용중입니다.
 
+만약 it.ozimov.embedded-redis 0.7.3 버전을 사용하시게 되면, 아래와 같이 slf4j 를 exclude 해줘야 합니다.
+
+```groovy
+    implementation (group: 'it.ozimov', name: 'embedded-redis', version: '0.7.3') {
+        exclude(group: "org.slf4j", module: "slf4j-simple")
+    }
+```
+
 그리고 Config 파일을 2개를 생성하겠습니다.  
   
 **EmbeddedRedisConfig**
@@ -351,7 +359,7 @@ public class EmbeddedRedisConfig {
         } catch (Exception e) {
         }
 
-        return !StringUtils.isEmpty(pidInfo.toString());
+        return StringUtils.hasText(pidInfo.toString());
     }
 }
 ```
