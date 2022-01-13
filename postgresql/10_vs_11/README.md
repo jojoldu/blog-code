@@ -103,6 +103,10 @@ WHERE (("status" = 'publish' AND "published_date" < now() AND "deleted_at" IS NU
 
 ## 결론
 
+11버전으로 업데이트 이후, 2초이상의 쿼리들이 거의 대부분 사라졌다.  
+
+![result](./images/result.png)
+
 PostgreSQL은 11, 12, 13, 14오면서 굉장한 성능 향상과 효율작업이 있었다.  
 
 비교한 2개의 쿼리는 실제 운영중인 쿼리들이기 때문에 언제든 실제 업무에서 만나볼 수 있다.  

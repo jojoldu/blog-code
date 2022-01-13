@@ -1,7 +1,7 @@
 # (기본적인) PostgreSQL 실행 계획 보는 법
 
 * AWS RDS PostgreSQL 10.15
-* m5.2xlarge
+* r5.2xlarge
 
 ## 실행계획 사용법
 
