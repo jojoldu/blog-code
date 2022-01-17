@@ -7,7 +7,7 @@
 * [release notes](https://aws.amazon.com/ko/about-aws/whats-new/2021/06/amazon-aurora-postgresql-supports-pg-bigm-extension-for-faster-full-text-search/)
 
 기존까지는 Aurora가 11.9 / 12.4 까지만 지원해서 `pg_bigm` 을 쓰려면 **PostgreSQL Amazon RDS** 를 사용해야만 했는데요.  
-  y
+  
 Aurora PostgreSQL 버전이 업데이트 되면서 (11.11 / 12.6 / 13.2) 가 드디어 Aurora에서도 `pg_bigm` 를 쓸 수 있게 되었습니다.  
   
 그래 이번 시간에는 Amazon Aurora PostgreSQL 에서의 `pg_bigm`에 대해서 소개드리겠습니다. 
