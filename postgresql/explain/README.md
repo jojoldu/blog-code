@@ -1,6 +1,6 @@
-# (기본적인) PostgreSQL 실행 계획 보는 법
+# PostgreSQL 실행 계획 
 
-* AWS RDS PostgreSQL 10.15
+* AWS RDS PostgreSQL 11.15
 * r5.2xlarge
 
 ## 실행계획 사용법
@@ -95,7 +95,7 @@ ANALYZE옵션이 사용될 때 명령문이 실제로 실행된다는 점에 유
 
 ![visual3](./images/visual3.png)
 
-> ANALYZE 는 실제 쿼리를 실행하기 때문에 혹시나 오랜 시간 수행되는 쿼리의 플랜을 확인할때는 서비스에 영향이 없게 주의해서 수행해야합니다.
+> `ANALYZE` 는 실제 쿼리를 실행하기 때문에 혹시나 오랜 시간 수행되는 쿼리의 플랜을 확인할때는 서비스에 영향이 없게 주의해서 수행해야합니다.
 
 ## 실습 환경
 
