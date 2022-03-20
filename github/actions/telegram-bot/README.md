@@ -9,5 +9,20 @@
 [telegram-action](https://github.com/appleboy/telegram-action)
 
 ```yaml
-
+      # 빌드 실패 메세지 발송
+      - name: Send Build Message
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ${{ github.actor }} created commit:
+            Commit message: ${{ github.event.commits[0].message }}
+            
+            Repository: ${{ github.repository }}
+            
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
 ```
+
+* `https://api.telegram.org/bot봇토큰/getUpdates` 
+  * `bot`과 `봇토큰` 을 합쳐야 한다
