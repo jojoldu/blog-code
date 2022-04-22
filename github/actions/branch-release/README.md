@@ -15,14 +15,32 @@
 그래서 그대로 적용할수는 없었고, 우리팀 스타일에 맞게 개조가 필요했다.
 
 * Master Push가 아니라 **PR이 Merge가 되었을때만** Github Action이 작동하기
-  * 상권님의 Github Action에서는 Master Push에서는 전부 Action이 트리거 된다.
-  * 행여나 Rollback 배포등을 고려해야되기 때문에 Push 를 트리거 기준으로 삼지 않았다.
+  * 상권님의 Github Action에서는 Master Push에서는 전부 Action이 실행 된다.
+  * 현재 **우리팀의 규칙상 Rollback 배포등**을 고려해야되기 때문에 Push 를 실행 기준으로 삼지 않았다.
 * **Release 브랜치명에서 버전 추출하기**
   * Release -> Master로 반영할때 Merge Commit을 생성하지 않는다
   * 그래서 Merge Commit Message에서 버전을 추출할 수가 없다.
 
+위와 같은 상황으로 
+목표로 하는 것은 2가지 이다.
 
-## Release 브랜치명에서 버전명 추출하기
+* Release 브랜치가 Master 브랜치로 Merge 될 경우에만 **Release 브랜치의 버전으로 Tag/Release 생성**
+* Merge가 되면 Release 브랜치 삭제
+  * 이 부분은 Github Action이 아니고, Github 기본 기능으로 지원된다
+
+## 1. Release 브랜치명에서 버전명 추출하기
+
+먼저 Release 브랜치명에서 버전명 추출하기부터 해본다.  
+  
+해당 작업은 [branch-names](https://github.com/marketplace/actions/branch-names) 을 사용한다.  
+  
+먼저 시범삼아 해당 Action으로 브랜치명이 잘 추출되는지 검증한다.  
+  
+간단하게 workflow를 하나 생성한다.
+
+![workflow1](./images/workflow1.png)
+
+코드는 다음과 같다.
 
 ```yml
 name: echo branch Name
@@ -46,7 +64,23 @@ jobs:
         run: echo "current branch name - ${{ env.TAG }}"
 ```
 
-## 최종 Github Action 작성하기
+핵심 로직은 다음과 같다.
+
+* `echo "TAG=$(echo '${{ steps.branch-name.outputs.current_branch }}')" >> $GITHUB_ENV`
+  * 현재의 브랜치를 `TAG` 라는 **Github 환경 변수에 저장**한다.
+  * 이렇게 저장된 환경 변수는 `${{ env.TAG }}` 와 같이 **다른 Step에서 사용할 수 있다**
+
+저장된 환경변수 값이 잘 출력되는지 확인해본다.
+
+![echo](./images/echo.png)
+
+브랜치명 추출 작업이 잘 되는것이 확인되었으니 본격 작업에 들어간다.
+
+## 2. 최종 Github Action 작성하기
+
+다음과 같이 `release.yml` workflow 파일을 하나 만들고
+
+![workflow2](./images/workflow2.png)
 
 ```yml
 name: Release
