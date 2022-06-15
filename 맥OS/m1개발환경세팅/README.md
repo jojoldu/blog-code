@@ -53,22 +53,14 @@
 
 JetBrains의 모든 IDE들이 M1 맥북을 지원하게 되었습니다.  
 Intel 버전을 사용할 경우 M1에서는 기존 맥북 보다도 오히려 더 성능이 떨어지는게 체감되어 무조건 M1용으로 재설치가 필요한데요.  
+    
+이는 Toolbox를 M1 Silicon 버전으로 설치하게 되면 해결되는줄 알았습니다...!?  
   
-직접 설치해서 쓰시는 분들이라면 사이트에 가서 설치하시면 되지만, 저처럼 Toolbox를 쓰신다면 Toolbox 내에서는 별도로 버전을 변경할 수 있는 방법이 없는데요.  
-이는 Toolbox를 M1 Silicon 버전으로 설치하게 되면 해결됩니다.  
-M1 Silicon 버전의 Toolbox로 설치하는 경우에는 모든 IDE가 Silicon 버전으로 설치가 되기 때문입니다.  
+확인해보면 **활성상태모니터 (Activity Monitor) 에서만 Apple**로 표기 되고, 실제로는 Intel로 설치가 됩니다.  
   
-그래서 현재 Intel 버전의 Toolbox를 쓰신다면 [M1 Toolbox](https://www.jetbrains.com/ko-kr/toolbox-app/)를 재설치합니다.
-
-![toolbox](./images/toolbox.png)
-
-Toolbox가 재설치되셨다면 현재 설치된 IDE들을 모두 uninstall하시고 재설치를 진행합니다.
-
-![ide1](./images/ide1.png)
-
-그럼 IDE들이 모두 Silicon 버전으로 설치된 것을 확인할 수 있습니다.
-
-![ide2](./images/ide2.png)
+* [Install via Toolbox app always get intel version](https://youtrack.jetbrains.com/issue/TBX-6012)
+  
+그래서 현재로서는 **직접 다운로드해서 설치할 수 밖에 없습니다**.
 
 ## 2. VS Code
 
