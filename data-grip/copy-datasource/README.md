@@ -3,7 +3,7 @@
 **Mac**
 
 ```bash
-~/Library/Application Support/JetBrains/<product><version>/projects
+ ~/Library/Application Support/JetBrains/DataGrip2021.1/projects/inflab/.idea
 ```
 
 `Settings/Preferences` → `Appearance and behavior` → `System settings` → `Passwords.`
