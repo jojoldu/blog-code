@@ -1,7 +1,11 @@
 # AWS RDS to Aurora Migratoin
 
-## 1. 스펙확인
-RDS에서 Aurora 마이그레이션에서 가장 중요한 건은 **둘 간의 엔진 버전이 일치해야만** 한다.
+작년 입사후, 가장 급하게 진행한 건이 AWS RDS PostgreSQL에서 AWS Aurora PostgreSQL로 이관한 것이다.  
+
+
+## 1. 버전 확인
+
+RDS에서 Aurora 마이그레이션에서 가장 중요한 것은 **둘 간의 엔진 버전이 일치해야** 하는 것이다.
 
 즉, RDS가 PostgreSQL 10.15를 쓴다면 Aurora 역시 PostgreSQL 10.15 엔진을 쓰는 것으로 변경이 필요하다.
 
