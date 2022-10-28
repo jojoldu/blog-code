@@ -1,6 +1,64 @@
 # 제어할 수 없는 것에 의존하지 않기
 
-저는 약 9년간 직업으로서 개발자로 활동해오면서 다양한 원칙과 기준들을 듣고 배웠습니다.  
+저는 약 9년간 직업으로서 개발자로, 테크리도르 활동해왔습니다.  
+그러다보니 인터뷰 등에서 "동욱님은 평소에 어떤 기준을 가지고 소프트웨어를 개발하시나요?" 와 같은 질문을 받곤 합니다.  
+그때마다 어떻게 대답해야할지, 상당히 망설여집니다.  
+왜냐하면 소프트웨어를 만드는데는 하나의 기준만 가지고 진행하지는 않기 때문입니다.  
+그간 듣고, 배운 다양한 원칙과 기준들 중에서 어느것 하나가 최우선이 되어서 개발을 한 적이 제게는 애초에 없었고, 지금도 딱히 그러지는 않기 때문이다.  
+  
+그러한 원칙과 기준들은 다음과 같습니다.  
+아마도 이미 많은 분들은 아래의 원칙들이나 기준들을 한번쯤은 들어보셨을겁니다. 
+
+* DRY
+  * Do not Repeat Yourself
+  * 똑같은 기능, 코드를 반복하지말라.
+* YAGNI 
+  * You Ain't Gonna Need It
+  * 그 기능이 필요하기전까지는 미리 만들지 말라.
+* KISS 
+  * Keep It Simple Stupid
+  * 최대한 단순함을 유지해라.
+* 빠른 피드백 환경을 구성하라.
+  * 단위 테스트를 통한 빠른 코드 피드백
+  * MVP 제품을 통한 빠른 사용자 피드백
+
+
+```ts
+export default class Order {
+    ...
+    discount() {
+        const now = LocalDateTime.now();
+        if (now.dayOfWeek() == DayOfWeek.SUNDAY) {
+            this._amount = this._amount * 0.9
+        }
+    }
+}
+```
+
+이 코드는 제어할 수 없는 코드인 `now()` 에 의존하고 있습니다.  
+그러다보니 실행할때마다 결과가 달라질 수 있습니다.
+
+```ts
+export default class Order {
+    ...
+    // 현재시간(now)를 밖에서 주입받도록 한다.
+    discountWith(now: LocalDateTimw) { 
+        if (now.dayOfWeek() == DayOfWeek.SUNDAY) {
+            this._amount = this._amount * 0.9
+        }
+    }
+}
+```
+
+```ts
+it('일요일에는 주문 금액이 10% 할인된다', () => {
+  const sut = Order.of(10_000, OrderStatus.APPROVAL);
+  const now = LocalDateTime.of(2022,8,14,10,15,0); // 2022-08-14 10:15:00 시로 고정
+  sut.discountWith(now);
+
+  expect(sut.amount).toBe(9_000);
+});
+```
 
 어떤 원칙, 기준으로 코드를 작업하고 
 
