@@ -109,4 +109,17 @@ describe('LectureRepository', () => {
         expect(result.students).toHaveLength(0);
     });
 
+    it('지정된 일자 뒤에 생성된 LectureItem이 반환된다', async () => {
+        //given
+        const name = "test";
+        const id = await testLectureCreator.create(name);
+
+        //when
+        const result = await lectureRepository.getLecture(id);
+
+        //then
+        expect(result.name).toBe(name);
+        expect(result.students).toHaveLength(0);
+    });
+
 });

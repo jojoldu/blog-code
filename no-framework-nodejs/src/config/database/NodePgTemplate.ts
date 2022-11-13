@@ -34,6 +34,17 @@ export class NodePgTemplate implements NodeTemplate {
         }
     }
 
+    async queryWith(sql: string, params: Array<any>): Promise<any[]> {
+        try {
+            const result: QueryResult = await this.pool.query(sql, params);
+            console.debug(`query(): query=${sql}, resultCount=${result.rowCount}`);
+            return result.rows;
+        } catch (e) {
+            console.error(`query(): query=${sql}`, e);
+            throw new Error(e.message);
+        }
+    }
+
     async startTransaction(): Promise<PoolClient> {
         console.debug(`startTransaction()`);
         const client: PoolClient = await this.pool.connect();

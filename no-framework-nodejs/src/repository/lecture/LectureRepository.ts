@@ -1,15 +1,13 @@
-import {Service} from "typedi";
-import {NodePgTemplate} from "../../config/database/NodePgTemplate";
-import {LecturesRequest} from "../../controller/lecture/dto/LecturesRequest";
-import {LecturesItem} from "./dto/LecturesItem";
-import {LectureItem} from "./dto/LectureItem";
-import {StudentLectureMap} from "../../entity/student/StudentLectureMap";
-import {toInsertQuery} from "../../config/orm/objectToSql";
-import {Lecture} from "../../entity/lecture/Lecture";
-import {transform} from "../../config/orm/transform";
-import {NumberUtil} from "../../util/NumberUtil";
-import {BaseRepository} from "../BaseRepository";
-import {StudentLectureMapRepository} from "../student/StudentLectureMapRepository";
+import { Service } from "typedi";
+import { NodePgTemplate } from "../../config/database/NodePgTemplate";
+import { LecturesRequest } from "../../controller/lecture/dto/LecturesRequest";
+import { LecturesItem } from "./dto/LecturesItem";
+import { LectureItem } from "./dto/LectureItem";
+import { Lecture } from "../../entity/lecture/Lecture";
+import { transform } from "../../config/orm/transform";
+import { NumberUtil } from "../../util/NumberUtil";
+import { BaseRepository } from "../BaseRepository";
+import { convert, LocalDate, LocalDateTime } from '@js-joda/core';
 
 @Service()
 export class LectureRepository extends BaseRepository<Lecture> {
@@ -39,5 +37,26 @@ export class LectureRepository extends BaseRepository<Lecture> {
         );
 
         return new LectureItem(lecture, students);
+    }
+
+    async getLectureByDate (createdAt: Date): Promise<LectureItem> {
+        // noinspection SqlResolve
+        const lectures = await this.nodePgTemplate.queryWith(
+          'SELECT * FROM lecture l WHERE l.created_at >= $1',
+          [createdAt]
+        );
+
+        return transform(lectures[0], LecturesItem);
+    }
+
+    async getLectureByLocalDate (createdAt: LocalDateTime): Promise<LectureItem> {
+        // noinspection SqlResolve
+        const createdDate = convert(createdAt).toDate();
+        const lectures = await this.nodePgTemplate.queryWith(
+          'SELECT * FROM lecture l WHERE l.created_at >= $1',
+          [createdDate]
+        );
+
+        return transform(lectures[0], LecturesItem);
     }
 }
