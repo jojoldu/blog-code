@@ -8,6 +8,7 @@ import { transform } from "../../config/orm/transform";
 import { NumberUtil } from "../../util/NumberUtil";
 import { BaseRepository } from "../BaseRepository";
 import { convert, LocalDate, LocalDateTime } from '@js-joda/core';
+import { LectureSearchDto } from './dto/LectureSearchDto';
 
 @Service()
 export class LectureRepository extends BaseRepository<Lecture> {
@@ -55,6 +56,16 @@ export class LectureRepository extends BaseRepository<Lecture> {
         const lectures = await this.nodePgTemplate.queryWith(
           'SELECT * FROM lecture l WHERE l.created_at >= $1',
           [createdDate]
+        );
+
+        return transform(lectures[0], LecturesItem);
+    }
+
+    async getLectureByDto (param: LectureSearchDto): Promise<LectureItem> {
+        // noinspection SqlResolve
+        const lectures = await this.nodePgTemplate.queryWith(
+          'SELECT * FROM lecture l WHERE l.created_at >= $1',
+          [param.createdAt]
         );
 
         return transform(lectures[0], LecturesItem);
