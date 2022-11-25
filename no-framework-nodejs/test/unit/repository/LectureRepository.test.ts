@@ -1,7 +1,9 @@
 import {LectureRepository} from "../../../src/repository/lecture/LectureRepository";
 import {NodePgTemplate} from "../../../src/config/database/NodePgTemplate";
-import {anyString, instance, mock, when} from "ts-mockito";
+import { anyOfClass, anyString, instance, mock, when } from "ts-mockito";
 import {LectureCategory} from "../../../src/entity/lecture/LectureCategory";
+import any = jasmine.any;
+import { convert, LocalDateTime } from "@js-joda/core";
 
 describe('LectureRepository', () => {
     let lectureRepository:LectureRepository;
@@ -49,6 +51,45 @@ describe('LectureRepository', () => {
         expect(result.category).toBe(LectureCategory.WEB);
         expect(result.studentCount).toBe(1);
         expect(result.publishStatus).toBe(2);
+    });
+
+    it('getLectureByDate', async () => {
+        const mockNodePgTemplateClass:NodePgTemplate = mock(NodePgTemplate);
+
+        when(mockNodePgTemplateClass.queryWith(anyString(), anyOfClass(Array))).thenResolve([{
+            name: "test",
+            category: LectureCategory.WEB,
+            student_count: 1,
+        }]);
+
+        lectureRepository = new LectureRepository(instance(mockNodePgTemplateClass));
+
+        const createdAt = LocalDateTime.of(2022,11,26, 12,0,5);
+        const createdDate = convert(createdAt).toDate();
+        const result = await lectureRepository.getLectureByDate(createdDate);
+
+        expect(result.name).toBe("test");
+        expect(result.category).toBe(LectureCategory.WEB);
+        expect(result.studentCount).toBe(1);
+    });
+
+    it('getLectureByLocalDate', async () => {
+        const mockNodePgTemplateClass:NodePgTemplate = mock(NodePgTemplate);
+
+        when(mockNodePgTemplateClass.queryWith(anyString(), anyOfClass(Array))).thenResolve([{
+            name: "test",
+            category: LectureCategory.WEB,
+            student_count: 1,
+        }]);
+
+        lectureRepository = new LectureRepository(instance(mockNodePgTemplateClass));
+
+        const createdAt = LocalDateTime.of(2022,11,26, 12,0,5);
+        const result = await lectureRepository.getLectureByLocalDate(createdAt);
+
+        expect(result.name).toBe("test");
+        expect(result.category).toBe(LectureCategory.WEB);
+        expect(result.studentCount).toBe(1);
     });
 });
 
