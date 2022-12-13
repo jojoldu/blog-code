@@ -1,23 +1,40 @@
-# 다른 언어 배우기
+# 다른 언어로 성장하기
 
-약 7년이 넘는 시간 동안 Java (Groovy) / Spring 을 학습하고 개발해왔다.  
-최근 2년은 Node.js 환경에서 JS / TS 로 학습하고 개발하고 있다.  
+한 언어를 오래 사용하면서 해당 분야의 전문가가 되는 것이 그리울 때가 있다.
+
+작년 4월까지는 Java (Groovy) / Spring 을 개발해왔다.  
+최근엔 Node.js (JS / TS) 에서 개발하고 있다.  
   
-Node.js 진영에서 NestJS와 TypeORM이 활발하게 사용되면서 
+Node.js 진영에서 NestJS와 TypeORM이 활발하게 사용되면서 코드나 설계가 두 진영 간에도 유사한 점이 많아졌다.  
+  
+반면에 두 진영에서 크게 차이가 나는 점들이 있는데, 이걸로 인해서 성장하는 부분이 많다.  
+  
+대표적인 예로 로거 (Logger) 의 사용방법이다.  
+  
+JVM에서 로거는 [SLF4J](https://www.slf4j.org/) 기반의 `Static Logger`를 주로 사용한다.  
+이건 
 
 * TS 에서는 logger를 DI로 항상 처리한다
 	* 도메인 객체에서 부수효과가 있는 로거를 자연스럽게 사용하지 않게 된다
 	* 순수 객체를 만들기 위해 자연스럽게 노력하고, 부수효과 계층 (서비스, 컨트롤러, 레파지토리) 에 로거를 집중 시킨다
+
+https://stackoverflow.com/a/9915056/264697
+
 * async/await 가 지원되니 async/await가 있는 함수는 부수효과를 일으키는 함수임을 인지할 수 있어, 자연스럽게 부수효과 함수와 순수함수를 격리시키게 된다.
 
-대표적인 테스트 프레임워크인 Jest가 [모듈 모킹 (Module Mocking)](https://www.daleseo.com/jest-mock-modules/) 기능을 너무 잘 지원해서 그런지... 테스트 하기가 너무 쉽다.  
+대표적인 테스트 프레임워크인 [Jest](https://jestjs.io/) 를 통해서 배운점도 많았다.  
+Jest는 JUnit이나 Kotest에 비해 굉장히 다양한 기능을 지원하는 테스트 프레임워크이다.  
 
+하지만 Jest가 [모듈 모킹 (Module Mocking)](https://www.daleseo.com/jest-mock-modules/) 기능을 너무 잘 지원해서 그런지... 테스트 하기가 너무 쉽다.  
+**외부모듈까지 모킹이 되기 때문에** 의존성 디자인의 중요성을 알기가 너무 어렵다.  
+의존성 주입보다는 항상 모듈 시스템을 후킹할 수 있는 외부 도구에 자꾸 의존하게 개발자를 유도한다고 느껴진다.  
+Jest가 의도한 것은 아니지만, Jest를 처음 테스트 도구로 접한 사람이라고 하면 당연히 **모든 영역을 모킹으로 해결할 수 있기 때문에** 의존성 디자인에 대해 신경쓸 이유가 없어진다.  
 
-의존성 주입이 불가능하고 항상 모듈 시스템을 후킹할 수 있는 외부도구에 의존하게되는것 같다.
-이건 장점이라고 느낄 사람도 있지만, 예전 글에서도 언급했지만 **테스트 하기가 어려울정도로 의존성과 인터페이스 설계가 망가진 상태에서도** 테스트가 쉬운것은 의존성 스멜 (Dependency Smell) 을 탈취제로 숨기는 잘못된 방식이 될 확률이 높다. 
-
+예전 글에서도 이와 같이 의존성이 망가지는 냄새를 숨기게 되는 것에 대해 이야기를 나눈적이 있다. 
 
 * [@SpyBean @MockBean 의도적으로 사용하지 않기](https://jojoldu.tistory.com/320)
+
+**테스트 하기가 어려울정도로 의존성과 인터페이스 설계가 망가진 상태에서도** 테스트가 쉬운것은 **의존성 스멜 (Dependency Smell) 을 탈취제로 숨기는** 것처럼 느껴진다. 
 
 보통 좋은 디자인의 코드는 테스트 하기 쉽다.  
 테스트 하기 쉬운 코드가 좋은 코드가 된다고 100% 확신할 수 없지만,  
@@ -31,19 +48,23 @@ Node.js 진영에서 NestJS와 TypeORM이 활발하게 사용되면서
 반면 
 JVM, Spring 진영에서는 최대한 외부 라이브러리는 추상화 시킨다
 
-* Spring Data XXX, Spring Cloud XXX 는 하위 구현체를 모두 추상화 시킨다
-* 언제든 라이브러리가 교체 되어도 내 코드가 영향을 받지 않도록 한다.
-* 외부 API 도 특히나 그렇다
+* Spring Data XXX, Spring Cloud XXX 는 하위 구현체에 대해 추상화를 시켜준다.
+  * 언제든 라이브러리가 교체 되어도 내 코드가 영향을 받지 않도록 한다.
 
 
-당시 사용하던 Redis Client인 Jedis의 성능이 너무 좋지 못해 Lettuce로 Client를 교체해서 성능 테스트를 진행했었다.  
-이때 내가 교체하면서 변경한 코드라곤 **빌드 도구에서 의존성만 교체해준것뿐**이다.  
-실제 프로젝트 코드 어느것도 수정하지 않고 다른 클라이언트로 교체했다.  
+
+당시 사용하던 Redis Client인 [Jedis](https://github.com/redis/jedis)의 성능이 너무 좋지 못해 [Lettuce](https://lettuce.io/)로 Client를 교체해서 성능 테스트를 진행했었다.  
+  
+이때 **Redis Client를 교체**하면서 변경한 코드라곤 **빌드 도구에서 의존성만 교체해준것뿐**이다.  
+실제 프로젝트 코드는 단 1줄도 수정할 필요가 없었다.  
 
 * [Jedis 보다 Lettuce 를 쓰자](https://jojoldu.tistory.com/418)
 
-Node.js 환경에서는 외부 라이브러리를 Wrapping 해서 사용하고 있다.  
-Http Client인 [Got](https://www.npmjs.com/package/got) 를 그대로 쓰지 않고, 인터페이스 (`HttpClient`) 와 구현체 (`GotHttpClient`) 로 만들어서 **언제든 
+좋은 추상화 계층이 있으면 외부 라이브러리 교체시에 기존 코드를 전혀 수정할 필요가 없다.
 
+## 마무리
 
 아마도 이제 다시 JVM 환경으로 돌아가더라도 Logger는 DI를 해서 사용할 것 같고, Logger가 침투하는 영역 역시 부수효과 (Side Effect) 메소드 내에서만 사용할 것 같다.  
+
+Node.js 환경에서는 외부 라이브러리를 Wrapping 해서 사용하고 있다.  
+Http Client인 [Got](https://www.npmjs.com/package/got) 를 그대로 쓰지 않고, 인터페이스 (`HttpClient`) 와 구현체 (`GotHttpClient`) 로 만들어서 **언제든 
