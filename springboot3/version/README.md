@@ -13,7 +13,7 @@
 
 > 기존 노트북에서 모두 Java 11로 프로젝트를 구동시켰었다.
 
-```gradle
+```groovy
 No matching variant of org.springframework.boot:spring-boot-gradle-plugin:3.0.1 was found. The consumer was configured to find a runtime of a library compatible with Java 16, packaged as a jar, and its dependencies declared externally, as well as attribute 'org.gradle.plugin.api-version' with value '7.6' but:
           - Variant 'apiElements' capability org.springframework.boot:spring-boot-gradle-plugin:3.0.1 declares a library, packaged as a jar, and its dependencies declared externally:
               - Incompatible because this component declares an API of a component compatible with Java 17 and the consumer needed a runtime of a component compatible with Java 16
@@ -43,7 +43,6 @@ No matching variant of org.springframework.boot:spring-boot-gradle-plugin:3.0.1 
                   - Doesn't say anything about its target Java version (required compatibility with Java 16)
                   - Doesn't say anything about its elements (required them packaged as a jar)
                   - Doesn't say anything about org.gradle.plugin.api-version (required '7.6')
-
 ```
 
 그래서 이런 에러들이 나온다면 다음의 방법들을 시도해보자.
