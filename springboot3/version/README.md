@@ -1,5 +1,7 @@
 # Spring Boot 3.x 실행이 안될 경우 (feat. Gradle)
 
+## 문제
+
 ```gradle
 No matching variant of org.springframework.boot:spring-boot-gradle-plugin:3.0.1 was found. The consumer was configured to find a runtime of a library compatible with Java 16, packaged as a jar, and its dependencies declared externally, as well as attribute 'org.gradle.plugin.api-version' with value '7.6' but:
           - Variant 'apiElements' capability org.springframework.boot:spring-boot-gradle-plugin:3.0.1 declares a library, packaged as a jar, and its dependencies declared externally:
@@ -33,6 +35,32 @@ No matching variant of org.springframework.boot:spring-boot-gradle-plugin:3.0.1 
 
 ```
 
+## Java
+
 ```bash
 java -version
 ```
+
+![java](./images/java.png)
+
+
+## build.gradle
+
+![gradle](./images/gradle.png)
+
+```groovy
+sourceCompatibility = '17'
+```
+
+
+## IntelliJ
+
+![ij1](./images/ij1.png)
+
+
+## 확인
+
+![ij2](./images/ij2.png)
+
+
+![result1](./images/result1.png)
