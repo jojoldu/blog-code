@@ -26,4 +26,15 @@
 
 ## 2. Giscus 설치
 
+### Install
+
+https://github.com/apps/giscus
+
+### 설정
+
+https://giscus.app/ko
+
 ## 3. 마이그레이션
+
+https://docs.github.com/en/discussions/managing-discussions-for-your-community/moderating-discussions#converting-an-issue-to-a-discussion
+
