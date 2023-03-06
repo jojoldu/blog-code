@@ -94,7 +94,7 @@ jobs:
         id: create-message
         run: |
           string='🐛 New Discussion on [${{ env.DISCUSSION_TITLE }}](${{ env.DISCUSSION_URL }}) \nby[@${{ env.USER_NAME }}](${{ env.USER_URL }}) \n\n${{ env.DISCUSSION_BODY }}"'
-          escaped_string=$(echo $string | sed 's/\([.!-_]\)/\\\\\1/g')
+          escaped_string=$(echo $string | sed 's/\([.!-]\)/\\\\\1/g')
           echo ${escaped_string}
           echo "MESSAGE_BODY=${escaped_string}" >> $GITHUB_OUTPUT
         env:
@@ -119,7 +119,7 @@ jobs:
 - `env`
   - Github의 `event` 변수가 너무 길어 환경 변수로 이들을 치환해서 `run`에서 사용한다.
 
-yml 파일이 모두 생성되었으면 Github에 Push 하고 실제로 Discussions을 하나 만들어서 정상적으로 알람이 오는지 확인한다.
+yml 파일이 모두 생성되었으면 Github에 Push 하고 실제로 Discussions을 하나 만들어서 정상적으로 알람이 오는지 확인 한다.
 
 ![gh1](./images/gh1.png)
 
@@ -134,7 +134,7 @@ yml 파일이 모두 생성되었으면 Github에 Push 하고 실제로 Discussi
 - 블로그 기준에서는 위에서 생성한 토론 생성에 대한 알람은 불필요할 수 있다.
 - 토론은 블로그에 첫 댓글이 달릴때만 알람이 오는 것인데, 개인적으로 첫 댓글에 대해서는 좀 더 의미를 부여해도 된다고 생각하는 편이다.
 
-기존에 만들어둔 yml 파일에 댓글에 대한 조건까지 추가하여 전체 코드는 다음과 같이 된다.
+기존에 만들어둔 yml 파일에 댓글에 대한 조건까지 추가하여 **전체 코드**는 다음과 같이 된다.
 
 ```yml
 name: GitHub Discussions Notifier
@@ -201,4 +201,15 @@ jobs:
   - Telegram에서 댓글 URL로 바로갈 수 있도록 URL을 메세지에 포함시킨다.
 - `COMMENT_BODY`
   - Telegram에서 보여줄 메세지를 댓글의 내용으로 변경한다.
+
+
+이렇게 댓글까지 등록후 Discussions 에서 토론과 댓글, 대댓글을 각각 생성해본다.
+
+![gh3](./images/gh3.png)
+
+다양한 특수문자와 마크다운 문법들을 이용해서 작성해보고, 해당 내용들이 전부 다 알람으로 오는지 메세지로 확인한다.  
+  
+다음과 같이 텔레그램 메세지가 모두다 도착한다면 모든 설정이 된 것이다.
+
+![gh4](./images/gh4.png)
 
