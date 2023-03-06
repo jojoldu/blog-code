@@ -113,7 +113,7 @@ jobs:
 
 - `if: ${{ github.event.discussion && !github.event.comment }}`
   - Discussion에 대한 Event이면서 Comment가 아닌 경우 실행된다.
-- `escaped_string=$(echo $string | sed 's/\([.!-_]\)/\\\\\1/g')` 
+- `escaped_string=$(echo $string | sed 's/\([.!-]\)/\\\\\1/g')` 
   - Telegram은 `.` 등 일부 특수문자에 대한 `escape` 처리가 필요하다.
   - 이를 처리한 후 output인 `MESSAGE_BODY` 에 저장해서 실제 메세지 보낼때 escape 처리된 결과를 사용한다.
 - `env`
@@ -155,7 +155,7 @@ jobs:
         id: create-message
         run: |
           string='🐛 New Discussion on [${{ env.DISCUSSION_TITLE }}](${{ env.DISCUSSION_URL }}) \nby[@${{ env.USER_NAME }}](${{ env.USER_URL }}) \n\n${{ env.DISCUSSION_BODY }}"'
-          escaped_string=$(echo $string | sed 's/\([.!-_]\)/\\\\\1/g')
+          escaped_string=$(echo $string | sed 's/\([.!-]\)/\\\\\1/g')
           echo ${escaped_string}
           echo "MESSAGE_BODY=${escaped_string}" >> $GITHUB_OUTPUT
         env:
@@ -178,7 +178,7 @@ jobs:
         id: create-comment-message
         run: |
           string='💬 New comment on [${{ env.DISCUSSION_TITLE }}](${{ env.COMMENT_URL }}) \nby[@${{ env.USER_NAME }}](${{ env.USER_URL }}) \n\n${{ env.COMMENT_BODY }}"'
-          escaped_string=$(echo $string | sed 's/\([.!-_]\)/\\\\\1/g')
+          escaped_string=$(echo $string | sed 's/\([.!-]\)/\\\\\1/g')
           echo ${escaped_string}
           echo "MESSAGE_BODY=${escaped_string}" >> $GITHUB_OUTPUT
         env:
