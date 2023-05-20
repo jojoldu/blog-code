@@ -1,4 +1,4 @@
-# 스타트업이 받을 수 있는 서비스 혜택
+# 스타트업이 받을 수 있는 클라우드, SaaS 혜택
 
 요즘 스타트업 제품팀과 종종 미팅을 한다.  
   
@@ -28,14 +28,14 @@
 이걸 모르고 그냥 개인 계정으로 사이드 프로젝트 하듯이 전혀 할인/혜택을 받지 않고 정직(?)하게 비용을 지불하면 너무 아깝다.    
   
 아래 내용은 **스타트업이 아니더라도 무료로 쓸 수 있는 그런 혜택들은 배제**했다.  
-특정 VC나 엑설레이터 소속이면 받을 수 있는 혜택들도 모두 배제했다.
+**특정 VC나 엑설레이터 소속이어야만 받을 수 있는 혜택들도 모두 배제**했다.
 대부분의 스타트업들이 사업을 하면서 쓸 수 밖에 없는 필수 서비스들만 대상으로 했다.  
   
 만약 조건에 맞는 혜택이 있다면 절대 놓치지 않고 신청해서 알뜰살뜰 제품을 만들어 가기를 추천한다.
 
 > 그 외 스타트업을 위한 지원 정책을 가진 제품이 있다면 댓글로 알려주시라.
   
-## 1. AWS 
+## 1. AWS - $5,000 크레딧
 
 대부분의 스타트업들 개발자분들이 인프라나 클라우드에 이해도가 높은게 아니라면 가장 무난하고 익숙한 AWS를 선택한다.  
 이때 혼자 사이드 프로젝트를 하듯이 비용을 지불 하기 보다는 가능하면 **스타트업용 크레딧을 받아서** 사용해보자.  
@@ -46,8 +46,15 @@
 
 ![aws](./images/aws.png)
 
-(회사 홍보 같아서 조심스럽지만)  
-아래 링크 신청하면 위 혜택을 받을 수 있다.
+
+#### 자격 조건
+
+다만, 아래의 자격조건을 만족해야만 한다.
+- 설립일 10년 이하
+- 투자 단계 시리즈 A 이하, 투자 이력 없어도 가능
+- 기업 홈페이지 보유
+
+아래 링크로 신청하면 위 혜택을 받을 수 있다.
 
 - [신청 링크](https://www.inflearn.com/partners/aws)
 
@@ -56,12 +63,6 @@
 > 인프런은 어디까지나 AWS의 Activate 프로그램을 홍보해주는 역할만 하며 그 어떤 혜택도 없다.. ㅠ  
 > (주변에 인프런 홍보좀...)
 
-#### 자격 조건
-
-다만, 아래의 자격조건을 만족해야만 한다.
-- 설립일 10년 이하
-- 투자 단계 시리즈 A 이하, 투자 이력 없어도 가능
-- 기업 홈페이지 보유
 
 초기 스타트업에게 AWS의 크레딧 5,000불, 12개월 동안의 기술지원 등은 정말 큰 혜택이다.  
 **내가 구성한 AWS 인프라에 대한 점검이나 과도하게 빠져나가는 비용에 대한 분석**등을 충분히 지원 받을 수 있다.  
@@ -94,7 +95,7 @@ MSP 파트너사는 "규모가 있어야만 해야하는것이 아닐까" 하는
 - [베스핀글로벌](https://www.bespinglobal.com/)
 
 
-## 2. JetBrains 제품 50% 할인
+## 2. JetBrains - 50% 할인
 
 우리 개발팀의 생산성을 책임지는 각종 IDE를 판매하는 JetBrains사의 제품 역시 스타트업이라면 **할인 혜택**을 받을 수 있다.  
   
@@ -123,16 +124,11 @@ WebStorm (JS/TS), PyCharm (Python), PhpStorm (php), IntelliJ (Java/Kotlin) 등�
 - [JetBrains 50% 할인 받기](https://blog.jetbrains.com/ko/2020/04/06/startup_discount_ko/)
 
 
-## 3. Github 
+## 3. Github - Enterprise 무료
 
-개인적으로는 웬만한 스타트업 팀은 Github Enterprise가 아니라 Github Team Plan으로 충분하다.  
-그렇지만, Team Plan보다 상위호환인 Enterprise를 12개월간 20명의 팀원까지는 무료로 쓸 수 있다는 건 큰 혜택이다.  
-  
-특히 **Gihtub Action를 월간 50,000분을 쓸 수 있다**는게 좋다.  
-생각보다 Github Action은 제품팀의 가제트 형사처럼 여기저기서 사용되는데, Team Plan의 3,000분은 금방 쓰게 된다.  
-50,000분이면 웬만한 팀은 절대 부족할 일이 없다.  
-
-> 12개월이 지나면 Team Plan을 쓰자...
+웬만한 스타트업 팀은 Github Enterprise가 아니라 Github Team Plan으로 충분하다.  
+그렇지만, Team Plan보다 상위 호환인 **Enterprise를 무료**로 쓸 수 있다면 어떨까?  
+Github 에서는 스타트업 팀을 위해 Enterprise 무료 플랜을 지원한다.
 
 #### 혜택
 
@@ -140,26 +136,89 @@ WebStorm (JS/TS), PyCharm (Python), PhpStorm (php), IntelliJ (Java/Kotlin) 등�
 
 #### 자격 조건
 
+- **시리즈 A 까지**
+- GitHub Enterprise 을 처음 사용하며, **이전에 GitHub Enterprise 크레딧이 없는 경우**
+
+신청 방법은 아래 링크를 참고한다.
+
 - [신청 링크](https://github.com/enterprise/startups)
 
 
-## 4. Cloudflare
+특히 **Gihtub Action를 월간 50,000분을 쓸 수 있다**는게 좋다.  
+생각보다 Github Action은 제품팀의 가제트 형사처럼 여기저기서 사용되는데, Team Plan의 3,000분은 금방 쓰게 된다.  
+**50,000분이면 웬만한 팀은 절대 부족할 일이 없다**.  
 
-https://blog.cloudflare.com/startup-program-v2/
+> 12개월이 지나면 Team Plan을 쓰자...
 
-1 domain
-1 custom SSL certificate
-up to fifty 50 custom WAF rules
-40 million Cloudflare Workers requests per month
-50 Cloudflare Access seats
-500,000 streamed minutes per month with Cloudflare Stream
-Priority support via e-mail, and telephone support limited to emergencies
+## 4. Google Workspace - Business+ 무료
 
+구글 워크스페이스는 회사를 운영하면 절대 빠질 수 없는 서비스이다.  
+사내 이메일 부터 구글 드라이브, 구글 시트 등 협업에 있어서도 절대 빠지지 않는다.  
+특히 구글 이메일 계정을 통한 각종 서비스들의 로그인 연동등을 고려하면 대부분 꼭 가져가는 서비스 중 하나이다.  
 
+#### 자격 조건
+
+기업의 규모에 따라 자격 요건이 다르다.  
+
+![google](./images/google.png)
+
+조금 더 자세히 보고 싶으면 아래 링크를 참고한다.
+- [자격 요건](https://cloud.google.com/startup?hl=ko)
+
+#### 혜택
+
+신규 가입에 한해서 **Google Workspace Business Plus 12개월간 무료** 사용이 가능하다.  
+팀을 시작하고, 아직 구글 워크스페이스를 사용하고 있지 않다면 무조건 신청해야한다.
+
+- [신청 링크](https://cloud.google.com/startup?hl=ko)
+
+## 5. Notion - 무료
+
+스타트업에서 올인원 워크스페이스를 구성할때 가장 먼저 언급되는 Notion 역시 스타트업 지원 프로그램이 존재한다.  
+  
+Notion에 대해서는 많은 스타트업들이 꼭 써야하는 제품인가에 대해서 의견이 나뉜다.  
+  
+이미 큰 기업에서 경험이 있는 분들은 Atlasian 제품군을 사용하고, Atlasian 제품을 선호하지 않는 분들은 Notion 외에도 Clickup 등이 사용되기 때문이다.  
+
+다만, 10인이하 스타트업에서 Notion 이 가장 무난한 선택인것은 사실이라서 추천하게 되었다.  
+
+#### 혜택
+
+**3개월 무료 사용** (AI 기능 지원 포함)  
+혜택이 조금 짧은게 아닌가 싶은데, 6개월 무료 지원도 존재한다.  
+다만, 이를 위해서는 **연계된 스타트업 파트너사**가 있어야 한다.
+
+![notion](./images/notion.png)
+
+#### 자격 조건
+
+파트너사 제한이 없는 3개월 무료를 받으려면 아래 조건을 달성해야 한다.
+
+- Notion 신규 고객
+- 직원 50명 미만
+- $50K~10M 사이의 투자
+
+신청 방법은 아래 링크를 참고한다.
+
+- [신청 링크](https://www.notion.so/ko-kr/startups)
 
 
 ## 마무리
 
-아마도 이 외에도 
+> 이 외에도 스타트업 플랜을 지원하는 서비스들은 많다.  
+([cloudflare](https://www.cloudflare.com/ko-kr/forstartups/?ref=blog.cloudflare.com), [MongoDB](https://www.mongodb.com/startups), [Datadog](https://www.datadoghq.com/partner/datadog-for-startups/) 등)  
+> 하지만 이들은 **연계된 파트너사, VC, 엑설레이터 등에 포함되어있어야** 가능하다.  
+
+이제 막 시작하는 스타트업을 지원하는 프로그램은 요즘 정말 많다.  
+이들을 모르고 그냥 넘어가면 안된다.  
+때가 지나면 헤택을 받지 못한다.  
+이런 혜택을 놓치지 말고 다 받아서 **가성비 있는 생산성**을 뽑아내면 좋다.  
+생산성을 해쳐가면서까지 무료로 쓰는 것도 초기 스타트업에서는 좋은 일은 아니다.  
+  
+그리고 이렇게 혜택을 받고 나중에 잘 된다면 이들처럼 또 다른 시작하는 스타트업을 위한 스타트업 지원 프로그램을 만든다면 좋겠다.  
+  
+계속해서 서로가 서로의 잘됨을 지원하는, 순환하는 스타트업 생태계가 되었으면 좋겠다.
+
+
 
 
