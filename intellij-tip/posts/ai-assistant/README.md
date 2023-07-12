@@ -38,6 +38,19 @@ Settings 페이지에서 **Early Access Program**을 체크한다.
 
 (WebStorm 2023 EAP)
 
+실행이 완료되면 다음과 같이 우측 탭 영역에 AI Assistant가 추가된 것을 확인할 수 있다.
+
+![enabl1](./images/enable1.png)
+
+해당 탭을 클릭후 **Log in to JetBrains AI**을 클릭한다.  
+가입한 JetBrains 계정으로 로그인을 성공하면
+
+![enabl2](./images/enable2.png)
+
+다음과 같이 AI Chat이 활성화 된 것을 확인할 수 있다.
+
+![enabl3](./images/enable3.png)
+
 ## 2. 주요 기능
 
 이렇게 설치된 JetBrains IDE 의 AI 주요 기능들은 다음과 같다.
@@ -118,8 +131,7 @@ AI 메뉴에는 **리팩토링**도 지원한다.
 Mac 기준으로 함수명, 변수명, 클래스명을 변경하는 단축키는 `Shift + F6` 이다.  
 해당 단축키로 이름을 변경하려고 하면, **AI에서 여러 이름을 추천**해준다.
 
-
-![image](https://github.com/jojoldu/blog-code/assets/7760496/34d0b1d2-29eb-445a-88d7-5b54b73834b3)
+![rename1](./images/rename1.png)
 
 ### 2-3. 주석 생성
 
