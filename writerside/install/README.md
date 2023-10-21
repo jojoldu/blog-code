@@ -18,3 +18,13 @@ IntelliJ 와 PyCharm 등 개발도구로 유명한 젯브레인에서 이번에 
 - REST API 자동 생성
 - 현재 Early Access Program으로 무료 공개중. 공식 릴리즈후에도 무료버전을 제공할 예정이라 계속 무료로 이용 가능
 - 지금은 웹 버전 문서를 빌드하지만, PDF 출력도 지원할 예정
+
+## Tips
+
+### Github 플러그인 설치
+
+기존 IDE와 달리 Github 플러그인이 기본 설치되어있지 않다.  
+다음과 같이 Github 플러그인을 설치하면 된다.
+
+![github](./images/github.png)
+
