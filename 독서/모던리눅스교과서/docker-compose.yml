@@ -1,0 +1,7 @@
+version: '3'
+name: modern-linux
+services:
+  centos8-container:
+    image: centos:8
+    container_name: my-centos8-container
+    command: tail -f /dev/null
