@@ -2,7 +2,18 @@
 
 ## 1. 제품과 기술
 
-FE 와 BE 사이의 
+### 신규 스택의 전환
+
+- 로드맵
+- 강의 에디터
+  
+
+### SpringBoot & JPA 첫 프로젝트
+
+강의 에디터 프로젝트를 진행하면서 신규 백엔드 프로젝트를 만들고, 이를 SpringBoot와 JPA로 진행했다.
+
+- JPA 모듈은 Java로
+- Application 모듈들은 Kotlin으로
 
 ### AI
 
