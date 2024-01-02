@@ -188,6 +188,35 @@
 
 2023년에는 총 55개의 글을 작성했다.  
 한달 평균 4.6개의 글을 작성한 셈이다.  
+작년엔 
+
+  
+GA4로 변경되어서 4월전까지 GA 지표는 연결되지 않아서 거의 5월부터의 데이터로만 봐야한다.  
+전체 통계는 티스토리 통계로만 확인했다.
+
+![blog1](./images/blog1.png)
+
+Top 10 글을 정리해보면 다음과 같다.
+
+- 1위: [Spring Boot 3.x 실행이 안될 경우 (feat. IntelliJ)](https://jojoldu.tistory.com/698)
+
+- 2위: [좋은 예외(Exception) 처리](https://jojoldu.tistory.com/734)
+
+- 3위: [일급 컬렉션 (First Class Collection)의 소개와 써야할 이유](https://jojoldu.tistory.com/412)
+
+- 4위: [2. Spring Batch 가이드 - Batch Job 실행해보기](https://jojoldu.tistory.com/325)
+
+- 5위: [가장 좋아하진 않는 프로그래밍](https://jojoldu.tistory.com/739)
+
+- 6위: [.gitignore가 작동하지 않을때 대처법](https://jojoldu.tistory.com/307)
+
+- 7위: [4. Spring Batch 가이드 - Spring Batch Job Flow](https://jojoldu.tistory.com/328)
+
+- 8위: [7. Spring Batch 가이드 - ItemReader](https://jojoldu.tistory.com/336)
+
+- 9위: [IntelliJ 디버깅 해보기](https://jojoldu.tistory.com/149)
+
+- 10위: [좋은 API Response Body 만들기](https://jojoldu.tistory.com/720)
 
 해마다 12월 마지막 주에는 한 해 동안 쓴 글에 대해 정리하는데, 2023년도 이제 며칠 안 남아서 이 블로그의 한 해를 정리해 본다.
 
