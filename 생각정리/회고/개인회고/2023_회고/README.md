@@ -188,9 +188,35 @@
 
 2023년에는 총 55개의 글을 작성했다.  
 한달 평균 4.6개의 글을 작성한 셈이다.  
-작년엔 
+작년엔 53개의 글을 썼으니 비슷하게 글을 작성한 것 같다.  
+  
+주 1회의 글을 계속 몇년째 쓰고 있는 셈인데, "조금 더 심사숙고해서 글을 써야하지 않을까" 하는 생각도 했었다.  
+정기적으로 작성한 것은 아니지만, 그래도 가능한 글을 쉬지 않고 쓰려다보니 너무 기계적으로 글을 쓰는 건 아닐까 했다.  
+  
+그렇게 고민하는 것과 별개로 계속 글은 쓰다가, 최근 폴인에 올라온 윤종신x송길영님의 인터뷰 영상을 봤다.
+
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/2zAvsHWIkiI?si=Du-ZAQp8XjbckNSk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+(풀영상은 [폴인](https://www.folin.co/video/5930) 결제 후 볼 수 있다.  
+좋은 내용이 정말 많다.)    
+  
+"앨범을 내는 것은 작년 혹은 재작년의 내 생각을 옮기는 것인데, 준비하다보면 1~2년이 지난다.  
+내 옛 생각인 셈인데, 생각이 나와야할 시점이 있는 것 같다.  
+한 3년 지나고 아카이빙의 미학을 알아버렸다.  
+월간 윤종신은 10년, 20년 시간이 흐를수록 의미가 있겠다 싶었다.  
+컨테츠적인 월기를 쓰고 있기 때문이다."  
+  
+"월간 윤종신을 하면서 노래 하나가 흥했다 망했다의 수준이 없어져버렸다.  
+윤종신은 '월간 윤종신' 을 아직도 하고 있다며? 가 기준이 되어버렸다.  
+평가의 기준에서 벗어나버렸다.  
+**남들의 평가를 신경 안쓰기 위해 월간 윤종신을 하게 되었다**."  
+
+
 
   
+
+
 GA4로 변경되어서 4월전까지 GA 지표는 연결되지 않아서 거의 5월부터의 데이터로만 봐야한다.  
 전체 통계는 티스토리 통계로만 확인했다.
 
@@ -198,25 +224,25 @@ GA4로 변경되어서 4월전까지 GA 지표는 연결되지 않아서 거의 
 
 Top 10 글을 정리해보면 다음과 같다.
 
-- 1위: [Spring Boot 3.x 실행이 안될 경우 (feat. IntelliJ)](https://jojoldu.tistory.com/698)
+- 1위: [Spring Boot 3.x 실행이 안될 경우 (feat. IntelliJ)](https://jojoldu.tistory.com/698) - 26,522
 
-- 2위: [좋은 예외(Exception) 처리](https://jojoldu.tistory.com/734)
+- 2위: [좋은 예외(Exception) 처리](https://jojoldu.tistory.com/734) - 20,722
 
-- 3위: [일급 컬렉션 (First Class Collection)의 소개와 써야할 이유](https://jojoldu.tistory.com/412)
+- 3위: [일급 컬렉션 (First Class Collection)의 소개와 써야할 이유](https://jojoldu.tistory.com/412) - 10,884
 
-- 4위: [2. Spring Batch 가이드 - Batch Job 실행해보기](https://jojoldu.tistory.com/325)
+- 4위: [2. Spring Batch 가이드 - Batch Job 실행해보기](https://jojoldu.tistory.com/325) - 10,722
 
-- 5위: [가장 좋아하진 않는 프로그래밍](https://jojoldu.tistory.com/739)
+- 5위: [가장 좋아하진 않는 프로그래밍](https://jojoldu.tistory.com/739) - 10,534
 
-- 6위: [.gitignore가 작동하지 않을때 대처법](https://jojoldu.tistory.com/307)
+- 6위: [.gitignore가 작동하지 않을때 대처법](https://jojoldu.tistory.com/307) - 10,389
 
-- 7위: [4. Spring Batch 가이드 - Spring Batch Job Flow](https://jojoldu.tistory.com/328)
+- 7위: [4. Spring Batch 가이드 - Spring Batch Job Flow](https://jojoldu.tistory.com/328) - 10,349
 
-- 8위: [7. Spring Batch 가이드 - ItemReader](https://jojoldu.tistory.com/336)
+- 8위: [7. Spring Batch 가이드 - ItemReader](https://jojoldu.tistory.com/336) - 9,812
 
-- 9위: [IntelliJ 디버깅 해보기](https://jojoldu.tistory.com/149)
+- 9위: [IntelliJ 디버깅 해보기](https://jojoldu.tistory.com/149) - 9,503
 
-- 10위: [좋은 API Response Body 만들기](https://jojoldu.tistory.com/720)
+- 10위: [좋은 API Response Body 만들기](https://jojoldu.tistory.com/720) - 9,389
 
 해마다 12월 마지막 주에는 한 해 동안 쓴 글에 대해 정리하는데, 2023년도 이제 며칠 안 남아서 이 블로그의 한 해를 정리해 본다.
 
