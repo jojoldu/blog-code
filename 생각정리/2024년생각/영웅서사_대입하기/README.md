@@ -1,12 +1,18 @@
-# 당신은 영웅의 여정을 걷고 있습니까 : 30분만에 내 커리어가 더 소중해지는 방법
+# 당신은 영웅의 여정을 걷고 있습니까
 
-[창준님](https://www.facebook.com/cjunekim/posts/pfbid0gQDdqYoRzURcPVCbMYEK42TxFPKWJ8WZcbkwJk4s8EAZbokvz8us6U3poR79dLZMl) 의 워크샵에 참석
+["창준님의 워크샵 - 당신은 영웅의 여정을 걷고 있습니까"](https://www.facebook.com/cjunekim/posts/pfbid0gQDdqYoRzURcPVCbMYEK42TxFPKWJ8WZcbkwJk4s8EAZbokvz8us6U3poR79dLZMl)에 참석했다.  
+  
+"**본인의 삶이 소위 영화나 소설에서 보는 영웅의 여정과 유사하다고 느낄수록 이 삶의 의미가 높은 것이다**" 라는 연구 결과가 있었다고 한다.  
 
-전설의 로맨
+- [Seeing Your Life Story as a Hero’s Journey Increases Meaning in Life](https://www.researchgate.net/publication/367377960_Seeing_your_life_story_as_a_Hero's_Journey_increases_meaning_in_life)
+  
+영웅의 여정에는 7가지 핵심 요소로 "주인공, 변화, 퀘스트, 동맹,도전, 변혁, 유산" 있다.  
+  
 
-현실세계에서는 사용할 수 없는 단어나 문장을 미러세계 (사이버펑크)에서는 사용하면서 나를 가두고 있던 단어의 폭이 깨지는 느낌을 받음
 
-나에게 있어 역경은 "나도 모른다" 라는 이야기를 못하는 것이다.  
-이걸 개발자 커리어 초기에 정말 고생을 많이 한 부분이다.  
-이걸 이겨내기 위해 "나도 모른다" 라는 이야기를 억지로 용기내서 내뱉는 연습을 많이 해왔다.  
-이게 내 캐릭터에도 동일하게 대입되었다.
+
+## 함께 보면 좋은 글
+
+- [소설에 몰입하기](https://jojoldu.tistory.com/735)
+
+
