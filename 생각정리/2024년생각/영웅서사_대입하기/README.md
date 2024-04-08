@@ -6,7 +6,7 @@
 
 - [Seeing Your Life Story as a Hero’s Journey Increases Meaning in Life](https://www.researchgate.net/publication/367377960_Seeing_your_life_story_as_a_Hero's_Journey_increases_meaning_in_life)
   
-영웅의 여정에는 7가지 핵심 요소로 "주인공, 변화, 퀘스트, 동맹,도전, 변혁, 유산" 있다.  
+영웅의 여정에는 7가지 핵심 요소로 "주인공, 변화, 퀘스트, 동맹, 도전, 변혁, 유산" 있다.  
   
 
 
