@@ -3,6 +3,24 @@
 모든 API는 예측 가능해야한다.  
 이 URL만 봐도 무엇을 하는 것인지 상세 스펙을 보지 않아도 알 수 있어야 한다.
 
+## api path
+
+API 임을 URL에서 표현되어야 한다.  
+크게 2가지로 나눠진다.  
+
+별도의 백엔드 API 서버로 분리되어있다면
+- `api.example.com/v1/xxx`
+
+단일 서비스에서 웹 페이지와 API를 모두 다루고 있다면
+- `www.example.com/api/v1/xxx`
+
+물론 인프라 계층에서 분기 처리를 한다면 단일 서비스에서도 서로 다른 도메인을 가지고 `api.example.com/v1` 과 같은 형태를 서비스할 수 있으나, API의 관리 주체가 가능한 애플리케이션 개발자들에 있으려면 인프라 계층에서 분기 처리하는 것을 최소화 하는 것이 좋다.  
+  
+이후에 백엔드 API 서버를 별도로 분리하는 것이 더 쉽고 권장되니 단일 서버에서 `/api/v1/xxx` 로 처리한다.
+
+## Version
+
+
 ## URL 네이밍 컨벤션
 
 URL 의 컨벤션은 **kebab-case**를 사용한다.
@@ -35,6 +53,18 @@ www.example.com/DO_NOT/EVER_DO/THIS
 www.example.com/this is/going 
 ```
 
+
+## 리소스
+
+리소스는 **복수형**으로 표현한다.
+
+```bash
+// good
+www.example.com/reviews
+
+// bad
+www.example.com/review
+```
 
 
 ## 상태 변화
