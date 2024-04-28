@@ -66,6 +66,19 @@ www.example.com/reviews
 www.example.com/review
 ```
 
+## Parameter, Body
+
+1. 프로그래밍 언어의 관습
+많은 프로그래밍 언어와 개발 프레임워크(특히 Java와 JavaScript)에서 camelCase는 변수와 속성 이름을 지정하는 기본 형식이다. API를 이러한 언어로 구현할 때, 자연스럽게 이러한 명명 규칙을 따르게 되며, 이는 API의 RequestParameter와 RequestBody에도 영향을 준다.
+2. JSON 호환성
+JSON 객체에서 키를 명명할 때 camelCase를 사용하는 것이 일반적이다. JSON은 API에서 데이터를 전송하는 데 가장 많이 사용되는 형식 중 하나이기 때문에, camelCase를 사용하면 JSON 페이로드와 일관된 명명 규칙을 유지할 수 있다.
+3. 읽기 쉬움 및 접근성
+camelCase는 각 단어의 시작을 대문자로 표시함으로써 구분을 명확히 합니다. 이는 특히 변수나 키가 긴 경우에 단어의 경계를 더 쉽게 인식할 수 있게 해주며, 코드의 가독성을 향상시킨다.
+4. 일관성 및 유지 관리
+API 전체에서 일관된 명명 규칙을 사용하면 코드의 유지 관리가 더 쉬워집니다. camelCase는 많은 개발 팀과 프로젝트에서 선호되는 스타일이므로, 이를 사용함으로써 새로운 개발자들이 기존 코드베이스와 빠르게 호환되고 적응할 수 있다.
+5. API 설계 표준 및 모범 사례
+많은 API 설계 가이드라인과 모범 사례에서 camelCase 사용을 권장합니다. 예를 들어, Google의 JSON 스타일 가이드나 Microsoft의 REST API 가이드라인 등에서는 camelCase 사용을 권장하고 있다.
+모두 camelCase를 사용한다.
 
 ## 상태 변화
 
