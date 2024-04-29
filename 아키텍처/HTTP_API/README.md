@@ -90,7 +90,12 @@ API 전체에서 일관된 명명 규칙을 사용하면 코드의 유지 관리
 - `/order/:orderId/cancel`
 
 
-## Path, Request, Response
+## PathVariable
 
 해당 리소스의 고유키 까지만 path variable에 포함시킨다.
 그 외 고유키가 아닌 것은 모두 Request Param/body에 포함시킨다
+단순함과 일관성을 중시할 수 있다.
+
+```bash
+/v1/orders/courses/{courseId}
+```
