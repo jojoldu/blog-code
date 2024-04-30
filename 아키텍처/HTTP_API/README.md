@@ -85,9 +85,32 @@ API 전체에서 일관된 명명 규칙을 사용하면 코드의 유지 관리
 - Get: 상태 변화를 주지 않는 기능
 - Post: 상태 변화를 주는 기능
 
-## 다양한 상태 표현
+## 도메인 행위 표현하기 (다양한 상태 표현)
 
-- `/order/:orderId/cancel`
+주문을 삭제하는 것과 주문을 취소하는 것은 다르다.  
+HTTP Method로 모든 도메인의 행위를 표현하려면 이와 같이 삭제와 취소를 함께 표현하기가 모호하다.  
+
+
+```bash
+// good
+POST /orders/:orderId/cancel
+
+// bad
+POST /orders-cancel/:orderId/
+```
+
+## 일관성 유지하기
+
+```bash
+// good
+POST /courses/:courseId/refund
+POST /mentorings/:mentoringId/refund
+
+// bad
+POST /courses/:courseId/refund
+POST /mentorings/:mentoringId/cancel
+```
+
 
 
 ## PathVariable
