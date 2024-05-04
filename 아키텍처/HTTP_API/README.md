@@ -91,6 +91,21 @@ www.example.com/reviews?user_id=
 - Get: 상태 변화를 주지 않는 기능
 - Post: 상태 변화를 주는 기능
 
+## 멱등성 지원하기
+
+POST는 멱등하지 않다.  
+PUT은 멱등하다.  
+여러번 반복해도 동일한 결과를 보장한다. 
+
+```bash
+POST /reviews
+
+PUT /reviews/1009
+If-None-Match: *
+```
+
+- `If-None-Match: *`: URL에 기존 리소스가 없으면 제공된 URL에 새로운 리소스를 생성하라.
+
 ## 도메인 행위 표현하기 (다양한 상태 표현)
 
 주문을 삭제하는 것과 주문을 취소하는 것은 다르다.  
