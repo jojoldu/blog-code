@@ -75,8 +75,8 @@ JSON은 API에서 데이터를 전송하는 데 가장 많이 사용되는 형�
   
 그 외에도 각종 API 표준 및 모범 사례에서 **camelCase를 권장**한다.  
 
-- Google의 JSON 스타일 가이드
-- Microsoft의 REST API 가이드라인 
+- [Google의 JSON 스타일 가이드](https://google.github.io/styleguide/jsoncstyleguide.xml)
+- [Microsoft의 REST API 가이드라인](https://learn.microsoft.com/ko-kr/azure/architecture/best-practices/api-design) 
 
 ```bash
 // good
@@ -95,7 +95,8 @@ www.example.com/reviews?user_id=
 
 POST는 멱등하지 않다.  
 PUT은 멱등하다.  
-여러번 반복해도 동일한 결과를 보장한다. 
+여러번 반복해도 동일한 결과를 보장한다.  
+이를 활용하면 **리소스 생성에 대해 멱등성을 보장하는 것을 고려해볼 수 있다**.  
 
 ```bash
 POST /reviews
@@ -105,6 +106,8 @@ If-None-Match: *
 ```
 
 - `If-None-Match: *`: URL에 기존 리소스가 없으면 제공된 URL에 새로운 리소스를 생성하라.
+
+다만, PUT은 특성상 
 
 ## 도메인 행위 표현하기 (다양한 상태 표현)
 
