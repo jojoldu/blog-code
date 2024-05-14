@@ -1,6 +1,6 @@
 # 1. Web API 디자인 - URL편
 
-[마틴 파울러의 블로그](https://martinfowler.com/articles/richardsonMaturityModel.html)를 가보면 Leonard Richardson이 제안한 [Web API 성숙도 모델 (Richardson Maturity Model - RMM)](https://martinfowler.com/articles/richardsonMaturityModel.html)을 볼 수 있다.  
+[마틴 파울러의 블로그](https://martinfowler.com/articles/richardsonMaturityModel.html)를 가보면 Leonard Richardson이 제안한 [Web API 성숙도 모델 (Richardson Maturity Model - RMM)](https://martinfowler.com/articles/richardsonMaturityModel.html)을 소개한다.  
 여기서는 다음과 같이 4단계를 설명한다.
   
 - 레벨 0: 하나의 URI를 정의하고 모든 작업은 이 URI에 대한 POST 요청  
@@ -8,14 +8,12 @@
 - 레벨 2: HTTP 메서드를 사용하여 리소스에 대한 작업을 정의
 - 레벨 3: 하이퍼미디어(HATEOAS 등)를 사용
 
-레벨 3이 Roy Fielding 의 정의에 따르면 진정한 RESTful API에 해당한다.  
-대부분의 RESTful API는 진짜 RESTful API는 아니며 보통 레벨2 부근에 해당한다.    
-  
-여기서는 레벨2를 기준으로 팀에서 사용하는 Web API 컨벤션을 소개한다.  
+Roy Fielding 의 정의에 따르면 레벨 3이 진정한 RESTful API에 해당한다.  
+[대부분의 RESTful API는 진짜 RESTful API는 아니며 보통 레벨2 부근](https://www.youtube.com/watch?v=RP_f5dMoHFc)에 해당한다.      
 
-> 아래는 마틴 파울러 블로그에 나와있는 [성숙도 레벨이 무엇을 의미하는지에 대햔 섹션](https://martinfowler.com/articles/richardsonMaturityModel.html#TheMeaningOfTheLevels)이다.  
-> 읽어보길 추천한다.
-> 
+아래는 마틴 파울러 블로그에 나와있는 [성숙도 레벨이 무엇을 의미하는지에 대햔 섹션](https://martinfowler.com/articles/richardsonMaturityModel.html#TheMeaningOfTheLevels)이다.  
+본문을 읽기전 먼저 읽어보면 좋다.  
+
 > RMM (Richardson 의 성숙도 모델) 은 REST의 요소가 무엇인지 생각하는 좋은 방법이지만 **REST 자체의 수준을 정의하는 것은 아니라는 점**을 강조하고 싶습니다.  
 > **Roy Fielding은 레벨 3이 REST의 전제 조건**임을 분명히 했습니다.  
 > 소프트웨어의 많은 용어와 마찬가지로 REST에도 많은 정의가 있지만 Roy Fielding이 이 용어를 만든 이후로 그의 정의는 대부분의 것보다 더 많은 의미를 지닙니다.  
@@ -31,15 +29,25 @@
 > 
 > 그 결과 우리가 제공하고자 하는 HTTP 서비스의 종류에 대해 생각하고 이 서비스와 상호 작용하고자 하는 사람들의 기대치를 설정하는 데 도움이 되는 모델이 탄생했습니다.
 
+여기서는 레벨2를 기준으로 팀에서 사용하는 Web API 컨벤션을 소개한다.  
+  
 ## 기본
 
-모든 API는 예측 가능해야한다.  
+좋은 Web API는 아래 규칙들을 전재로 한다.
+
+### 모든 API는 예측 가능해야한다.  
+
 이 URL만 봐도 무엇을 하는 것인지 상세 스펙을 보지 않아도 알 수 있어야 한다.  
 
-API는 리소스를 중심으로 디자인되며, 여기서 이야기 하는 리소스는 클라이언트에서 접근할 수 있는 모든 종류의 개체, 데이터 또는 서비스 등 모든 것이 포함된다.
+### 리소스는 테이블과 1:1 매칭 대상이 아니다.
 
-리소스마다 해당 리소스를 고유하게 식별하는 URI인 식별자가 있습니다. 예를 들어 특정 고객 주문의 URI는 다음과 같습니다.
+API는 리소스를 중심으로 디자인되며, 여기서 이야기 하는 **리소스는 클라이언트에서 접근할 수 있는 모든 종류의 개체, 데이터 또는 서비스 등 모든 것이 포함**된다.  
   
+이를 잊으면 안된다.  
+리소스는 추상화된 계층이지, **테이블과 1:1 매칭을 해야하는 것으로 오해해선 안된다**.  
+
+### Stateless API 를 구성한다.
+
 (REST API를 가장한) **HTTP API는 Stateless (상태 비저장) 요청 모델**을 사용해야 한다.  
 
 HTTP 요청은 독립적이어야 하며 어떤 순서로든 발생할 수 있으므로 **요청 간에 일시적인 상태 정보를 유지하는 것은 불가능**하다.  
@@ -48,25 +56,25 @@ HTTP 요청은 독립적이어야 하며 어떤 순서로든 발생할 수 있�
 클라이언트가 어느 특정 서버로 연결 해야할지 별도로 관리할 필요가 없기 때문이다.  
 **모든 서버는 모든 클라이언트의 모든 요청을 처리할 수 있다**.  
 
+이 전제들을 기반으로 좀 더 상세한 규칙들을 소개한다.
 
 ## URL에 API 을 표기한다
 
 API 임을 URL에서 표현되어야 한다.  
 크게 2가지로 나눠진다.  
 
-**별도의 백엔드 API 서버**로 분리되어있다면
-- `api.example.com/v1/xxx`
-- (분산 백엔드 API 환경이라면) `order-api.example.com/v1/xxx`
-
-**단일 프로젝트에서 웹 페이지와 API**를 모두 다루고 있다면
-- `www.example.com/api/v1/xxx`
+- **별도의 백엔드 API 서버**로 분리되어있다면
+  - `api.example.com/v1/xxx`
+  - (분산 백엔드 API 환경이라면) `order-api.example.com/v1/xxx`
+- **단일 프로젝트에서 웹 페이지와 API**를 모두 다루고 있다면
+  - `www.example.com/api/v1/xxx`
 
 **3차 도메인 혹은 API Path 에서 api 요청**임을 표기해야한다.  
 
-물론 인프라 계층에서 분기 처리를 한다면 단일 서비스에서도 서로 다른 도메인을 가지고 `api.example.com/v1` 과 같은 형태를 서비스할 수 있으나, API의 관리 주체는 가능하면 애플리케이션 개발자들이 관리하는 것이 좋다.  
+물론 인프라 계층에서 분기 처리를 한다면 단일 서비스에서도 서로 다른 도메인을 가지고 `api.example.com/v1` 과 같은 형태를 서비스할 수 있으나, 이럴 경우 API 컨벤션을 인프라팀과 함께 관리해야 한다.  
   
+API의 관리 주체는 가능하면 애플리케이션 개발자들이 관리하는 것이 좋다.  
 이를 위해 인프라 계층에서 분기 처리하는 것을 최소화 하는 것이 좋다.  
-  
 이후에 백엔드 API 서버를 별도로 분리하는 것이 더 쉽고 권장되니 단일 서버에서는 `/api/v1/xxx` 로 처리한다.
 
 ## 리소스 중심 (테이블 중심 X)
