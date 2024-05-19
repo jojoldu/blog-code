@@ -161,6 +161,37 @@ bad에서처럼 특정 리소스의 특정 하위 리소스를 찾는게 필요�
 
 ## Version
 
+URL 경로에 버전을 포함시킨다.
+
+```bash
+// good
+/v1/orders/{orderId}
+
+```
+
+- 장점
+  - 명확성: 버전이 URL에 명시되어 있어 직관적으로 이해하기 쉽다.
+  - 브라우저 접근성: API 버전이 URL에 포함되어 있으므로, 브라우저를 통해 직접 접근하기 쉽다.
+  - 캐싱 용이성: URL 자체가 변경되므로 캐싱 전략을 쉽게 적용할 수 있다.
+- 단점
+  - URL 길이 증가: 버전 정보를 포함하면서 URL이 길어질 수 있다.
+  - URL 변경: 버전이 올라갈 때마다 URL이 변경되므로, 클라이언트 측에서 수정이 필요하다.
+
+이 외에도 크게 2가지 방법이 더 있다.
+
+```bash
+GET /users?version=1
+GET /users?version=2
+```
+
+```bash
+GET /users
+Headers: 
+    Accept: application/vnd.myapi.v1+json
+GET /users
+Headers: 
+    Accept: application/vnd.myapi.v2+json
+```
 
 ## URL 네이밍 컨벤션
 
@@ -266,28 +297,6 @@ www.example.com/reviews?userId=
 www.example.com/reviews?user_id=
 ```
 
-## 상태 변화
-
-- Get: 상태 변화를 주지 않는 기능
-- Post: 상태 변화를 주는 기능
-
-## 멱등성 지원하기
-
-POST는 멱등하지 않다.  
-PUT은 멱등하다.  
-여러번 반복해도 동일한 결과를 보장한다.  
-이를 활용하면 **리소스 생성에 대해 멱등성을 보장하는 것을 고려해볼 수 있다**.  
-
-```bash
-POST /reviews
-
-PUT /reviews/1009
-If-None-Match: *
-```
-
-- `If-None-Match: *`: URL에 기존 리소스가 없으면 제공된 URL에 새로운 리소스를 생성하라.
-
-다만, PUT은 특성상 
 
 ## 도메인 행위 표현하기 (다양한 상태 표현)
 
