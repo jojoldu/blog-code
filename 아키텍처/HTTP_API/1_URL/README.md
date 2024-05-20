@@ -36,17 +36,17 @@ Roy Fielding 의 정의에 따르면 레벨 3이 진정한 RESTful API에 해당
 좋은 Web API는 아래 규칙들을 전재로 한다.  
 이 전제들을 기반으로 좀 더 상세한 규칙들을 소개한다.
 
-#### 모든 API는 예측 가능해야한다.  
+#### 모든 API는 직관적이어야 한다  
 
 이 URL만 봐도 무엇을 하는 것인지 상세 스펙을 보지 않아도 알 수 있어야 한다.  
 
-#### 리소스는 테이블과 1:1 매칭 대상이 아니다.
+#### 리소스는 테이블과 1:1 매칭 대상이 아니다
 
 API는 리소스를 중심으로 디자인되며, 여기서 이야기 하는 **리소스는 클라이언트에서 접근할 수 있는 모든 종류의 개체, 데이터 또는 서비스 등 모든 것이 포함**된다.  
   
 리소스는 추상화된 계층이지, **테이블과 1:1 매칭을 해야하는 것으로 오해해선 안된다**.  
 
-#### Stateless API 를 구성한다.
+#### Stateless API 를 구성한다
 
 (REST API를 가장한) **HTTP API는 Stateless (상태 비저장) 요청 모델**을 사용해야 한다.  
   
@@ -71,11 +71,87 @@ API 임을 URL에서 표현되어야 한다.
 
 **3차 도메인 혹은 API Path 에서 api 요청**임을 표기해야한다.  
 
+```bash
+// good
+api.example.com/v1/orders
+order-api.example.com/v1/orders
+www.example.com/api/v1/orders
+
+// bad
+www.example.com/v1/orders
+order.example.com/v1/orders
+```
+
 물론 인프라 계층에서 분기 처리를 한다면 단일 서비스에서도 서로 다른 도메인을 가지고 `api.example.com/v1` 과 같은 형태를 서비스할 수 있으나, 이럴 경우 API 컨벤션을 인프라팀과 함께 관리해야 한다.  
   
-API의 관리 주체는 가능하면 애플리케이션 개발자들이 관리하는 것이 좋다.  
+API의 관리 주체는 **애플리케이션 개발자들이 관리해야 한다**.  
 이를 위해 인프라 계층에서 분기 처리하는 것을 최소화 하는 것이 좋다.  
 이후에 백엔드 API 서버를 별도로 분리하는 것이 더 쉽고 권장되니 단일 서버에서는 `/api/v1/xxx` 로 처리한다.
+
+## URL에 버전을 표기한다
+
+API에 버전을 명시할 수 있는 방법은 크게 3가지 정도가 있지만 **URL 경로에 버전을 포함**시키는 것을 추천한다.  
+
+```bash
+// good
+api.example.com/v1/orders/{orderId}
+www.example.com/api/v1/orders/{orderId}
+```
+
+다음의 장/단점이 있다.
+
+- 장점
+  - 명확성: 버전이 URL에 명시되어 있어 직관적으로 이해하기 쉽다.
+  - 브라우저 접근성: API 버전이 URL에 포함되어 있으므로, 브라우저를 통해 직접 접근하기 쉽다.
+  - 캐싱 용이성: URL 자체가 변경되므로 캐싱 전략을 쉽게 적용할 수 있다.
+- 단점
+  - URL 길이 증가: 버전 정보를 포함하면서 URL이 길어질 수 있다.
+  - URL 변경: 버전이 올라갈 때마다 URL이 변경되므로, 클라이언트 측에서 수정이 필요하다.
+
+이 외에도 2가지 방법이 더 있다.
+
+
+
+
+#### 파라미터에 버전 표기
+
+```bash
+GET /orders?version=1
+GET /orders?version=2
+```
+
+#### Header에 버전 표기
+
+```bash
+GET /orders
+Headers: 
+    Accept: application/vnd.myapi.v1+json
+GET /orders
+Headers: 
+    Accept: application/vnd.myapi.v2+json
+```
+
+다만, 위 2가지 방식은
+**URL만 보고는 버전을 직관적으로 알기 어렵고, URL 경로가 동일해 API를 캐싱하기가 어려워** 개인적으로 선호하지 않는다.  
+
+> [API의 캐싱에 대해서는 이전 글](https://jojoldu.tistory.com/779)을 참고한다.
+
+## /api/{version}/리소스 템플릿을 쓴다.
+
+버저닝 표기는 `/api/{version}/리소스` 템플릿을 사용한다.
+
+```bash
+// good
+api.example.com/v1/orders/{orderId}
+www.example.com/api/v1/orders/{orderId}
+
+// bad
+www.example.com/v1/api/orders/{orderId}
+```
+
+URL은 상위 -> 하위 계층으로 내려가야 한다.  
+좀 더 직관적으로 이야기하자면 **변화가 더 적은 곳이 앞에 선언 되어야 한다**.  
+  
 
 ## 테이블이 아닌 리소스가 중심이 되어야 한다
 
@@ -137,66 +213,24 @@ bad에서처럼 특정 리소스의 특정 하위 리소스를 찾는게 필요�
 
 한번의 API 조회로 필요한 모든 데이터를 가져오게 되면 상황에 따라 그 한번의 요청이 레이턴시를 증가시킨다.  
 
+## URL 네이밍 컨벤션
 
-## GET, PUT, DELETE, HEAD 및 PATCH 작업은 멱등해야 한다.
-
-- 위 HTTP 메소드들은 모두 부수 효과가 없어야 한다. 
-- 동일한 리소스에 대해 동일한 요청이 반복되면 그 결과는 동일한 상태여야한다. 
-- 응답 메시지의 HTTP 상태 코드는 다를 수 있지만 여러 DELETE 요청을 동일한 URI로 보내는 것은 동일한 효과가 있어야 한다. 
-  - 예를 들어 첫 번째 DELETE 요청은 상태 코드 204(콘텐츠 없음)를 반환하고, 그 이후 DELETE 요청은 상태 코드 404(찾을 수 없음)를 반환할 수 있다.
-  - 단, 서버 혹은 데이터베이스 등에서는 첫번째나 그 이후의 요청에서 변경되는 부분이 없어야 한다.
-
-## 새 리소스를 생성하는 POST 에는 연관 관계가 있는 리소스에만 영향을 줘야한다
-
-- POST 요청이 새 리소스를 만들기 위한 것인 경우 요청의 효과는 새 리소스로 제한되어야 한다. 
-  - 관련 링크의 종류가 있는 경우 직접 관련된 리소스일 수 있음 
-- 예를 들어 전자 상거래 시스템에서 고객에게 새 주문을 만드는 POST 요청은 재고 수준을 수정하고 청구 정보를 생성할 수도 있지만 주문과 직접 관련되지 않은 정보를 수정하거나 시스템 전체 상태에 다른 부작용이 있으면 안된다.
-
-## 번잡한 POST, PUT 및 DELETE 작업을 구현하지 않는다
-
-- 리소스 컬렉션에 대한 POST, PUT 및 DELETE 요청을 지원한다. 
-- POST 요청은 다수의 새로운 리소스에 대한 세부 정보를 포함할 수 있으며 그 모두를 동일한 컬렉션에 추가할 수 있고, PUT 요청은 컬렉션에 포함된 전체 리소스를 바꿀 수 있고, DELETE 요청은 컬렉션 전체를 제거할 수 있다.
-
-
-
-## Version
-
-URL 경로에 버전을 포함시킨다.
+URL은 **kebab-case**를 사용한다.  
 
 ```bash
 // good
-/v1/orders/{orderId}
+api.example.com/this-is/a-nice/url-name
+www.example.com/api/v1/this-is/a-nice/url-name
 
+// bad
+www.example.com/this_is/a_bad/url_name 
+www.example.com/ThisIs/aBad/URLName 
+www.example.com/DO_NOT/EVER_DO/THIS 
+www.example.com/this is/going 
 ```
 
-- 장점
-  - 명확성: 버전이 URL에 명시되어 있어 직관적으로 이해하기 쉽다.
-  - 브라우저 접근성: API 버전이 URL에 포함되어 있으므로, 브라우저를 통해 직접 접근하기 쉽다.
-  - 캐싱 용이성: URL 자체가 변경되므로 캐싱 전략을 쉽게 적용할 수 있다.
-- 단점
-  - URL 길이 증가: 버전 정보를 포함하면서 URL이 길어질 수 있다.
-  - URL 변경: 버전이 올라갈 때마다 URL이 변경되므로, 클라이언트 측에서 수정이 필요하다.
-
-이 외에도 크게 2가지 방법이 더 있다.
-
-```bash
-GET /users?version=1
-GET /users?version=2
-```
-
-```bash
-GET /users
-Headers: 
-    Accept: application/vnd.myapi.v1+json
-GET /users
-Headers: 
-    Accept: application/vnd.myapi.v2+json
-```
-
-## URL 네이밍 컨벤션
-
-URL 의 컨벤션은 **kebab-case**를 사용한다.
-RFC 3986과 같은 URI를 정의하는 표준 문서에서는 URL에 대문자, 소문자, 숫자, 일부 특수 문자(`-, _, ., ~`)의 사용을 권장한다.  
+[RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986)과 같은 URI를 정의하는 표준 문서에서는 URL에 대문자, 소문자, 숫자, 일부 특수 문자(`-, _, ., ~`)의 사용을 권장한다.  
+  
 kebab-case는 이러한 표준 규칙에 잘 부합한다.  
 또한 여러 검색엔진에서 단어간 구별을 `-`로 할 경우 훨씬 더 잘 구분한다.  
 
@@ -210,23 +244,12 @@ kebab-case는 이러한 표준 규칙에 잘 부합한다.
 - 공백을 포함하지 않는다.
 - 특수 문자를 포함하지 않는다.
 
-```bash
-ex) https://stackoverflow.com/questions/48495260/sql-interpolated-strings
-```
+API는 아니지만, 스택오버플로우 등에서는 웹 페이지의 URL에서도 kebab-case를 유지한다.
 
-```bash
-// good
-www.example.com/this-is/a-nice/url-name
-
-// bad
-www.example.com/this_is/a_bad/url_name 
-www.example.com/ThisIs/aBad/URLName 
-www.example.com/DO_NOT/EVER_DO/THIS 
-www.example.com/this is/going 
-```
+- https://stackoverflow.com/questions/48495260/sql-interpolated-strings
 
 
-## 리소스
+## 리소스는 복수형으로
 
 리소스는 **복수형**으로 표현한다.
 
@@ -277,17 +300,9 @@ GET /users/${userId}/by-admin // 관리자 유저 조회
   
 URL은 해당 API가 제공하는 정보에 집중해야한다.
 
-## Parameter, Body
+## Parameter, Body 네이밍 컨벤션
 
-RequestParameter와 Request Body에서 사용되는 변수, 객체는 **camelCase**를 사용한다.  
-
-JSON 객체에서 키를 명명할 때 camelCase를 사용하는 것이 일반적이다.  
-JSON은 API에서 데이터를 전송하는 데 가장 많이 사용되는 형식 중 하나이기 때문에, camelCase를 사용하면 JSON 페이로드와 일관된 명명 규칙을 유지할 수 있다.  
-  
-그 외에도 각종 API 표준 및 모범 사례에서 **camelCase를 권장**한다.  
-
-- [Google의 JSON 스타일 가이드](https://google.github.io/styleguide/jsoncstyleguide.xml)
-- [Microsoft의 REST API 가이드라인](https://learn.microsoft.com/ko-kr/azure/architecture/best-practices/api-design) 
+Request Parameter와 Request Body에서 사용되는 변수, 객체는 **camelCase**를 사용한다.  
 
 ```bash
 // good
@@ -297,22 +312,37 @@ www.example.com/reviews?userId=
 www.example.com/reviews?user_id=
 ```
 
+JSON 객체에서 키를 명명할 때 camelCase를 사용하는 것이 일반적이다.  
+JSON은 API에서 데이터를 전송하는 데 가장 많이 사용되는 형식 중 하나이기 때문에, camelCase를 사용하면 JSON 페이로드와 일관된 명명 규칙을 유지할 수 있다.  
+  
+그 외에도 각종 API 표준 및 모범 사례에서 **camelCase를 권장**한다.  
 
-## 도메인 행위 표현하기 (다양한 상태 표현)
+- [Google의 JSON 스타일 가이드](https://google.github.io/styleguide/jsoncstyleguide.xml)
+- [Microsoft의 REST API 가이드라인](https://learn.microsoft.com/ko-kr/azure/architecture/best-practices/api-design) 
 
+
+
+
+## 복잡한 행위에는 동사를 URL에 포함시킨다
+
+CRUD 외 다양한 도메인 행위를 표현하기 위해 **URL에 동사를 포함시키는 것을 용인**한다.  
+  
 주문을 삭제하는 것과 주문을 취소하는 것은 다르다.  
-HTTP Method로 모든 도메인의 행위를 표현하려면 이와 같이 삭제와 취소를 함께 표현하기가 모호하다.  
+HTTP Method로 모든 도메인의 행위를 표현하려면 삭제와 취소를 함께 표현하기가 모호하다.  
+그래서 단순한 행위 외 복잡한 행위에 대해서는 동사를 사용한다.  
 
+단, 규칙없는 URL을 피하기 위해 `/리소스/{리소스ID}/행위` 의 템플릿을 따른다.
 
 ```bash
 // good
-POST /orders/:orderId/cancel
+POST /orders/{orderId}/cancel
 
 // bad
-POST /orders-cancel/:orderId/
+POST /orders-cancel/{orderId}
 ```
 
 ## 일관성 유지하기
+
 
 ```bash
 // good
