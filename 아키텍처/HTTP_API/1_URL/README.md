@@ -330,6 +330,14 @@ GET /users/${userId}/by-admin // 관리자 유저 조회
   
 **URI은 해당 API가 제공하는 정보에 집중**한다.
 
+## 불필요한, 당연한 이름은 포함시키지 않는다.
+
+```bash
+// good
+
+// bad
+```
+
 ## 복잡한 행위에는 동사를 URI에 포함시킨다
 
 CRUD 외 다양한 도메인 행위를 표현하기 위해 **URI에 동사를 포함시키는 것을 용인**한다.  
@@ -351,17 +359,17 @@ POST /orders-cancel/{orderId}
 ## 일관성 유지하기
 
 일관된 용어를 사용한다.  
-예를 들어 환불을 `refund` 로 하기로 했다면 환불에 대해서는 `refund` 를 유지해야 한다.  
-어디는 `refund`, 어디는 `cancel` 등으로 진행해서는 일관성이 떨어지고, 처음 API를 보는 사람마다 서로 다르게 해석할 수 있게 된다.
+예를 들어 '내역'을 `history` 로 하기로 했다면 내역에 대해서는 `history` 를 유지해야 한다.  
+어디는 `history`, 어디는 `record` 등으로 진행해서는 일관성이 떨어지고, 처음 API를 보는 사람마다 서로 다르게 해석할 수 있게 된다.
 
 ```bash
 // good
-POST /courses/:courseId/refund
-POST /mentorings/:mentoringId/refund
+POST /courses/:courseId/history
+POST /mentorings/:mentoringId/history
 
 // bad
-POST /courses/:courseId/refund
-POST /mentorings/:mentoringId/cancel
+POST /courses/:courseId/history
+POST /mentorings/:mentoringId/record
 ```
 
 ## 마무리
