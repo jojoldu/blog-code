@@ -17,9 +17,9 @@ Java 21이 2023년 9월에 출시 된지 1년이 다되어 간다.
 - [(페이스북) 다들 개발팀 로컬 PC는 JDK 어느것들을 사용하시나요?](https://www.facebook.com/jojoldu/posts/pfbid0woHLzFSoaYwom5HNEfSYFtDsythkiQdkqakKpxJLC92w1dBn5dQyDpZPVJgk9uUMl?notif_id=1718758810997688&notif_t=feedback_reaction_generic&ref=notif)
 - [(트위터) 다들 개발팀 로컬 PC는 JDK 어느것들을 사용하시나요?](https://twitter.com/jojoldu/status/1803228699225104577)
 
-온프레미스 기반의 회사에서는 당연하게도 Temurin을 사용중이고, AWS를 사용중인 팀에서도 요즘 같이 컨테이너 환경에서는 JDK 환경 설정에 제약이 없다시피 하다보니 Temurin을 사용하는 경우가 제법 있다.  
+온프레미스 기반의 회사에서는 당연하게도 Temurin을 사용중이고, AWS를 사용중인 팀에서도 요즘 같이 컨테이너 환경에서는 특정 클라우드 벤더사의 JDK만 써야하는 제약이 있다거나 하는게 아니다보니 Temurin을 사용하는 경우가 많다.  
   
-그래서 내가 속한 회사의 인프라 환경에 크게 제약을 받지 않는 오픈소스인 Temurin 21 로 설치를 진행한다.
+이 글에서도 속한 회사의 인프라 환경에 크게 제약을 받지 않는 오픈소스인 Temurin 21 로 설치를 진행해보자.
 
 ### Adoptium Eclipse Temurin 21 설치
 
@@ -33,6 +33,8 @@ brew install cask
 brew install --cask temurin@21
 ```
 
+설치가 완료되면 잘 설치되어있는지 확인해본다.
+
 ```bash
 $ java --version
 openjdk 21.0.3 2024-04-16 LTS
@@ -42,18 +44,23 @@ OpenJDK 64-Bit Server VM Temurin-21.0.3+9 (build 21.0.3+9-LTS, mixed mode)
 
 ### jenv 설치
 
-- [](https://www.jenv.be/)
+정상혁님의 ["여러 개의 JDK를 설치하고 선택해서 사용하기"](https://blog.benelog.net/installing-jdk)을 보면 여러 JDK 버전 관리 도구들에 대한 소개가 나온다.  
+  
+SDKMAN 의 경우 JDK 설치까지 편하게 사용 가능하지만, 버전 변경에 대해 불편한 점이 많다.  
+반면 jenv는 JDK 설치는 수동으로 진행해야하지만, 그 이후 버전 관리에 대해서는 다양하고 편리하게 사용할 수 있어 여기서는 [jenv](https://www.jenv.be/) 로 진행한다.  
 
 ```bash
 $ brew install jenv
 ```
 
-그리고 `~/.bashrc` 또는 `~/.bash_profile` 최근 Mac을 사용한다면 `~/.zsh`에 아래 내용을 추가하자.
+설치된 jenv 를 등록하기 위해  `~/.bashrc` 또는 `~/.bash_profile` 최근 Mac을 사용한다면 `~/.zsh`에 아래 내용을 추가하자.
 
 ```bash
 export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
 ```
+
+아래와 같이 직접 명령어를 수행해서 추가해도 된다.
 
 ```bash
 $ echo 'export PATH="$HOME/.jenv/bin:$PATH"' >> ~/.zshrc
@@ -73,9 +80,13 @@ $ jenv enable-plugin export
 $ exec $SHELL -l
 ```
 
+jenv 설정이 완료되었다면, 위에서 설치한 temurin21 JDK를 jenv에 등록한다.
+
 ```bash
 $ jenv add /Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home
 ```
+
+jenv에 잘 등록되었는지 확인해본다.
 
 ```bash
 $ jenv versions
@@ -86,27 +97,38 @@ $ jenv versions
   temurin64-21.0.3
 ```
 
+JAVA_HOME에도 jenv 로 설정된 버전을 인식할 수 있도록 아래 명령어로 글로벌 JDK 버전을 변경한다.  
+
 ```bash
 $ jenv global 21.0.3
 ```
 
+(이걸 하지 않으면 Gradle 등에서 JAVA_HOME 인식을 하지 못한다.)
+
 ## Gradle 8 설치
 
-### SDKMAN 설치
+sdkman은 JDK 외에도 여러 JVM 진영의 도구들을 설치, 관리하기 편리한 도구이다.  
+그래서 Gradle 은 [sdkman](https://sdkman.io/install)을 통해 진행한다.  
 
-[](https://sdkman.io/install)
+먼저 sdkman 을 설치한다.
 
 ```bash
 $ curl -s "https://get.sdkman.io" | bash
 ```
 
+설치된 sdkman 을 등록하고
+
 ```bash
 $ source "$HOME/.sdkman/bin/sdkman-init.sh"
 ```
 
+sdkman 을 통해 Gradle 최신 버전을 설치한다.
+
 ```bash
 $ sdk install gradle 8.8
 ```
+
+잘 설치되었는지 아래 명령어로 gradle 버전을 확인해본다.
 
 ```bash
 $ gradle -v
