@@ -23,11 +23,13 @@ Java 21이 2023년 9월에 출시 된지 1년이 다되어 간다.
 
 ### Adoptium Eclipse Temurin 21 설치
 
+(설치 안되어있다면) `cask`를 설치하고 
+
 ```bash
 brew install cask
 ```
 
-**21 설치**
+**Temurin 21 설치**
 
 ```bash
 brew install --cask temurin@21
