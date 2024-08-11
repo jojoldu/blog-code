@@ -80,5 +80,7 @@ Task 생성 후 Zap History에서 Zap이 실행되었는지 확인한다.
 ![10](./images/10.png)
 
 
-
-
+> Offlight 에서 Task를 Done 처리하면 TickTick 에도 자동으로 Complete 되도록 하는 자동화도 가능하다.  
+> 다만, **TickTick과 연동된 Task에만 Zapier가 실행되는 조건문**을 추가할 수 없어, **Zapier 무료 플랜 제한 (월 100건의 Zap만 실행) 을 쉽게 초과해버린다**.  
+> 그래서 Done에 대한 연동은 하지 않고 생성에 대한 것만 연동해둔다.  
+> 본인이 Zapier 프리미엄 플랜을 사용한다면 당연히 Done Task도 연동하면 좋다.
