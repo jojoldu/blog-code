@@ -1,8 +1,5 @@
 # IntelliJ & WebStorm VM Options
 
-[Temurin-21을 설치](https://jojoldu.tistory.com/789)하여 사용 중이다.  
-**가능하면 높은 버전의 Java를 설치**하고 이를 IDE에서 사용하도록 하는 것이 선행되어야한다.  
-오래된 버전의 Java를 사용하지 않도록 한다.
 
 ## VM Options
 
@@ -195,7 +192,7 @@ IDE를 사용할때 주로 성능 저하가 느껴지는 부분이 Indexing 이�
 
 적용 방법은 다음과 같이 `Mark Directory as | Excluded` 를 선택하면 된다.
 
-![1](./images/1.png)
+![exclude](./images/exclude.png)
 
 
 ## 참고
