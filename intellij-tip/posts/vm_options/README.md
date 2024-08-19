@@ -47,12 +47,12 @@
 - **의미**: Assertion을 활성화하는 옵션이다.
 - **특징 및 장점**: IntelliJ 등 JVM 환경에서 코드를 작성할 떄 별도의 추가 옵션 없이 `assert` 문을 사용할 수 있다.
 - **단점 및 주의사항**: WebStorm 등 JVM 개발 환경이 아닌 경우 굳이 넣을 필요가 없다.
-- 사례: [Where to add compiler options like -ea in IntelliJ IDEA?](https://stackoverflow.com/questions/18168257/where-to-add-compiler-options-like-ea-in-intellij-idea)
+- 참고: [Where to add compiler options like -ea in IntelliJ IDEA?](https://stackoverflow.com/questions/18168257/where-to-add-compiler-options-like-ea-in-intellij-idea)
 
 `-server`
-- **의미**: JVM을 서버 모드로 실행하는 옵션이다.
-- **특징 및 장점**: 서버 애플리케이션에 적합한 최적화가 적용된다.
-- **단점 및 주의사항**: 짧은 실행 시간의 애플리케이션에서는 이점을 느끼기 어려울 수 있다.
+- **의미**: 가장 자주 사용되는 코드 조각(핫스팟)을 최적화하는 데 더 많은 시간을 할애하도록 JVM에 지시한다.
+- **특징 및 장점**: IDE 시작시 오버헤드가 높아질 수 있지만, 성능이 더 좋아진다. 
+- 참고: [notes-on-the-java-server-flag](https://web.archive.org/web/20130606001921/http://victorpillac.com/2011/09/11/notes-on-the-java-server-flag/)
 
 `-Xms1024m` /`-Xmx4096m`
 - **의미**: JVM의 힙 메모리 초기 크기와 최대 크기를 각각 1024MB와 4096MB로 설정한다.
@@ -202,3 +202,4 @@ IDE를 사용할때 주로 성능 저하가 느껴지는 부분이 Indexing 이�
 
 - [mahmoudimus/idea-gcg1.vmoptions](https://gist.github.com/mahmoudimus/ce9278d27267e109dda7292cfa1ba253#file-z-9-vmoptions-md)
 - [P7h/IntelliJ_IDEA__Perf_Tuning](https://gist.github.com/P7h/4388881)
+- [intellij-jvm-options-explained](https://github.com/FoxxMD/intellij-jvm-options-explained?tab=readme-ov-file)
