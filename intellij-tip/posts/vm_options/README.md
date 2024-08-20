@@ -1,6 +1,7 @@
 # IntelliJ & WebStorm VM Options
 
 
+
 ## VM Options
 
 ```bash
@@ -180,6 +181,8 @@
 
 ## 옵션 외 성능 개선
 
+### Indexing 범위 제거
+
 IDE를 사용할때 주로 성능 저하가 느껴지는 부분이 Indexing 이다.  
 최적화하려면 이 Indexing 과정에서 굳이 대상에 포함시킬 필요가 없는 부분들은 제외시키면 좋다.  
 제외시키면 프로젝트에서 볼 수는 있지만, 코드 완성, 탐색, 인덱싱 및 검사에서는 무시되어 IDE의 성능이 개선된다.  
@@ -194,6 +197,11 @@ IDE를 사용할때 주로 성능 저하가 느껴지는 부분이 Indexing 이�
 
 ![exclude](./images/exclude.png)
 
+### JBR 변경
+
+IDE를 실행하고 시간이 흘러 메모리가 계속해서 올라가는 메모리 릭 같은 이슈가 발생한다면 아래 링크를 따라 JBR (JetBrains Runtime) 을 교체한다.
+
+- [IntelliJ 등에서 메모리 점유율이 계속 높아질 때 (feat. vanilla JBR)](https://jojoldu.tistory.com/800)
 
 ## 참고
 
