@@ -65,6 +65,16 @@ OK를 누르고 IntelliJ를 완전히 종료 후, 재실행 해본다.
 
 > 당연히 이 설정은 이후 IntelliJ가 메모리 이슈를 해소하고 나면 다시 Default Runtime을 선택할 수 있음을 염두해 둔다.
 
+## 번외
 
+여기서 아마도 한가지 의문점이 생길 수 있는데, 이렇게 Runtime을 교체할 수 있으면 **Open JDK 등을 선택해도 되지 않나?** 라는 생각이 들 수 있다.  
+  
+실제로 Amazon Corretto, GraalVM 등으로 교체해서 메모리 성능 개선 효과를 봤다는 글이 있었다.
+
+- [HN - How do you improve the performance of IntelliJ IDEs?](https://news.ycombinator.com/item?id=28890002)
+
+하지만 macOS에서 JetBrains IDE를 실행하려면 설치된 Java JDK에 macOS 애플리케이션 레이아웃이 있어야만 하는데, 이게 GraalVM 등에는 없다.  
+  
+물론 Windows 에서는 교체가 가능하니, GraalVM 혹은 Temurin 등으로 JDK를 교체해서 메모리 사용율을 테스트 해봐도 좋다.
  
 

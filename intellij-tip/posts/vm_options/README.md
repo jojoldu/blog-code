@@ -1,5 +1,10 @@
 # IntelliJ & WebStorm VM Options
 
+## 설정 방법
+
+`Menu Bar` -> `Help` -> `Edit Custom VM Options…` 으로 접근할 수 있다.  
+혹은 `command + A` 으로 Action 검색으로 `Edit Custom VM Options` 을 검색해서 접근해서 수정해도 된다.  
+
 
 
 ## VM Options
