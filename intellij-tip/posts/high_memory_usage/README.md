@@ -65,6 +65,17 @@ OK를 누르고 IntelliJ를 완전히 종료 후, 재실행 해본다.
 
 > 당연히 이 설정은 이후 IntelliJ가 메모리 이슈를 해소하고 나면 다시 Default Runtime을 선택할 수 있음을 염두해 둔다.
 
+## 클래식 UI 사용하기
+
+체감상 새 UI 보다 기존의 [클래식 UI](https://plugins.jetbrains.com/plugin/24468-classic-ui) 가 반응속도가 훨씬 빠르다고 느껴진다.  
+글꼴이나 IDE UI 컴포넌트들의 렌더링 속도 등이 차이가 난다고 느껴진다.  
+그래서 개인적으로는 기존의 클래식 UI를 다시 사용하고 있다.  
+방법은 간단하다.  
+
+`CMD + A` -> `plugins` -> `classic ui` 로 **플러그인을 설치**하면 된다.
+
+![classicui](./images/classicui.png)
+
 ## 번외
 
 여기서 아마도 한가지 의문점이 생길 수 있는데, 이렇게 Runtime을 교체할 수 있으면 **Open JDK 등을 선택해도 되지 않나?** 라는 생각이 들 수 있다.  
@@ -73,7 +84,10 @@ OK를 누르고 IntelliJ를 완전히 종료 후, 재실행 해본다.
 
 - [HN - How do you improve the performance of IntelliJ IDEs?](https://news.ycombinator.com/item?id=28890002)
 
-하지만 macOS에서 JetBrains IDE를 실행하려면 설치된 Java JDK에 macOS 애플리케이션 레이아웃이 있어야만 하는데, 이게 GraalVM 등에는 없다.  
+하지만 macOS에서 JetBrains IDE를 실행하려면 설치된 Java JDK에 **macOS 애플리케이션 레이아웃이 있어야만 하는데, 이게 JBR 이 아닌 GraalVM 등 다른 JDK에는 없다**.  
+  
+그래서 정상적인 화면이 그려지지 않는다.  
+그 외에도 여러 플러그인들이 사용되지 않을 수 있다.  
   
 물론 Windows 에서는 교체가 가능하니, GraalVM 혹은 Temurin 등으로 JDK를 교체해서 메모리 사용율을 테스트 해봐도 좋다.
  
