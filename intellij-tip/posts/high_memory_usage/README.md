@@ -76,6 +76,14 @@ OK를 누르고 IntelliJ를 완전히 종료 후, 재실행 해본다.
 
 ![classicui](./images/classicui.png)
 
+## ML 옵션 disable
+
+Preference 에서 `Advanced Settings` 를 가보면 `xx based on machine learning` 옵션들이 있다.
+
+![ml](./images/ml.png)
+
+ML 로 인한 성능 저하를 방지할 수 있다.
+
 ## 번외
 
 여기서 아마도 한가지 의문점이 생길 수 있는데, 이렇게 Runtime을 교체할 수 있으면 **Open JDK 등을 선택해도 되지 않나?** 라는 생각이 들 수 있다.  

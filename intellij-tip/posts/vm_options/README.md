@@ -202,9 +202,12 @@ IDE를 사용할때 주로 성능 저하가 느껴지는 부분이 Indexing 이�
 
 ![exclude](./images/exclude.png)
 
-### JBR 변경
+### JDK 변경 및 ClassicUI 변경
 
-IDE를 실행하고 시간이 흘러 메모리가 계속해서 올라가는 메모리 릭 같은 이슈가 발생한다면 아래 링크를 따라 JBR (JetBrains Runtime) 을 교체한다.
+현재 IntelliJ & WebStorm 2024.x 버전에서 불안정한 모습이 보인다면, 2023.3.7로 다운그레이드 한다.  
+2023까지는 안정적인 퍼포먼스를 제공한다.  
+  
+그 외에 IDE를 실행하고 시간이 흘러 메모리가 계속해서 올라가는 메모리 릭 같은 이슈가 발생한다면 아래 링크를 따라 JBR (JetBrains Runtime) 과 UI를 교체한다.
 
 - [IntelliJ 등에서 메모리 점유율이 계속 높아질 때 (feat. vanilla JBR)](https://jojoldu.tistory.com/800)
 
