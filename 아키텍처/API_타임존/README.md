@@ -2,6 +2,21 @@
 
 국제화를 하면서 기존 KST의 시간값들을 어떻게 다룰 것인가?
 
+## 0. 데이터베이스와 경계선
+
+### 데이터베이스
+
+모든 시간 데이터를 데이터베이스에서는 UTC 기준으로 전용 날짜 타입 (`timestamp` 등) 으로 관리되어야 한다.  
+만약 KST 등 특정 시간대로 컬럼이 생성되고 관리되고 있다면, UTC 기반의 신규 컬럼을 추가하여 점진적으로 신규 컬럼으로 API를 이관한다. 
+
+### 구조
+
+User <-> Client (Web / App) <-> Server <-> Database 구조에서 경계선을 확실히 그어야한다.  
+  
+- Server <-> Database 는 UTC로만 통신한다.
+- Client (Web / App) <-> Server 도 UTC로만 통신한다.
+- User <-> Client (Web / App) 는 User의 타임존에 맞게 Client (Web / App)가 처리한다.
+
 ## 1. 기준 시간
 기존 날짜 필드는 그대로 두고 신규 UTC 필드를 추가한다.
 
