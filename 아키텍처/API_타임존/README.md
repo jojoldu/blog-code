@@ -7,12 +7,14 @@
 
 ### 데이터베이스
 
-모든 시간 데이터를 데이터베이스에서는 UTC 기준으로 전용 날짜 타입 (`timestamp` 등) 으로 관리되어야 한다.  
+모든 시간 데이터를 데이터베이스에서는 UTC 기준으로 전용 날짜 타입 (`timestamp/datetime`) 으로 관리되어야 한다.  
   
 만약 기존 시스템이 `KST` 등 특정 국가의 시간대로 컬럼이 관리되고 있었다면, UTC 기반의 신규 컬럼을 추가하여 점진적으로 신규 컬럼으로 API를 이관한다.  
 
 ### 서버 애플리케이션
 
+PostgreSQL 에서는 `Timestamp with timezone` 타입이 지원되기 때문에 UTC 컬럼을 사용해도 큰 영향은 없다.  
+  
 Spring & Hibernate 와 같은 환경에서는 다음과 같이 애플리케이션에서 UTC 기반으로 처리할 수 있도록 지원한다.
 
 ```bash
@@ -70,6 +72,12 @@ tobe)
 시스템 개편은 비즈니스 목표에 의존된다.  
 전체적인 시스템이 신규 컬럼에 맞춰 UTC 기준으로 처리하도록 개편이 되면 이후에 버저닝으로 정상적인 컬럼명으로 변경한다.
 
+> Q) 그럼 앞으로 `createdAtUTC` 를 영영 날짜 필드에 대한 컨벤션으로 가져가나?  
+> `createdAtUTC` 로 모든 날짜 사용이 통일 되어서 그 어디에도 `createdAt` 필드를 사용하지 않을때 2차 마이그레이션 시작
+> 어디에도 `createdAt` 을 사용하지 않으면 `createdAt` 필드를 다시 추가하여 이 필드도 UTC값을 가지도록 한다.
+> 즉, `createdAtUTC` & `createdAt` 이 둘다 UTC를 사용함
+앤트맨 & Next.js 등 `createdAtUTC` 를 쓰는 시스템들은 어느값을 사용하든 똑같이 UTC이기 때문에 점진적으로 `createdAt` 으로 이관한다.
+모든 시스템이 UTC로 된 `createdAt` 을 사용하게 되면 그때 `createdAtUTC` 를 제거한다.
 
 ## 2. 날짜 포맷
 
