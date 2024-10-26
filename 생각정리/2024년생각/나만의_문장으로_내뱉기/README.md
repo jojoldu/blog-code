@@ -1,5 +1,16 @@
-# 나만의 문장으로 내뱉기
+# 암묵지에서 형식지로
 
+정말 재밌게 봤던 드라마 중 스토브리그가 있다.  
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/c5aE51XTgbE?si=HQu3IuK94s5pMRVL" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+장진우 투수가 왜 우린 그때 준우승을 했나 하나하나 이야기해주고 그걸 그대로 다시 적용한다
+그리고 +@로 좋은선수 구성을 더 한다
+
+우승한다
+그때우린 왜 좋은성적을 냈는지 암묵지가 아닌 형식지였기때문이다
+
+좋은팀을 경험했다면 왜 그런팀이 된건지 어떤게 있었는지 형식지가 필요하다
 어떤 링크를 팀 내에 공유할때는 링크 내용에 대한 요약이나 내 생각을 포함해서 전달하는 것을 습관화하려고 노력중이다.  
 내용이 너무 좋은데, 구체적으로 정리가 잘 안되서 덩그러니 링크만 공유할때가 자주 있었다.  
   
