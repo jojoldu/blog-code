@@ -36,11 +36,6 @@ User ↔ Client (Web / App) ↔ Server ↔ Database 구조에서 경계선을 �
   
 - Private API는 Next.js 에서 Request Body로 전달받습니다.
   - Next.js에서는 이 정보를 가져와서 전달합니다.
-  
-> 현재 이 건은 회원가입 쪽을 진행하는 랠릿 Cell에서 우선 진행중이며  
-> 회원 가입시 국가 코드와 IP를 저장하는 걸로 시범삼아 해본 뒤,  
-> 이후 장바구니 (구매) 와 구매내역 상세 (주문취소) 에 추가될 예정  
-> 그 외 프로세스에서는 아직 국가코드를 저장할 필요는 없어서 고려하지 않아도 된다.
 
 ## 1-3. 서버 애플리케이션
 
@@ -113,7 +108,7 @@ tobe)
 > A) `createdAtUTC` 로 모든 날짜 사용이 통일 되어서 그 어디에도 `createdAt` 필드를 사용하지 않을때 2차 마이그레이션 시작한다.  
 > 어디에도 `createdAt` 을 사용하지 않으면 `createdAt` 필드를 다시 추가하여 이 필드도 UTC값을 가지도록 한다.
 > 즉, `createdAtUTC` & `createdAt` 이 둘다 UTC를 사용함
-앤트맨 & Next.js 등 `createdAtUTC` 를 쓰는 시스템들은 어느값을 사용하든 똑같이 UTC이기 때문에 점진적으로 `createdAt` 으로 이관한다.
+레거시 & Next.js 등 `createdAtUTC` 를 쓰는 시스템들은 어느 값을 사용하든 똑같이 UTC이기 때문에 점진적으로 `createdAt` 으로 이관한다.
 모든 시스템이 UTC로 된 `createdAt` 을 사용하게 되면 그때 `createdAtUTC` 를 제거한다.
 
 # 3. 날짜 포맷
