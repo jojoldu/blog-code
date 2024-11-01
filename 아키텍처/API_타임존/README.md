@@ -27,6 +27,22 @@ User ↔ Client (Web / App) ↔ Server ↔ Database 구조에서 경계선을 �
   - 이는 결제완료 등에 관련하여 이메일 발송, 문자 발송 등에 해당 이벤트 처리시간이 포함될 때 결제 당시의 국가의 타임존으로 노출시키기 위함이다.
   - 또한 CS 응대시에도 해당 유저 입장에서 언제 결제했다고 할 때 빠르게 응대하기 위함이다.
 
+### MongoDB
+
+ISODate 타입: MongoDB의 Date 타입은 기본적으로 UTC로 저장돼. ISODate()로 생성하면 자동으로 UTC 시간으로 저장되며, 클라이언트에서 가져온 데이터를 MongoDB에 저장할 때 UTC로 변환하는 추가 작업이 필요 없다
+
+```js
+db.collection.insertOne({ createdAt: new Date() });  // UTC 시간으로 저장
+```
+
+### Redis
+
+UTC 시간 문자열 저장: Redis는 데이터 타입이 제한적이기 때문에, UTC 시간을 문자열 형식(예: ISO 8601 또는 UNIX 타임스탬프)으로 저장하는 방식이 일반적이야. 클라이언트에서 UTC 시간을 가져와 문자열로 저장하고, 읽을 때 변환하는 방식으로 처리할 수 있다.
+
+```bash
+SET event:timestamp "2024-11-01T10:00:00Z"  # ISO 8601 UTC 형식
+```
+
 ### 1-2-1. 유저 접속 국가 코드
 
 [Cloudfront에서는 다음과 같이 현재 웹 페이지 접근자의 IP와 국가코드를 가져올 수 있는 방법](https://docs.aws.amazon.com/ko_kr/AmazonCloudFront/latest/DeveloperGuide/adding-cloudfront-headers.html) 을 지원한다.
