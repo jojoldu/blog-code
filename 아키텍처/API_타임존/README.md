@@ -7,17 +7,30 @@
 
 ## 1-1. 구조
 
-User ↔ Client (Web / App) ↔ Server ↔ Database 구조에서 경계선을 확실히 그어야 한다.
+User <-> Client (Web / App) <-> Server <-> Database 구조에서 경계선을 확실히 그어야 한다.
 
-- **Server ↔ Database** 는 **UTC**로만 통신한다.
-- **Client (Web / App) ↔ Server** 도 **UTC** & **KST**로 통신한다.
+![1](./images/1.png)
+
+- **User <-> Client (Web / App)** 는 **User의 타임존에 맞게** Client (Web / App)가 처리한다.
+- **Server <-> Database** 는 **UTC**로만 통신한다.
+- **Client (Web / App) <-> Server** 는 **UTC** 와 **KST**를 함께 전달한다.
   - Request Body, Response Body에는 UTC 타임 필드와 KST 타임 필드를 함께 포함시킨다.
-- **User ↔ Client (Web / App)** 는 **User의 타임존에 맞게** Client (Web / App)가 처리한다.
-- **Server ↔ Server** 에서도 **UTC** & **KST**로 통신한다.
+  - 이는 국제화가 미 진행된 시스템이 있어 항상 기존 타임값을 보장하기 위함이다.
+- **Server <-> Server** 에서도 **UTC** & **KST**로 통신한다.
+  - 위와 마찬가지로 기존 시스템의 영향도를 최소화 하기 위함이다.
 
-사용자가 서비스를 사용하는 동안에는 해당 시간대에 맞게 타임존을 사용하지만, 이후 API 통신이 발생하는 시점에는 항상 UTC로 치환한 결과를 전달한다.
-
+모든 비즈니스 로직을 UTC로 처리 한다.  
+  
+사용자가 보고 있는 화면에서는 사용자의 타임존에 맞게 (Web, APP에서) 처리해야하지만 사용자의 액션 전, 액션 이후 API 통신이 발생하는 시점에는 항상 UTC로 치환한 결과를 전달한다.  
+그래야만 사용자의 타임존에 관련된 로직이 Client View 계층에서만 격리화 되어 관리 된다.  
+  
+격리 영역을 정해두지 않으면 타임존 치환 로직이 여기저기 흩어져 로직상 문제가 되는 지점이 분명히 발생한다.  
+  
+여러 계층에서 타임존 이슈를 고민하기 보다는 UTC로 처리하는 영역을 최대한 넓히고, 타임존 이슈를 최대한 격리화된 영역으로 몰아서 처리한다.
+  
 ## 1-2. 데이터베이스
+
+### RDBMS
 
 - 모든 시간 데이터는 UTC 기준으로 전용 날짜 타입 (timestamp/datetime) 으로 데이터베이스에서 관리되어야 한다.
   - 만약 기존 시스템이 KST 등 기준으로 생성된 컬럼이 있었다면, **UTC 기반의 신규 컬럼을 추가**하여 점진적으로 신규 컬럼으로 API를 이관한다.
@@ -29,7 +42,9 @@ User ↔ Client (Web / App) ↔ Server ↔ Database 구조에서 경계선을 �
 
 ### MongoDB
 
-ISODate 타입: MongoDB의 Date 타입은 기본적으로 UTC로 저장돼. ISODate()로 생성하면 자동으로 UTC 시간으로 저장되며, 클라이언트에서 가져온 데이터를 MongoDB에 저장할 때 UTC로 변환하는 추가 작업이 필요 없다
+ISODate 타입: MongoDB의 Date 타입은 기본적으로 UTC로 저장된다.  
+
+ISODate()로 생성하면 자동으로 UTC 시간으로 저장되며, 클라이언트에서 가져온 데이터를 MongoDB에 저장할 때 UTC로 변환하는 추가 작업이 필요 없다
 
 ```js
 db.collection.insertOne({ createdAt: new Date() });  // UTC 시간으로 저장
@@ -37,7 +52,8 @@ db.collection.insertOne({ createdAt: new Date() });  // UTC 시간으로 저장
 
 ### Redis
 
-UTC 시간 문자열 저장: Redis는 데이터 타입이 제한적이기 때문에, UTC 시간을 문자열 형식(예: ISO 8601 또는 UNIX 타임스탬프)으로 저장하는 방식이 일반적이야. 클라이언트에서 UTC 시간을 가져와 문자열로 저장하고, 읽을 때 변환하는 방식으로 처리할 수 있다.
+UTC 시간 문자열 저장: Redis는 데이터 타입이 제한적이기 때문에, UTC 시간을 문자열 형식(예: ISO 8601 또는 UNIX 타임스탬프)으로 저장한다.  
+클라이언트에서 UTC 시간을 가져와 문자열로 저장하고, 읽을 때 변환하는 방식으로 처리할 수 있다.
 
 ```bash
 SET event:timestamp "2024-11-01T10:00:00Z"  # ISO 8601 UTC 형식
@@ -48,10 +64,10 @@ SET event:timestamp "2024-11-01T10:00:00Z"  # ISO 8601 UTC 형식
 [Cloudfront에서는 다음과 같이 현재 웹 페이지 접근자의 IP와 국가코드를 가져올 수 있는 방법](https://docs.aws.amazon.com/ko_kr/AmazonCloudFront/latest/DeveloperGuide/adding-cloudfront-headers.html) 을 지원한다.
 
 - Public API는 위와 같이 CF를 통해 정보를 가져오고 (Public API에는 CF 가 다 추가될 예정)
-  - CSR, SPA, APP 에서는 국가 코드와 IP를 전달하지 않습니다.
+  - CSR, SPA, APP 에서는 국가 코드와 IP를 전달하지 않는다.
   
-- Private API는 Next.js 에서 Request Body로 전달받습니다.
-  - Next.js에서는 이 정보를 가져와서 전달합니다.
+- Private API는 Next.js 에서 Request Body로 전달받는다.
+  - Next.js에서는 이 정보를 가져와서 전달한다.
 
 ## 1-3. 서버 애플리케이션
 
