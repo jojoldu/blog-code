@@ -209,13 +209,13 @@ describe('verifyPassword', () => {
   
   **목과 스텁의 차이를 구분하지 못하거나 정확히 짚고 넘어가지 않으면, 한 작업 단위 안에 여러 종료점이 있을 때처럼 복잡한 테스트를 만들 때 가독성과 유지보수성이 떨어지는 테스트를 만들 수 있다**.  
 
-  ### 로거 함수에 대한 의존성 분리하기
+### 로거 함수에 대한 의존성 분리하기
 
-  ```js
-  const verifyPassword = (input, rules) => {
-  const failed = rules
-    .map((rule) => rule(input))
-    .filter((result) => result === false);
+```js
+const verifyPassword = (input, rules) => {
+const failed = rules
+  .map((rule) => rule(input))
+  .filter((result) => result === false);
 
   console.log(failed);
   if (failed.length === 0) {
@@ -227,6 +227,7 @@ describe('verifyPassword', () => {
   log.info('FAIL');
   return false;
 };
+
 ``` 
 
 이 코드는 종료점이 2개이다.
