@@ -10,8 +10,8 @@ Gmail, Slack 등등에서 모두 플러그인 형태로 지원하는데, 이게 
   
 그래서 TickTick도 오프라이트와 마찬가지로 편하게 업무도구와의 통합을 연동했다.
 
-- Gmail 에서 이메일을 Star 할 경우 Task가 자동 생성
-- Slac에서 Bookmakr를 누르면 메세지 내용으로 Task가 자동 생성
+- Gmail 에서 "이메일을 Star" 할 경우 Task가 자동 생성
+- Slack 에서 "메세지를 Bookmark" 할 경우 메세지 내용으로 Task가 자동 생성
 
 이 2가지 환경을 [Zapier](https://zapier.com/)를 통해 쉽게 구축할 수 있다.  
 Zapier는 TickTick과 Gmail, Slack의 대부분의 Event에 대해 트리거 할 수 있고, 액션으로 등록해둘 수 있다.
