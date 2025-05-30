@@ -97,10 +97,10 @@ Antonio님은 다양한 주제의 서비스 구현 강의들이 있었다.
 
 Antonio님은 놀라울 정도로 성숙하게, 따뜻하게 답해주셨다.
 
-> “No hard feelings on my end.  
-> I’m glad to see the positive changes you're implementing.”  
->  
-> “I’m definitely interested in expanding my reach to Korean and Asian audiences.”
+> “Hi Donguk,
+> Thank you for reaching out!
+> 
+> I understand that managing content across a large platform can be challenging, and I truly appreciate the steps you're taking to improve your internal processes. No hard feelings on my end, and I’m glad to see the positive changes you're implementing. 🙂”
 
 그리고 Antonio님과 같이 협업을 시작하게 되었다!  
 Antonio님은 항상 [강의의 유료 자료 전체를 구매하는 방식](https://www.codewithantonio.com/pricing)으로만 판매하셨다.  
@@ -111,42 +111,25 @@ Antonio님은 항상 [강의의 유료 자료 전체를 구매하는 방식](htt
   
 그래서 이번에 **우리와의 협업에서는 단건 구매가 가능하도록 각각의 강의를 아주 저렴하게 판매**하기로 했다.  
   
-그리고 그렇게 많은 논의 끝에 나온 첫 주제는 대표작 [YouTube Clone 프로젝트](https://www.inflearn.com/course/nextjs15-%EC%8B%A4%EC%A0%84-youtube-%ED%81%B4%EB%A1%A0%EA%B0%9C%EB%B0%9C) 이다.  
+그리고 그렇게 많은 논의 끝에 나온 첫 주제는 대표작 [YouTube Clone 프로젝트](https://inf.run/aXdYT) 이다.  
   
 Next.js 15 & React 19 기반 최신 스택을 기반으로 비디오 플레이어, 컨텐츠 피드, 구독, 좋아요 등을 다 만들어보는 강좌이다. 
 
 그의 뜻에 따라 기존 가격도 낮게 설정하고, 얼리버드 할인 역시 큰 폭으로 진행하게 되었다.  
   
-가격을 떠나 요즘 풀스택 구현을 원하시는 분들에게 필요한 대부분의 내용이 포함되어있었다.  
+가격을 떠나 요즘 풀스택 구현을 원하시는 분들에게 필요한 대부분의 내용이 포함되어 있었다. 
 
-아래의 기능들을 모두 다 구현해볼 수 있는 기회가 된 것이다.
+- 🚀 Next.js 15 & React 19 기반 최신 스택
+- 🗄️ DrizzleORM 기반 PostgreSQL 
+- 💅 TailwindCSS와 ShadcnUI를 활용한 세련된 UI 구성
+- 🤖 AI 기반 제목, 소개, 썸네일 자동 생성
+- 📊 조회수, 좋아요, 트래픽을 확인할 수 있는 크리에이터 스튜디오
 
--	🎥 화질 선택이 가능한 고급 비디오 플레이어
--	🎬 Mux를 활용한 실시간 영상 처리
--	📝 자동 자막 생성 기능
--	🖼️ 영상 기반 썸네일 자동 생성
--	🤖 AI 기반 제목 및 설명 자동 생성
--	📊 조회수, 좋아요, 트래픽을 확인할 수 있는 크리에이터 스튜디오
--	🗂️ 사용자 맞춤 재생목록 관리 기능
--	📱 모든 기기에 최적화된 반응형 디자인
--	🔄 여러 개의 콘텐츠 피드 구성
--	💬 댓글 및 답글을 포함한 인터랙티브한 댓글 시스템
--	👍 좋아요 및 구독 시스템
--	🎯 개인별 시청 기록 추적
--	🔐 완성도 높은 사용자 인증 시스템
--	📦 모듈 기반의 구조적 설계
--	🗄️ DrizzleORM 기반 PostgreSQL 연동
--	🚀 Next.js 15 & React 19 기반 최신 스택
--	🔄 완전한 타입 안정성을 보장하는 tRPC 기반 API
--	💅 TailwindCSS와 ShadcnUI를 활용한 세련된 UI 구성
-
-단순히 “유튜브처럼 생긴 무언가”를 만드는 수준을 넘어서 지금 우리가 매일 쓰는 유튜브의 핵심 기능들을 하나하나 직접 구현하면서 배워나가는 구조다.
+등 단순히 “유튜브처럼 생긴 무언가”를 만드는 수준을 넘어서 지금 우리가 매일 쓰는 유튜브의 핵심 기능들을 하나하나 직접 구현하면서 배워나가는 구조다.
 
 이 모든 것을 한 프로젝트 안에서 경험할 수 있는, 그야말로 **현업형 풀스택 클론 코딩 강의**였다.  
   
 ---
-
-이 이야기는 실수로 시작되었지만, 결국 협업으로 완성된 이야기다.  
   
 우리는 실수를 했다.  
 하지만 그 실수를 투명하게 인정하고,  
@@ -155,6 +138,8 @@ Next.js 15 & React 19 기반 최신 스택을 기반으로 비디오 플레이�
   
 앞으로도 우리는 계속 실수할 수 있다.  
 다만, 그 실수는 실수에서 끝나지 않고, 항상 더 나은 시작으로 만들 수 있을 것 같다는 자신이 생겼다.  
+
+그리고 당당하게 Antonio님의 강의를 이제는 한국의 많은 개발자분들께 소개할 수 있게 되어서, 너무 기쁘다.
 
 
 
