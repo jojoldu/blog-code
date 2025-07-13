@@ -1,0 +1,18 @@
+# 약점 공개하기
+
+### 1. 약점은 ‘스토리의 첫 문장’이다
+샤크탱크에 등장한 소피 니스티코는 피칭을 시작하자마자 자신의 **불안·편두통** 경험부터 털어놨다. “나는 자주 운다. 심지어 여기 있는 케빈도 그런 적이 있다”는 솔직한 고백은 방청객뿐 아니라 투자자까지 웃게 만들었다.  
+결과? **24시간 만에 26만 USD(약 3.5 억 원) 판매**라는 기록을 세웠고, 이 성공 사례는 그녀를 멘토 찾아 나서게 할 정도의 자신감으로 이어졌다.  [oai_citation:0‡EO planet - 스타트업 세상의 디즈니 이오플래닛](https://eopla.net/magazines/31682) [oai_citation:1‡Women](https://www.women.com/1583970/what-went-down-see-the-way-i-see-clothing-after-shark-tank/) 
+
+
+### 2. 과학적 근거 — ‘프랫폴(Pratfall) 효과’
+사회심리학자 엘리엇 애런슨은 **똑똑한 사람이 작은 실수를 인정할 때** 매력이 더 올라간다고 밝혔다. 마케팅에선 이를 ‘**blemishing 효과**’라고도 부르며, 일부러 흠집을 드러내 브랜드 신뢰를 높인다.  [oai_citation:2‡위키백과](https://en.wikipedia.org/wiki/Pratfall_effect?utm_source=chatgpt.com) [oai_citation:3‡Inc.com](https://www.inc.com/nick-hobson/the-boldest-marketers-use-rule-of-pratfall-to-make-themselves-look-bad-customers-love-it.html)  
+
+- **Avis**: “우린 2등이야. 그래서 더 열심히 한다.”  
+- **KFC**: 닭고기 품절 사태 광고에 “FCK”라고 대놓고 실수 인정.  
+- **Buckley’s 시럽**: “맛은 최악, 효과는 최고.”  
+
+> **배웠다:** **능력(Competence)**을 이미 증명한 뒤, **약점(Pratfall)**을 살짝 흘려라. 사람들은 ‘잘하는데 인간적’인 상대에게 강하게 끌린다.
+
+> **“완벽해 보이는 순간, 우리는 멀어진다.  
+> 약점을 고백하는 순간, 우리는 연결된다.”**
