@@ -1,5 +1,14 @@
 # IntelliJ Kotlin 컴파일 속도 개선하기
 
+- IntelliJ 최신 버전 + 최신 JBR 업그레이드
+  - Help → “Choose Boot Java Runtime for the IDE”에서 최신 JetBrains Runtime 선택.
+- IDE 메모리와 빌드 프로세스 힙 설정
+  - Help → Change Memory Settings, 그리고 Settings → Build, Execution, Deployment → Compiler → “Shared build process heap size”.
+- 불필요한 플러그인 disable
+- build/, .gradle/, out/, node_modules/는 Excluded로 지정 
+- Gradle 프로젝트라도 “Run tests using: IntelliJ IDEA”로 변경
+  - Settings → Gradle → “Run tests using”.
+
 ## k2 Compiler
 
 IntelliJ IDEA는 Kotlin 지원의 혁신으로 K2 모드를 도입하여 개발자의 생산성과 효율성을 향상시켰습니다.
