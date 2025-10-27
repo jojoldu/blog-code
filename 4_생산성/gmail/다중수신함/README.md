@@ -10,7 +10,7 @@
 
 ## **2010년부터 이렇게 Gmail을 써왔다**
 
-![Gmail inbox screenshot](/images/gmail-inbox.jpg)
+![Gmail inbox screenshot](./images/1.jpg)
 
 - **GTD (Getting Things Done)** 방식  
 - 왼쪽엔 항상 **비워진(혹은 거의 비워진) 인박스**  
@@ -44,7 +44,7 @@
 
 ### 예시
 
-![Gmail email example](/images/gmail-email-example.jpg)
+![Gmail email example](./images/2.jpg)
 
 - 이메일을 받음  
 - 바로 답장할 수 있어 답장함 (못했으면 “노란 느낌표 = Todo”로 표시했을 것)  
@@ -73,8 +73,8 @@
 
 ### **1. Multiple Inboxes 설정**
 
-![Gmail multiple inboxes](/images/gmail-multiple-inboxes.jpg)
-![Gmail density settings](/images/gmail-density.jpg)
+![Gmail multiple inboxes](./images/3.jpg)
+![Gmail density settings](./images/4.jpg)
 
 1. Gmail 설정으로 이동  
 2. “Multiple Inboxes” 선택  
@@ -84,7 +84,7 @@
 
 ### **2. Special Stars(특수별) 선택**
 
-![Gmail stars](/images/gmail-stars.jpg)
+![Gmail stars](./images/5.png)
 
 1. 설정 → 일반 탭으로 이동  
 2. “별표” 항목으로 스크롤  
@@ -102,7 +102,7 @@
 
 ### **3. 별을 Inbox와 연결하기 (필터 추가)**
 
-![Gmail inbox sections](/images/gmail-inbox-sections.jpg)
+![Gmail inbox sections](./images/6.jpg)
 
 1. 설정 → Multiple Inboxes  
 2. 각 Inbox에 사용할 필터 규칙 추가  
@@ -130,7 +130,7 @@
 
 ### **4. 인박스 레이아웃 활성화 (탭 제거)**
 
-![Gmail importance markers](/images/gmail-importance-markers.jpg)
+![Gmail importance markers](./images/7.jpg)
 
 이 단계는 좀 귀찮지만 꼭 해야 한다.  
 새 레이아웃이 적용되지 않았다면 이 부분을 놓친 걸 가능성이 높다.
@@ -150,7 +150,7 @@
 나도 처음엔 그랬다.  
 하지만 걱정 마라, 의외로 간단하다.
 
-![Gmail email status](/images/gmail-email-status.jpg)
+![Gmail email status](./images/8.jpg)
 
 1. 첫 2~3페이지의 메일을 훑는다.  
 2. 해야 할 건 “Todo(노란 느낌표)”로 표시  
@@ -178,7 +178,7 @@
 - 나중에 검색해서만 볼 메일은 **자동 라벨링 후 숨김 처리**
 - 자동 처리 가능한 건 필터로 라벨 지정 후 **자동 전달**
 
-![Gmail filters](/images/gmail-filters.jpg)
+![Gmail filters](./images/9.jpg)
 
 나도 100개 이상의 필터를 쓰고 있고,  
 진짜 필요한 메일만 눈앞에 보인다.
@@ -187,7 +187,7 @@
 
 ### **키보드 단축키**
 
-![Gmail keyboard shortcuts](/images/gmail-keyboard-shortcuts.jpg)
+![Gmail keyboard shortcuts](./images/10.jpg)
 
 - 설정에서 **단축키 활성화**
 - [공식 단축키 가이드](https://support.google.com/mail/answer/6594?hl=en&ctx=mail) 참고
@@ -201,7 +201,7 @@
 
 ### **Auto-Advance**
 
-![Gmail auto advance](/images/gmail-auto-advance.jpg)
+![Gmail auto advance](./images/11.jpg)
 
 - 설정 → 고급 → **Auto-advance** 기능 켜기  
 - 아침에 새 메일들을 훨씬 빠르게 처리 가능  
@@ -210,13 +210,13 @@
 
 ### **모든 계정 하나로 통합하기**
 
-![Gmail email address](/images/gmail-email-address.jpg)
+![Gmail email address](./images/12.jpg)
 
 - 여러 계정 로그인은 불편하다.  
 - 다른 이메일들을 모두 주 계정으로 불러오기  
 - “on behalf of” 문구 없이 보내려면 **SMTP** 설정 사용  
 
-![Gmail reply address](/images/gmail-reply-address.jpg)
+![Gmail reply address](./images/13.jpg)
 
 - 받은 이메일 주소로 자동 답장 설정  
 - 개인/업무 메일을 하나의 인박스에서 관리 가능  
