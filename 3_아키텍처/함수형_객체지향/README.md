@@ -6,204 +6,150 @@ OOP와 FP에 대한 인동님의 해석을 흥미롭게 읽으면서,
 ## 객체지향 프로그래밍
 
 ```ts
-// 결제 수단을 표현하는 예시
-enum PaymentMethod {
-  CREDIT_CARD = "CREDIT_CARD",
-  NAVER_PAY = "NAVER_PAY",
-  KAKAO_PAY = "KAKAO_PAY",
-}
-
-// "결제"를 책임지는 객체
-class Payment {
-  constructor(
-    private amount: number,
-    private method: PaymentMethod,
-    private isPaid: boolean = false
-  ) {}
-
-  public pay(): void {
-    if (this.isPaid) {
-      throw new Error("이미 결제된 주문입니다.");
-    }
-    // 실제 결제 로직 (카드 승인, PG 연동 등)
-    // ...
-    this.isPaid = true;
-    console.log(`[Payment] ${this.method}로 ${this.amount}원 결제 완료.`);
-  }
-
-  public refund(): void {
-    if (!this.isPaid) {
-      throw new Error("결제가 완료되지 않아 환불할 수 없습니다.");
-    }
-    // 실제 환불 로직 (PG 연동, 기록 etc.)
-    // ...
-    this.isPaid = false;
-    console.log(`[Payment] ${this.method} 환불 완료.`);
-  }
-
-  public isPaymentCompleted(): boolean {
-    return this.isPaid;
-  }
-
-  public getAmount(): number {
-    return this.amount;
-  }
-}
-
-// "배송"을 책임지는 객체
-class Shipping {
-  constructor(private address: string, private shipped: boolean = false) {}
-
-  public ship(): void {
-    if (this.shipped) {
-      throw new Error("이미 배송된 주문입니다.");
-    }
-    // 실제 배송 로직
-    // ...
-    this.shipped = true;
-    console.log(`[Shipping] ${this.address}로 배송 완료.`);
-  }
-
-  public isShipped(): boolean {
-    return this.shipped;
-  }
-}
-
-// "주문"을 책임지는 객체
+/**
+ * [OOP] Order 객체는 자신의 상태(결제 여부, 배송 여부)를 스스로 책임집니다.
+ * 외부에서는 Order 내부의 상태를 직접 바꿀 수 없고, 오직 메서드를 통해서만 요청할 수 있습니다.
+ */
 class Order {
-  private payment: Payment | null = null;
-  private shipping: Shipping | null = null;
+  // 상태는 철저히 숨깁니다 (Encapsulation)
+  private _status: 'CREATED' | 'PAID' | 'SHIPPED' | 'REFUNDED' = 'CREATED';
 
   constructor(
-    private orderId: string,
-    private items: { name: string; price: number; quantity: number }[]
+    public readonly id: string,
+    private readonly items: { price: number; quantity: number }[]
   ) {}
 
-  // 결제 객체를 생성하고, 결제를 진행
-  public processPayment(method: PaymentMethod): void {
-    const totalAmount = this.items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-    this.payment = new Payment(totalAmount, method);
-    this.payment.pay();
+  // 계산 로직이 객체 내부에 응집되어 있습니다.
+  get totalAmount(): number {
+    return this.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   }
 
-  // 결제가 완료된 후 배송 처리
-  public processShipping(address: string): void {
-    if (!this.payment || !this.payment.isPaymentCompleted()) {
-      throw new Error("결제가 완료되지 않았습니다.");
+  // 행동(Method): 결제 처리
+  // 외부에서는 이 객체가 내부적으로 어떤 상태인지 알 필요 없이, 'pay'라는 메시지만 보내면 됩니다.
+  public pay(paymentMethod: string): void {
+    if (this._status !== 'CREATED') {
+      throw new Error("이미 처리되었거나 취소된 주문입니다.");
     }
-    this.shipping = new Shipping(address);
-    this.shipping.ship();
+    
+    // ... 결제 승인 로직 (외부 API 호출 등은 주입받은 서비스로 위임 가능) ...
+    
+    console.log(`[OOP] 주문 ${this.id}가 ${paymentMethod}로 결제되었습니다.`);
+    this._status = 'PAID'; // 상태 변경
   }
 
-  public getOrderId(): string {
-    return this.orderId;
-  }
-
-  public getTotalAmount(): number {
-    return this.payment ? this.payment.getAmount() : 0;
-  }
-
-  public refundOrder(): void {
-    if (!this.payment) {
-      throw new Error("결제 정보가 없습니다.");
+  // 행동(Method): 배송 시작
+  public ship(address: string): void {
+    if (this._status !== 'PAID') {
+      throw new Error("결제가 완료된 주문만 배송할 수 있습니다.");
     }
-    if (this.shipping && this.shipping.isShipped()) {
-      throw new Error("이미 배송된 주문은 환불할 수 없습니다. 반품 절차 필요.");
-    }
-    // 환불 진행
-    this.payment.refund();
+    
+    console.log(`[OOP] 주문 ${this.id}가 ${address}로 배송 시작되었습니다.`);
+    this._status = 'SHIPPED'; // 상태 변경
   }
 }
 
-// 사용 예시
-const order = new Order("ORDER-123", [
-  { name: "상품A", price: 10000, quantity: 2 },
-  { name: "상품B", price: 5000, quantity: 1 },
-]);
+// [사용 예시]
+// 개발자는 Order 객체의 내부 데이터가 꼬였을까봐 걱정할 필요가 없습니다.
+// 객체가 스스로 방어하고 있으니까요.
+const myOrder = new Order("ORD-001", [{ price: 1000, quantity: 2 }]);
 
-order.processPayment(PaymentMethod.CREDIT_CARD);  // [Payment] CREDIT_CARD로 25000원 결제 완료.
-order.processShipping("서울시 강남구");           // [Shipping] 서울시 강남구로 배송 완료.
+try {
+  myOrder.ship("Seoul"); // Error: 결제가 완료된 주문만 배송할 수 있습니다.
+} catch (e) {
+  myOrder.pay("CreditCard");
+  myOrder.ship("Seoul"); // 성공
+}
 ```
 
 
 ## 함수형 프로그래밍
 
 ```ts
-type ComplexOrder = {
-  orderId: string;
-  items: { productId: string; quantity: number }[];
-  isPaid: boolean;
-  isShipped: boolean;
-  // 실제로 더 많은 필드(재고, 할인, 쿠폰, 회원정보 등등)이 있을 수 있음
+/**
+ * [FP] 데이터(Model)는 멍청할수록(Anemic) 좋습니다. 
+ * 메서드 없이 순수한 정보들의 집합입니다.
+ */
+type OrderState = 
+  | { status: 'CREATED' }
+  | { status: 'PAID'; paymentMethod: string }
+  | { status: 'SHIPPED'; address: string };
+
+type Order = {
+  readonly id: string;
+  readonly items: { price: number; quantity: number }[];
+  readonly state: OrderState; // 상태를 명시적인 데이터 구조로 표현
 };
 
-function validateInventory(order: ComplexOrder): ComplexOrder {
-  // 재고 확인 로직 (실제로는 외부 DB 또는 API 호출)
-  // FP를 지키려면 사이드이펙트를 최소화해야 하지만, 실제로는 여기서 부수효과 발생 가능
-  logger.log(`재고 확인: ${order.orderId}`);
-  return { ...order };
-}
+// [FP] 순수 함수들: 입력을 받아서 출력을 반환할 뿐, 외부 세상을 바꾸지 않습니다.
 
-function payOrder(order: ComplexOrder): ComplexOrder {
-  if (order.isPaid) {
-    throw new Error("이미 결제된 주문입니다.");
+const createOrder = (id: string, items: Order['items']): Order => ({
+  id,
+  items,
+  state: { status: 'CREATED' }
+});
+
+// 결제 함수: 입력받은 order를 변경하지 않고, '새로운' order를 반환합니다.
+const payOrder = (order: Order, method: string): Order => {
+  if (order.state.status !== 'CREATED') {
+    throw new Error(`결제 불가: 현재 상태는 ${order.state.status} 입니다.`);
   }
-  // 결제 로직 (외부 PG 연동, 승인 등). 부수효과가 많음
-  // FP 흉내를 내려면, 상태만 바뀐 새 객체를 돌려준다
-  logger.log(`결제 진행: ${order.orderId}`);
-  return { ...order, isPaid: true };
-}
-
-function shipOrder(order: ComplexOrder): ComplexOrder {
-  if (!order.isPaid) {
-    throw new Error("결제가 완료되지 않았습니다.");
-  }
-  logger.log(`배송 진행: ${order.orderId}`);
-  return { ...order, isShipped: true };
-}
-
-function recordEvent(order: ComplexOrder, eventType: string): ComplexOrder {
-  // 실제로는 DB 이벤트 기록, 모니터링, 메시지 큐 전송 등 (모두 부수효과)
-  logger.log(`[Event] ${order.orderId} - ${eventType}`);
-  return { ...order };
-}
-
-// 사용
-let complexOrder: ComplexOrder = {
-  orderId: "ORD-999",
-  items: [{ productId: "PD-ABC", quantity: 2 }],
-  isPaid: false,
-  isShipped: false,
+  // 기존 객체 복사(...) 후 새로운 상태 부여 -> 불변성(Immutability) 유지
+  return { 
+    ...order, 
+    state: { status: 'PAID', paymentMethod: method } 
+  };
 };
 
-// FP 식 파이프라인
-complexOrder = validateInventory(complexOrder);
-complexOrder = payOrder(complexOrder);
-complexOrder = recordEvent(complexOrder, "PAYMENT_COMPLETED");
-complexOrder = shipOrder(complexOrder);
-complexOrder = recordEvent(complexOrder, "SHIPPING_COMPLETED");
+const shipOrder = (order: Order, address: string): Order => {
+  if (order.state.status !== 'PAID') {
+     throw new Error(`배송 불가: 결제가 필요합니다.`);
+  }
+  return {
+    ...order,
+    state: { status: 'SHIPPED', address }
+  };
+};
+
+// [사용 예시 - 파이프라인]
+// 데이터가 함수라는 파이프를 통과하며 변해갑니다.
+const initialOrder = createOrder("ORD-001", [{ price: 1000, quantity: 2 }]);
+
+// FP에서는 아래와 같이 함수 합성을 통해 로직을 전개합니다.
+// (pipe 함수가 있다고 가정하거나, 아래처럼 체이닝)
+
+const paidOrder = payOrder(initialOrder, "CreditCard");
+const shippedOrder = shipOrder(paidOrder, "Seoul");
+
+console.log(`[FP] 완료된 주문 상태:`, shippedOrder);
+// initialOrder는 여전히 'CREATED' 상태로 남아있습니다. (타임머신처럼 과거 상태 보존)
 ```
 
 ### 결론
 
-FP가 사용되기에 적절한 예:
-- 주로 데이터 변환 파이프라인 위주의 로직 (필터, 매핑, 집계 등)
-- 외부 상태에 의존하지 않고 순수 함수로 처리할 수 있을 때
-- “Simple Made Easy”에서 말하는 “단순성”을 쉽게 확보 가능
+#### [비교 분석] 복잡성을 다루는 태도의 차이
 
-FP가 적합하지 않은 예:
-- 복잡한 도메인 로직(주문, 결제, 재고, 이벤트 발행, 외부 API 호출 등)이 얽혀 있고, 상태 전이가 연속적으로 발생하는 경우
-- 부수효과(Side Effect)가 많고, 여러 부분이 Entangled되어 있어 순수 함수를 지키기 어려울 때
-- 이런 경우, FP만으로 문제를 해결하려 하면 오히려 복잡도가 증가하고, “누가 책임지는가?”가 모호해져 유지보수가 힘들어질 수 있음
+| 특징 | 객체지향 (OOP) | 함수형 (FP) |
+| :--- | :--- | :--- |
+| **세계관** | **시뮬레이션 (Simulation)** | **데이터 처리 (Data Processing)** |
+| **접근법** | "누가(Object) 무엇을 책임질 것인가?" | "데이터가 어떤 과정을 거쳐 변환되는가?" |
+| **상태 관리** | 상태를 객체 내부에 숨기고 보호함 (은닉) | 상태 변경을 피하고 새로운 상태를 만듦 (불변) |
+| **코드 재사용** | 상속, 다형성, 인터페이스 구현 | 함수 합성, 고차 함수 (Map, Reduce 등) |
 
 
-> 참고: Rich Hickey, Simple Made Easy (한국어 번역)
-> - Simple(단순): 요소가 얽혀 있지 않은 상태
-> - Easy(쉬움): 접근이나 사용이 용이한 상태
+우리는 흔히 OOP와 FP 중 무엇이 더 우월한지 논쟁하곤 한다. 하지만 유인동 님의 책과 여러 예제를 통해 알 수 있는 진실은, 이 둘이 **'상태(State)와 복잡성'을 다루는 방식이 다를 뿐**이라는 점이다.
 
-함수형 프로그래밍은 “상태와 로직을 분리”하고 “함수 합성”을 통해 단순화를 추구합니다. 하지만 도메인이 너무 복잡해 여러 요소가 얽혀 있다면, FP만으로는 “단순성”을 유지하기가 쉽지 않다.  
+1. **OOP가 강력한 순간**: 
+   * 개별 개체(Entity)의 정체성이 중요하고, 그 개체의 상태가 시간의 흐름에 따라 복잡하게 변할 때.
+   * 예: UI 컴포넌트, 게임 캐릭터, 복잡한 상태 머신.
+   * **"신호등은 스스로 색을 바꿀 책임을 진다."**
 
-실무에서는 FP와 OOP를 상황에 따라 혼합하거나, 도메인에 맞는 적절한 추상화를 선택해 복잡성을 줄이는 것이 핵심이다.
+2. **FP가 강력한 순간**: 
+   * 입력 데이터가 명확하고, 일련의 변환 과정을 거쳐 결과를 도출해야 할 때.
+   * 예: 데이터 분석, 결제 정산 로직, 비동기 데이터 파이프라인.
+   * **"신호등의 색은 시간과 규칙이라는 함수의 결과값일 뿐이다."**
+
+**Simple Made Easy**의 관점에서 본다면:
+* **OOP**는 관련된 데이터와 코드를 묶어(Encapsulation) 우리 뇌가 인식하기 **쉽게(Easy)** 만들어 줍니다. (친숙함)
+* **FP**는 데이터와 로직을 떼어놓음(Decoupling)으로써 시스템의 요소들이 서로 얽히지 않게 **단순하게(Simple)** 유지합니다. (구조적 단순함)
+
+따라서 모던 프로그래밍에서는 이 둘을 이분법적으로 나누기보다, **"도메인 모델의 핵심 로직은 순수 함수(FP)로 작성하여 테스트 용이성을 확보하고, 전체적인 구조와 인터페이스는 객체(OOP)로 감싸서 사용성을 높이는"** 하이브리드 전략이 가장 실용적인 해답이 될 것이다.
