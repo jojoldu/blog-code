@@ -6,12 +6,7 @@ OOP와 FP에 대한 인동님의 해석을 흥미롭게 읽으면서,
 ## 객체지향 프로그래밍
 
 ```ts
-/**
- * [OOP] Order 객체는 자신의 상태(결제 여부, 배송 여부)를 스스로 책임집니다.
- * 외부에서는 Order 내부의 상태를 직접 바꿀 수 없고, 오직 메서드를 통해서만 요청할 수 있습니다.
- */
 class Order {
-  // 상태는 철저히 숨깁니다 (Encapsulation)
   private _status: 'CREATED' | 'PAID' | 'SHIPPED' | 'REFUNDED' = 'CREATED';
 
   constructor(
@@ -19,46 +14,49 @@ class Order {
     private readonly items: { price: number; quantity: number }[]
   ) {}
 
-  // 계산 로직이 객체 내부에 응집되어 있습니다.
+  // 외부에는 읽기 전용으로만 상태를 노출합니다
+  get status() {
+    return this._status;
+  }
+
   get totalAmount(): number {
     return this.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   }
 
   // 행동(Method): 결제 처리
-  // 외부에서는 이 객체가 내부적으로 어떤 상태인지 알 필요 없이, 'pay'라는 메시지만 보내면 됩니다.
-  public pay(paymentMethod: string): void {
+  // 외부에서는 'pay'라는 메시지만 보내면 됩니다. 내부 상태 검증은 객체가 책임집니다.
+  pay(paymentMethod: string): void {
     if (this._status !== 'CREATED') {
-      throw new Error("이미 처리되었거나 취소된 주문입니다.");
+      throw new Error('이미 처리된 주문입니다.');
     }
-    
-    // ... 결제 승인 로직 (외부 API 호출 등은 주입받은 서비스로 위임 가능) ...
-    
-    console.log(`[OOP] 주문 ${this.id}가 ${paymentMethod}로 결제되었습니다.`);
-    this._status = 'PAID'; // 상태 변경
+    console.log(`주문 ${this.id}가 ${paymentMethod}로 결제되었습니다.`);
+    this._status = 'PAID';
   }
 
-  // 행동(Method): 배송 시작
-  public ship(address: string): void {
+  ship(address: string): void {
     if (this._status !== 'PAID') {
-      throw new Error("결제가 완료된 주문만 배송할 수 있습니다.");
+      throw new Error('결제가 완료된 주문만 배송할 수 있습니다.');
     }
-    
-    console.log(`[OOP] 주문 ${this.id}가 ${address}로 배송 시작되었습니다.`);
-    this._status = 'SHIPPED'; // 상태 변경
+    console.log(`주문 ${this.id}가 ${address}로 배송 시작되었습니다.`);
+    this._status = 'SHIPPED';
+  }
+
+  refund(): void {
+    if (this._status === 'CREATED' || this._status === 'REFUNDED') {
+      throw new Error('환불할 수 없는 상태입니다.');
+    }
+    console.log(`주문 ${this.id}가 환불 처리되었습니다.`);
+    this._status = 'REFUNDED';
   }
 }
 
 // [사용 예시]
-// 개발자는 Order 객체의 내부 데이터가 꼬였을까봐 걱정할 필요가 없습니다.
-// 객체가 스스로 방어하고 있으니까요.
-const myOrder = new Order("ORD-001", [{ price: 1000, quantity: 2 }]);
+const order = new Order('ORD-001', [{ price: 1000, quantity: 2 }]);
 
-try {
-  myOrder.ship("Seoul"); // Error: 결제가 완료된 주문만 배송할 수 있습니다.
-} catch (e) {
-  myOrder.pay("CreditCard");
-  myOrder.ship("Seoul"); // 성공
-}
+// 잘못된 순서로 호출해도 객체가 스스로 방어합니다
+order.ship('Seoul');  // ❌ Error: 결제가 완료된 주문만 배송할 수 있습니다.
+order.pay('CreditCard');
+order.ship('Seoul');  // ✅ 성공
 ```
 
 
@@ -66,62 +64,68 @@ try {
 
 ```ts
 /**
- * [FP] 데이터(Model)는 멍청할수록(Anemic) 좋습니다. 
- * 메서드 없이 순수한 정보들의 집합입니다.
+ * [FP] 데이터는 순수한 값(Value)입니다.
+ * 행위를 포함하지 않고, 무엇인지(What)만 표현합니다.
  */
-type OrderState = 
-  | { status: 'CREATED' }
-  | { status: 'PAID'; paymentMethod: string }
-  | { status: 'SHIPPED'; address: string };
+type OrderStatus = 
+  | { tag: 'CREATED' }
+  | { tag: 'PAID'; paymentMethod: string }
+  | { tag: 'SHIPPED'; address: string }
+  | { tag: 'REFUNDED' };
 
 type Order = {
   readonly id: string;
-  readonly items: { price: number; quantity: number }[];
-  readonly state: OrderState; // 상태를 명시적인 데이터 구조로 표현
+  readonly items: ReadonlyArray<{ price: number; quantity: number }>;
+  readonly status: OrderStatus;
 };
 
-// [FP] 순수 함수들: 입력을 받아서 출력을 반환할 뿐, 외부 세상을 바꾸지 않습니다.
+// [순수 함수들] 입력 → 출력. 외부 상태를 변경하지 않습니다.
 
 const createOrder = (id: string, items: Order['items']): Order => ({
   id,
   items,
-  state: { status: 'CREATED' }
+  status: { tag: 'CREATED' }
 });
 
-// 결제 함수: 입력받은 order를 변경하지 않고, '새로운' order를 반환합니다.
+const getTotalAmount = (order: Order): number =>
+  order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+// 기존 Order를 변경하지 않고, 새로운 Order를 반환합니다 (불변성)
 const payOrder = (order: Order, method: string): Order => {
-  if (order.state.status !== 'CREATED') {
-    throw new Error(`결제 불가: 현재 상태는 ${order.state.status} 입니다.`);
+  if (order.status.tag !== 'CREATED') {
+    throw new Error(`결제 불가: 현재 상태는 ${order.status.tag}입니다.`);
   }
-  // 기존 객체 복사(...) 후 새로운 상태 부여 -> 불변성(Immutability) 유지
-  return { 
-    ...order, 
-    state: { status: 'PAID', paymentMethod: method } 
-  };
+  return { ...order, status: { tag: 'PAID', paymentMethod: method } };
 };
 
 const shipOrder = (order: Order, address: string): Order => {
-  if (order.state.status !== 'PAID') {
-     throw new Error(`배송 불가: 결제가 필요합니다.`);
+  if (order.status.tag !== 'PAID') {
+    throw new Error('배송 불가: 결제가 필요합니다.');
   }
-  return {
-    ...order,
-    state: { status: 'SHIPPED', address }
-  };
+  return { ...order, status: { tag: 'SHIPPED', address } };
 };
 
-// [사용 예시 - 파이프라인]
-// 데이터가 함수라는 파이프를 통과하며 변해갑니다.
-const initialOrder = createOrder("ORD-001", [{ price: 1000, quantity: 2 }]);
+const refundOrder = (order: Order): Order => {
+  if (order.status.tag === 'CREATED' || order.status.tag === 'REFUNDED') {
+    throw new Error('환불 불가: 현재 상태에서는 환불할 수 없습니다.');
+  }
+  return { ...order, status: { tag: 'REFUNDED' } };
+};
 
-// FP에서는 아래와 같이 함수 합성을 통해 로직을 전개합니다.
-// (pipe 함수가 있다고 가정하거나, 아래처럼 체이닝)
+// [사용 예시] 데이터가 함수라는 파이프를 통과하며 변환됩니다
+const pipe = <T>(...fns: Array<(arg: T) => T>) => (initial: T): T =>
+  fns.reduce((v, fn) => fn(v), initial);
 
-const paidOrder = payOrder(initialOrder, "CreditCard");
-const shippedOrder = shipOrder(paidOrder, "Seoul");
+const processOrder = pipe(
+  (order: Order) => payOrder(order, 'CreditCard'),
+  (order: Order) => shipOrder(order, 'Seoul')
+);
 
-console.log(`[FP] 완료된 주문 상태:`, shippedOrder);
-// initialOrder는 여전히 'CREATED' 상태로 남아있습니다. (타임머신처럼 과거 상태 보존)
+const initialOrder = createOrder('ORD-001', [{ price: 1000, quantity: 2 }]);
+const completedOrder = processOrder(initialOrder);
+
+console.log(initialOrder.status);   // { tag: 'CREATED' } - 원본 불변
+console.log(completedOrder.status); // { tag: 'SHIPPED', address: 'Seoul' }
 ```
 
 ### 결론
@@ -148,8 +152,14 @@ console.log(`[FP] 완료된 주문 상태:`, shippedOrder);
    * 예: 데이터 분석, 결제 정산 로직, 비동기 데이터 파이프라인.
    * **"신호등의 색은 시간과 규칙이라는 함수의 결과값일 뿐이다."**
 
-**Simple Made Easy**의 관점에서 본다면:
-* **OOP**는 관련된 데이터와 코드를 묶어(Encapsulation) 우리 뇌가 인식하기 **쉽게(Easy)** 만들어 줍니다. (친숙함)
-* **FP**는 데이터와 로직을 떼어놓음(Decoupling)으로써 시스템의 요소들이 서로 얽히지 않게 **단순하게(Simple)** 유지합니다. (구조적 단순함)
+Rich Hickey의 Simple Made Easy 관점에서 보면:
 
-따라서 모던 프로그래밍에서는 이 둘을 이분법적으로 나누기보다, **"도메인 모델의 핵심 로직은 순수 함수(FP)로 작성하여 테스트 용이성을 확보하고, 전체적인 구조와 인터페이스는 객체(OOP)로 감싸서 사용성을 높이는"** 하이브리드 전략이 가장 실용적인 해답이 될 것이다.
+- OOP는 관련된 것들을 한 곳에 모아(Encapsulation) 인지적으로 다루기 쉽게(Easy) 만든다.
+- FP는 데이터와 로직을 분리하고 얽힘을 제거하여 구조적으로 단순하게(Simple) 유지한다.
+
+따라서 실용적인 접근은 이 둘을 상호보완적으로 사용하는 것이다:
+
+"도메인의 핵심 비즈니스 로직은 순수 함수로 작성하여 테스트와 추론을 쉽게 하고,
+시스템의 경계와 인터페이스는 객체로 감싸 사용성과 캡슐화를 확보한다."
+
+이것이 TypeScript, Kotlin, Swift 같은 모던 언어들이 두 패러다임을 모두 지원하는 이유이기도 하다.
