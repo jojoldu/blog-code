@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --version)",
+      "Bash(npm --version:*)",
+      "Bash(git --version)",
+      "Bash(claude:*)",
+      "WebSearch"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

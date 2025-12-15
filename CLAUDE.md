@@ -41,6 +41,10 @@ cd spring-boot-tips
 - `1_생각정리`, `2_독서`, etc.: Korean-named directories contain blog post drafts/notes (non-code)
 - Each project's README.md contains the related blog post content
 
-## Language Note
+## 언어 규칙
 
-Many directory names and documentation are in Korean. Blog posts and code comments may also be in Korean.
+- **커뮤니케이션**: 모든 응답과 설명은 한국어로 작성
+- **코드 주석/커밋 메시지/문서화**: 한국어로 작성
+- **변수명/함수명/클래스명**: 영어로 작성 (코드 표준 준수)
+
+디렉토리명과 README 등 기존 문서도 대부분 한국어로 작성되어 있음.
