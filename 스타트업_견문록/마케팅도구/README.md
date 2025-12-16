@@ -1,5 +1,8 @@
 # 스타트업에서의 마케팅 도구
 
+> **원문 출처**: [Andreas Klinger - Analytics tools for startups](https://klinger.io/posts/analytics-tools-for-startups)
+> 이 글은 원문을 번역하고 일부 내용을 추가/수정한 것입니다.
+
 "어떤 분석 도구를 사용해야 하는가"는 그 도구로 무엇을 하려는지에 달려 있습니다. 도구들은 (다소) 구체적인 목적을 가지고 있기 때문입니다.
 
 **주의:** 이 글은 웹 제품에 초점을 맞추고 있지만, 모바일에도 동일한 개념을 적용할 수 있습니다.
@@ -221,3 +224,70 @@ KISSMetrics의 **매출(revenue) 탭**은 어떤 소스가 어떤 종류의 평�
 제가 모든 측면과 모든 도구를 다룰 수는 없었지만, 이 블로그 포스트가 지표에 대한 명확성을 얻는 데 조금이나마 도움이 되었기를 바랍니다.
 
 만약 여전히 어떤 도구를 선택해야 할지 확신이 서지 않는다면, API 호출을 위한 래퍼(wrapper)로 [Segment.io](https://href.li/?https://segment.io/)를 사용하는 것을 추천합니다. 그렇게 하면 필요할 때마다 도구를 간단히 교체할 수 있습니다.
+
+---
+
+## 2024-2025년 업데이트
+
+> 원문이 작성된 이후 분석 도구 생태계에 많은 변화가 있었습니다.
+
+### 도구 변경 사항
+
+| 원문의 도구 | 현재 상태 |
+|------------|----------|
+| Google Analytics (UA) | **GA4**로 완전히 대체됨 (2023년 7월 UA 종료) |
+| KISSMetrics | 여러 차례 인수/변경을 거쳐 현재는 다른 형태로 운영 |
+| Chart.io | Atlassian에 인수 후 **서비스 종료** |
+| Segment.io | Twilio에 인수되어 **Segment**로 운영 중 (여전히 추천) |
+
+### 현재 추천하는 도구들
+
+#### 제품 분석 (Product Analytics)
+- **[Amplitude](https://amplitude.com/)**: 제품 내부 분석의 사실상 표준. 무료 티어가 넉넉함
+- **[Mixpanel](https://mixpanel.com/)**: 여전히 강력한 선택지. 이벤트 기반 분석에 탁월
+- **[PostHog](https://posthog.com/)**: 오픈소스 대안. 셀프 호스팅 가능하여 데이터 소유권 확보
+
+#### 웹 분석 (Web Analytics)
+- **[Google Analytics 4 (GA4)](https://analytics.google.com/)**: 기존 GA와 다른 이벤트 기반 모델. 학습 곡선이 있음
+- **[Plausible](https://plausible.io/)**: 프라이버시 중심의 경량 분석 도구
+- **[Fathom](https://usefathom.com/)**: GDPR 친화적인 간단한 분석 도구
+
+#### 세션 리플레이 & 히트맵
+- **[Hotjar](https://www.hotjar.com/)**: 사용자 행동 시각화의 대표 도구
+- **[FullStory](https://www.fullstory.com/)**: 엔터프라이즈급 세션 리플레이
+- **[Microsoft Clarity](https://clarity.microsoft.com/)**: **무료**로 제공되는 세션 리플레이 & 히트맵
+
+#### 내부 대시보드 구축
+- **[Metabase](https://www.metabase.com/)**: 오픈소스, 셀프 호스팅 가능. SQL 없이도 사용 가능
+- **[Apache Superset](https://superset.apache.org/)**: 오픈소스, 대규모 데이터에 적합
+- **[Redash](https://redash.io/)**: SQL 기반 대시보드, 오픈소스
+
+#### 데이터 파이프라인
+- **[Segment](https://segment.com/)**: 여전히 CDP(Customer Data Platform)의 표준
+- **[RudderStack](https://www.rudderstack.com/)**: Segment의 오픈소스 대안
+
+### 2024년 기준 추천 조합
+
+**초기 스타트업 (비용 최소화)**
+```
+웹 분석: GA4 (무료) + Plausible (선택)
+제품 분석: Amplitude 무료 티어 또는 PostHog (셀프호스팅)
+세션 리플레이: Microsoft Clarity (무료)
+내부 대시보드: Metabase (셀프호스팅)
+```
+
+**성장 단계 스타트업**
+```
+웹 분석: GA4
+제품 분석: Amplitude 또는 Mixpanel
+세션 리플레이: Hotjar
+데이터 파이프라인: Segment
+내부 대시보드: Metabase 또는 Looker
+```
+
+### 원문의 핵심 원칙은 여전히 유효합니다
+
+- **탐색 vs 회계** 구분: 즉각적인 질문과 장기 추적 지표를 분리해서 생각하기
+- **외부 vs 내부** 구분: 마케팅 분석과 제품 분석은 다른 도구가 필요함
+- **데이터 무결성**: 회계용 보고서는 자체 데이터베이스 기반으로 구축하는 것이 안정적
+- **도구에 대한 현실적 기대**: 어떤 도구도 모든 것을 완벽하게 해결해주지 않음
