@@ -92,16 +92,6 @@
 
 **GA는 외부적인 모든 것에 훌륭합니다.** 특히 트래픽 분석과 유입 경로 최적화(referral optimization)는 GA에서 완벽하게 작동합니다.
 
-**저는 엄청난 Google Analytics 괴짜(geek)**라서, 이를 제대로 다루려면 적어도 3개의 블로그 포스팅이 필요할 겁니다.
-
-만약 GA가 처음이라면 읽어볼 만한 세 가지 블로그 포스트를 추천합니다:
-
-* 주요 전환(예: 뉴스레터 또는 가입 버튼)을 위한 [목표 설정(Set up Goals)](https://href.li/?https://support.google.com/analytics/answer/1032415?hl=ko)
-* 가입한 사용자를 "표시"하기 위해 [사용자 지정 변수 사용하기(Use custom variables)](https://href.li/?https://developers.google.com/analytics/devguides/collection/gajs/gaTrackingCustomVariables)
-* [이탈률 고치기(Fix your bounce rate)](https://href.li/?http://drawingablank.me/blog/fix-your-bounce-rate.html) (특히 콘텐츠 마케팅에 중요)
-* [가중 정렬(weighted sorted)](https://href.li/?http://analytics.blogspot.com/2010/08/introducing-weighted-sort.html) 사용법 배우기
-* 그리고 [세그먼트(segments)](https://href.li/?http://www.kaushik.net/avinash/google-analytics-visitor-segmentation-users-sequences-cohorts/) 사용법
-
 GA의 가장 일반적인 사용 사례는 **유입 경로 최적화**입니다. 어떤 소스가 가장 가치 있는 트래픽을 가져오는지, 어디에 집중해야 하는지 이해할 수 있게 해줍니다(위에서 언급했듯이 가중 정렬 사용법을 배우세요).
 
 ![](https://64.media.tumblr.com/339c5613c3c73e3fc4e4def84283e6c7/tumblr_inline_my4wpyHy1D1r5v9i8.png)
@@ -120,9 +110,9 @@ GA는 제품 외부 탐색에는 최고이며, 많은 제품 외부 보고/회�
 
 모바일 관련 추가: 저는 여기서 주로 웹용 GA에 대해 이야기하고 있습니다. GA 팀은 현재 모바일 분석 도구를 밀고 있습니다. 사용해 본 사람이라면 누구나 이 도구가 원래 이 용도로 만들어지지 않았다는 묘한 느낌을 받을 것입니다. 하지만 현재 그들의 개발 속도를 감안할 때, 반년 후에 이 부분을 업데이트하러 다시 와야 할지도 모르겠습니다.
 
-### KISSMetrics와 Mixpanel
+### Amplitude와 Mixpanel
 
-KMS(KISSMetrics)와 MXP(Mixpanel) 둘 다 같은 주요 개념에서 출발했습니다. **그들은 "사람"과 "이벤트" 단위로 생각합니다.**
+Amplitude와 MXP(Mixpanel) 둘 다 같은 주요 개념에서 출발했습니다. **그들은 "사람"과 "이벤트" 단위로 생각합니다.**
 
 두 도구 모두 훌륭하며, 제대로 다루려면 각각 여러 개의 블로그 포스팅이 필요하므로 간략하게 설명하겠습니다.
 
@@ -132,15 +122,9 @@ KMS(KISSMetrics)와 MXP(Mixpanel) 둘 다 같은 주요 개념에서 출발했�
 
 ![](https://64.media.tumblr.com/60da5d172f5bdf5ab474d1847b692fb6/tumblr_inline_my4wuv0WSG1r5v9i8.png)
 
-반면 **KISSMetrics**는 한 발을 제품 외부 세계에 걸치고 있는 느낌입니다.
+반면 **Amplitude**는 한 발을 제품 외부 세계에 걸치고 있는 느낌입니다.
 
-KISSMetrics의 **매출(revenue) 탭**은 어떤 소스가 어떤 종류의 평생 가치(LTV)를 지닌 고객을 데려왔는지 매우 쉽게 보여줍니다. 고객들이 무엇을 했는지 등을 쉽게 볼 수 있습니다.
-
-물론 MXP도 따라잡고 있고 매출 탭도 제공합니다. 그럼에도 불구하고 제가 (특히 SaaS 스타트업으로서) 제품 자체를 개선하면서 수익 개선(예: 콘텐츠 마케팅을 통해)에 많이 집중한다면 KISSMetrics를 선택할 것입니다.
-
-![](https://64.media.tumblr.com/d0d0afb5e8b65ea6df57330f23b06fdb/tumblr_inline_my4wypKjDv1r5v9i8.png)
-
-사실 KISSMetrics는 제품 내부와 외부 사용 사례(특히 콘텐츠 마케팅) 사이의 하이브리드로 매우 잘 맞아서, 그들이 전문적인 콘텐츠 마케팅 도구를 내놓거나 시장에 더 쉽게 접근하기 위해 Google Analytics와 어떤 식으로든 통합한다 해도 놀랍지 않을 것입니다.
+물론 MXP도 따라잡고 있고 매출 탭도 제공합니다. 그럼에도 불구하고 제가 (특히 SaaS 스타트업으로서) 제품 자체를 개선하면서 수익 개선(예: 콘텐츠 마케팅을 통해)에 많이 집중한다면 Amplitude을 선택합니다.
 
 ## 전문화된 도구들
 

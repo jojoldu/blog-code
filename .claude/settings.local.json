@@ -5,7 +5,9 @@
       "Bash(npm --version:*)",
       "Bash(git --version)",
       "Bash(claude:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\n스타트업 마케팅 도구 글에 원문 출처 및 2024-2025 업데이트 추가\n\n- 원문 출처(Andreas Klinger) 명시\n- 도구 변경 사항 테이블 추가 (GA→GA4, KISSMetrics, Chart.io 종료 등)\n- 현재 추천 도구 목록 추가 (Amplitude, PostHog, Hotjar, Metabase 등)\n- 스타트업 단계별 도구 조합 추천\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []
