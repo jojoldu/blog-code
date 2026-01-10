@@ -265,6 +265,78 @@
     #article-view .code-block-container .copy-button:hover {
       background-color: #444 !important;
     }
+
+    /* Fix giscus overlap issue on mobile */
+    @media screen and (max-width: 767px) {
+      .comments iframe {
+        position: static !important;
+        width: 100% !important;
+      }
+    }
+
+    /* Zenn-style colorful header */
+    #header {
+      background: #ffffff !important;
+      border-bottom: 1px solid #eee !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    #header h1 {
+      color: #065f46 !important;
+      font-weight: 700 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      font-size: 24px !important;
+    }
+
+    #header h1::before {
+      content: '' !important;
+      display: inline-block !important;
+      width: 40px !important;
+      height: 40px !important;
+      background-image: url('https://tistory1.daumcdn.net/tistory/1826700/attach/4efe20086b2d444e9f65dee7d24265af') !important;
+      background-size: contain !important;
+      background-repeat: no-repeat !important;
+      background-position: center !important;
+      flex-shrink: 0 !important;
+    }
+
+    #header h1 a {
+      color: #065f46 !important;
+      transition: opacity 0.3s ease !important;
+    }
+
+    #header h1 a:hover {
+      opacity: 0.7 !important;
+      text-decoration: none !important;
+    }
+
+    /* Navigation menu styling with colorful background */
+    #gnb {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      margin: 0 !important;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25) !important;
+    }
+
+    #gnb ul li a {
+      color: rgba(255, 255, 255, 0.9) !important;
+      font-weight: 500 !important;
+      transition: all 0.3s ease !important;
+    }
+
+    #gnb ul li a:hover {
+      color: #ffffff !important;
+      background-color: rgba(255, 255, 255, 0.15) !important;
+      border-radius: 4px !important;
+      text-decoration: none !important;
+    }
+
+    #gnb ul li.selected a {
+      color: #ffffff !important;
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      border-radius: 4px !important;
+    }
   </style>
 </head>
 
@@ -309,9 +381,11 @@
             </div>
             <button type="button" class="menu"><span>메뉴</span></button>
           </div>
+          <!--
           <nav id="gnb">
             [##_blog_menu_##]
           </nav>
+          -->
         </div>
       </header>
       <section id="container">
