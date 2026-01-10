@@ -173,13 +173,97 @@
       border: 1px solid #ffe0b2 !important;
     }
 
-    /* Code blocks should remain unchanged */
+    /* Code blocks - Zenn style dark theme */
+    pre,
+    .entry-content pre,
+    #article-view pre {
+      margin: 1.5rem 0 !important;
+      padding: 1.2rem !important;
+      background-color: #2b3340 !important;
+      border-radius: 8px !important;
+      overflow-x: auto !important;
+      border: 1px solid #4a5568 !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    }
+
     pre code,
     .entry-content pre code,
     #article-view pre code {
       background-color: transparent !important;
       border: none !important;
       padding: 0 !important;
+      color: #abb2bf !important;
+      font-family: 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace !important;
+      font-size: 14px !important;
+      line-height: 1.6 !important;
+      display: block !important;
+    }
+
+    /* Syntax highlighting enhancement */
+    pre code.hljs,
+    .entry-content pre code.hljs,
+    #article-view pre code.hljs {
+      background-color: transparent !important;
+    }
+
+    /* Code block container styling - Zenn style */
+    .code-block-container,
+    .entry-content .code-block-container,
+    #article-view .code-block-container {
+      margin: 1.5rem 0 !important;
+      border-radius: 8px !important;
+      overflow: hidden !important;
+      background-color: #2b3340 !important;
+      border: 1px solid #4a5568 !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Code block header */
+    .code-block-container .code-header,
+    .entry-content .code-block-container .code-header,
+    #article-view .code-block-container .code-header {
+      background-color: #2d2d2d !important;
+      padding: 0.5rem 1rem !important;
+      border-bottom: 1px solid #333 !important;
+      font-size: 0.85em !important;
+      color: #999 !important;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace !important;
+    }
+
+    /* Pre tag inside code block */
+    .code-block-container pre,
+    .entry-content .code-block-container pre,
+    #article-view .code-block-container pre {
+      margin: 0 !important;
+      padding: 1.2rem !important;
+      background-color: #2b3340 !important;
+      overflow-x: auto !important;
+      font-size: 14px !important;
+      line-height: 1.6 !important;
+      border: none !important;
+    }
+
+    /* Copy button styling */
+    .code-block-container .copy-button,
+    .entry-content .code-block-container .copy-button,
+    #article-view .code-block-container .copy-button {
+      position: absolute !important;
+      top: 0.5rem !important;
+      right: 0.5rem !important;
+      padding: 0.4rem 0.8rem !important;
+      background-color: #333 !important;
+      color: #fff !important;
+      border: 1px solid #555 !important;
+      border-radius: 4px !important;
+      font-size: 0.8em !important;
+      cursor: pointer !important;
+      transition: background-color 0.2s !important;
+    }
+
+    .code-block-container .copy-button:hover,
+    .entry-content .code-block-container .copy-button:hover,
+    #article-view .code-block-container .copy-button:hover {
+      background-color: #444 !important;
     }
   </style>
 </head>
