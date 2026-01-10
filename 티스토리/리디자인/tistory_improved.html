@@ -54,6 +54,111 @@
       width: 100%;
       height: auto;
     }
+
+    /* Blockquote unified styling - Zenn style message box */
+    blockquote[data-ke-style],
+    .entry-content blockquote[data-ke-style],
+    #article-view blockquote[data-ke-style] {
+      margin: 1.5rem 0 !important;
+      padding: 1rem 1.25rem !important;
+      background-color: #f7f9fc !important;
+      border: none !important;
+      border-left: 4px solid #3ea8ff !important;
+      border-radius: 4px !important;
+      color: #24292e !important;
+      font-size: 0.95em !important;
+      line-height: 1.7 !important;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    /* Remove quotation mark icon from blockquote - all variations */
+    blockquote::before,
+    blockquote::after,
+    blockquote[data-ke-style]::before,
+    blockquote[data-ke-style]::after,
+    blockquote[data-ke-style="style1"]::before,
+    blockquote[data-ke-style="style1"]::after,
+    blockquote[data-ke-style="style2"]::before,
+    blockquote[data-ke-style="style2"]::after,
+    blockquote[data-ke-style="style3"]::before,
+    blockquote[data-ke-style="style3"]::after,
+    blockquote[data-ke-style="style4"]::before,
+    blockquote[data-ke-style="style4"]::after,
+    .entry-content blockquote::before,
+    .entry-content blockquote::after,
+    .entry-content blockquote[data-ke-style]::before,
+    .entry-content blockquote[data-ke-style]::after,
+    #article-view blockquote::before,
+    #article-view blockquote::after,
+    #article-view blockquote[data-ke-style]::before,
+    #article-view blockquote[data-ke-style]::after,
+    article blockquote::before,
+    article blockquote::after,
+    article blockquote[data-ke-style]::before,
+    article blockquote[data-ke-style]::after,
+    .article blockquote::before,
+    .article blockquote::after,
+    .article blockquote[data-ke-style]::before,
+    .article blockquote[data-ke-style]::after {
+      content: "" !important;
+      content: none !important;
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      height: 0 !important;
+      font-size: 0 !important;
+      background: none !important;
+      background-image: none !important;
+    }
+
+    /* Override all data-ke-style variations */
+    blockquote[data-ke-style="style1"],
+    blockquote[data-ke-style="style2"],
+    blockquote[data-ke-style="style3"],
+    blockquote[data-ke-style="style4"],
+    .entry-content blockquote[data-ke-style="style1"],
+    .entry-content blockquote[data-ke-style="style2"],
+    .entry-content blockquote[data-ke-style="style3"],
+    .entry-content blockquote[data-ke-style="style4"] {
+      margin: 1.5rem 0 !important;
+      padding: 1rem 1.25rem !important;
+      background-color: #f7f9fc !important;
+      border: none !important;
+      border-left: 4px solid #3ea8ff !important;
+      border-radius: 4px !important;
+      color: #24292e !important;
+      font-size: 0.95em !important;
+      line-height: 1.7 !important;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    /* Paragraph inside blockquote */
+    blockquote[data-ke-style] p,
+    .entry-content blockquote[data-ke-style] p {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* Links inside blockquote */
+    blockquote[data-ke-style] a,
+    .entry-content blockquote[data-ke-style] a {
+      color: #3ea8ff !important;
+      text-decoration: underline !important;
+    }
+
+    blockquote[data-ke-style] a:hover,
+    .entry-content blockquote[data-ke-style] a:hover {
+      color: #0366d6 !important;
+    }
+
+    /* Code inside blockquote */
+    blockquote[data-ke-style] code,
+    .entry-content blockquote[data-ke-style] code {
+      background-color: #e8ecf1 !important;
+      padding: 0.2em 0.4em !important;
+      border-radius: 3px !important;
+      font-size: 0.9em !important;
+    }
   </style>
 </head>
 
@@ -786,6 +891,32 @@
     </div>
   </s_t3>
   <script src="./images/script.js"></script>
+  <script>
+    // Blockquote 스타일 통일 및 ::before 제거
+    document.addEventListener('DOMContentLoaded', function() {
+      // 모든 blockquote 요소 찾기
+      const blockquotes = document.querySelectorAll('blockquote[data-ke-style]');
+      
+      blockquotes.forEach(function(blockquote) {
+        // data-ke-style을 style2로 통일
+        blockquote.setAttribute('data-ke-style', 'style2');
+        
+        // inline style로 ::before 완전 제거
+        const style = document.createElement('style');
+        style.textContent = `
+          blockquote[data-ke-style="style2"]::before,
+          blockquote[data-ke-style="style2"]::after {
+            content: none !important;
+            display: none !important;
+          }
+        `;
+        if (!document.querySelector('#blockquote-style-override')) {
+          style.id = 'blockquote-style-override';
+          document.head.appendChild(style);
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>
