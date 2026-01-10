@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width">
+  <title>[##_page_title_##]</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="//t1.daumcdn.net/tistory_admin/lib/jquery/jquery-1.12.4.min.js"></script>
+  <style type="text/css">
+    <s_if_var_point-color>.entry-content a,
+    .post-header h1 em,
+    .comments h2 .count {
+      color: [##_var_point-color_##]
+    }
+
+    .comment-form .submit button:hover,
+    .comment-form .submit button:focus {
+      background-color: [##_var_point-color_##]
+    }
+
+    </s_if_var_point-color><s_if_var_promotion-1-btn-color>.main-slider ul li:nth-child(1) .btn {
+      background-color: [##_var_promotion-1-btn-color_##]
+    }
+
+    </s_if_var_promotion-1-btn-color><s_if_var_promotion-1-btn-hover-color>.main-slider ul li:nth-child(1) .btn:hover {
+      background-color: [##_var_promotion-1-btn-hover-color_##] !important;
+    }
+
+    </s_if_var_promotion-1-btn-hover-color><s_if_var_promotion-2-btn-hover-color>.main-slider ul li:nth-child(2) .btn:hover {
+      background-color: [##_var_promotion-2-btn-hover-color_##] !important;
+    }
+
+    </s_if_var_promotion-2-btn-hover-color><s_if_var_promotion-3-btn-hover-color>.main-slider ul li:nth-child(3) .btn:hover {
+      background-color: [##_var_promotion-3-btn-hover-color_##] !important;
+    }
+
+    </s_if_var_promotion-3-btn-hover-color>
+    /* Image size control - prevent overflow */
+    .entry-content img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .entry-content figure {
+      max-width: 100%;
+      margin: 1.5rem auto;
+    }
+
+    .entry-content figure img {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+
+<body id="[##_body_id_##]"
+  class="<s_if_var_layout-aside>[##_var_layout-aside_##]</s_if_var_layout-aside><s_if_var_list-type> [##_var_list-type_##]</s_if_var_list-type><s_if_var_view-more> [##_var_view-more_##]</s_if_var_view-more><s_not_var_promotion-mobile-view> promotion-mobile-hide</s_not_var_promotion-mobile-view>">
+  <s_t3>
+    <div id="acc-nav">
+      <a href="#content">본문 바로가기</a>
+    </div>
+    <div id="wrap">
+      <header id="header">
+        <div class="inner">
+          <h1>
+            <a href="[##_blog_link_##]">
+              <s_if_var_logo>
+                <img src="[##_var_logo_##]" alt="[##_title_##]">
+              </s_if_var_logo>
+              <s_not_var_logo>
+                [##_title_##]
+              </s_not_var_logo>
+            </a>
+          </h1>
+          <div class="util">
+            <div class="search">
+              <s_search>
+                <label for="[##_search_name_##]" class="screen_out">블로그 내 검색</label>
+                <input id="[##_search_name_##]" type="text" name="[##_search_name_##]" value="[##_search_text_##]"
+                  placeholder="검색내용을 입력하세요." onkeypress="if (event.keyCode == 13) { [##_search_onclick_submit_##] }">
+                <button type="submit" onclick="[##_search_onclick_submit_##]">검색</button>
+              </s_search>
+            </div>
+            <div class="profile">
+              <button type="button">[##_blog_image_##]</button>
+              <nav>
+                <ul>
+                  <li><a href="[##_owner_url_##]">관리</a></li>
+                  <li><a href="[##_owner_url_##]/entry/post ">글쓰기</a></li>
+                  <li class="login"><a href="#">로그인</a></li>
+                  <li class="logout"><a href="#">로그아웃</a></li>
+                </ul>
+              </nav>
+            </div>
+            <button type="button" class="menu"><span>메뉴</span></button>
+          </div>
+          <nav id="gnb">
+            [##_blog_menu_##]
+          </nav>
+        </div>
+      </header>
+      <section id="container">
+        <s_if_var_promotion-1-image>
+          <div class="main-slider">
+            <ul>
+              <li style="background-image: url([##_var_promotion-1-image_##]);">
+                <s_if_var_promotion-1-url>
+                  <a href="[##_var_promotion-1-url_##]">
+                    <span class="inner">
+                      <span class="box">
+                        <s_if_var_promotion-1-text>
+                          <span class="text" <s_if_var_promotion-1-color>
+                            style="color:[##_var_promotion-1-color_##]"</s_if_var_promotion-1-color>>
+                            [##_var_promotion-1-text_##]
+                          </span>
+                        </s_if_var_promotion-1-text>
+                        <span class="btn">바로가기</span>
+                      </span>
+                    </span>
+                  </a>
+                </s_if_var_promotion-1-url>
+                <s_not_var_promotion-1-url>
+                  <span class="inner">
+                    <span class="box">
+                      <s_if_var_promotion-1-text>
+                        <span class="text" <s_if_var_promotion-1-color>
+                          style="color:[##_var_promotion-1-color_##]"</s_if_var_promotion-1-color>>
+                          [##_var_promotion-1-text_##]
+                        </span>
+                      </s_if_var_promotion-1-text>
+                    </span>
+                  </span>
+                </s_not_var_promotion-1-url>
+              </li>
+              <s_if_var_promotion-2-image>
+                <li style="background-image: url([##_var_promotion-2-image_##]);">
+                  <s_if_var_promotion-2-url>
+                    <a href="[##_var_promotion-2-url_##]">
+                      <span class="inner">
+                        <span class="box">
+                          <s_if_var_promotion-2-text>
+                            <span class="text" <s_if_var_promotion-2-color>
+                              style="color:[##_var_promotion-2-color_##]"</s_if_var_promotion-2-color>>
+                              [##_var_promotion-2-text_##]
+                            </span>
+                          </s_if_var_promotion-2-text>
+                          <span class="btn" <s_if_var_promotion-2-btn-color>
+                            style="background-color:[##_var_promotion-2-btn-color_##]"</s_if_var_promotion-2-btn-color>>바로가기</span>
+                        </span>
+                      </span>
+                    </a>
+                  </s_if_var_promotion-2-url>
+                  <s_not_var_promotion-2-url>
+                    <span class="inner">
+                      <span class="box">
+                        <s_if_var_promotion-2-text>
+                          <span class="text" <s_if_var_promotion-2-color>
+                            style="color:[##_var_promotion-2-color_##]"</s_if_var_promotion-2-color>>
+                            [##_var_promotion-2-text_##]
+                          </span>
+                        </s_if_var_promotion-2-text>
+                      </span>
+                    </span>
+                  </s_not_var_promotion-2-url>
+                </li>
+              </s_if_var_promotion-2-image>
+              <s_if_var_promotion-3-image>
+                <li style="background-image: url([##_var_promotion-3-image_##]);">
+                  <s_if_var_promotion-3-url>
+                    <a href="[##_var_promotion-3-url_##]">
+                      <span class="inner">
+                        <span class="box">
+                          <s_if_var_promotion-3-text>
+                            <span class="text" <s_if_var_promotion-3-color>
+                              style="color:[##_var_promotion-3-color_##]"</s_if_var_promotion-3-color>>
+                              [##_var_promotion-3-text_##]
+                            </span>
+                          </s_if_var_promotion-3-text>
+                          <span class="btn" <s_if_var_promotion-3-btn-color>
+                            style="background-color:[##_var_promotion-3-btn-color_##]"</s_if_var_promotion-3-btn-color>>바로가기</span>
+                        </span>
+                      </span>
+                    </a>
+                  </s_if_var_promotion-3-url>
+                  <s_not_var_promotion-3-url>
+                    <span class="inner">
+                      <span class="box">
+                        <s_if_var_promotion-3-text>
+                          <span class="text" <s_if_var_promotion-3-color>
+                            style="color:[##_var_promotion-3-color_##]"</s_if_var_promotion-3-color>>
+                            [##_var_promotion-3-text_##]
+                          </span>
+                        </s_if_var_promotion-3-text>
+                      </span>
+                    </span>
+                  </s_not_var_promotion-3-url>
+                </li>
+              </s_if_var_promotion-3-image>
+            </ul>
+          </div>
+        </s_if_var_promotion-1-image>
+        <div class="content-wrap">
+          <article id="content">
+            [##_revenue_list_upper_##]
+
+            <s_cover_group>
+              <s_cover_rep>
+
+                <s_cover name='cover-thumbnail-1'>
+                  <div class="cover-thumbnail-1">
+                    <h2>[##_cover_title_##]</h2>
+                    <ul>
+                      <s_cover_item>
+                        <li>
+                          <a href="[##_cover_item_url_##]">
+                            <figure>
+                              <s_cover_item_thumbnail>
+                                <img loading="lazy"
+                                  src="//i1.daumcdn.net/thumb/C230x300.fwebp.q85/?fname=[##_cover_item_thumbnail_##]"
+                                  alt="">
+                              </s_cover_item_thumbnail>
+                            </figure>
+                            <span class="title">[##_cover_item_title_##]</span>
+                            <s_cover_item_article_info>
+                              <span class="date">[##_cover_item_simple_date_##]</span>
+                            </s_cover_item_article_info>
+                          </a>
+                        </li>
+                      </s_cover_item>
+                    </ul>
+                    <s_cover_url>
+                      <a href="[##_cover_url_##]" class="more">more</a>
+                    </s_cover_url>
+                  </div>
+                </s_cover>
+
+                <s_cover name='cover-thumbnail-2'>
+                  <div class="cover-thumbnail-2">
+                    <h2>[##_cover_title_##]</h2>
+                    <ul>
+                      <s_cover_item>
+                        <li>
+                          <a href="[##_cover_item_url_##]">
+                            <figure>
+                              <s_cover_item_thumbnail>
+                                <img loading="lazy"
+                                  src="//i1.daumcdn.net/thumb/C126x166.fwebp.q85/?fname=[##_cover_item_thumbnail_##]"
+                                  alt="">
+                              </s_cover_item_thumbnail>
+                            </figure>
+                            <span class="title">[##_cover_item_title_##]</span>
+                            <span class="excerpt">[##_cover_item_summary_##]</span>
+                            <s_cover_item_article_info>
+                              <span class="meta">
+                                <span class="date">[##_cover_item_simple_date_##]</span>
+                              </span>
+                            </s_cover_item_article_info>
+                          </a>
+                        </li>
+                      </s_cover_item>
+                    </ul>
+                  </div>
+                </s_cover>
+
+                <s_cover name='cover-thumbnail-3'>
+                  <div class="cover-thumbnail-3">
+                    <h2>[##_cover_title_##]</h2>
+                    <ul>
+                      <s_cover_item>
+                        <li>
+                          <a href="[##_cover_item_url_##]">
+                            <figure>
+                              <s_cover_item_thumbnail>
+                                <img loading="lazy"
+                                  src="//i1.daumcdn.net/thumb/C126x164.fwebp.q85/?fname=[##_cover_item_thumbnail_##]"
+                                  alt="">
+                              </s_cover_item_thumbnail>
+                            </figure>
+                            <span class="title">[##_cover_item_title_##]</span>
+                          </a>
+                        </li>
+                      </s_cover_item>
+                    </ul>
+                  </div>
+                </s_cover>
+
+                <s_cover name='cover-thumbnail-4'>
+                  <div class="cover-thumbnail-4">
+                    <h2>[##_cover_title_##]</h2>
+                    <ul>
+                      <s_cover_item>
+                        <li>
+                          <a href="[##_cover_item_url_##]">
+                            <figure>
+                              <s_cover_item_thumbnail>
+                                <img loading="lazy"
+                                  src="//i1.daumcdn.net/thumb/C230x140.fwebp.q85/?fname=[##_cover_item_thumbnail_##]"
+                                  alt="">
+                              </s_cover_item_thumbnail>
+                            </figure>
+                            <span class="title">[##_cover_item_title_##]</span>
+                            <s_cover_item_article_info>
+                              <span class="excerpt">[##_cover_item_summary_##]</span>
+                              <span class="meta">
+                                <span class="comment">댓글 [##_cover_item_comment_count_##]</span>
+                                <span class="date">[##_cover_item_simple_date_##]</span>
+                              </span>
+                            </s_cover_item_article_info>
+                          </a>
+                        </li>
+                      </s_cover_item>
+                    </ul>
+                  </div>
+                </s_cover>
+
+                <s_cover name='cover-list'>
+                  <div class="cover-list">
+                    <h2>[##_cover_title_##]</h2>
+                    <ul>
+                      <s_cover_item>
+                        <li>
+                          <a href="[##_cover_item_url_##]">
+                            <span class="title">[##_cover_item_title_##]</span>
+                            <span class="excerpt">[##_cover_item_summary_##]</span>
+                            <s_cover_item_article_info>
+                              <span class="date">[##_cover_item_simple_date_##]</span>
+                            </s_cover_item_article_info>
+                          </a>
+                        </li>
+                      </s_cover_item>
+                    </ul>
+                  </div>
+                </s_cover>
+
+                <s_cover name='cover-event'>
+                  <div class="cover-event">
+                    <h2>[##_cover_title_##]</h2>
+                    <ul>
+                      <s_cover_item>
+                        <li>
+                          <a href="[##_cover_item_url_##]" <s_cover_item_thumbnail>
+                            style="background-image:url(//i1.daumcdn.net/thumb/C360x120.fwebp.q85/?fname=[##_cover_item_thumbnail_##])"
+                            </s_cover_item_thumbnail>>
+                            <s_cover_item_article_info>
+                              <span class="title">[##_cover_item_title_##]</span>
+                              <span class="more">more</span>
+                            </s_cover_item_article_info>
+                          </a>
+                        </li>
+                      </s_cover_item>
+                    </ul>
+                  </div>
+                </s_cover>
+
+              </s_cover_rep>
+            </s_cover_group>
+
+            <s_page_rep>
+              <div class="post-cover">
+                <div class="inner">
+                  <h1>[##_article_rep_title_##]</h1>
+                  <span class="meta">
+                    <span class="author">by [##_article_rep_author_##]</span>
+                    <span class="date">[##_article_rep_simple_date_##]</span>
+                  </span>
+                </div>
+              </div>
+              <div class="entry-content" id="article-view">
+                [##_article_rep_desc_##]
+              </div>
+            </s_page_rep>
+
+            <s_notice_rep>
+              <div class="post-cover notice" <s_notice_rep_thumbnail> style="background-image:
+                url([##_notice_rep_thumbnail_raw_url_##]);"</s_notice_rep_thumbnail>>
+                <div class="inner">
+                  <h1><a href="[##_notice_rep_link_##]">[##_notice_rep_title_##]</a></h1>
+                  <span class="meta">
+                    <span class="date">[##_notice_rep_simple_date_##]</span>
+                  </span>
+                </div>
+              </div>
+              <div class="entry-content" id="article-view">
+                [##_notice_rep_desc_##]
+              </div>
+            </s_notice_rep>
+
+            <s_list>
+              <div class="post-header">
+                <h1><span>[##_list_conform_##]</span><em>[##_list_count_##]</em></h1>
+              </div>
+              <s_list_empty>
+                <div class="not-found">
+                  <ul>
+                    <li>입력하신 단어의 철자가 정확한지 확인해 보세요.</li>
+                    <li>검색어의 단어 수를 줄이거나, 보다 일반적인 단어로 검색해 보세요.</li>
+                    <li>두 단어 이상의 키워드로 검색 하신 경우, 정확하게 띄어쓰기를 한 후 검색해 보세요.</li>
+                  </ul>
+                  <ul class="tag">
+                    <li>선택하신 태그에 해당하는 글이 없습니다.</li>
+                    <li>다른 태그를 선택하시거나, 검색 기능을 활용해 보세요.</li>
+                  </ul>
+                  <ul class="category">
+                    <li>선택하신 카테고리에 해당하는 글이 없습니다.</li>
+                    <li>다른 카테고리를 선택하시거나, 검색 기능을 활용해 보세요.</li>
+                  </ul>
+                  <ul class="archive">
+                    <li>선택하신 기간에 등록된 글이 없습니다.</li>
+                  </ul>
+                </div>
+              </s_list_empty>
+            </s_list>
+
+            <s_article_protected>
+              <s_index_article_rep>
+                <div class="post-item protected">
+                  <a href="[##_article_rep_link_##]"
+                    data-tiara-action-name="블로그글_클릭"
+                    data-tiara-action-kind="ClickContent"
+                    data-tiara-copy="[##_article_rep_title_text_##]"
+                    data-tiara-image="[##_article_rep_thumbnail_url_##]"
+                    data-tiara-click_url="[##_blog_link_##][##_article_rep_link_##]"
+                    data-tiara-name="[##_article_rep_title_text_##]"
+                    data-tiara-provider="[##_title_##]"
+                    data-tiara-plink="[##_article_rep_link_##]"
+                    data-tiara-id="[##_article_rep_link_##]"
+                  >
+                    <span class="thum"></span>
+                    <span class="title">[##_article_rep_title_##]</span>
+                    <span class="excerpt">보호되어 있는 글 입니다.</span>
+                    <span class="meta">
+                      <span class="date">[##_article_rep_simple_date_##]</span>
+                    </span>
+                  </a>
+                </div>
+              </s_index_article_rep>
+
+              <s_permalink_article_rep>
+                <div class="entry-content">
+                  <form class="protected_form" onsubmit="[##_article_dissolve_##]">
+                    <h2>보호되어 있는 글입니다.</h2>
+                    <p>내용을 보시려면 비밀번호를 입력하세요.</p>
+                    <input type="password" id="[##_article_password_##]" name="[##_article_password_##]" value="" placeholder="비밀번호" />
+                    <button type="submit" class="btn">확인</button>
+                  </form>
+                </div>
+              </s_permalink_article_rep>
+            </s_article_protected>
+
+            <div class="inner">
+              <s_article_rep>
+
+                <s_index_article_rep>
+                  <div class="post-item">
+                    <a href="[##_article_rep_link_##]"
+                      data-tiara-action-name="블로그글_클릭"
+                      data-tiara-action-kind="ClickContent"
+                      data-tiara-copy="[##_article_rep_title_text_##]"
+                      data-tiara-image="[##_article_rep_thumbnail_url_##]"
+                      data-tiara-click_url="[##_blog_link_##][##_article_rep_link_##]"
+                      data-tiara-name="[##_article_rep_title_text_##]"
+                      data-tiara-provider="[##_title_##]"
+                      data-tiara-plink="[##_article_rep_link_##]"
+                      data-tiara-id="[##_article_rep_link_##]"
+                    >
+                      <span class="thum">
+                        <s_article_rep_thumbnail>
+                          <img loading="lazy"
+                            src="//i1.daumcdn.net/thumb/C230x300.fwebp.q85/?fname=[##_article_rep_thumbnail_raw_url_##]"
+                            alt="">
+                        </s_article_rep_thumbnail>
+                      </span>
+                      <span class="title">[##_article_rep_title_##]</span>
+                      <span class="excerpt">[##_article_rep_summary_##]</span>
+                      <span class="meta">
+                        <span class="date">[##_article_rep_simple_date_##]</span>
+                      </span>
+                    </a>
+                  </div>
+                </s_index_article_rep>
+
+                <s_permalink_article_rep>
+                  <div class="post-cover" <s_article_rep_thumbnail>
+                    style="background-image:url([##_article_rep_thumbnail_raw_url_##])"</s_article_rep_thumbnail>>
+                    <div class="inner">
+                      <span class="category">[##_article_rep_category_##]</span>
+                      <h1>[##_article_rep_title_##]</h1>
+                      <span class="meta">
+                        <span class="author">by [##_article_rep_author_##]</span>
+                        <span class="date">[##_article_rep_simple_date_##]</span>
+                        [##_s_ad_isolation_##]
+                      </span>
+                    </div>
+                  </div>
+                  <div class="entry-content" id="article-view">
+                    [##_article_rep_desc_##]
+                  </div>
+
+                  <s_tag_label>
+                    <div class="tags">
+                      <h2>태그</h2>
+                      [##_tag_label_rep_##]
+                    </div>
+                  </s_tag_label>
+
+                  <s_article_related>
+                    <div class="related-articles">
+                      <h2>관련글</h2>
+                      <ul>
+                        <s_article_related_rep>
+                          <li>
+                            <a href="[##_article_related_rep_link_##]">
+                              <figure>
+                                <s_article_related_rep_thumbnail>
+                                  <img loading="lazy"
+                                    src="//i1.daumcdn.net/thumb/C176x120.fwebp.q85/?fname=[##_article_related_rep_thumbnail_link_##]"
+                                    alt="">
+                                </s_article_related_rep_thumbnail>
+                              </figure>
+                              <span class="title">[##_article_related_rep_title_##]</span>
+                            </a>
+                          </li>
+                        </s_article_related_rep>
+                      </ul>
+                    </div>
+                  </s_article_related>
+
+                  <div class="comments">
+                    <s_rp>
+                      <div class="tt-comments-wrap">
+                         <script src="https://giscus.app/client.js"
+        data-repo="jojoldu/blog-comments"
+        data-repo-id="MDEwOlJlcG9zaXRvcnk2aXRvcnkxMjM0MjI5MzU="
+        data-category="Comments"
+        data-category-id="DIC_kwDOB1tI184CUn12"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+                      </div>
+                    </s_rp>
+                  </div>
+                </s_permalink_article_rep>
+
+              </s_article_rep>
+
+            </div>
+
+            <s_tag>
+              <div class="post-header">
+                <h1>태그</h1>
+              </div>
+              <div class="tags">
+                <s_tag_rep>
+                  <a href="[##_tag_link_##]">[##_tag_name_##]</a>
+                </s_tag_rep>
+              </div>
+            </s_tag>
+
+            <s_guest>
+              <div class="tt-comments-wrap">
+                 <script src="https://giscus.app/client.js"
+        data-repo="jojoldu/blog-comments"
+        data-repo-id="MDEwOlJlcG9zaXRvcnk2aXRvcnkxMjM0MjI5MzU="
+        data-category="Comments"
+        data-category-id="DIC_kwDOB1tI184CUn12"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+              </div>
+            </s_guest>
+
+            <s_paging>
+              <div class="pagination">
+                <a [##_prev_page_##] class="prev [##_no_more_prev_##]">이전</a>
+                <s_paging_rep>
+                  <a [##_paging_rep_link_##]>[##_paging_rep_link_num_##]</a>
+                </s_paging_rep>
+                <a [##_next_page_##] class="next [##_no_more_next_##]">다음</a>
+              </div>
+            </s_paging>
+
+            [##_revenue_list_lower_##]
+
+          </article>
+          <aside id="aside" class="sidebar">
+
+            <div class="sidebar-1">
+              <s_sidebar>
+                <s_sidebar_element>
+                  <!-- 카테고리 -->
+                  <nav class="category">
+                    [##_category_list_##]
+                  </nav>
+                </s_sidebar_element>
+              </s_sidebar>
+            </div>
+            <div class="sidebar-2">
+              <s_sidebar>
+                <s_sidebar_element>
+                  <!-- 공지사항 -->
+                  <s_rct_notice>
+                    <div class="notice">
+                      <h2>공지사항</h2>
+                      <ul>
+                        <s_rct_notice_rep>
+                          <li>
+                            <a href="[##_notice_rep_link_##]"
+                              data-tiara-action-name="공지목록글_클릭"
+                              data-tiara-action-kind="ClickContent"
+                              data-tiara-copy="[##_notice_rep_title_##]"
+                              data-tiara-click_url="[##_blog_link_##][##_notice_rep_link_##]"
+                              data-tiara-name="[##_notice_rep_title_##]"
+                              data-tiara-provider="[##_title_##]"
+                              data-tiara-plink="[##_notice_rep_link_##]"
+                              data-tiara-id="[##_notice_rep_link_##]"
+                            >[##_notice_rep_title_##]</a>
+                          </li>
+                        </s_rct_notice_rep>
+                      </ul>
+                    </div>
+                  </s_rct_notice>
+                </s_sidebar_element>
+                <s_sidebar_element>
+                  <!-- 최근글/인기글 -->
+                  <div class="post-list tab-ui">
+                    <div id="recent" class="tab-list">
+                      <h2>최근글</h2>
+                      <ul>
+                        <s_rctps_rep>
+                          <li>
+                            <a href="[##_rctps_rep_link_##]">
+                              <s_rctps_rep_thumbnail>
+                                <img loading="lazy"
+                                  src="//i1.daumcdn.net/thumb/C58x58.fwebp.q85/?fname=[##_rctps_rep_thumbnail_##]" alt="" />
+                              </s_rctps_rep_thumbnail>
+                              <span class="title">[##_rctps_rep_title_##]</span>
+                              <span class="date">[##_rctps_rep_simple_date_##]</span>
+                            </a>
+                          </li>
+                        </s_rctps_rep>
+                      </ul>
+                    </div>
+                    <div id="popular" class="tab-list">
+                      <h2>인기글</h2>
+                      <ul>
+                        <s_rctps_popular_rep>
+                          <li>
+                            <a href="[##_rctps_rep_link_##]">
+                              <s_rctps_rep_thumbnail>
+                                <img loading="lazy"
+                                  src="//i1.daumcdn.net/thumb/C58x58.fwebp.q85/?fname=[##_rctps_rep_thumbnail_##]" alt="" />
+                              </s_rctps_rep_thumbnail>
+                              <span class="title">[##_rctps_rep_title_##]</span>
+                              <span class="date">[##_rctps_rep_simple_date_##]</span>
+                            </a>
+                          </li>
+                        </s_rctps_popular_rep>
+                      </ul>
+                    </div>
+                  </div>
+                </s_sidebar_element>
+                <s_sidebar_element>
+                  <!-- 최근댓글 -->
+                  <div class="recent-comment">
+                    <h2>최근댓글</h2>
+                    <ul>
+                      <s_rctrp_rep>
+                        <li><a href="[##_rctrp_rep_link_##]">[##_rctrp_rep_desc_##]</a></li>
+                      </s_rctrp_rep>
+                    </ul>
+                  </div>
+                </s_sidebar_element>
+                <s_sidebar_element>
+                  <!-- Facebook/Twitter -->
+                  <div class="social-list tab-ui">
+                    <s_if_var_facebook-timeline>
+                      <div id="facebook" class="tab-list">
+                        <h2>Facebook</h2>
+                        <div id="fb-root"></div>
+                        <script>(function (d, s, id) {
+                            var js, fjs = d.getElementsByTagName(s)[0];
+                            if (d.getElementById(id)) return;
+                            js = d.createElement(s); js.id = id;
+                            js.src = 'https://connect.facebook.net/ko_KR/sdk.js#xfbml=1&version=v3.2';
+                            fjs.parentNode.insertBefore(js, fjs);
+                          }(document, 'script', 'facebook-jssdk'));</script>
+                        <div class="fb-page" data-href="[##_var_facebook-timeline_##]" data-tabs="timeline"
+                          data-width="230" data-height="400" data-small-header="true" data-adapt-container-width="true"
+                          data-hide-cover="true" data-show-facepile="false"></div>
+                      </div>
+                    </s_if_var_facebook-timeline>
+                    <s_if_var_twitter-timeline>
+                      <div id="twitter" class="tab-list">
+                        <h2>Twitter</h2>
+                        <a class="twitter-timeline" data-width="230" data-height="400"
+                          href="[##_var_twitter-timeline_##]?ref_src=twsrc%5Etfw">[##_var_twitter-timeline_##]</a>
+                        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                      </div>
+                    </s_if_var_twitter-timeline>
+                  </div>
+                </s_sidebar_element>
+              </s_sidebar>
+              <s_sidebar>
+                <s_sidebar_element>
+                  <!-- 태그 -->
+                  <div class="tags">
+                    <h2>태그</h2>
+                    <s_random_tags>
+                      <a href="[##_tag_link_##]">[##_tag_name_##]</a>
+                    </s_random_tags>
+                  </div>
+                </s_sidebar_element>
+                <s_sidebar_element>
+                  <!-- 전체 방문자 -->
+                  <div class="count">
+                    <h2>전체 방문자</h2>
+                    <p class="total">[##_count_total_##]</p>
+                    <p>Today : [##_count_today_##]</p>
+                    <p>Yesterday : [##_count_yesterday_##]</p>
+                  </div>
+                </s_sidebar_element>
+                <s_sidebar_element>
+                  <!-- 소셜 채널 -->
+                  <div class="social-channel">
+                    <ul>
+                      <s_if_var_facebook-link>
+                        <li class="facebook"><a href="[##_var_facebook-link_##]">페이스북</a></li>
+                      </s_if_var_facebook-link>
+                      <s_if_var_instagram-link>
+                        <li class="instagram"><a href="[##_var_instagram-link_##]">인스타그램</a></li>
+                      </s_if_var_instagram-link>
+                      <s_if_var_twitter-link>
+                        <li class="twitter"><a href="[##_var_twitter-link_##]">트위터</a></li>
+                      </s_if_var_twitter-link>
+                      <s_if_var_youtube-link>
+                        <li class="youtube"><a href="[##_var_youtube-link_##]">유투브</a></li>
+                      </s_if_var_youtube-link>
+                    </ul>
+                  </div>
+                </s_sidebar_element>
+              </s_sidebar>
+            </div>
+          </aside>
+        </div>
+      </section>
+      <hr>
+      <footer id="footer">
+        <div class="inner">
+          <div class="order-menu">
+            <s_if_var_order-link-1-title>
+              <a href="[##_var_order-link-1-url_##]">[##_var_order-link-1-title_##]</a>
+            </s_if_var_order-link-1-title>
+            <s_if_var_order-link-2-title>
+              <a href="[##_var_order-link-2-url_##]">[##_var_order-link-2-title_##]</a>
+            </s_if_var_order-link-2-title>
+            <s_if_var_order-link-3-title>
+              <a href="[##_var_order-link-3-url_##]">[##_var_order-link-3-title_##]</a>
+            </s_if_var_order-link-3-title>
+            <s_if_var_order-link-4-title>
+              <a href="[##_var_order-link-4-url_##]">[##_var_order-link-4-title_##]</a>
+            </s_if_var_order-link-4-title>
+          </div>
+          <a href="#" class="page-top">TOP</a>
+          <p class="meta"><s_if_var_footer-text-1>[##_var_footer-text-1_##]</s_if_var_footer-text-1></p>
+          <p class="copyright"><s_if_var_footer-text-2>[##_var_footer-text-2_##]</s_if_var_footer-text-2></p>
+        </div>
+      </footer>
+    </div>
+  </s_t3>
+  <script src="./images/script.js"></script>
+</body>
+
+</html>
