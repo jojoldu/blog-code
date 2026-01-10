@@ -159,6 +159,28 @@
       border-radius: 3px !important;
       font-size: 0.9em !important;
     }
+
+    /* Inline code highlighting - Zenn style */
+    code,
+    .entry-content code,
+    #article-view code {
+      background-color: #fff8e1 !important;
+      color: #e65100 !important;
+      padding: 0.2em 0.4em !important;
+      border-radius: 3px !important;
+      font-size: 0.9em !important;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace !important;
+      border: 1px solid #ffe0b2 !important;
+    }
+
+    /* Code blocks should remain unchanged */
+    pre code,
+    .entry-content pre code,
+    #article-view pre code {
+      background-color: transparent !important;
+      border: none !important;
+      padding: 0 !important;
+    }
   </style>
 </head>
 
