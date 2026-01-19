@@ -1,0 +1,57 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="sandGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f4d03f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d4ac0d;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Decorative circles (representing time/delay) -->
+  <circle cx="950" cy="150" r="80" fill="none" stroke="#0f3460" stroke-width="2" opacity="0.5"/>
+  <circle cx="950" cy="150" r="120" fill="none" stroke="#0f3460" stroke-width="1" opacity="0.3"/>
+  <circle cx="950" cy="150" r="160" fill="none" stroke="#0f3460" stroke-width="1" opacity="0.2"/>
+  
+  <circle cx="200" cy="500" r="60" fill="none" stroke="#0f3460" stroke-width="2" opacity="0.5"/>
+  <circle cx="200" cy="500" r="100" fill="none" stroke="#0f3460" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Hourglass -->
+  <g transform="translate(600, 315)">
+    <!-- Top glass -->
+    <path d="M-60,-150 L60,-150 L60,-130 L15,-20 L15,20 L60,130 L60,150 L-60,150 L-60,130 L-15,20 L-15,-20 L-60,-130 L-60,-150 Z" 
+          fill="none" stroke="#e94560" stroke-width="4" opacity="0.9"/>
+    
+    <!-- Sand in top -->
+    <path d="M-45,-130 L45,-130 L10,-30 L-10,-30 Z" fill="url(#sandGradient)" opacity="0.8"/>
+    
+    <!-- Sand in bottom -->
+    <path d="M-45,130 L45,130 L45,110 L-45,110 Z" fill="url(#sandGradient)" opacity="0.8"/>
+    
+    <!-- Falling sand particles -->
+    <circle cx="0" cy="0" r="3" fill="#f4d03f" opacity="0.9"/>
+    <circle cx="0" cy="20" r="2" fill="#f4d03f" opacity="0.7"/>
+    <circle cx="0" cy="40" r="2" fill="#f4d03f" opacity="0.5"/>
+  </g>
+  
+  <!-- Arrow representing delay -->
+  <g transform="translate(600, 315)">
+    <path d="M-200,0 C-150,-30 -100,-30 -80,0" fill="none" stroke="#0f3460" stroke-width="3" stroke-dasharray="8,4" opacity="0.6"/>
+    <path d="M80,0 C100,30 150,30 200,0" fill="none" stroke="#0f3460" stroke-width="3" stroke-dasharray="8,4" opacity="0.6"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="560" font-family="'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif" font-size="72" font-weight="bold" fill="#ffffff" text-anchor="middle">기다리기</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="600" font-family="'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif" font-size="24" fill="#a0a0a0" text-anchor="middle">행동과 결과 사이의 지연</text>
+  
+  <!-- Small decorative dots -->
+  <circle cx="480" cy="540" r="4" fill="#e94560" opacity="0.8"/>
+  <circle cx="720" cy="540" r="4" fill="#e94560" opacity="0.8"/>
+</svg>
