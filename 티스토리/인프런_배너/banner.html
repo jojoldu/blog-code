@@ -1,0 +1,550 @@
+<!-- 인프런 강의 롤링 배너 (15개 강의 + 수강평) -->
+<style>
+    .inflearn-banner {
+        max-width: 720px;
+        margin: 30px auto;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .inflearn-banner .banner-header {
+        background: linear-gradient(135deg, #00c471, #00a65a);
+        color: #fff;
+        text-align: center;
+        padding: 14px 20px;
+        font-weight: 600;
+        font-size: 15px;
+    }
+
+    .inflearn-banner .banner-container {
+        position: relative;
+        background: #fff;
+    }
+
+    .inflearn-banner .slides-wrapper {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .inflearn-banner .slide {
+        min-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .inflearn-banner .slide-inner {
+        display: flex;
+        padding: 24px;
+        gap: 24px;
+    }
+
+    .inflearn-banner .slide a.main-link {
+        display: flex;
+        gap: 24px;
+        text-decoration: none;
+        color: inherit;
+        flex: 1;
+    }
+
+    .inflearn-banner .thumbnail-wrap {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .inflearn-banner .thumbnail {
+        width: 200px;
+        height: 200px;
+        border-radius: 12px;
+        object-fit: cover;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    .inflearn-banner .course-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .inflearn-banner .promo-text {
+        font-size: 13px;
+        color: #ff6b00;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .inflearn-banner .course-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: #1a1a1a;
+        line-height: 1.4;
+        margin-bottom: 6px;
+    }
+
+    .inflearn-banner .course-meta {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 12px;
+    }
+
+    .inflearn-banner .course-meta .instructor {
+        color: #00c471;
+        font-weight: 600;
+    }
+
+    .inflearn-banner .rating {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 12px;
+        font-size: 13px;
+    }
+
+    .inflearn-banner .rating .stars {
+        color: #ffc107;
+    }
+
+    .inflearn-banner .rating .count {
+        color: #888;
+    }
+
+    .inflearn-banner .review-box {
+        background: #f8f9fa;
+        border-left: 3px solid #00c471;
+        padding: 12px 14px;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 14px;
+    }
+
+    .inflearn-banner .review-text {
+        font-size: 13px;
+        color: #444;
+        line-height: 1.6;
+        font-style: italic;
+    }
+
+    .inflearn-banner .review-author {
+        font-size: 12px;
+        color: #888;
+        margin-top: 6px;
+    }
+
+    .inflearn-banner .cta-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: linear-gradient(135deg, #00c471, #00a65a);
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        margin-top: auto;
+        width: fit-content;
+    }
+
+    .inflearn-banner .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,196,113,0.4);
+    }
+
+    .inflearn-banner .nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #fff;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        transition: all 0.2s;
+    }
+
+    .inflearn-banner .nav-btn:hover {
+        background: #f5f5f5;
+        transform: translateY(-50%) scale(1.05);
+    }
+
+    .inflearn-banner .nav-btn.prev { left: 12px; }
+    .inflearn-banner .nav-btn.next { right: 12px; }
+
+    .inflearn-banner .nav-btn svg {
+        width: 18px;
+        height: 18px;
+        fill: #333;
+    }
+
+    .inflearn-banner .indicators {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        padding: 16px 0;
+        background: #fafafa;
+        border-top: 1px solid #f0f0f0;
+        flex-wrap: wrap;
+    }
+
+    .inflearn-banner .indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ddd;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .inflearn-banner .indicator.active {
+        background: #00c471;
+        transform: scale(1.3);
+    }
+
+    @media (max-width: 600px) {
+        .inflearn-banner .slide-inner {
+            flex-direction: column;
+            padding: 20px;
+        }
+        .inflearn-banner .slide a.main-link {
+            flex-direction: column;
+        }
+        .inflearn-banner .thumbnail {
+            width: 100%;
+            height: 180px;
+        }
+        .inflearn-banner .course-title {
+            font-size: 15px;
+        }
+        .inflearn-banner .review-box {
+            padding: 10px 12px;
+        }
+        .inflearn-banner .review-text {
+            font-size: 12px;
+        }
+    }
+</style>
+
+<div class="inflearn-banner">
+    <div class="banner-header" id="inflearnHeader">
+        🤖 AI 시대, 개발자의 생존 전략
+    </div>
+
+    <div class="banner-container">
+        <button class="nav-btn prev" onclick="inflearnSlide(-1)">
+            <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </button>
+
+        <div class="slides-wrapper" id="inflearnSlides"></div>
+
+        <button class="nav-btn next" onclick="inflearnSlide(1)">
+            <svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+        </button>
+    </div>
+
+    <div class="indicators" id="inflearnIndicators"></div>
+</div>
+
+<script>
+    (function() {
+        const slidesData = [
+            {
+                header: '🤖 AI 시대, 개발자의 생존 전략',
+                href: 'https://inf.run/ZzaQn',
+                img: 'https://cdn.inflearn.com/public/files/courses/340204/cover/01kdq400svs4gc7zjf5qembtwk',
+                alt: '제미니의 개발실무',
+                promo: '🔥 레거시 코드에 지쳤다면? AI로 돌파구를 찾으세요!',
+                title: '제미니의 개발실무 - 커머스 백엔드 레거시와 AI 활용편',
+                instructor: '제미니',
+                instructorSuffix: '전 토스페이먼츠 기술이사',
+                ratingScore: '5.0',
+                ratingCount: '(2개 수강평)',
+                reviewText: '"일을 잘 하는 개발자로써 필요한 것들을 알려주는 강의여서 더 놀랬어요. 스스로 생각하도록 유도하는 말이 자주 나와요."',
+                reviewAuthor: '- drag***terr (4년차 개발자)'
+            },
+            {
+                header: '🤖 AI 시대, 업무 생산성 혁신',
+                href: 'https://inf.run/a5ifg',
+                img: 'https://cdn.inflearn.com/public/courses/335583/cover/0a35b6cc-c88a-4c53-a39f-2f34ce3a7a2b/335583.jpg',
+                alt: '공공기관 생성AI',
+                promo: '📋 공공기관 실무자를 위한 생성AI 활용 가이드!',
+                title: '공공기관 및 비영리단체를 위한 생성AI 활용 비법',
+                instructor: '박형주',
+                instructorSuffix: '오픈러닝랩 소장',
+                ratingScore: '5.0',
+                ratingCount: '(2개 수강평)'
+            },
+            {
+                header: '🏗️ 백엔드 아키텍처의 정석',
+                href: 'https://inf.run/YKPuw',
+                img: 'https://cdn.inflearn.com/public/files/courses/336073/cover/01jxenn0g2x8x74qp6gfyvwpan',
+                alt: '토비의 클린 스프링',
+                promo: '🏗️ 헥사고날 아키텍처의 정석을 배우세요!',
+                title: '토비의 클린 스프링 - 도메인 모델 패턴과 헥사고날 아키텍처 Part 1',
+                instructor: '토비',
+                ratingScore: '5.0',
+                ratingCount: '(253개 수강평)',
+                reviewText: '"대한민국 스프링 대장의 업무 스타일과 노하우를 간접 체험할 수 있는 소중한 시간이었습니다. 테스트 코드의 가치를 더 보여줬습니다."',
+                reviewAuthor: '- 최*형 (100% 완강)'
+            },
+            {
+                header: '🤖 AI 시대, 개발자의 생존 전략',
+                href: 'https://inf.run/EqjuQ',
+                img: 'https://cdn.inflearn.com/public/files/courses/339317/cover/01ka8fyg15t2g2tzh7hcd5ern5.gif',
+                alt: '클로드 코드 마스터',
+                promo: '🤖 Claude Code로 AI 개발 워크플로우 마스터!',
+                title: '클로드 코드 완벽 마스터: AI 개발 워크플로우 기초부터 실전까지',
+                instructor: '짐코딩',
+                ratingScore: '4.9',
+                ratingCount: '(118개 수강평)',
+                reviewText: '"AI를 \'도구\'가 아니라 \'개발 파트너\'로 쓰고 싶은 분들께 특히 추천합니다. 실무에서 바로 써먹을 수 있는 점이 가장 좋았습니다."',
+                reviewAuthor: '- Bul***s (58% 수강)'
+            },
+            {
+                header: '✍️ 개발자 커리어 성장 전략',
+                href: 'https://inf.run/8F5ra',
+                img: 'https://cdn.inflearn.com/public/courses/334432/cover/cd027c97-91ea-4c24-87aa-119da01eb184/334432.png',
+                alt: '기술 블로그 글쓰기',
+                promo: '✍️ 300만 페이지뷰의 비결을 공개합니다!',
+                title: '블로그 페이지뷰 300만이 알려주는 "실용주의 기술 블로그 글쓰기"',
+                instructor: '카일스쿨',
+                ratingScore: '4.8',
+                ratingCount: '(42개 수강평)',
+                reviewText: '"지금 당장 행동하지 않으면 이 모든 좋은 강의들이 다 그냥 지나가 버릴까봐 지금부터 완벽이아닌 완료를 목표로 블로그를 운영해보려고 합니다!"',
+                reviewAuthor: '- 담* (100% 완강)'
+            },
+            {
+                header: '⚡ 풀스택 개발의 지름길',
+                href: 'https://inf.run/YoZC6',
+                img: 'https://cdn.inflearn.com/public/courses/332907/cover/2975d3d7-5dcc-4e2a-977c-98b11134cfb6/332907.jpg',
+                alt: 'Supabase 풀스택',
+                promo: '⚡ Supabase + Next.js로 풀스택 완성!',
+                title: '[풀스택 완성] Supabase로 웹사이트 3개 클론하기 (Next.js 14)',
+                instructor: '로펀',
+                ratingScore: '4.9',
+                ratingCount: '(54개 수강평)',
+                reviewText: '"투두리스트 같은 간단한 프로젝트로 Supabase의 기본을 익히고 나서 Storage나 Auth 같은 주요 기능들도 직접 구현해볼 수 있는 점이 마음에 들었습니다."',
+                reviewAuthor: '- Ja** (66% 수강)'
+            },
+            {
+                header: '📝 업무 생산성 200% 올리기',
+                href: 'https://inf.run/MXt4C',
+                img: 'https://cdn.inflearn.com/public/files/courses/337714/cover/01jyn838cx48pfk0hfh77c2k2q',
+                alt: '옵시디언 마스터',
+                promo: '📝 생산성을 바꾸는 기록 습관의 시작!',
+                title: '옵시디언 마스터 클래스(생산성을 바꾸는 기록 습관)',
+                instructor: '조영수(데이먼)',
+                ratingScore: '4.9',
+                ratingCount: '(90개 수강평)',
+                reviewText: '"옵시디언은 정말 최고의 툴입니다. AI 시대에 제 데이터를 쌓고 있다는 생각이 듭니다. 잘 정리한 데이터가 AI를 통해 정리될 때 희열을 느낍니다."',
+                reviewAuthor: '- 임*택 (96% 수강)'
+            },
+            {
+                header: '🎯 개발자 취업/이직 완벽 대비',
+                href: 'https://inf.run/caDnf',
+                img: 'https://cdn.inflearn.com/public/files/courses/337293/cover/01k69vfbrhm2034cb4pxyq5cbk',
+                alt: '코딩 인터뷰',
+                promo: '🌏 국내는 물론 해외 취업까지!',
+                title: '국내는 기본, 해외까지 노리는 코딩 인터뷰 실전 패키지',
+                instructor: '미쿡엔지니어',
+                ratingScore: '5.0',
+                ratingCount: '(9개 수강평)',
+                reviewText: '"채용 과정에서 코딩 인터뷰를 하는 의도가 무엇인지, 코딩 인터뷰의 핵심에 대해 잘 설명하고 있습니다. 끝까지 완강하겠습니다."',
+                reviewAuthor: '- 든든***마 (56% 수강)'
+            },
+            {
+                header: '🤖 AI 시대, 업무 생산성 혁신',
+                href: 'https://inf.run/32icw',
+                img: 'https://cdn.inflearn.com/public/files/courses/339976/cover/01kf5azeavfx6ftdt8db88jbdm',
+                alt: 'GAMMA 마스터',
+                promo: '🎨 AI로 프레젠테이션 자동 생성!',
+                title: 'GAMMA 마스터 코스: AI를 사용하여 프레젠테이션을 자동 생성하는 방법',
+                instructor: 'UMINO',
+                ratingScore: '-'
+            },
+            {
+                header: '🤖 AI 시대, 개발자의 생존 전략',
+                href: 'https://inf.run/x6mn7',
+                img: 'https://cdn.inflearn.com/public/files/courses/340242/cover/01kfdb25rybs92qftj95q38p2d',
+                alt: 'AI Native',
+                promo: '🚀 AI 시대, 일의 미래를 미리 경험하세요!',
+                title: '[밋업vod] AI Native 회사의 일하는 방식으로 보는 일의 미래',
+                instructor: '골빈해커',
+                ratingScore: '4.7',
+                ratingCount: '(6개 수강평)',
+                reviewText: '"AI 시대에 개발자가 어떤 마음가짐을 가지고 임해야 나 자신을 \'개발자\'라고 정의내릴 수 있을까가 항상 고민이었습니다. 너무나 큰 인사이트를 얻어갈 수 있었습니다."',
+                reviewAuthor: '- yk***64'
+            },
+            {
+                header: '🎯 PM/PO를 위한 프로덕트 인사이트',
+                href: 'https://inf.run/a1SXy',
+                img: 'https://cdn.inflearn.com/public/files/courses/340145/cover/01kd59gr6k4qbznvjx1y8ntq8r',
+                alt: '북토크',
+                promo: '📖 제품을 만드는 사람들을 위한 이야기',
+                title: '[북토크VOD] 실패를 통과하는 일: 제품을 만드는 사람들을 위한 북토크',
+                instructor: 'Soryoung Park',
+                instructorSuffix: '퍼블리 창업자',
+                ratingScore: '-'
+            },
+            {
+                header: '💼 리더십과 소프트 스킬',
+                href: 'https://inf.run/h22Dz',
+                img: 'https://cdn.inflearn.com/public/files/courses/337501/cover/01jvfdz4nry64w1wvg3savkq5t',
+                alt: '리더십 메시지',
+                promo: '💼 글로벌 CEO가 찾는 코치의 노하우!',
+                title: '글로벌/대기업/스타트업 CEO가 찾는 코치 김호의 리더십 메시지 메이커',
+                instructor: 'hoh.coach',
+                ratingScore: '5.0',
+                ratingCount: '(9개 수강평)',
+                reviewText: '"커뮤니케이션은 직무나 직급을 막론하고 모든 비즈니스 상황에서 중요하다고 생각합니다. 커리어 전반에 걸쳐 써먹을 수 있는 유익한 팁이 많아서 직장 생활을 하는 모든 분들께 추천드리는 강의예요!"',
+                reviewAuthor: '- 성실***고래 (31% 수강)'
+            },
+            {
+                header: '✍️ 개발자 커리어 성장 전략',
+                href: 'https://inf.run/qiu1m',
+                img: 'https://cdn.inflearn.com/public/courses/333674/cover/a2ca4413-bf64-40d7-9cde-1cf4c34645a9/333674.png',
+                alt: '시니어 개발자',
+                promo: '📈 주니어에서 시니어로 성장하는 로드맵!',
+                title: '시니어 개발자로 성장하기',
+                instructor: 'Chaesang Jung',
+                ratingScore: '4.8',
+                ratingCount: '(4개 수강평)',
+                reviewText: '"좋은 강의 잘 들었습니다. 제가 생각하지 못하는 얘기를 많이 해 주셨습니다. 나중에 다시 들어 보자라는 생각을 하게 되네요. 감사합니다."',
+                reviewAuthor: '- sun**75 (100% 완강)'
+            },
+            {
+                header: '📊 데이터 기반 비즈니스 성장',
+                href: 'https://inf.run/1MH6u',
+                img: 'https://cdn.inflearn.com/public/files/courses/333200/cover/01jz0ghrph3rvwcpjeq660wgk9',
+                alt: '그로스 마케팅',
+                promo: '📊 데이터 기반 고객 중심 마케팅!',
+                title: '데이터 드리븐 그로스 마케팅 - 고객 중심의 문제 해결력 업그레이드',
+                instructor: '서현직',
+                ratingScore: '5.0',
+                ratingCount: '(80개 수강평)',
+                reviewText: '"그로스 관점으로 과거에 했던 일 + 현재 / 미래 업무를 바라보고 성과를 내고 싶습니다! 마케팅을 시작하는 분이라면 개념/기본 탄탄히 다지고 커리어를 시작한다면 분명 멋진 커리어를 만들어 나갈 수 있으리라 확신합니다!"',
+                reviewAuthor: '- 리* (25% 수강)'
+            },
+            {
+                header: '🎯 PM/PO를 위한 프로덕트 인사이트',
+                href: 'https://inf.run/q4G5H',
+                img: 'https://cdn.inflearn.com/public/courses/332958/cover/63c0cd6c-37fd-4fdb-b2c6-bcd85506b479/332958.png',
+                alt: 'PM/PO 프로덕트',
+                promo: '🎯 PM/PO를 위한 프로덕트 A to Z!',
+                title: '시작하는 PM/PO들에게 알려주고 싶은, 프로덕트의 모든 것',
+                instructor: '김민우',
+                ratingScore: '4.9',
+                ratingCount: '(64개 수강평)',
+                reviewText: '"첫 PM 업무를 맡은 상황에서 새로 프로덕트 출시를 준비하고 있었기 때문에 강의 내용을 챕터별로 따라가며 적용할 수 있었어요. PM을 처음 준비하며 생긴 답답함을 해소해주는 강의여서 감사하는 마음으로 수강했어요."',
+                reviewAuthor: '- sha***mon'
+            }
+        ];
+
+        let currentSlide = 0;
+        const wrapper = document.getElementById('inflearnSlides');
+        const indicatorsContainer = document.getElementById('inflearnIndicators');
+        let slides = [];
+        let indicators = [];
+        const header = document.getElementById('inflearnHeader');
+        let totalSlides = 0;
+
+        function buildSlides() {
+            const slidesHtml = slidesData.map(function(item) {
+                let instructorMeta = '<span class="instructor">' + item.instructor + '</span>';
+                if (item.instructorSuffix) {
+                    instructorMeta += ' · ' + item.instructorSuffix;
+                }
+                let ratingHtml = '<span class="stars">★★★★★</span> <span>' + item.ratingScore + '</span>';
+                if (item.ratingCount) {
+                    ratingHtml += ' <span class="count">' + item.ratingCount + '</span>';
+                }
+                let reviewHtml = '';
+                if (item.reviewText && item.reviewAuthor) {
+                    reviewHtml = '<div class="review-box">' +
+                        '<div class="review-text">' + item.reviewText + '</div>' +
+                        '<div class="review-author">' + item.reviewAuthor + '</div>' +
+                        '</div>';
+                }
+                return '' +
+                    '<div class="slide" data-header="' + item.header + '">' +
+                        '<div class="slide-inner">' +
+                            '<a href="' + item.href + '" target="_blank" rel="noopener" class="main-link">' +
+                                '<div class="thumbnail-wrap">' +
+                                    '<img class="thumbnail" src="' + item.img + '" alt="' + item.alt + '">' +
+                                '</div>' +
+                                '<div class="course-info">' +
+                                    '<div class="promo-text">' + item.promo + '</div>' +
+                                    '<div class="course-title">' + item.title + '</div>' +
+                                    '<div class="course-meta">' + instructorMeta + '</div>' +
+                                    '<div class="rating">' + ratingHtml + '</div>' +
+                                    reviewHtml +
+                                    '<span class="cta-button">강의 보러가기 →</span>' +
+                                '</div>' +
+                            '</a>' +
+                        '</div>' +
+                    '</div>';
+            }).join('');
+
+            const indicatorsHtml = slidesData.map(function(_, index) {
+                const activeClass = index === 0 ? ' active' : '';
+                return '<span class="indicator' + activeClass + '" onclick="inflearnGoTo(' + index + ')"></span>';
+            }).join('');
+
+            wrapper.innerHTML = slidesHtml;
+            indicatorsContainer.innerHTML = indicatorsHtml;
+            slides = wrapper.querySelectorAll('.slide');
+            indicators = indicatorsContainer.querySelectorAll('.indicator');
+            totalSlides = slides.length;
+            if (slidesData.length && header) {
+                header.textContent = slidesData[0].header;
+            }
+        }
+
+        buildSlides();
+
+        let autoSlide = setInterval(function() { inflearnSlide(1); }, 6000);
+
+        window.inflearnSlide = function(direction) {
+            currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+            updateSlide();
+            resetAutoSlide();
+        };
+
+        window.inflearnGoTo = function(index) {
+            currentSlide = index;
+            updateSlide();
+            resetAutoSlide();
+        };
+
+        function updateSlide() {
+            wrapper.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
+            for (let i = 0; i < indicators.length; i++) {
+                if (i === currentSlide) {
+                    indicators[i].classList.add('active');
+                } else {
+                    indicators[i].classList.remove('active');
+                }
+            }
+            const currentHeader = slides[currentSlide].getAttribute('data-header');
+            if (currentHeader && header) {
+                header.textContent = currentHeader;
+            }
+        }
+
+        function resetAutoSlide() {
+            clearInterval(autoSlide);
+            autoSlide = setInterval(function() { inflearnSlide(1); }, 6000);
+        }
+
+        const banner = document.querySelector('.inflearn-banner');
+        banner.addEventListener('mouseenter', function() { clearInterval(autoSlide); });
+        banner.addEventListener('mouseleave', function() {
+            autoSlide = setInterval(function() { inflearnSlide(1); }, 6000);
+        });
+    })();
+</script>
