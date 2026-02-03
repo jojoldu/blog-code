@@ -1,0 +1,95 @@
+{
+  "categories": [
+    {
+      "id": 5,
+      "slug": "it-programming",
+      "title": "개발 · 프로그래밍",
+      "originalTitle": "개발 · 프로그래밍",
+      "icon": "computer-classic"
+    },
+    {
+      "id": 494,
+      "slug": "career",
+      "title": "커리어 · 자기계발",
+      "originalTitle": "커리어 · 자기계발",
+      "icon": "compass"
+    },
+    {
+      "id": 456,
+      "slug": "artificial-intelligence",
+      "title": "AI 기술",
+      "originalTitle": "AI 기술",
+      "icon": "microchip-ai"
+    },
+    {
+      "id": 9,
+      "slug": "data-science",
+      "title": "데이터 사이언스",
+      "originalTitle": "데이터 사이언스",
+      "icon": "atom-simple"
+    },
+    {
+      "id": 183380,
+      "slug": "Applied-ai",
+      "title": "AI 활용(AX)",
+      "originalTitle": "AI 활용(AX)",
+      "icon": "robot"
+    },
+    {
+      "id": 39306,
+      "slug": "game-dev-all",
+      "title": "게임 개발",
+      "originalTitle": "게임 개발",
+      "icon": "alien-8bit"
+    },
+    {
+      "id": 492,
+      "slug": "it",
+      "title": "보안 · 네트워크",
+      "originalTitle": "보안 · 네트워크",
+      "icon": "shield-check"
+    },
+    {
+      "id": 178677,
+      "slug": "hardware",
+      "title": "하드웨어",
+      "originalTitle": "하드웨어",
+      "icon": "microchip"
+    },
+    {
+      "id": 22,
+      "slug": "design",
+      "title": "디자인 · 아트",
+      "originalTitle": "디자인 · 아트",
+      "icon": "palette"
+    },
+    {
+      "id": 33,
+      "slug": "business",
+      "title": "기획 · 경영 · 마케팅",
+      "originalTitle": "기획 · 경영 · 마케팅",
+      "icon": "briefcase"
+    },
+    {
+      "id": 462,
+      "slug": "foreign-language",
+      "title": "외국어",
+      "originalTitle": "외국어",
+      "icon": "language"
+    },
+    {
+      "id": 666,
+      "slug": "productivity",
+      "title": "업무 생산성",
+      "originalTitle": "업무 생산성",
+      "icon": "book-open-reader"
+    },
+    {
+      "id": 493,
+      "slug": "academics",
+      "title": "대학 교육",
+      "originalTitle": "대학 교육",
+      "icon": "book-atlas"
+    }
+  ]
+}

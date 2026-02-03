@@ -1,0 +1,132 @@
+<!-- 개발바닥 유튜브 사이드바 배너 -->
+<style>
+    .devbadak-banner {
+        display: block;
+        width: 100%;
+        max-width: 250px;
+        background: linear-gradient(135deg, #ff0000 0%, #cc0000 50%, #990000 100%);
+        border-radius: 16px;
+        overflow: hidden;
+        text-decoration: none;
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(255,0,0,0.25);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        position: relative;
+    }
+
+    .devbadak-banner:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 35px rgba(255,0,0,0.35);
+        text-decoration: none;
+        color: #fff;
+    }
+
+    .devbadak-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #fff;
+        color: #ff0000;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 20px;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .devbadak-badge svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .devbadak-header {
+        position: relative;
+        padding: 32px 14px 14px;
+        text-align: center;
+    }
+
+    .devbadak-thumb-wrap {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+    .devbadak-thumb {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        border: 3px solid rgba(255,255,255,0.3);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        object-fit: cover;
+    }
+
+    .devbadak-title {
+        font-size: 16px;
+        font-weight: 900;
+        line-height: 1.3;
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .devbadak-subtitle {
+        font-size: 11px;
+        color: rgba(255,255,255,0.85);
+        margin-top: 6px;
+        line-height: 1.4;
+    }
+
+    .devbadak-stats {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 12px 16px;
+        background: rgba(0,0,0,0.15);
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .devbadak-stat {
+        text-align: center;
+    }
+
+    .devbadak-stat-value {
+        font-size: 14px;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .devbadak-stat-label {
+        font-size: 9px;
+        color: rgba(255,255,255,0.6);
+        margin-top: 2px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+</style>
+
+<a href="https://www.youtube.com/@devbadak" class="devbadak-banner" target="_blank" rel="noopener noreferrer">
+  <span class="devbadak-badge">
+    <svg viewBox="0 0 24 24"><path fill="#ff0000" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+    YouTube
+  </span>
+    <div class="devbadak-header">
+        <div class="devbadak-thumb-wrap">
+            <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fbim1Va%2FbtqTF33hmUr%2FnPP1Khw4ZRyOqe196PiFhk%2Fimg.png" alt="개발바닥" class="devbadak-thumb">
+        </div>
+        <h3 class="devbadak-title">개발바닥</h3>
+        <p class="devbadak-subtitle">현직 시니어 개발자들의 솔직한 개발 이야기</p>
+    </div>
+    <div class="devbadak-stats">
+        <div class="devbadak-stat">
+            <div class="devbadak-stat-value">4.8만+</div>
+            <div class="devbadak-stat-label">구독자</div>
+        </div>
+        <div class="devbadak-stat">
+            <div class="devbadak-stat-value">200+</div>
+            <div class="devbadak-stat-label">영상</div>
+        </div>
+    </div>
+</a>

@@ -1,0 +1,420 @@
+<script>
+/**
+ * 블로그 글 본문 내용을 분석하여 categories.json의 카테고리 중 적절한 것을 추출하는 스크립트
+ * 티스토리 블로그 상세 페이지 (jojoldu.tistory.com/{id}) 에서 동작
+ */
+
+(function() {
+  'use strict';
+
+  // 카테고리 정의 (categories.json 기반)
+  const CATEGORIES = [
+    {
+      id: 5,
+      slug: "it-programming",
+      title: "개발 · 프로그래밍",
+      keywords: [
+        // 프로그래밍 언어
+        "java", "자바", "kotlin", "코틀린", "javascript", "자바스크립트", "typescript", "타입스크립트",
+        "python", "파이썬", "go", "golang", "rust", "러스트", "c++", "c#", "swift", "스위프트",
+        // 프레임워크 & 라이브러리
+        "spring", "스프링", "springboot", "스프링부트", "spring boot", "jpa", "hibernate", "하이버네이트",
+        "querydsl", "mybatis", "마이바티스", "react", "리액트", "vue", "뷰", "angular", "앵귤러",
+        "next.js", "nextjs", "넥스트", "node.js", "nodejs", "노드", "express", "nestjs",
+        // 개발 도구 & 환경
+        "intellij", "인텔리제이", "vscode", "webstorm", "웹스톰", "eclipse", "이클립스", "ide",
+        "git", "깃", "github", "깃허브", "gitlab", "깃랩", "docker", "도커", "kubernetes", "쿠버네티스", "k8s",
+        // 빌드 도구
+        "gradle", "그래들", "maven", "메이븐", "npm", "yarn", "webpack", "웹팩",
+        // 테스트
+        "junit", "spock", "스팍", "mockito", "모키토", "test", "테스트", "tdd", "bdd",
+        // 기타 개발 관련
+        "api", "rest", "restful", "graphql", "그래프큐엘", "microservice", "마이크로서비스",
+        "refactoring", "리팩토링", "clean code", "클린코드", "디자인패턴", "design pattern",
+        "알고리즘", "algorithm", "자료구조", "data structure", "코딩", "coding", "프로그래밍", "programming",
+        "객체지향", "oop", "함수형", "functional", "개발자", "developer", "백엔드", "backend", "프론트엔드", "frontend"
+      ]
+    },
+    {
+      id: 494,
+      slug: "career",
+      title: "커리어 · 자기계발",
+      keywords: [
+        "커리어", "career", "이직", "취업", "면접", "interview", "채용", "hiring",
+        "자기계발", "self-development", "성장", "growth", "회고", "retrospective",
+        "주니어", "junior", "시니어", "senior", "신입", "경력", "연봉", "salary",
+        "개발자 생활", "직장생활", "회사생활", "워라밸", "work-life balance",
+        "리더십", "leadership", "팀장", "매니저", "manager", "cto", "tech lead",
+        "코딩테스트", "coding test", "알고리즘 테스트", "기술면접", "인성면접",
+        "포트폴리오", "portfolio", "이력서", "resume", "자기소개서",
+        "스타트업", "startup", "대기업", "중소기업", "외국계"
+      ]
+    },
+    {
+      id: 456,
+      slug: "artificial-intelligence",
+      title: "AI 기술",
+      keywords: [
+        "ai", "인공지능", "artificial intelligence", "머신러닝", "machine learning", "ml",
+        "딥러닝", "deep learning", "dl", "신경망", "neural network",
+        "tensorflow", "텐서플로우", "pytorch", "파이토치", "keras", "케라스",
+        "자연어처리", "nlp", "natural language processing", "컴퓨터비전", "computer vision",
+        "llm", "large language model", "gpt", "chatgpt", "챗gpt", "claude", "클로드",
+        "bert", "transformer", "트랜스포머", "생성ai", "generative ai",
+        "langchain", "랭체인", "embedding", "임베딩", "vector", "벡터",
+        "rag", "fine-tuning", "파인튜닝", "prompt", "프롬프트"
+      ]
+    },
+    {
+      id: 9,
+      slug: "data-science",
+      title: "데이터 사이언스",
+      keywords: [
+        "데이터", "data", "데이터분석", "data analysis", "데이터사이언스", "data science",
+        "빅데이터", "big data", "통계", "statistics", "분석", "analytics",
+        "pandas", "판다스", "numpy", "넘파이", "matplotlib", "시각화", "visualization",
+        "데이터베이스", "database", "db", "sql", "mysql", "postgresql", "포스트그레스",
+        "mongodb", "몽고db", "redis", "레디스", "elasticsearch", "엘라스틱서치",
+        "etl", "data pipeline", "데이터파이프라인", "airflow", "에어플로우",
+        "spark", "스파크", "hadoop", "하둡", "kafka", "카프카",
+        "데이터엔지니어", "data engineer", "데이터분석가", "data analyst"
+      ]
+    },
+    {
+      id: 183380,
+      slug: "Applied-ai",
+      title: "AI 활용(AX)",
+      keywords: [
+        "ai활용", "ai 활용", "copilot", "코파일럿", "github copilot", "깃허브 코파일럿",
+        "cursor", "커서", "claude code", "클로드코드", "ai assistant", "ai 어시스턴트",
+        "자동화", "automation", "ai도구", "ai 도구", "ai tool",
+        "코드생성", "code generation", "ai 개발", "ai development",
+        "생산성", "productivity", "효율", "efficiency"
+      ]
+    },
+    {
+      id: 39306,
+      slug: "game-dev-all",
+      title: "게임 개발",
+      keywords: [
+        "게임", "game", "게임개발", "game development", "게임엔진", "game engine",
+        "unity", "유니티", "unreal", "언리얼", "unreal engine",
+        "게임디자인", "game design", "게임기획", "인디게임", "indie game",
+        "모바일게임", "mobile game", "pc게임", "콘솔게임", "console game"
+      ]
+    },
+    {
+      id: 492,
+      slug: "it",
+      title: "보안 · 네트워크",
+      keywords: [
+        "보안", "security", "해킹", "hacking", "취약점", "vulnerability",
+        "인증", "authentication", "인가", "authorization", "oauth", "jwt", "토큰",
+        "암호화", "encryption", "ssl", "tls", "https", "인증서", "certificate",
+        "네트워크", "network", "tcp", "udp", "http", "dns", "ip", "소켓", "socket",
+        "방화벽", "firewall", "vpn", "프록시", "proxy", "로드밸런서", "load balancer",
+        "xss", "csrf", "sql injection", "보안취약점"
+      ]
+    },
+    {
+      id: 178677,
+      slug: "hardware",
+      title: "하드웨어",
+      keywords: [
+        "하드웨어", "hardware", "임베디드", "embedded", "iot", "사물인터넷",
+        "라즈베리파이", "raspberry pi", "아두이노", "arduino",
+        "반도체", "semiconductor", "cpu", "gpu", "메모리", "memory", "ssd", "hdd",
+        "서버", "server", "pc", "맥", "mac", "맥북", "macbook", "m1", "m2", "m3"
+      ]
+    },
+    {
+      id: 22,
+      slug: "design",
+      title: "디자인 · 아트",
+      keywords: [
+        "디자인", "design", "ui", "ux", "ui/ux", "사용자경험", "user experience",
+        "figma", "피그마", "sketch", "스케치", "adobe", "포토샵", "photoshop",
+        "일러스트", "illustrator", "웹디자인", "web design", "앱디자인", "app design",
+        "그래픽", "graphic", "아이콘", "icon", "타이포그래피", "typography"
+      ]
+    },
+    {
+      id: 33,
+      slug: "business",
+      title: "기획 · 경영 · 마케팅",
+      keywords: [
+        "기획", "planning", "경영", "management", "마케팅", "marketing",
+        "pm", "product manager", "프로덕트매니저", "po", "product owner",
+        "비즈니스", "business", "사업", "창업", "스타트업", "startup",
+        "그로스", "growth", "그로스해킹", "growth hacking",
+        "마케터", "marketer", "브랜딩", "branding", "광고", "advertising",
+        "seo", "검색엔진최적화", "콘텐츠마케팅", "content marketing"
+      ]
+    },
+    {
+      id: 462,
+      slug: "foreign-language",
+      title: "외국어",
+      keywords: [
+        "영어", "english", "일본어", "japanese", "중국어", "chinese",
+        "외국어", "language", "언어", "번역", "translation",
+        "영어회화", "영어공부", "토익", "toeic", "토플", "toefl", "ielts"
+      ]
+    },
+    {
+      id: 666,
+      slug: "productivity",
+      title: "업무 생산성",
+      keywords: [
+        "생산성", "productivity", "효율", "efficiency", "업무", "work",
+        "노션", "notion", "옵시디언", "obsidian", "슬랙", "slack",
+        "협업", "collaboration", "tool", "도구", "업무도구",
+        "자동화", "automation", "워크플로우", "workflow",
+        "시간관리", "time management", "할일관리", "todo", "일정관리",
+        "문서화", "documentation", "기록", "note", "메모"
+      ]
+    },
+    {
+      id: 493,
+      slug: "academics",
+      title: "대학 교육",
+      keywords: [
+        "대학", "university", "college", "학교", "school",
+        "교육", "education", "강의", "lecture", "수업", "class",
+        "전공", "major", "학과", "department", "학위", "degree",
+        "컴퓨터공학", "computer science", "전산", "소프트웨어학과"
+      ]
+    }
+  ];
+
+  // DevOps/Cloud 카테고리 추가 (it-programming에 포함되지만 별도 체크용)
+  const DEVOPS_KEYWORDS = [
+    "aws", "아마존", "amazon", "ec2", "s3", "lambda", "람다", "rds",
+    "gcp", "google cloud", "구글클라우드", "azure", "애저",
+    "terraform", "테라폼", "ansible", "앤서블", "jenkins", "젠킨스",
+    "ci/cd", "cicd", "배포", "deploy", "deployment", "devops", "데브옵스",
+    "인프라", "infrastructure", "클라우드", "cloud", "서버리스", "serverless"
+  ];
+
+  /**
+   * 블로그 본문 콘텐츠를 추출하는 함수
+   */
+  function extractArticleContent() {
+    // 티스토리 본문 영역 선택자들
+    const selectors = [
+      '.article-content', // 티스토리 공통
+      '.contents_style',   // 일부 스킨
+      '.entry-content',    // 일부 스킨
+      '.post-content',     // 일부 스킨
+      '.tt_article_useless_p_margin', // 티스토리 에디터
+      '#article-view',     // 일부 스킨
+      'article',           // 시맨틱 태그
+      '.area_view'         // 일부 스킨
+    ];
+
+    let content = '';
+
+    // 제목 추출
+    const titleSelectors = ['.article-header h1', '.entry-title', 'h1.title', '.post-title', 'h1'];
+    for (const selector of titleSelectors) {
+      const titleEl = document.querySelector(selector);
+      if (titleEl && titleEl.textContent.trim()) {
+        content += titleEl.textContent.trim() + ' ';
+        break;
+      }
+    }
+
+    // 본문 추출
+    for (const selector of selectors) {
+      const el = document.querySelector(selector);
+      if (el && el.textContent.trim().length > 100) {
+        content += el.textContent.trim();
+        break;
+      }
+    }
+
+    // 태그 추출
+    const tagSelectors = ['.article-tag', '.tag-list', '.tags', '[class*="tag"]'];
+    for (const selector of tagSelectors) {
+      const tagEls = document.querySelectorAll(selector + ' a');
+      tagEls.forEach(tag => {
+        content += ' ' + tag.textContent.trim();
+      });
+    }
+
+    // 카테고리 추출
+    const categorySelectors = ['.article-category', '.category', '[class*="category"]'];
+    for (const selector of categorySelectors) {
+      const categoryEl = document.querySelector(selector);
+      if (categoryEl) {
+        content += ' ' + categoryEl.textContent.trim();
+      }
+    }
+
+    return content.toLowerCase();
+  }
+
+  /**
+   * 텍스트에서 키워드 매칭 점수를 계산
+   */
+  function calculateKeywordScore(text, keywords) {
+    let score = 0;
+    const matchedKeywords = [];
+
+    for (const keyword of keywords) {
+      // 단어 경계를 고려한 정규식 패턴
+      const pattern = new RegExp(`(^|[^a-z가-힣])${escapeRegExp(keyword)}([^a-z가-힣]|$)`, 'gi');
+      const matches = text.match(pattern);
+      
+      if (matches) {
+        const count = matches.length;
+        // 키워드 길이에 따른 가중치 (긴 키워드일수록 더 정확한 매칭)
+        const weight = Math.min(keyword.length / 3, 3);
+        score += count * weight;
+        matchedKeywords.push({ keyword, count });
+      }
+    }
+
+    return { score, matchedKeywords };
+  }
+
+  /**
+   * 정규식 특수문자 이스케이프
+   */
+  function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  /**
+   * 블로그 콘텐츠를 분석하여 가장 적합한 카테고리들을 반환
+   * @param {number} topN - 반환할 상위 카테고리 수
+   * @returns {Array} 추출된 카테고리 목록
+   */
+  function extractCategories(topN = 3) {
+    const content = extractArticleContent();
+    
+    if (!content || content.length < 50) {
+      console.warn('[CategoryExtractor] 본문 콘텐츠를 찾을 수 없습니다.');
+      return [];
+    }
+
+    console.log('[CategoryExtractor] 분석 중인 콘텐츠 길이:', content.length);
+
+    const categoryScores = [];
+
+    for (const category of CATEGORIES) {
+      const result = calculateKeywordScore(content, category.keywords);
+      
+      if (result.score > 0) {
+        categoryScores.push({
+          id: category.id,
+          slug: category.slug,
+          title: category.title,
+          score: result.score,
+          matchedKeywords: result.matchedKeywords.slice(0, 5) // 상위 5개 키워드만
+        });
+      }
+    }
+
+    // 점수순 정렬
+    categoryScores.sort((a, b) => b.score - a.score);
+
+    // 상위 N개 반환
+    const topCategories = categoryScores.slice(0, topN);
+
+    console.log('[CategoryExtractor] 추출된 카테고리:', topCategories);
+
+    return topCategories;
+  }
+
+  /**
+   * 추출된 카테고리 ID 배열만 반환
+   */
+  function extractCategoryIds(topN = 3) {
+    return extractCategories(topN).map(cat => cat.id);
+  }
+
+  /**
+   * 추출된 카테고리 slug 배열만 반환
+   */
+  function extractCategorySlugs(topN = 3) {
+    return extractCategories(topN).map(cat => cat.slug);
+  }
+
+  /**
+   * 특정 카테고리에 해당하는지 확인
+   */
+  function belongsToCategory(categorySlug) {
+    const categories = extractCategories(5);
+    return categories.some(cat => cat.slug === categorySlug);
+  }
+
+  /**
+   * 카테고리별 광고 배너 URL 매핑
+   */
+  const BANNER_URLS = {
+    'it-programming': 'https://www.inflearn.com/courses?order=seq&skill=it-programming',
+    'career': 'https://www.inflearn.com/courses?order=seq&skill=career',
+    'artificial-intelligence': 'https://www.inflearn.com/courses?order=seq&skill=artificial-intelligence',
+    'data-science': 'https://www.inflearn.com/courses?order=seq&skill=data-science',
+    'Applied-ai': 'https://www.inflearn.com/courses?order=seq&skill=Applied-ai',
+    'game-dev-all': 'https://www.inflearn.com/courses?order=seq&skill=game-dev-all',
+    'it': 'https://www.inflearn.com/courses?order=seq&skill=it',
+    'hardware': 'https://www.inflearn.com/courses?order=seq&skill=hardware',
+    'design': 'https://www.inflearn.com/courses?order=seq&skill=design',
+    'business': 'https://www.inflearn.com/courses?order=seq&skill=business',
+    'foreign-language': 'https://www.inflearn.com/courses?order=seq&skill=foreign-language',
+    'productivity': 'https://www.inflearn.com/courses?order=seq&skill=productivity',
+    'academics': 'https://www.inflearn.com/courses?order=seq&skill=academics'
+  };
+
+  /**
+   * 현재 페이지에 맞는 배너 URL 반환
+   */
+  function getRecommendedBannerUrl() {
+    const categories = extractCategorySlugs(1);
+    if (categories.length > 0) {
+      return BANNER_URLS[categories[0]] || BANNER_URLS['it-programming'];
+    }
+    return BANNER_URLS['it-programming']; // 기본값
+  }
+
+  /**
+   * 디버그 정보 출력
+   */
+  function debug() {
+    console.log('=== CategoryExtractor Debug ===');
+    console.log('Content length:', extractArticleContent().length);
+    console.log('Extracted categories:', extractCategories(5));
+    console.log('Recommended banner URL:', getRecommendedBannerUrl());
+    console.log('================================');
+  }
+
+  // 전역 객체로 노출
+  window.CategoryExtractor = {
+    extractCategories,
+    extractCategoryIds,
+    extractCategorySlugs,
+    belongsToCategory,
+    getRecommendedBannerUrl,
+    debug,
+    CATEGORIES,
+    BANNER_URLS
+  };
+
+  // 페이지 로드 완료 후 자동 실행 (선택사항)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('[CategoryExtractor] 초기화 완료');
+      // 자동으로 카테고리 추출 결과 로그
+      const categories = extractCategories(3);
+      if (categories.length > 0) {
+        console.log('[CategoryExtractor] 추천 카테고리:', categories.map(c => c.title).join(', '));
+      }
+    });
+  } else {
+    console.log('[CategoryExtractor] 초기화 완료');
+  }
+
+})();
+</script>

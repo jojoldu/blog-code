@@ -1,0 +1,307 @@
+<div id="inflearn-banner-root"></div>
+<style>
+  #inflearn-banner-root {
+    margin: 24px 0;
+  }
+
+  .inflearn-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+    padding: 18px 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+    color: #0f172a;
+    font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  }
+
+  .inflearn-banner__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #111827;
+    color: #ffffff;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .inflearn-banner__content {
+    flex: 1 1 280px;
+    min-width: 240px;
+  }
+
+  .inflearn-banner__title {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 2px 0 6px;
+  }
+
+  .inflearn-banner__desc {
+    font-size: 13px;
+    color: #334155;
+    margin: 0;
+  }
+
+  .inflearn-banner__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #4f46e5;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .inflearn-banner__cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(79, 70, 229, 0.25);
+  }
+
+  @media (max-width: 640px) {
+    .inflearn-banner {
+      padding: 16px;
+    }
+
+    .inflearn-banner__cta {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+<script>
+  (function () {
+    const CATEGORY_DATA = {
+      categories: [
+        {
+          id: 5,
+          slug: "it-programming",
+          title: "개발 · 프로그래밍",
+          originalTitle: "개발 · 프로그래밍",
+          icon: "computer-classic",
+        },
+        {
+          id: 494,
+          slug: "career",
+          title: "커리어 · 자기계발",
+          originalTitle: "커리어 · 자기계발",
+          icon: "compass",
+        },
+        {
+          id: 456,
+          slug: "artificial-intelligence",
+          title: "AI 기술",
+          originalTitle: "AI 기술",
+          icon: "microchip-ai",
+        },
+        {
+          id: 9,
+          slug: "data-science",
+          title: "데이터 사이언스",
+          originalTitle: "데이터 사이언스",
+          icon: "atom-simple",
+        },
+        {
+          id: 183380,
+          slug: "Applied-ai",
+          title: "AI 활용(AX)",
+          originalTitle: "AI 활용(AX)",
+          icon: "robot",
+        },
+        {
+          id: 39306,
+          slug: "game-dev-all",
+          title: "게임 개발",
+          originalTitle: "게임 개발",
+          icon: "alien-8bit",
+        },
+        {
+          id: 492,
+          slug: "it",
+          title: "보안 · 네트워크",
+          originalTitle: "보안 · 네트워크",
+          icon: "shield-check",
+        },
+        {
+          id: 178677,
+          slug: "hardware",
+          title: "하드웨어",
+          originalTitle: "하드웨어",
+          icon: "microchip",
+        },
+        {
+          id: 22,
+          slug: "design",
+          title: "디자인 · 아트",
+          originalTitle: "디자인 · 아트",
+          icon: "palette",
+        },
+        {
+          id: 33,
+          slug: "business",
+          title: "기획 · 경영 · 마케팅",
+          originalTitle: "기획 · 경영 · 마케팅",
+          icon: "briefcase",
+        },
+        {
+          id: 462,
+          slug: "foreign-language",
+          title: "외국어",
+          originalTitle: "외국어",
+          icon: "language",
+        },
+        {
+          id: 666,
+          slug: "productivity",
+          title: "업무 생산성",
+          originalTitle: "업무 생산성",
+          icon: "book-open-reader",
+        },
+        {
+          id: 493,
+          slug: "academics",
+          title: "대학 교육",
+          originalTitle: "대학 교육",
+          icon: "book-atlas",
+        },
+      ],
+    };
+
+    const CATEGORY_DEFAULT_SLUG = "it-programming";
+    const BANNER_SEARCH_BASE = "https://www.inflearn.com/courses?s=";
+
+    function normalizeText(text) {
+      return text
+        .toLowerCase()
+        .replace(/[·•]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function tokenize(text) {
+      return normalizeText(text)
+        .split(/[^a-z0-9가-힣]+/g)
+        .filter(Boolean);
+    }
+
+    function unique(list) {
+      return Array.from(new Set(list));
+    }
+
+    function getArticleText() {
+      const selectors = [
+        ".article-view",
+        ".entry-content",
+        ".tt_article_useless_p_margin",
+        ".post-content",
+        ".article-area",
+        ".contents_style",
+        "article",
+        "#content",
+      ];
+
+      for (const selector of selectors) {
+        const element = document.querySelector(selector);
+        if (element && element.textContent && element.textContent.trim().length > 50) {
+          return element.textContent;
+        }
+      }
+
+      return document.body ? document.body.textContent || "" : "";
+    }
+
+    function getCategoryKeywords(category) {
+      const raw = [category.title, category.originalTitle, category.slug]
+        .filter(Boolean)
+        .join(" ");
+      return unique(tokenize(raw)).filter((keyword) => keyword.length >= 2);
+    }
+
+    function countOccurrences(text, keyword) {
+      if (!keyword) {
+        return 0;
+      }
+      const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(escaped, "g");
+      const matches = text.match(regex);
+      return matches ? matches.length : 0;
+    }
+
+    function scoreCategories(text) {
+      const normalizedText = normalizeText(text);
+
+      return CATEGORY_DATA.categories.map((category) => {
+        const keywords = getCategoryKeywords(category);
+        const score = keywords.reduce(
+          (sum, keyword) => sum + countOccurrences(normalizedText, keyword),
+          0
+        );
+
+        return { category, score };
+      });
+    }
+
+    function pickCategory(scored) {
+      const ranked = scored
+        .filter((entry) => entry.score > 0)
+        .sort((a, b) => b.score - a.score);
+
+      if (ranked.length > 0) {
+        return ranked[0].category;
+      }
+
+      return (
+        CATEGORY_DATA.categories.find((category) => category.slug === CATEGORY_DEFAULT_SLUG) ||
+        CATEGORY_DATA.categories[0]
+      );
+    }
+
+    function renderBanner(category) {
+      const root = document.getElementById("inflearn-banner-root");
+      if (!root) {
+        return;
+      }
+
+      const searchUrl = BANNER_SEARCH_BASE + encodeURIComponent(category.title);
+
+      root.innerHTML = `
+        <div class="inflearn-banner" data-category-id="${category.id}">
+          <span class="inflearn-banner__badge">INFLEARN 추천</span>
+          <div class="inflearn-banner__content">
+            <div class="inflearn-banner__title">${category.title} 관련 강의를 추천드려요</div>
+            <p class="inflearn-banner__desc">
+              본문 내용에서 추출한 키워드를 기반으로 인프런 추천 카테고리를 선정했습니다.
+            </p>
+          </div>
+          <a class="inflearn-banner__cta" href="${searchUrl}" target="_blank" rel="noopener noreferrer">
+            추천 강의 보기
+          </a>
+        </div>
+      `;
+    }
+
+    function init() {
+      const articleText = getArticleText();
+      if (!articleText || articleText.trim().length < 50) {
+        return;
+      }
+
+      const scored = scoreCategories(articleText);
+      const category = pickCategory(scored);
+      renderBanner(category);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+  })();
+</script>
