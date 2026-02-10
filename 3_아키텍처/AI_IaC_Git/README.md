@@ -1,466 +1,636 @@
-# AI 시대의 인프라 생존 전략: 왜 IaC와 Git이 필수인가
+# 에이전틱 코딩 시대, IaC와 GitOps가 필수인 이유
 
-## 들어가며: AI 시대, 왜 Git이 더 중요해졌는가
+에이전틱 코딩(Agentic Coding)이 대세가 되면서 개발 속도가 폭발적으로 빨라졌다.
+Cursor, Windsurf, Claude Code 같은 AI 코딩 에이전트가 코드베이스를 분석하고, 수십 개의 파일을 동시에 수정하고, 터미널 명령까지 실행하는 수준이 되었다.
 
-AI가 코드를 짜고, 데이터 분석 모델을 돌리고, 인프라 구성을 제안하는 시대다. AI는 혁신적인 속도를 제공하지만, 동시에 **'불확실성'**이라는 숙제도 안겨주었다.
+이 속도 자체는 혁신적이다.
+다만, 속도가 빨라질수록 한 가지 문제가 커진다.
 
-AI가 제안한 결과물이 의도와 다를 때, 혹은 예상치 못한 오류를 발생시켰을 때 우리에게 가장 필요한 것은 무엇일까? 바로 **"언제든 안전했던 과거의 상태로 되돌릴 수 있는 능력"**이다.
+> AI 에이전트가 만든 변경이 잘못되었을 때, 안전하게 되돌릴 수 있는가?
 
-소프트웨어 개발에서 Git은 이미 단순한 도구를 넘어 '실수로부터의 자유'를 보장하는 필수 인프라가 되었다. AI 시대의 폭발적인 변화 속에서 Git의 버전 관리는 우리가 믿고 의지할 수 있는 유일한 검증된 타임머신이다.
+소프트웨어 코드는 이미 Git으로 관리하고 있으니 `git revert` 하면 된다.
+그런데 인프라는?
 
-Git이 제공하는 핵심 가치는 다음과 같다.
+많은 회사에서 여전히 AWS 콘솔에 접속해 클릭으로 리소스를 만든다.
+변경 이력은 담당자의 머릿속에만 존재하고, "어제 누가 Security Group 바꿨어?"라는 질문에 아무도 답하지 못한다.
 
-- **버전 관리**: 모든 변경 이력이 기록되어 언제든 과거로 돌아갈 수 있음
-- **멱등성**: 같은 커밋을 체크아웃하면 항상 같은 상태가 보장됨
-- **실험의 자유**: 브랜치를 만들어 마음껏 시도하고, 실패하면 버리면 됨
-- **협업과 리뷰**: PR을 통해 변경사항을 검토하고 승인할 수 있음
+에이전틱 코딩 시대에 이런 환경은 치명적이다.
+AI 에이전트에게 "트래픽 증가에 대응해줘"라고 했더니, 콘솔에서 Security Group을 열고, 인스턴스 타입을 변경하고, 로드밸런서를 추가했다고 하자.
+다음 날 장애가 발생했을 때:
 
-AI와 함께 일할 때 이 가치들은 더욱 빛을 발한다. AI가 만든 코드가 잘못되었다면? `git revert` 한 번이면 된다. AI의 제안이 마음에 들지 않는다면? 브랜치를 버리면 그만이다.
+- 어떤 변경이 장애를 일으켰는지 알 수 없다
+- "어제 상태"로 즉시 되돌릴 방법이 없다
+- AI가 실제로 무엇을 변경했는지 확인할 수 없다
 
-## 그렇다면 인프라는?
+바로 여기서 IaC(Infrastructure as Code)가 필요하다.
+인프라를 코드로 정의하면, 소프트웨어 개발에서 누리던 Git의 모든 이점을 인프라에서도 그대로 얻을 수 있다.
 
-소프트웨어 코드는 Git으로 관리하면서, 정작 그 코드가 돌아가는 **인프라는 왜 Git으로 관리하지 않는 걸까?**
+이 글에서는 **Pulumi + AWS + GitHub Actions** 조합으로 실제 동작하는 IaC 프로젝트를 처음부터 끝까지 만들어본다.
+직접 따라하면서 IaC와 GitOps가 왜 필요한지 체감할 수 있도록 구성했다.
 
-많은 회사에서 여전히 AWS 콘솔에 접속해 클릭으로 리소스를 만든다. 변경 이력은 담당자의 머릿속에만 존재하고, "어제 누가 Security Group 바꿨어?"라는 질문에 아무도 답하지 못한다. 프로덕션과 스테이징 환경이 왜 다른지도 모른다.
-
-AI 시대에 이런 환경은 치명적이다. AI가 콘솔에서 수동으로 설정을 바꾼다면, 어떤 변경이 장애를 일으켰는지 알 수 없다. 장애 발생 시 "어제 상태"로 즉시 되돌릴 방법도 없다.
-
-바로 여기서 **IaC(Infrastructure as Code)** 가 필요하다. 인프라를 코드로 정의하면, 소프트웨어 개발에서 누리던 Git의 모든 이점을 인프라에서도 그대로 얻을 수 있다.
-
-> 코드에서 Git이 필수이듯, 인프라에서도 Git은 필수다. IaC는 그것을 가능하게 한다.
-
----
-
-## 1. GitOps: Git을 중심에 둔 운영 패러다임
-
-IaC로 인프라를 코드화했다면, 그 다음 단계는 **GitOps**다. GitOps는 Git 저장소를 **단일 진실 공급원(Single Source of Truth)**으로 삼아 인프라와 애플리케이션을 운영하는 방법론이다.
-
-### OpenGitOps 표준 원칙 (v1.0.0)
-
-[OpenGitOps](https://opengitops.dev/)는 CNCF(Cloud Native Computing Foundation) 산하 GitOps Working Group에서 관리하는 오픈소스 표준이다. GitOps를 도입하려는 조직에게 구조화된 표준과 모범 사례를 제공한다.
-
-OpenGitOps에서 정의한 GitOps의 4가지 핵심 원칙은 다음과 같다.
-
-| 원칙 | 설명 |
-|------|------|
-| **1. Declarative (선언적)** | GitOps로 관리되는 시스템은 원하는 상태를 선언적으로 표현해야 한다. "어떻게"가 아니라 "무엇"을 정의한다. |
-| **2. Versioned and Immutable (버전 관리 및 불변성)** | 원하는 상태는 불변성을 보장하고, 버전 관리되며, 완전한 버전 히스토리를 유지하는 방식으로 저장된다. |
-| **3. Pulled Automatically (자동 Pull)** | 소프트웨어 에이전트가 소스(Git)에서 원하는 상태 선언을 자동으로 Pull 한다. |
-| **4. Continuously Reconciled (지속적 조정)** | 소프트웨어 에이전트가 지속적으로 실제 시스템 상태를 관찰하고, 원하는 상태와 다르면 자동으로 맞춘다. |
-
-### 왜 이 원칙들이 중요한가?
-
-
-원칙 1: Declarative (선언적)
-> "EC2 인스턴스를 생성하라" (X) - 명령형
-> "t3.large EC2 인스턴스가 존재해야 한다" (O) - 선언형
-
-원칙 2: Versioned and Immutable (버전 관리 및 불변성)
-> 모든 변경은 Git 커밋으로 기록 -> 누가, 언제, 무엇을 변경했는지 추적 가능
-> 한번 커밋된 상태는 변경 불가 -> 신뢰할 수 있는 히스토리
-
-원칙 3: Pulled Automatically (자동 Pull)
-> 개발자가 pulumi up 실행 (X) - Push 방식
-> ArgoCD/Flux가 Git 변경 감지 후 자동 적용 (O) - Pull 방식
-
-원칙 4: Continuously Reconciled (지속적 조정)
-> 누군가 콘솔에서 수동 변경 -> 에이전트가 감지 -> Git 상태로 자동 복구
-
-
-### GitOps가 AI 시대에 중요한 이유
-
-OpenGitOps의 4가지 원칙은 AI 시대에 더욱 빛을 발한다.
-
-
-[기존 방식 - 원칙 위반]
-AI 제안 -> 콘솔에서 수동 적용 (Pull 아님) -> 이력 없음 (버전 관리 안됨) -> 문제 발생 -> 복구 불가
-
-[GitOps 방식 - 원칙 준수]
-AI 제안 -> PR 생성 (선언적) -> 코드 리뷰 -> 머지 (버전 관리) -> 자동 적용 (Pull) -> 문제 발생 -> git revert -> 자동 복구 (지속적 조정)
-
-
-GitOps 환경에서는 AI가 아무리 많은 변경을 제안해도, 모든 것이 Git 히스토리에 남는다.  
-문제가 생기면 해당 커밋만 되돌리면 인프라가 자동으로 이전 상태로 복구된다.
-
-### IaC vs GitOps: 무엇이 다른가?
-
-| 구분 | IaC | GitOps |
-|------|-----|--------|
-| **정의** | 인프라를 코드로 작성 | Git을 중심으로 인프라 운영 |
-| **초점** | 코드화 (선언적 정의) | 운영 프로세스 (자동화된 조정) |
-| **적용 방식** | Push (개발자가 명령 실행) | Pull (에이전트가 Git 감시 후 자동 적용) |
-| **상태 관리** | 코드로 상태 정의 | 코드와 실제 상태의 지속적 동기화 |
-| **관계** | GitOps의 기반 | IaC를 활용한 운영 방법론 |
-
-IaC는 인프라를 코드로 만드는 "도구"이고, GitOps는 그 코드를 Git 중심으로 운영하는 "방법론"이다.  
-OpenGitOps 원칙에 따르면, IaC만으로는 충분하지 않다.  
-선언적으로 정의된 코드(IaC)를 버전 관리하고(Git), 자동으로 Pull하여 지속적으로 조정하는(GitOps Agent) 전체 시스템이 필요하다.
-
-AI 시대에는 둘 다 필수다.
+> 이 글의 전체 예제 코드는 [GitHub](https://github.com/jojoldu/blog-code/tree/master/3_아키텍처/AI_IaC_Git/pulumi-practice)에서 확인할 수 있다.
 
 ---
 
-## 2. AI 시대, 인프라의 멱등성과 원복이 중요한 이유
+## 1. 왜 IaC인가
 
-AI는 확률적으로 최선의 답을 내놓지만, 그것이 항상 우리 환경에 완벽하다는 보장은 없다.  
-이때 인프라가 IaC 기반의 GitOps 환경으로 구축되어 있지 않다면 다음과 같은 위기에 직면한다.
+IaC를 쓰면 뭐가 좋은지, 표로만 보면 와닿지 않는다.
+직접 겪어봐야 비로소 느끼게 되는 차이를 먼저 정리했다.
 
-- **추적 불가**: AI가 콘솔에서 수동으로 설정을 바꾼다면, 어떤 변경이 장애를 일으켰는지 알 수 없다.
-- **원복 불가**: 장애 발생 시 "어제 상태"로 즉시 되돌릴 방법이 없다.
-- **멱등성 상실**: 같은 명령을 내려도 실행할 때마다 결과가 달라진다면 AI에게 자동화를 맡길 수 없다.
+### 수동 관리의 문제
 
-### 멱등성(Idempotency)이란?
+콘솔 클릭으로 인프라를 관리하면 초기에는 빠르다.
+EC2 하나 만드는데 코드를 작성할 필요가 없으니 당연하다.
 
-> 연산을 여러 번 적용하더라도 결과가 달라지지 않는 성질을 의미한다.  
-> 즉, 현재 상태가 어떻든 코드가 정의한 '최종 상태'로 항상 동일하게 맞춰주는 능력이다.
+그런데 시간이 지나면 문제가 쌓인다.
 
-멱등성이 없는 경우 (쉘 스크립트)
+- 프로덕션과 스테이징 환경이 왜 다른지 아무도 모른다
+- 장애가 나면 "누가 뭘 바꿨는지" 추적이 안된다
+- 새 환경을 만들려면 콘솔에서 하나씩 다시 클릭해야 한다
+- 인수인계가 불가능하다 (담당자가 퇴사하면 히스토리가 사라진다)
+
+### IaC로 바뀌는 것
+
+인프라를 코드로 관리하면 이런 것들이 가능해진다.
+
+```bash
+# 어제 누가 Security Group을 바꿨는지 확인
+git log --oneline components/webServer.ts
+
+# 장애 발생 시 어제 상태로 되돌리기
+git revert HEAD
+pulumi up --yes
+
+# 새 환경(staging)을 만들기
+pulumi stack init staging
+pulumi up --yes
 ```
-aws ec2 run-instances ...  # 실행할 때마다 새 인스턴스 생성
+
+모든 변경이 코드로 남고, 코드는 Git에 기록되고, Git은 되돌릴 수 있다.
+이것이 IaC의 핵심 가치다.
+
+### 멱등성
+
+IaC에서 가장 중요한 개념이 멱등성(Idempotency)이다.
+
+쉘 스크립트로 인프라를 만들면 이런 문제가 생긴다.
+
+```bash
+# 실행할 때마다 새 인스턴스가 생성된다
+aws ec2 run-instances --image-id ami-xxx --instance-type t3.micro
+
+# 3번 실행하면? EC2가 3대 생긴다
 ```
 
-멱등성이 있는 경우 (IaC)
+Pulumi는 다르다.
 
+```typescript
+// "webServer라는 EC2가 존재해야 한다"
+const server = new aws.ec2.Instance("webServer", {
+    instanceType: "t3.micro",
+    ami: "ami-xxx",
+});
+
+// 몇 번 실행하든 EC2는 1대다. 없으면 생성하고, 있으면 유지한다.
 ```
-"webServer라는 EC2가 있어야 해"  # 없으면 생성, 있으면 유지
-```
 
-
-## 3. 수동 관리 vs IaC 비교
-
-| 특징 | 수동 관리 (Click-ops) | IaC (Pulumi + Git) |
-|------|----------------------|-------------------|
-| **속도** | 초기엔 빠르나 규모 커지면 한계 | 항상 일정하고 빠름 |
-| **안정성** | 사람의 실수에 매우 취약함 | 코드 리뷰 및 사전 테스트 가능 |
-| **버전 관리** | 불가능 (이력 확인 어려움) | Git을 통한 완벽한 히스토리 관리 |
-| **원복** | 불가능 (수작업 복구 필요) | git revert로 즉시 복구 |
-| **AI 연동** | 불가능 | 매우 용이 (Code Generation) |
+에이전틱 코딩에서 멱등성이 특히 중요한 이유가 있다.
+AI 에이전트는 같은 작업을 재시도하거나, 여러 경로에서 동일한 리소스를 참조할 수 있다.
+멱등성이 보장되지 않으면 AI의 재시도가 곧 장애의 원인이 된다.
 
 ---
 
-## 4. 왜 Pulumi인가?
+## 2. 왜 Pulumi인가
 
-Terraform도 훌륭하지만, **Pulumi**는 TypeScript, Python 같은 실제 프로그래밍 언어를 사용한다. 이는 LLM(대규모 언어 모델)이 가장 잘 이해하고 생성할 수 있는 형태라는 점에서 AI 시대에 강력한 강점을 가진다.
+IaC 도구로 Terraform이 가장 유명하다.
+Terraform도 훌륭한 도구이고, 이미 잘 쓰고 있다면 그것도 좋은 선택이다.
 
-| 특징 | 설명 |
-|------|------|
-| **익숙한 언어** | TypeScript, Python, Go, C# 등 지원 |
-| **타입 안전성** | IDE 자동완성, 컴파일 타임 오류 검출 |
-| **재사용성** | 함수, 클래스, 모듈로 추상화 가능 |
-| **테스트 가능** | 유닛 테스트, 통합 테스트 작성 가능 |
-| **AI 친화적** | LLM이 잘 이해하는 범용 언어 사용 |
+다만 새로 IaC를 도입하는 팀이 에이전틱 코딩을 적극 활용하고 싶다면, Pulumi가 더 유리한 출발점이라고 생각한다.
+
+이유는 간단하다.
+Pulumi는 TypeScript, Python 같은 범용 프로그래밍 언어를 사용한다.
+
+Terraform의 HCL은 전용 DSL이다.
+조건문이나 반복문을 쓰려면 HCL만의 문법을 배워야 한다.
+
+```hcl
+# Terraform: 조건부 생성이 필요하면?
+resource "aws_instance" "web" {
+  count = var.enable_web ? 1 : 0
+  
+  # 반복이 필요하면? dynamic block을 써야 한다
+  dynamic "ingress" {
+    for_each = var.ports
+    content {
+      from_port = ingress.value
+    }
+  }
+}
+```
+
+Pulumi는 그냥 if문과 for문을 쓰면 된다.
+
+```typescript
+// Pulumi: 그냥 TypeScript다
+if (config.requireBoolean("enableWeb")) {
+    const server = new aws.ec2.Instance("web", {
+        ami: "ami-xxx",
+        instanceType: "t3.micro",
+    });
+}
+
+for (const port of [80, 443]) {
+    // ...
+}
+```
+
+AI 에이전트 관점에서도 마찬가지다.
+LLM은 TypeScript와 Python 코드를 수십억 줄 학습했다.
+HCL은 상대적으로 훨씬 적다.
+결과적으로 AI 에이전트가 생성하는 Pulumi 코드의 정확도가 더 높다.
 
 ---
 
-## 5. 실전 예제: AWS + Pulumi + Git
+## 3. 실습: 처음부터 끝까지 따라하기
 
-### 프로젝트 구조
+여기서부터 실습이다.
+실제로 따라하면서 Pulumi + AWS + GitHub Actions 환경을 만들어본다.
+
+> **전제 조건**
+> - Node.js 20+ 설치
+> - AWS CLI 설정 완료 (`aws configure`)
+> - [Pulumi CLI 설치](https://www.pulumi.com/docs/install/)
+> - GitHub 저장소 생성
+
+### 3-1. 프로젝트 생성
+
+```bash
+mkdir my-infrastructure && cd my-infrastructure
+pulumi new aws-typescript
+```
+
+프로젝트 이름, 설명, 스택 이름을 물으면 다음과 같이 입력한다.
+
+```
+project name: my-infrastructure
+project description: 우리 서비스의 AWS 인프라
+stack name: dev
+aws:region: ap-northeast-2
+```
+
+생성된 프로젝트 구조는 다음과 같다.
 
 ```
 my-infrastructure/
 ├── index.ts           # 메인 인프라 정의
-├── components/
-│   ├── vpc.ts         # VPC 컴포넌트
-│   ├── webServer.ts   # EC2 컴포넌트
-│   └── storage.ts     # S3 컴포넌트
 ├── Pulumi.yaml        # 프로젝트 설정
-├── Pulumi.dev.yaml    # 개발 환경 설정
-├── Pulumi.prod.yaml   # 프로덕션 환경 설정
-└── package.json
+├── Pulumi.dev.yaml    # dev 스택 설정
+├── package.json
+└── tsconfig.json
 ```
 
-### Step 1: VPC 구성 (components/vpc.ts)
+### 3-2. S3 버킷 하나 만들어보기
+
+먼저 가장 간단한 것부터 시작한다.
+S3 버킷 하나를 만들어보자.
+
+`index.ts`를 아래와 같이 수정한다.
 
 ```typescript
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-
-export interface VpcArgs {
-    cidrBlock: string;
-    environment: string;
-}
-
-export class Vpc extends pulumi.ComponentResource {
-    public readonly vpc: aws.ec2.Vpc;
-    public readonly publicSubnets: aws.ec2.Subnet[];
-    public readonly privateSubnets: aws.ec2.Subnet[];
-
-    constructor(name: string, args: VpcArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("custom:network:Vpc", name, {}, opts);
-
-        this.vpc = new aws.ec2.Vpc(`${name}-vpc`, {
-            cidrBlock: args.cidrBlock,
-            enableDnsHostnames: true,
-            enableDnsSupport: true,
-            tags: {
-                Name: `${name}-vpc`,
-                Environment: args.environment,
-                ManagedBy: "pulumi",
-            },
-        }, { parent: this });
-
-        const azs = aws.getAvailabilityZones({ state: "available" });
-
-        this.publicSubnets = [];
-        for (let i = 0; i < 2; i++) {
-            const subnet = new aws.ec2.Subnet(`${name}-public-${i}`, {
-                vpcId: this.vpc.id,
-                cidrBlock: `10.0.${i}.0/24`,
-                availabilityZone: azs.then(az => az.names[i]),
-                mapPublicIpOnLaunch: true,
-                tags: { Name: `${name}-public-${i}`, Type: "public" },
-            }, { parent: this });
-            this.publicSubnets.push(subnet);
-        }
-
-        this.privateSubnets = [];
-        for (let i = 0; i < 2; i++) {
-            const subnet = new aws.ec2.Subnet(`${name}-private-${i}`, {
-                vpcId: this.vpc.id,
-                cidrBlock: `10.0.${i + 10}.0/24`,
-                availabilityZone: azs.then(az => az.names[i]),
-                tags: { Name: `${name}-private-${i}`, Type: "private" },
-            }, { parent: this });
-            this.privateSubnets.push(subnet);
-        }
-
-        this.registerOutputs({
-            vpcId: this.vpc.id,
-            publicSubnetIds: this.publicSubnets.map(s => s.id),
-            privateSubnetIds: this.privateSubnets.map(s => s.id),
-        });
-    }
-}
-```
-
-### Step 2: 웹 서버 구성 (components/webServer.ts)
-
-```typescript
-import * as pulumi from "@pulumi/pulumi";
-import * as aws from "@pulumi/aws";
-
-export interface WebServerArgs {
-    vpcId: pulumi.Input<string>;
-    subnetId: pulumi.Input<string>;
-    instanceType: string;
-    environment: string;
-}
-
-export class WebServer extends pulumi.ComponentResource {
-    public readonly instance: aws.ec2.Instance;
-    public readonly securityGroup: aws.ec2.SecurityGroup;
-    public readonly publicIp: pulumi.Output<string>;
-
-    constructor(name: string, args: WebServerArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("custom:compute:WebServer", name, {}, opts);
-
-        this.securityGroup = new aws.ec2.SecurityGroup(`${name}-sg`, {
-            vpcId: args.vpcId,
-            description: "Security group for web server",
-            ingress: [
-                { protocol: "tcp", fromPort: 80, toPort: 80, cidrBlocks: ["0.0.0.0/0"] },
-                { protocol: "tcp", fromPort: 443, toPort: 443, cidrBlocks: ["0.0.0.0/0"] },
-                { protocol: "tcp", fromPort: 22, toPort: 22, cidrBlocks: ["0.0.0.0/0"] },
-            ],
-            egress: [
-                { protocol: "-1", fromPort: 0, toPort: 0, cidrBlocks: ["0.0.0.0/0"] },
-            ],
-            tags: { Name: `${name}-sg`, ManagedBy: "pulumi" },
-        }, { parent: this });
-
-        const ami = aws.ec2.getAmi({
-            mostRecent: true,
-            owners: ["amazon"],
-            filters: [{ name: "name", values: ["amzn2-ami-hvm-*-x86_64-gp2"] }],
-        });
-
-        this.instance = new aws.ec2.Instance(`${name}-instance`, {
-            ami: ami.then(a => a.id),
-            instanceType: args.instanceType,
-            subnetId: args.subnetId,
-            vpcSecurityGroupIds: [this.securityGroup.id],
-            tags: { Name: name, Environment: args.environment, ManagedBy: "pulumi" },
-        }, { parent: this });
-
-        this.publicIp = this.instance.publicIp;
-        this.registerOutputs({ instanceId: this.instance.id, publicIp: this.publicIp });
-    }
-}
-```
-
-### Step 3: S3 스토리지 구성 (components/storage.ts)
-
-```typescript
-import * as pulumi from "@pulumi/pulumi";
-import * as aws from "@pulumi/aws";
-
-export interface StorageArgs {
-    bucketName: string;
-    environment: string;
-}
-
-export class Storage extends pulumi.ComponentResource {
-    public readonly bucket: aws.s3.BucketV2;
-    public readonly bucketId: pulumi.Output<string>;
-
-    constructor(name: string, args: StorageArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("custom:storage:Storage", name, {}, opts);
-
-        this.bucket = new aws.s3.BucketV2(`${name}-bucket`, {
-            bucket: args.bucketName,
-            tags: { Environment: args.environment, ManagedBy: "pulumi", VersionControl: "Git" },
-        }, { parent: this });
-
-        const bucketVersioning = new aws.s3.BucketVersioningV2(`${name}-versioning`, {
-            bucket: this.bucket.id,
-            versioningConfiguration: { status: "Enabled" },
-        }, { parent: this });
-
-        this.bucketId = this.bucket.id;
-        this.registerOutputs({ bucketId: this.bucketId });
-    }
-}
-```
-
-### Step 4: 메인 인프라 정의 (index.ts)
-
-```typescript
-import * as pulumi from "@pulumi/pulumi";
-import { Vpc } from "./components/vpc";
-import { WebServer } from "./components/webServer";
-import { Storage } from "./components/storage";
 
 const config = new pulumi.Config();
-const environment = config.require("environment");
-const instanceType = config.get("instanceType") || "t3.micro";
+const environment = pulumi.getStack(); // dev, staging, prod 등 스택 이름
 
-const network = new Vpc("main", { cidrBlock: "10.0.0.0/16", environment });
-
-const webServer = new WebServer("web", {
-    vpcId: network.vpc.id,
-    subnetId: network.publicSubnets[0].id,
-    instanceType,
-    environment,
+// S3 버킷
+const bucket = new aws.s3.BucketV2("app-data", {
+    bucket: `my-app-data-${environment}`,
+    tags: {
+        Environment: environment,
+        ManagedBy: "pulumi",
+    },
 });
 
-const storage = new Storage("data", {
-    bucketName: `my-app-storage-${environment}`,
-    environment,
+// 버킷 버저닝 활성화
+const versioning = new aws.s3.BucketVersioningV2("app-data-versioning", {
+    bucket: bucket.id,
+    versioningConfiguration: {
+        status: "Enabled",
+    },
 });
 
-export const vpcId = network.vpc.id;
-export const webServerPublicIp = webServer.publicIp;
-export const webServerUrl = pulumi.interpolate`http://${webServer.publicIp}`;
-export const storageBucketId = storage.bucketId;
+// 퍼블릭 접근 차단
+const publicAccessBlock = new aws.s3.BucketPublicAccessBlock("app-data-public-access", {
+    bucket: bucket.id,
+    blockPublicAcls: true,
+    blockPublicPolicy: true,
+    ignorePublicAcls: true,
+    restrictPublicBuckets: true,
+});
+
+export const bucketName = bucket.bucket;
 ```
 
-### Step 5: 환경별 설정 파일
+변경사항을 미리 확인한다.
 
-**Pulumi.dev.yaml**
+```bash
+pulumi preview
+```
+
+출력 결과:
+
+```
+Previewing update (dev):
+
+     Type                               Name                     Plan
+ +   pulumi:pulumi:Stack                my-infrastructure-dev    create
+ +   ├─ aws:s3:BucketV2                 app-data                 create
+ +   ├─ aws:s3:BucketVersioningV2       app-data-versioning      create
+ +   └─ aws:s3:BucketPublicAccessBlock  app-data-public-access   create
+
+Resources:
+    + 4 to create
+```
+
+3개의 리소스가 생성될 것이라고 미리 알려준다.
+실제로 적용하기 전에 무엇이 바뀌는지 확인할 수 있다는 것이 핵심이다.
+
+문제가 없으면 적용한다.
+
+```bash
+pulumi up --yes
+```
+
+Git에 커밋한다.
+
+```bash
+git init
+git add .
+git commit -m "S3 버킷 추가"
+```
+
+### 3-3. EC2 웹 서버 추가하기
+
+이번엔 현업에서 흔히 볼 수 있는 구성을 만들어본다.
+VPC, Security Group, EC2를 추가한다.
+
+`index.ts`에 아래 코드를 추가한다.
+
+```typescript
+// VPC
+const vpc = new aws.ec2.Vpc("main-vpc", {
+    cidrBlock: "10.0.0.0/16",
+    enableDnsHostnames: true,
+    enableDnsSupport: true,
+    tags: {
+        Name: `main-vpc-${environment}`,
+        Environment: environment,
+        ManagedBy: "pulumi",
+    },
+});
+
+// 퍼블릭 서브넷
+const publicSubnet = new aws.ec2.Subnet("public-subnet-1", {
+    vpcId: vpc.id,
+    cidrBlock: "10.0.1.0/24",
+    availabilityZone: "ap-northeast-2a",
+    mapPublicIpOnLaunch: true,
+    tags: {
+        Name: `public-subnet-1-${environment}`,
+        Type: "public",
+    },
+});
+
+// 인터넷 게이트웨이
+const igw = new aws.ec2.InternetGateway("main-igw", {
+    vpcId: vpc.id,
+    tags: { Name: `main-igw-${environment}` },
+});
+
+// 라우트 테이블
+const publicRt = new aws.ec2.RouteTable("public-rt", {
+    vpcId: vpc.id,
+    routes: [{
+        cidrBlock: "0.0.0.0/0",
+        gatewayId: igw.id,
+    }],
+    tags: { Name: `public-rt-${environment}` },
+});
+
+new aws.ec2.RouteTableAssociation("public-rta-1", {
+    subnetId: publicSubnet.id,
+    routeTableId: publicRt.id,
+});
+
+// Security Group
+const webSg = new aws.ec2.SecurityGroup("web-sg", {
+    vpcId: vpc.id,
+    description: "Allow HTTP and HTTPS",
+    ingress: [
+        { protocol: "tcp", fromPort: 80, toPort: 80, cidrBlocks: ["0.0.0.0/0"], description: "HTTP" },
+        { protocol: "tcp", fromPort: 443, toPort: 443, cidrBlocks: ["0.0.0.0/0"], description: "HTTPS" },
+    ],
+    egress: [
+        { protocol: "-1", fromPort: 0, toPort: 0, cidrBlocks: ["0.0.0.0/0"], description: "Allow all outbound" },
+    ],
+    tags: { Name: `web-sg-${environment}`, ManagedBy: "pulumi" },
+});
+
+// EC2 인스턴스
+const ami = aws.ec2.getAmiOutput({
+    mostRecent: true,
+    owners: ["amazon"],
+    filters: [{ name: "name", values: ["al2023-ami-2023*-x86_64"] }],
+});
+
+const instanceType = config.get("instanceType") || "t3.micro";
+
+const webServer = new aws.ec2.Instance("web-server", {
+    ami: ami.id,
+    instanceType: instanceType,
+    subnetId: publicSubnet.id,
+    vpcSecurityGroupIds: [webSg.id],
+    tags: {
+        Name: `web-server-${environment}`,
+        Environment: environment,
+        ManagedBy: "pulumi",
+    },
+});
+
+export const vpcId = vpc.id;
+export const webServerPublicIp = webServer.publicIp;
+```
+
+적용 전에 미리 확인한다.
+
+```bash
+pulumi preview
+```
+
+```
+Previewing update (dev):
+
+     Type                              Name              Plan
+     pulumi:pulumi:Stack               my-infrastructure-dev
+ +   ├─ aws:ec2:Vpc                    main-vpc          create
+ +   ├─ aws:ec2:Subnet                 public-subnet-1   create
+ +   ├─ aws:ec2:InternetGateway        main-igw          create
+ +   ├─ aws:ec2:RouteTable             public-rt         create
+ +   ├─ aws:ec2:RouteTableAssociation  public-rta-1      create
+ +   ├─ aws:ec2:SecurityGroup          web-sg            create
+ +   └─ aws:ec2:Instance               web-server        create
+
+Resources:
+    + 7 to create
+    4 unchanged
+```
+
+총 7개 리소스가 새로 생기고, 기존 S3 관련 4개는 변경 없다.
+
+적용하고 커밋한다.
+
+```bash
+pulumi up --yes
+git add .
+git commit -m "VPC, Security Group, EC2 웹 서버 추가"
+```
+
+### 3-4. 환경별 설정 분리
+
+현업에서는 dev, staging, prod 환경의 설정이 다르다.
+EC2 인스턴스 타입이 dev에서는 `t3.micro`지만, prod에서는 `t3.large`를 쓰는 식이다.
+
+Pulumi는 스택별로 설정 파일을 분리할 수 있다.
+
+`Pulumi.dev.yaml`에 설정을 추가한다.
+
 ```yaml
 config:
   aws:region: ap-northeast-2
-  my-infrastructure:environment: dev
   my-infrastructure:instanceType: t3.micro
 ```
 
-**Pulumi.prod.yaml**
+prod 스택을 만들어보자.
+
+```bash
+pulumi stack init prod
+```
+
+`Pulumi.prod.yaml`이 생성된다. 아래 내용을 넣는다.
+
 ```yaml
 config:
   aws:region: ap-northeast-2
-  my-infrastructure:environment: prod
   my-infrastructure:instanceType: t3.large
 ```
 
----
-
-## 6. Git 워크플로우: 인프라 변경의 정석
-
-### 브랜치 전략
-
-```
-main (production)
-  └── develop
-        ├── feature/add-rds
-        ├── feature/update-security-group
-        └── hotfix/fix-vpc-routing
-```
-
-### 변경 프로세스
+코드는 동일하고, 환경별 설정만 다르다.
+`pulumi up`을 실행하면 각 스택의 설정에 맞는 인프라가 만들어진다.
 
 ```bash
-# 1. 기능 브랜치 생성
-git checkout -b feature/add-rds
+# dev 환경 적용 (t3.micro)
+pulumi stack select dev
+pulumi up --yes
 
-# 2. 인프라 코드 수정 후 미리보기
-pulumi preview
-
-# 3. 코드 커밋
-git add .
-git commit -m "feat: Add RDS instance for user data"
-
-# 4. PR 생성 및 코드 리뷰
-git push origin feature/add-rds
-
-# 5. 리뷰 완료 후 머지 & 적용
-git checkout main
-git merge feature/add-rds
+# prod 환경 적용 (t3.large)
+pulumi stack select prod
 pulumi up --yes
 ```
 
-### 롤백이 필요할 때
+같은 코드로 여러 환경을 관리할 수 있다.
+콘솔에서 수동으로 하면 환경마다 하나씩 클릭해야 하고, 실수가 생겨도 알 수 없다.
+
+커밋한다.
 
 ```bash
-# 방법 1: Git revert 후 재적용
+git add .
+git commit -m "환경별 설정 분리 (dev: t3.micro, prod: t3.large)"
+```
+
+### 3-5. 현업 시나리오: SSH 포트를 열었다가 되돌리기
+
+현업에서 흔히 겪는 상황을 재현해보자.
+
+> 디버깅을 위해 SSH(22번 포트)를 급하게 열었는데, 그대로 두고 잊어버렸다.
+
+IaC 없이는 이런 변경이 기록되지 않는다.
+IaC에서는 이 과정이 어떻게 되는지 따라해보자.
+
+먼저 브랜치를 만든다.
+
+```bash
+git checkout -b feature/open-ssh
+```
+
+Security Group의 `ingress`에 SSH 규칙을 추가한다.
+
+```typescript
+ingress: [
+    { protocol: "tcp", fromPort: 80, toPort: 80, cidrBlocks: ["0.0.0.0/0"], description: "HTTP" },
+    { protocol: "tcp", fromPort: 443, toPort: 443, cidrBlocks: ["0.0.0.0/0"], description: "HTTPS" },
+    // 디버깅용 SSH 추가
+    { protocol: "tcp", fromPort: 22, toPort: 22, cidrBlocks: ["0.0.0.0/0"], description: "SSH" },
+],
+```
+
+미리보기로 변경사항을 확인한다.
+
+```bash
+pulumi preview
+```
+
+```
+Previewing update (dev):
+
+     Type                         Name     Plan       Info
+     pulumi:pulumi:Stack          my-infrastructure-dev
+ ~   └─ aws:ec2:SecurityGroup     web-sg   update     [diff: ~ingress]
+
+Resources:
+    ~ 1 to update
+    10 unchanged
+```
+
+Security Group 하나만 변경된다는 것을 알 수 있다.
+
+적용하고 커밋한다.
+
+```bash
+pulumi up --yes
+git add .
+git commit -m "디버깅용 SSH 포트 오픈"
+git push origin feature/open-ssh
+```
+
+여기까지가 "SSH를 열었다" 이다.
+
+디버깅이 끝났다.
+이제 되돌리면 된다.
+IaC + Git이 없었다면 "어떤 Security Group에서 SSH를 열었더라?" 부터 찾아야 한다.
+Git에서는 간단하다.
+
+```bash
+git checkout main
+git merge feature/open-ssh
 git revert HEAD
 pulumi up --yes
+```
 
-# 방법 2: 특정 커밋으로 되돌리기
-git checkout <previous-commit-hash> -- .
-pulumi up --yes
+끝이다. Security Group이 원래 상태로 돌아간다.
+어떤 변경이 있었고, 누가 되돌렸는지도 Git 히스토리에 남는다.
 
-# 방법 3: Pulumi 히스토리에서 직접 복원
-pulumi stack history
-pulumi stack export --version <version> > backup.json
+```bash
+git log --oneline
+# abc1234 Revert "디버깅용 SSH 포트 오픈"
+# def5678 디버깅용 SSH 포트 오픈
+# ghi9012 VPC, Security Group, EC2 웹 서버 추가
+# jkl3456 S3 버킷 추가
 ```
 
 ---
 
-## 7. CI/CD 파이프라인 (GitHub Actions)
+## 4. GitOps: Git을 중심에 둔 운영
+
+IaC로 인프라를 코드화했다면, 다음 단계는 GitOps다.
+
+GitOps라고 하면 쿠버네티스(K8s)와 ArgoCD를 떠올리는 경우가 많다.
+하지만 GitOps의 본질은 특정 도구가 아니라 원칙이다.
+
+[OpenGitOps](https://opengitops.dev/)에서 정의한 4가지 원칙이 있다.
+
+| 원칙 | 의미 | 이 글에서의 구현 |
+|------|------|-----------------|
+| 선언적 | "어떻게"가 아니라 "무엇을"을 정의 | Pulumi TypeScript 코드 |
+| 버전 관리 | 모든 변경을 기록하고 불변으로 관리 | Git + PR 리뷰 |
+| 자동 Pull | Git 변경을 감지해서 자동으로 적용 | GitHub Actions push 트리거 |
+| 지속적 조정 | 실제 상태가 달라지면 자동으로 맞춤 | Drift Detection 스케줄 |
+
+핵심은 **main 브랜치의 코드 = 인프라의 "있어야 할 상태"** 라는 것이다.
+
+- main에 머지되면 → CI/CD가 자동으로 `pulumi up` 실행
+- 누가 콘솔에서 수동 변경하면 → 스케줄 CI가 감지해서 알림
+
+K8s 없이도, ArgoCD 없이도, GitHub Actions만으로 이 원칙을 충분히 실천할 수 있다.
+
+---
+
+## 5. GitHub Actions로 GitOps 구현하기
+
+실습에서 만든 프로젝트에 CI/CD 파이프라인을 추가한다.
+3개의 워크플로우를 만든다.
+
+### 5-1. PR Preview
+
+PR이 생성되면 `pulumi preview`를 실행하고, 결과를 PR 코멘트로 남긴다.
+리뷰어가 "이 PR이 머지되면 인프라에 어떤 변화가 생기는지"를 코드 diff와 함께 볼 수 있다.
+
+`.github/workflows/preview.yml`을 생성한다.
 
 ```yaml
-name: Infrastructure CI/CD
+name: Infrastructure Preview
 
 on:
   pull_request:
     branches: [main]
-  push:
-    branches: [main]
 
 jobs:
   preview:
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
       - run: npm ci
+
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
+
       - uses: pulumi/actions@v5
         with:
           command: preview
           stack-name: dev
+          comment-on-pr: true
+          comment-on-pr-number: ${{ github.event.pull_request.number }}
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+```
 
+이 워크플로우가 동작하면 PR에 아래와 같은 코멘트가 자동으로 달린다.
+
+```
+Pulumi Preview
+
+  + aws:rds:Instance       user-db       create
+  ~ aws:ec2:SecurityGroup  web-sg        update [diff: +ingress]
+  
+  Resources: 1 to create, 1 to update, 10 unchanged
+```
+
+코드 리뷰어 입장에서 매우 유용하다.
+코드 diff만으로는 "실제로 뭐가 바뀌는지" 파악하기 어려운 경우가 있는데, `pulumi preview` 결과가 함께 있으면 한눈에 확인할 수 있다.
+
+### 5-2. Deploy
+
+main 브랜치에 머지되면 자동으로 `pulumi up`을 실행한다.
+
+`.github/workflows/deploy.yml`을 생성한다.
+
+```yaml
+name: Infrastructure Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
   deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -468,47 +638,410 @@ jobs:
         with:
           node-version: '20'
       - run: npm ci
+
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
+
       - uses: pulumi/actions@v5
         with:
           command: up
-          stack-name: prod
+          stack-name: dev
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 ```
 
+이제부터 직접 `pulumi up`을 실행할 필요가 없다.
+PR을 만들고, 리뷰 받고, 머지하면 인프라가 자동으로 반영된다.
+
+이것이 GitOps의 "자동 Pull" 원칙이다.
+
+### 5-3. Drift Detection
+
+GitOps의 4번째 원칙 "지속적 조정"을 구현하는 워크플로우다.
+
+누군가 AWS 콘솔에서 직접 리소스를 수정하면, Git의 코드와 실제 인프라가 달라진다.
+이것을 Drift라고 부른다.
+
+이 워크플로우는 매일 아침 9시에 실행되어 Drift를 감지한다.
+
+`.github/workflows/drift-detection.yml`을 생성한다.
+
+```yaml
+name: Drift Detection
+
+on:
+  schedule:
+    - cron: '0 0 * * 1-5'  # UTC 0시 = KST 9시, 평일만
+  workflow_dispatch:        # 수동 실행도 가능
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - uses: pulumi/actions@v5
+        id: drift
+        continue-on-error: true
+        with:
+          command: preview
+          stack-name: dev
+          expect-no-changes: true
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+      - name: Drift 감지 시 GitHub Issue 생성
+        if: steps.drift.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '⚠️ 인프라 Drift 감지',
+              body: [
+                'Git 코드와 실제 AWS 상태가 다릅니다.',
+                '누군가 콘솔에서 직접 변경한 것 같습니다.',
+                '',
+                '확인 후 코드를 업데이트하거나 `pulumi up`으로 원래 상태로 복구해주세요.',
+                '',
+                `[워크플로우 실행 결과](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`
+              ].join('\n'),
+              labels: ['infrastructure', 'drift']
+            })
+```
+
+Drift가 감지되면 GitHub Issue가 자동으로 생성된다.
+
+커밋한다.
+
+```bash
+mkdir -p .github/workflows
+git add .github/
+git commit -m "CI/CD 파이프라인 추가 (Preview, Deploy, Drift Detection)"
+```
+
+이 3개의 워크플로우를 조합하면 GitOps의 4가지 원칙을 모두 구현할 수 있다.
+
+| GitOps 원칙 | 구현 |
+|-------------|------|
+| 선언적 | Pulumi TypeScript 코드 |
+| 버전 관리 | Git + PR 리뷰 |
+| 자동 Pull | `deploy.yml` — main push 시 자동 `pulumi up` |
+| 지속적 조정 | `drift-detection.yml` — 평일 9시 Drift 체크 |
+
 ---
 
-## 8. AI와 함께하는 IaC 워크플로우
+## 6. 현업 시나리오: AI 에이전트와 함께 인프라 변경하기
 
-IaC 환경이 갖춰지면, AI를 활용한 인프라 관리가 가능해진다.
+여기서부터는 에이전틱 코딩 환경에서 IaC + GitOps가 어떻게 동작하는지 구체적인 시나리오로 살펴본다.
+
+### 시나리오 1: 트래픽 증가 대응
 
 ```
-Human: "현재 웹서버 트래픽이 증가하고 있어. 오토스케일링 그룹으로 변경해줘"
-
-AI: "현재 index.ts를 분석한 결과, 단일 EC2 인스턴스로 구성되어 있다.
-     Auto Scaling Group + ALB 구성으로 변경하는 코드를 작성할게.
-     
-     [코드 생성]
-     
-     pulumi preview로 변경사항을 먼저 확인해봐."
+👤 "현재 웹서버가 단일 EC2인데, 트래픽이 증가하고 있어. 
+    Auto Scaling Group으로 변경해줘."
 ```
+
+AI 에이전트는 기존 `index.ts`를 분석하고, 아래와 같은 코드를 작성한다.
+
+```typescript
+// 기존 단일 EC2 인스턴스를 제거하고 아래로 교체
+
+// 서브넷 하나 더 추가 (ASG는 최소 2개 AZ 필요)
+const publicSubnet2 = new aws.ec2.Subnet("public-subnet-2", {
+    vpcId: vpc.id,
+    cidrBlock: "10.0.2.0/24",
+    availabilityZone: "ap-northeast-2c",
+    mapPublicIpOnLaunch: true,
+    tags: { Name: `public-subnet-2-${environment}`, Type: "public" },
+});
+
+// Launch Template
+const launchTemplate = new aws.ec2.LaunchTemplate("web-lt", {
+    imageId: ami.id,
+    instanceType: instanceType,
+    vpcSecurityGroupIds: [webSg.id],
+    tags: { Name: `web-lt-${environment}`, ManagedBy: "pulumi" },
+});
+
+// ALB
+const alb = new aws.lb.LoadBalancer("web-alb", {
+    internal: false,
+    loadBalancerType: "application",
+    securityGroups: [webSg.id],
+    subnets: [publicSubnet.id, publicSubnet2.id],
+    tags: { Name: `web-alb-${environment}`, ManagedBy: "pulumi" },
+});
+
+// Target Group
+const targetGroup = new aws.lb.TargetGroup("web-tg", {
+    port: 80,
+    protocol: "HTTP",
+    vpcId: vpc.id,
+    healthCheck: {
+        path: "/health",
+        healthyThreshold: 2,
+        unhealthyThreshold: 3,
+    },
+    tags: { Name: `web-tg-${environment}` },
+});
+
+// Listener
+new aws.lb.Listener("web-listener", {
+    loadBalancerArn: alb.arn,
+    port: 80,
+    defaultActions: [{
+        type: "forward",
+        targetGroupArn: targetGroup.arn,
+    }],
+});
+
+// Auto Scaling Group
+const asg = new aws.autoscaling.Group("web-asg", {
+    desiredCapacity: 2,
+    maxSize: 10,
+    minSize: 2,
+    launchTemplate: {
+        id: launchTemplate.id,
+        version: "$Latest",
+    },
+    vpcZoneIdentifiers: [publicSubnet.id, publicSubnet2.id],
+    targetGroupArns: [targetGroup.arn],
+});
+
+export const albDnsName = alb.dnsName;
+```
+
+AI 에이전트가 이 코드로 PR을 만들면, CI가 `pulumi preview`를 실행한다.
+
+```
+Pulumi Preview
+
+  + aws:ec2:Subnet             public-subnet-2  create
+  + aws:ec2:LaunchTemplate     web-lt           create
+  + aws:lb:LoadBalancer        web-alb          create
+  + aws:lb:TargetGroup         web-tg           create
+  + aws:lb:Listener            web-listener     create
+  + aws:autoscaling:Group      web-asg          create
+  - aws:ec2:Instance           web-server       delete
+
+  Resources: 6 to create, 1 to delete, 10 unchanged
+```
+
+PR 리뷰에서 확인할 수 있는 것들:
+
+- 기존 EC2(`web-server`)가 삭제되고 ASG가 생성된다
+- 코드 diff를 통해 Health Check 설정이 적절한지 확인할 수 있다
+- 문제가 있으면 머지하지 않으면 된다
+
+머지 후 문제가 생기면? `git revert` → 자동 `pulumi up` → 원래 단일 EC2 상태로 복구.
+
+### 시나리오 2: 보안 점검
+
+```
+👤 "현재 인프라 코드에서 보안 취약점 있는지 점검해줘."
+```
+
+AI 에이전트가 코드를 분석한 결과:
+
+```
+분석 결과 2가지 보안 이슈를 발견했습니다.
+
+1. web-sg: SSH(22번 포트)가 0.0.0.0/0으로 열려 있음
+   → 회사 VPN IP 대역(10.0.0.0/8)으로 제한
+
+2. app-data 버킷: 서버 사이드 암호화가 설정되지 않음
+   → SSE-KMS 암호화 추가
+```
+
+AI 에이전트가 수정한 코드의 diff:
+
+```diff
+ // Security Group
+-{ protocol: "tcp", fromPort: 22, toPort: 22, cidrBlocks: ["0.0.0.0/0"], description: "SSH" },
++{ protocol: "tcp", fromPort: 22, toPort: 22, cidrBlocks: ["10.0.0.0/8"], description: "SSH - VPN only" },
+```
+
+```typescript
+// S3 버킷 암호화 추가
+const encryption = new aws.s3.BucketServerSideEncryptionConfigurationV2("app-data-encryption", {
+    bucket: bucket.id,
+    rules: [{
+        applyServerSideEncryptionByDefault: {
+            sseAlgorithm: "aws:kms",
+        },
+    }],
+});
+```
+
+보안 변경은 특히 코드 리뷰가 중요하다.
+콘솔에서 수동으로 바꾸면 "정확히 뭐가 바뀌었는지" 확인하기 어렵다.
+IaC에서는 diff가 곧 변경 내역이기 때문에 리뷰가 명확하다.
+
+### 시나리오 3: 장애 복구
+
+금요일 오후 5시, AI 에이전트가 제안한 변경이 머지된 후 서비스 장애가 발생했다.
+
+```bash
+# 1. 최근 커밋 확인
+git log --oneline -5
+# a1b2c3d Auto Scaling Group으로 변경  ← 이 커밋이 원인
+# e4f5g6h S3 버킷 암호화 추가
+# ...
+
+# 2. 해당 커밋을 되돌리기
+git revert a1b2c3d
+
+# 3. main에 푸시 → CI/CD가 자동으로 이전 상태로 복구
+git push origin main
+
+# 총 소요 시간: 2~3분
+```
+
+수동 관리였다면?
+담당자가 콘솔에 접속해서 ALB를 삭제하고, ASG를 삭제하고, Launch Template을 삭제하고, EC2를 다시 만들어야 한다.
+금요일 밤이 사라진다.
+
+---
+
+## 7. 리소스 정리
+
+실습이 끝나면 AWS 리소스를 정리해야 한다.
+요금이 나가니 반드시 정리하자.
+
+```bash
+# dev 스택 리소스 삭제
+pulumi stack select dev
+pulumi destroy --yes
+
+# prod 스택 리소스 삭제 (만들었다면)
+pulumi stack select prod
+pulumi destroy --yes
+```
+
+`pulumi destroy`도 멱등하다.
+이미 삭제된 리소스가 있으면 건너뛰고, 남아있는 것만 삭제한다.
+
+---
+
+## 8. 그 다음 단계: K8s + ArgoCD + Helm
+
+이 글에서 구현한 GitOps는 솔직히 말하면 "간이 버전"이다.
+GitHub Actions가 `pulumi up`을 실행하는 방식은 GitOps의 원칙을 따르긴 하지만, 한계가 분명하다.
+
+진짜 GitOps는 쿠버네티스(K8s) + ArgoCD + Helm Chart 조합에서 완성된다.
+
+왜 그런지 정리해보면 이렇다.
+
+### GitHub Actions 방식의 한계
+
+이 글에서 구현한 방식은 Push 기반이다.
+CI가 코드를 감지해서 인프라에 "밀어넣는(Push)" 구조다.
+
+이 구조에서는 몇 가지 문제가 생긴다.
+
+- **CI가 인프라에 대한 강력한 권한을 가진다.** GitHub Actions에 AWS 키를 넣어야 하고, 그 키가 유출되면 인프라 전체가 위험해진다.
+- **실시간 조정이 안된다.** Drift Detection을 cron으로 돌리고 있지만, 하루에 한 번 체크하는 것과 실시간으로 감지하는 것은 다르다. 그 사이에 누군가 콘솔에서 변경하면 최대 24시간 동안 모른다.
+- **애플리케이션 배포와 인프라 배포가 분리되지 않는다.** 실제 서비스에서는 앱 배포(컨테이너 이미지 교체)와 인프라 변경(VPC, DB 등)의 주기와 리스크가 완전히 다르다.
+
+### ArgoCD가 해결하는 것
+
+ArgoCD는 Pull 기반이다.
+클러스터 안에서 에이전트가 돌면서 Git 저장소를 지속적으로 감시한다.
+
+```
+GitHub Actions (Push 기반)
+  CI → 인프라에 명령을 보낸다
+
+ArgoCD (Pull 기반)  
+  클러스터 안의 에이전트 ← Git 저장소를 계속 감시한다
+```
+
+차이가 크다.
+
+- **CI에 인프라 권한이 필요 없다.** ArgoCD가 클러스터 안에서 동작하기 때문에, 외부에서 접근 키를 관리할 필요가 없다.
+- **실시간 조정이 된다.** 3분마다 Git과 실제 상태를 비교하고, 차이가 있으면 자동으로 원래 상태로 맞춘다. 누가 `kubectl`로 직접 수정해도 ArgoCD가 알아서 되돌린다.
+- **Self-Healing이 가능하다.** 파드가 죽으면 다시 살리고, 설정이 바뀌면 원래대로 돌린다. 진짜 "지속적 조정"이다.
+
+### Helm Chart가 필요한 이유
+
+Pulumi에서 `Pulumi.dev.yaml`과 `Pulumi.prod.yaml`로 환경별 설정을 분리한 것처럼, Helm Chart도 같은 역할을 한다.
+다만 Helm은 K8s 생태계의 사실상 표준 패키지 매니저라서, 오픈소스 차트를 가져다 쓸 수 있다는 차이가 있다.
+
+```yaml
+# values-dev.yaml
+replicaCount: 2
+resources:
+  limits:
+    memory: 512Mi
+
+# values-prod.yaml
+replicaCount: 10
+resources:
+  limits:
+    memory: 2Gi
+```
+
+애플리케이션의 K8s 매니페스트를 Helm Chart로 패키징하고, 환경별 values 파일로 설정을 분리하고, ArgoCD가 Git의 Chart를 감시하면서 자동으로 클러스터에 반영하는 것.
+이것이 완전한 GitOps 파이프라인이다.
+
+### 이 글에서 다루지 않은 이유
+
+솔직히 K8s + ArgoCD + Helm까지 한 번에 다루면 시작 자체가 너무 어려워진다.
+
+K8s 클러스터를 띄워야 하고, ArgoCD를 설치해야 하고, Helm Chart 문법을 배워야 하고, 그 위에서 GitOps를 구현해야 한다.
+인프라를 코드로 관리하는 것 자체가 처음인 팀에게 이 모든 것을 한꺼번에 요구하면, "그냥 콘솔이 낫겠다"는 결론에 도달할 가능성이 높다.
+
+그래서 이 글에서는 진입 장벽을 최대한 낮추려고 했다.
+Pulumi + GitHub Actions만으로도 GitOps의 핵심 원칙은 충분히 체험할 수 있다.
+여기서 한 발짝 나아가고 싶다면, 그때 K8s + ArgoCD + Helm을 도입하면 된다.
+
+순서를 정리하면 이렇다.
+
+1. **(이 글)** Pulumi + GitHub Actions → IaC와 GitOps의 기본 체험
+2. **(다음 단계)** 컨테이너화 + K8s 도입 → 애플리케이션을 컨테이너로 배포
+3. **(최종)** ArgoCD + Helm Chart → 완전한 Pull 기반 GitOps 구현
+
+한 번에 3번으로 가려고 하면 대부분 중간에 포기한다.
+1번부터 시작해서 익숙해진 다음에 올라가는 것을 권장한다.
 
 ---
 
 ## 마치며
 
-AI 시대의 인프라 관리는 더 이상 선택이 아니다.
+이 글에서 다룬 내용을 정리하면 다음과 같다.
 
-- **버전 관리**: 모든 변경 이력 추적
-- **멱등성**: 예측 가능한 결과
-- **원복 가능성**: 실패해도 빠른 복구
-- **협업**: 코드 리뷰를 통한 품질 관리
-- **자동화**: CI/CD 파이프라인 통합
-- **GitOps**: Git을 단일 진실 공급원으로 삼는 운영
+1. S3 버킷 하나 만드는 것부터 시작했다
+2. VPC, Security Group, EC2를 추가했다
+3. 환경별 설정을 분리했다
+4. SSH 포트를 열었다가 되돌려봤다
+5. GitHub Actions로 PR Preview, 자동 배포, Drift Detection을 구현했다
 
-콘솔 클릭에서 벗어나, 코드로 인프라를 관리하라. 그래야만 AI와 함께 안전하게 인프라를 발전시킬 수 있다.
+이 모든 과정에서 일관된 패턴이 하나 있다.
+
+> 코드를 수정하고 → Git에 커밋하고 → PR을 만들고 → 리뷰 후 머지하면 → 인프라가 자동으로 반영된다.
+
+에이전틱 코딩 시대에 이 패턴은 더 중요해진다.
+AI 에이전트가 하루에 수십 번 인프라 변경을 제안할 수 있는 환경에서, 모든 변경이 Git에 기록되고, 코드 리뷰를 거쳐 적용되고, 문제가 생기면 `git revert` 한 번으로 복구되는 환경은 선택이 아니라 필수다.
+
+콘솔 클릭이 익숙해서 IaC가 번거로워 보일 수 있다.
+처음에는 나도 그랬다.
+하지만 한번 구축해놓으면 AI 에이전트가 인프라 코드를 작성하고, CI/CD가 자동으로 검증하고, 문제가 생기면 한 줄로 복구되는 환경이 갖춰진다.
+그때 느끼는 안정감은 콘솔 클릭과는 비교할 수 없다.
+
+완전한 GitOps(K8s + ArgoCD + Helm)까지 가려면 갈 길이 남았지만, 그 여정의 첫 발은 이미 뗐다.
+다음 글에서는 이 인프라 위에 컨테이너 기반 배포를 도입하는 과정을 다뤄볼 예정이다.
