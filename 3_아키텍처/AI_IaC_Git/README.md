@@ -1,9 +1,9 @@
 # 에이전틱 코딩 시대, IaC와 GitOps가 필수인 이유
 
-에이전틱 코딩(Agentic Coding)이 대세가 되면서 개발 속도가 폭발적으로 빨라졌다.
+에이전틱 코딩(Agentic Coding)이 대세가 되면서 개발 속도가 눈에 띄게 빨라졌다.
 Cursor, Windsurf, Claude Code 같은 AI 코딩 에이전트가 코드베이스를 분석하고, 수십 개의 파일을 동시에 수정하고, 터미널 명령까지 실행하는 수준이 되었다.
 
-이 속도 자체는 혁신적이다.
+속도가 빨라진 것 자체는 좋은 일이다.
 다만, 속도가 빨라질수록 한 가지 문제가 커진다.
 
 > AI 에이전트가 만든 변경이 잘못되었을 때, 안전하게 되돌릴 수 있는가?
@@ -14,7 +14,7 @@ Cursor, Windsurf, Claude Code 같은 AI 코딩 에이전트가 코드베이스�
 많은 회사에서 여전히 AWS 콘솔에 접속해 클릭으로 리소스를 만든다.
 변경 이력은 담당자의 머릿속에만 존재하고, "어제 누가 Security Group 바꿨어?"라는 질문에 아무도 답하지 못한다.
 
-에이전틱 코딩 시대에 이런 환경은 치명적이다.
+에이전틱 코딩 시대에 이런 환경은 문제가 된다.
 AI 에이전트에게 "트래픽 증가에 대응해줘"라고 했더니, 콘솔에서 Security Group을 열고, 인스턴스 타입을 변경하고, 로드밸런서를 추가했다고 하자.
 다음 날 장애가 발생했을 때:
 
@@ -28,14 +28,14 @@ AI 에이전트에게 "트래픽 증가에 대응해줘"라고 했더니, 콘솔
 이 글에서는 **Pulumi + AWS + GitHub Actions** 조합으로 실제 동작하는 IaC 프로젝트를 처음부터 끝까지 만들어본다.
 직접 따라하면서 IaC와 GitOps가 왜 필요한지 체감할 수 있도록 구성했다.
 
-> 이 글의 전체 예제 코드는 [GitHub](https://github.com/jojoldu/blog-code/tree/master/3_아키텍처/AI_IaC_Git/pulumi-practice)에서 확인할 수 있다.
+> 이 글의 전체 예제 코드는 [GitHub](https://github.com/jojoldu/iac-gitops-pulumi)에서 확인할 수 있다.
 
 ---
 
 ## 1. 왜 IaC인가
 
-IaC를 쓰면 뭐가 좋은지, 표로만 보면 와닿지 않는다.
-직접 겪어봐야 비로소 느끼게 되는 차이를 먼저 정리했다.
+IaC를 쓰면 뭐가 좋은지, 표로만 보면 잘 와닿지 않는다.
+직접 겪어봐야 느끼는 차이를 먼저 정리했다.
 
 ### 수동 관리의 문제
 
@@ -145,9 +145,8 @@ for (const port of [80, 443]) {
 ```
 
 AI 에이전트 관점에서도 마찬가지다.
-LLM은 TypeScript와 Python 코드를 수십억 줄 학습했다.
-HCL은 상대적으로 훨씬 적다.
-결과적으로 AI 에이전트가 생성하는 Pulumi 코드의 정확도가 더 높다.
+LLM의 학습 데이터에 TypeScript와 Python 코드가 HCL보다 훨씬 많다.
+그만큼 AI 에이전트가 생성하는 Pulumi 코드의 정확도가 더 높을 수밖에 없다.
 
 ---
 
@@ -253,7 +252,7 @@ Resources:
     + 4 to create
 ```
 
-3개의 리소스가 생성될 것이라고 미리 알려준다.
+총 4개의 리소스(Stack 포함)가 생성될 것이라고 미리 알려준다.
 실제로 적용하기 전에 무엇이 바뀌는지 확인할 수 있다는 것이 핵심이다.
 
 문제가 없으면 적용한다.
@@ -613,8 +612,8 @@ Pulumi Preview
   Resources: 1 to create, 1 to update, 10 unchanged
 ```
 
-코드 리뷰어 입장에서 매우 유용하다.
-코드 diff만으로는 "실제로 뭐가 바뀌는지" 파악하기 어려운 경우가 있는데, `pulumi preview` 결과가 함께 있으면 한눈에 확인할 수 있다.
+코드 리뷰어 입장에서 이게 있고 없고의 차이가 크다.
+코드 diff만으로는 "실제로 뭐가 바뀌는지" 파악하기 어려운 경우가 있는데, `pulumi preview` 결과가 함께 있으면 바로 확인할 수 있다.
 
 ### 5-2. Deploy
 
@@ -680,6 +679,8 @@ on:
 jobs:
   detect:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -770,6 +771,11 @@ const publicSubnet2 = new aws.ec2.Subnet("public-subnet-2", {
     tags: { Name: `public-subnet-2-${environment}`, Type: "public" },
 });
 
+new aws.ec2.RouteTableAssociation("public-rta-2", {
+    subnetId: publicSubnet2.id,
+    routeTableId: publicRt.id,
+});
+
 // Launch Template
 const launchTemplate = new aws.ec2.LaunchTemplate("web-lt", {
     imageId: ami.id,
@@ -832,6 +838,7 @@ AI 에이전트가 이 코드로 PR을 만들면, CI가 `pulumi preview`를 실�
 Pulumi Preview
 
   + aws:ec2:Subnet             public-subnet-2  create
+  + aws:ec2:RouteTableAssociation public-rta-2  create
   + aws:ec2:LaunchTemplate     web-lt           create
   + aws:lb:LoadBalancer        web-alb          create
   + aws:lb:TargetGroup         web-tg           create
@@ -839,7 +846,7 @@ Pulumi Preview
   + aws:autoscaling:Group      web-asg          create
   - aws:ec2:Instance           web-server       delete
 
-  Resources: 6 to create, 1 to delete, 10 unchanged
+  Resources: 7 to create, 1 to delete, 10 unchanged
 ```
 
 PR 리뷰에서 확인할 수 있는 것들:
@@ -941,9 +948,9 @@ pulumi destroy --yes
 ## 8. 그 다음 단계: K8s + ArgoCD + Helm
 
 이 글에서 구현한 GitOps는 솔직히 말하면 "간이 버전"이다.
-GitHub Actions가 `pulumi up`을 실행하는 방식은 GitOps의 원칙을 따르긴 하지만, 한계가 분명하다.
+GitHub Actions가 `pulumi up`을 실행하는 방식은 GitOps의 원칙을 따르긴 하지만, 한계가 있다.
 
-진짜 GitOps는 쿠버네티스(K8s) + ArgoCD + Helm Chart 조합에서 완성된다.
+좀 더 본격적인 GitOps를 하려면 쿠버네티스(K8s) + ArgoCD + Helm Chart 조합이 필요하다.
 
 왜 그런지 정리해보면 이렇다.
 
@@ -974,8 +981,8 @@ ArgoCD (Pull 기반)
 차이가 크다.
 
 - **CI에 인프라 권한이 필요 없다.** ArgoCD가 클러스터 안에서 동작하기 때문에, 외부에서 접근 키를 관리할 필요가 없다.
-- **실시간 조정이 된다.** 3분마다 Git과 실제 상태를 비교하고, 차이가 있으면 자동으로 원래 상태로 맞춘다. 누가 `kubectl`로 직접 수정해도 ArgoCD가 알아서 되돌린다.
-- **Self-Healing이 가능하다.** 파드가 죽으면 다시 살리고, 설정이 바뀌면 원래대로 돌린다. 진짜 "지속적 조정"이다.
+- **실시간 조정이 된다.** 3분마다 Git과 실제 상태를 비교하고, 차이가 있으면 자동으로 원래 상태로 맞춘다. 누가 `kubectl`로 직접 수정해도 ArgoCD가 되돌린다.
+- **Self-Healing이 가능하다.** 파드가 죽으면 다시 살리고, 설정이 바뀌면 원래대로 돌린다. GitOps에서 말하는 "지속적 조정"이 이것이다.
 
 ### Helm Chart가 필요한 이유
 
@@ -996,8 +1003,8 @@ resources:
     memory: 2Gi
 ```
 
-애플리케이션의 K8s 매니페스트를 Helm Chart로 패키징하고, 환경별 values 파일로 설정을 분리하고, ArgoCD가 Git의 Chart를 감시하면서 자동으로 클러스터에 반영하는 것.
-이것이 완전한 GitOps 파이프라인이다.
+애플리케이션의 K8s 매니페스트를 Helm Chart로 패키징하고, 환경별 values 파일로 설정을 분리하고, ArgoCD가 Git의 Chart를 감시하면서 자동으로 클러스터에 반영한다.
+여기까지 갖춰지면 GitOps의 4가지 원칙을 빠짐없이 충족하게 된다.
 
 ### 이 글에서 다루지 않은 이유
 
@@ -1036,12 +1043,12 @@ Pulumi + GitHub Actions만으로도 GitOps의 핵심 원칙은 충분히 체험�
 > 코드를 수정하고 → Git에 커밋하고 → PR을 만들고 → 리뷰 후 머지하면 → 인프라가 자동으로 반영된다.
 
 에이전틱 코딩 시대에 이 패턴은 더 중요해진다.
-AI 에이전트가 하루에 수십 번 인프라 변경을 제안할 수 있는 환경에서, 모든 변경이 Git에 기록되고, 코드 리뷰를 거쳐 적용되고, 문제가 생기면 `git revert` 한 번으로 복구되는 환경은 선택이 아니라 필수다.
+AI 에이전트가 하루에 수십 번 인프라 변경을 제안할 수 있는 환경에서, 모든 변경이 Git에 기록되고, 코드 리뷰를 거쳐 적용되고, 문제가 생기면 `git revert` 한 번으로 복구되는 환경이 없으면 문제가 생긴다.
 
 콘솔 클릭이 익숙해서 IaC가 번거로워 보일 수 있다.
 처음에는 나도 그랬다.
 하지만 한번 구축해놓으면 AI 에이전트가 인프라 코드를 작성하고, CI/CD가 자동으로 검증하고, 문제가 생기면 한 줄로 복구되는 환경이 갖춰진다.
-그때 느끼는 안정감은 콘솔 클릭과는 비교할 수 없다.
+그 환경에 익숙해지고 나면 다시 콘솔 클릭으로 돌아가기 어렵다.
 
 완전한 GitOps(K8s + ArgoCD + Helm)까지 가려면 갈 길이 남았지만, 그 여정의 첫 발은 이미 뗐다.
 다음 글에서는 이 인프라 위에 컨테이너 기반 배포를 도입하는 과정을 다뤄볼 예정이다.
