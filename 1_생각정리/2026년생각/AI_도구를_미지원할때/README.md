@@ -57,7 +57,7 @@ Claude Code, Codex, Cursor와 같은 도구들은 아무리 좋아도 회사에 
 특히 Kiro의 경우 AWS 위에 있다 보니, 기존 예산 체계나 계정 관리 측면에서 리더를 설득할 수 있는 구체적인 포인트들이 있다.  
 Yan So 님이 이런 부분을 잘 정리해주신 글이 있어서 공유한다.
 
-https://yanlog.yanbert.com/ko/blog/dear-team-lead-lets-adopt-kiro-20260211/
+[Kiro를 기업에서 쓰기 좋은 이유 (IAM Identity Center)](https://yanlog.yanbert.com/ko/blog/dear-team-lead-lets-adopt-kiro-20260211/)
 
 "왜 우리 리더들은 AI 도구를 지원하지 않는 것인가"에 대해 리더의 입장에서의 시각과 그들을 설득하기 위한 충분한 근거를 자세히 설명해 주셨다.  
 예산과 비용 처리 관점에서 왜 도입이 지연되는지, 그리고 리더 입장에서 Kiro를 어떤 포인트로 검토하면 좋을지가 실무적으로 정리되어 있다.
