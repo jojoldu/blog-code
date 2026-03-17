@@ -765,21 +765,146 @@ router.get('/api/dashboard/category-ratio', async (req, res) => {
 });
 ```
 
-## Step 7. 공식 Analytics 대시보드와의 차이점
+## Step 7. 공식 Analytics 대시보드와의 차이점 — 왜 직접 만들어야 하는가
 
-Anthropic은 2026년에 공식 Claude Code Analytics 대시보드를 출시했습니다. `claude.ai/analytics/claude-code`에서 접근할 수 있으며, 수락된 코드 라인, 제안 수락률, 일일 활성 사용자, PR 기여도 등을 추적합니다.
+Anthropic은 2026년에 공식 Claude Code Analytics 대시보드를 출시했습니다. `claude.ai/analytics/claude-code`에서 접근할 수 있고, Teams/Enterprise 플랜에서는 GitHub 연동까지 지원합니다. 그렇다면 직접 만들 필요가 있을까요?
 
-그렇다면 직접 만들 필요가 있을까요? 목적이 다릅니다.
+결론부터 말하면, **여전히 필요합니다.** 공식 대시보드와 커스텀 대시보드는 답하는 질문이 다릅니다.
+
+### 공식 대시보드가 추적하는 것
+
+공식 Analytics는 "**Claude Code가 얼마나 코드에 기여했는가**"에 대한 답을 줍니다.
+
+- 수락된 코드 라인 수 (Lines of code accepted)
+- 제안 수락률 (Suggestion accept rate)
+- 일일 활성 사용자 및 세션 수
+- Claude Code가 관여한 PR 수와 비율 (GitHub 연동)
+- 사용자별 기여도 리더보드
+- 모델별 지출 추적
+
+### 공식 대시보드가 추적하지 않는 것
+
+공식 대시보드에서는 다음 질문에 답할 수 없습니다.
+
+- 어떤 Skill을 누가 쓰고 있는가?
+- 어떤 Sub-agent를 활용하는가?
+- 어떤 MCP 도구를 연동했는가?
+- 슬래시 커맨드 사용 패턴은 어떤가?
+- "많이 쓰는 사람"과 "**잘 쓰는 사람**"의 차이는?
+- 같은 기능의 스킬을 여러 사람이 각자 만들어 쓰고 있진 않은가? (스킬 속인화)
+- Jira 티켓 처리 속도, 배포 빈도, 장애 발생률과의 상관관계는?
+
+### 비교 정리
 
 | 항목 | 공식 Analytics | 커스텀 대시보드 |
 |------|-------------|--------------|
-| 추적 대상 | 코드 수락률, PR 기여도 | 스킬/서브에이전트/MCP 사용 패턴 |
-| 목적 | ROI 측정, 채택 현황 | 활용 "품질" 분석, 팀 학습 촉진 |
+| 코드 기여량 (LoC, PR) | O | X (불필요) |
+| 사용자 채택률/세션 수 | O | X (불필요) |
+| Skill/Agent/MCP 사용 패턴 | **X** | O |
+| "잘 쓰는 사람" vs "많이 쓰는 사람" | **X** | O |
+| 스킬 속인화(屬人化) 감지 | **X** | O |
+| Jira/배포/장애 로그 교차 분석 | **X** | O |
 | 커스터마이징 | 제한적 | 자유로움 |
+| 데이터 내보내기 | CSV export 지원 | BigQuery에서 자유롭게 쿼리 |
 | 설치 | 별도 설정 없음 | Plugin 설치 필요 |
-| GitHub 연동 | 지원 (PR 속성 분석) | 직접 구현 필요 |
 
-공식 대시보드는 "Claude Code가 얼마나 코드에 기여했는가"를 보여주고, 커스텀 대시보드는 "팀원들이 Claude Code를 **어떻게** 활용하고 있는가"를 보여줍니다. 둘을 함께 사용하면 양적 기여도와 질적 활용도를 모두 파악할 수 있습니다.
+### 운영 전략: 둘을 함께 쓴다
+
+공식 대시보드가 커버하는 영역(코드 기여량, 채택률, PR 속성 분석)은 굳이 다시 만들 필요가 없습니다. 커스텀 대시보드는 공식이 다루지 못하는 "**활용 품질**" 영역에 집중하면 됩니다.
+
+- **공식 대시보드**: "Claude Code가 우리 팀 코드에 얼마나 기여하는가?" → ROI 측정, 경영진 보고
+- **커스텀 대시보드**: "팀원들이 Claude Code를 **어떻게** 활용하는가?" → 팀 학습 촉진, 활용 품질 개선
+
+둘을 병행하면 양적 기여도와 질적 활용도를 모두 파악할 수 있습니다.
+
+### 플랜별 가능 범위 — Teams vs Enterprise
+
+이 글의 커스텀 대시보드(Hook + BigQuery)는 플랜에 관계없이 동작합니다. Transcript 파싱은 개발자 로컬에서 일어나는 일이라 API 제약이 없습니다. 하지만 공식 Analytics 쪽은 플랜에 따라 사용할 수 있는 범위가 다릅니다.
+
+**Teams 플랜에서 가능한 것 (대시보드 UI)**
+
+| 기능 | 접근 권한 |
+|------|----------|
+| 주간 활성 사용자(WAU), 이용률 | Owner, Primary Owner |
+| Claude.ai 채팅 수, 프로젝트 사용량, 아티팩트 생성 수 | Owner, Primary Owner |
+| Claude Code: 수락된 코드 라인, 제안 수락률, PR 기여도 | Owner, Primary Owner |
+| 모델별 지출, 사용자별 지출 TOP 10 | Owner, Primary Owner |
+| 상위 커넥터 사용 현황 | Owner, Primary Owner |
+| CSV export (사용자별/모델별 일일 사용량) | Owner, Primary Owner |
+
+Teams에서도 `claude.ai/analytics`의 대시보드 UI를 통해 채팅, 프로젝트, Claude Code, 지출까지 꽤 넓은 범위를 확인할 수 있습니다. 다만 이 데이터를 프로그래밍 방식으로 가져올 수는 없어서, BigQuery로 자동 적재하려면 CSV를 수동으로 다운로드해야 합니다.
+
+**Enterprise 플랜에서 추가되는 것**
+
+| 기능 | 설명 |
+|------|------|
+| **Analytics API** | 5개 엔드포인트로 사용자 활동, 스킬/커넥터 사용량을 프로그래밍 방식으로 수집 |
+| **Compliance API** | 채팅 기록, 파일 콘텐츠, 활동 로그에 실시간 프로그래매틱 접근 |
+| **Audit Log** | 사용자 행동, 시스템 이벤트, 데이터 접근 기록 |
+| 확장 컨텍스트 윈도우 | Sonnet 4.6에서 채팅 500K, Claude Code 1M 토큰 |
+
+Enterprise의 Analytics API를 사용하면 Claude 채팅(웹/앱) 사용량까지 자동으로 BigQuery에 적재할 수 있습니다. 비개발 직군(기획, 마케팅, CS 등)의 AI 활용도까지 하나의 대시보드에서 추적하고 싶다면 이 API가 핵심입니다.
+
+Analytics API가 제공하는 5개 엔드포인트는 다음과 같습니다.
+
+- `GET /users` — 사용자별 대화 수, 메시지 수, 파일 업로드, 아티팩트 생성, 스킬/커넥터 사용 횟수, Claude Code 커밋/PR/코드 라인
+- `GET /summaries` — 일일/7일/30일 활성 사용자 수, 시트 활용률
+- `GET /apps/chat/projects` — 프로젝트별 대화 수, 사용자 수
+- `GET /skills` — 스킬별 고유 사용자 수, 채팅/Claude Code 각각의 사용 횟수
+- `GET /connectors` — 커넥터별(Slack, Jira, Google Drive 등) 사용자 수와 사용 횟수
+
+Enterprise 환경에서는 이 데이터를 매일 스케줄 Lambda로 수집해 BigQuery에 넣으면, 전사 AI 활용 대시보드로 확장할 수 있습니다.
+
+```go
+// 매일 실행되는 스케줄 Lambda — Enterprise Analytics API → BigQuery
+func collectOrgAnalytics(ctx context.Context) error {
+    client := &http.Client{}
+    baseURL := "https://api.anthropic.com/v1/organizations/analytics"
+    apiKey := os.Getenv("ANTHROPIC_ANALYTICS_KEY")
+
+    endpoints := []struct {
+        path  string
+        table string
+    }{
+        {"/users", "org_user_activity"},
+        {"/summaries", "org_daily_summary"},
+        {"/apps/chat/projects", "org_chat_projects"},
+        {"/skills", "org_skill_usage"},
+        {"/connectors", "org_connector_usage"},
+    }
+
+    yesterday := time.Now().AddDate(0, 0, -3).Format("2006-01-02")
+    for _, ep := range endpoints {
+        url := fmt.Sprintf("%s%s?start_date=%s&end_date=%s", baseURL, ep.path, yesterday, yesterday)
+        req, _ := http.NewRequest("GET", url, nil)
+        req.Header.Set("x-api-key", apiKey)
+        req.Header.Set("anthropic-version", "2023-06-01")
+
+        resp, err := client.Do(req)
+        if err != nil {
+            return err
+        }
+        // 응답을 파싱하여 BigQuery ep.table에 적재
+        // ...
+    }
+    return nil
+}
+```
+
+> 참고: Analytics API 데이터는 집계 후 3일 뒤부터 조회 가능하며, 최대 90일치 데이터를 제공합니다.
+
+**정리: 플랜별 대시보드 구성 전략**
+
+| 구성 요소 | Teams | Enterprise |
+|----------|-------|------------|
+| Claude Code 활용 품질 추적 (Hook 기반) | O | O |
+| 공식 대시보드 UI 확인 | O | O |
+| CSV export → BigQuery (수동/반자동) | O | O |
+| Analytics API → BigQuery (자동) | X | **O** |
+| 비개발 직군 Claude 채팅 사용량 자동 수집 | X | **O** |
+| 전사 AI 활용 통합 대시보드 (자동화) | △ (CSV 기반) | **O** |
+
+Teams 플랜에서도 이 글의 핵심인 Claude Code 활용 품질 대시보드는 완전히 구현 가능합니다. Enterprise로 전환하면 비개발 직군까지 포함한 전사 AI 활용 대시보드로 자연스럽게 확장할 수 있는 구조입니다.
 
 ## Step 8. OpenTelemetry 기반 모니터링과의 비교
 
