@@ -1,3 +1,7 @@
 {
-    "java.compile.nullAnalysis.mode": "disabled"
+    "java.compile.nullAnalysis.mode": "disabled",
+    "chat.tools.terminal.autoApprove": {
+        "codex": true,
+        "npx codex": true
+    }
 }
