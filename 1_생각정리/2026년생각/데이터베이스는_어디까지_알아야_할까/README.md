@@ -106,6 +106,8 @@ ORM이 만든 비용도 결국 쿼리와 데이터베이스 지표에서 드러�
 주문과 결제가 서로 다른 데이터베이스에 있다면 프로시저와 ORM 모두 자기 데이터베이스의 경계까지만 책임질 수 있다.
 경계를 넘는 흐름은 애플리케이션이 중복 요청을 막고 실패를 재시도하며, 전달되지 않은 이벤트와 어긋난 데이터를 다시 맞출 방법까지 준비해야 한다.
 
+![1990년대부터 2010년대까지 데이터베이스 책임이 이동한 과정](./images/database-responsibility-shift-body.png)
+
 ## 오픈소스 데이터베이스가 넓힌 선택지
 
 초기 웹 서비스는 MySQL 같은 오픈소스 데이터베이스와 함께 성장했다.
@@ -146,6 +148,8 @@ Supabase의 `rpc()`가 호출하는 것은 PostgreSQL 함수다.
 프로시저(Procedure)는 최상위 `CALL`이 명시적인 트랜잭션 블록 밖에서 실행되는 등의 조건에서 [내부 트랜잭션을 제어할 수 있다](https://www.postgresql.org/docs/current/xproc.html).
 Data API와 JWT, RLS가 그 앞에서 API와 권한 경계를 맡기 때문에 과거의 단순한 2계층 구조와도 다르다.
 
+![Supabase에서 Data API와 JDBC가 권한 및 트랜잭션을 처리하는 경로](./images/supabase-access-paths-body.png)
+
 ## 2026년, PostgreSQL 위에 무엇을 둘 것인가
 
 선택지는 애플리케이션 서버 중심, Data API 중심, 둘을 섞는 방식으로 나뉜다.
@@ -183,6 +187,8 @@ JDBC 쿼리는 접속한 PostgreSQL 역할로 실행되며, 슈퍼유저와 `BYP
 
 개인 메모와 프로필은 Data API와 RLS로 처리하고, 결제와 정산은 애플리케이션 서버에서 처리하는 식으로 두 경로를 섞을 수도 있다.
 이때 먼저 볼 것은 같은 규칙을 RLS와 서비스 코드 양쪽에 적고 있지는 않은지, 트랜잭션의 끝을 누가 책임지는지, 장애가 났을 때 어느 계층부터 확인해야 하는지다.
+
+![PostgreSQL을 사용하는 애플리케이션 서버 중심, Data API 중심, 혼합형 구조](./images/postgresql-architecture-options-body.png)
 
 ## 스토어드 프로시저와 ORM을 어디까지 배워야 할까
 
