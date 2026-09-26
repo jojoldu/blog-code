@@ -5,3 +5,4 @@ node_modules
 .gradle
 out
 리디자인
+.DS_Store
