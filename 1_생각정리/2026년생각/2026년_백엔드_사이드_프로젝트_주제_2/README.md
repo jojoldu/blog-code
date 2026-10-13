@@ -17,7 +17,10 @@ RDBMS나 Key Value 스토어, 메시지 큐 중 더 깊이 이해하고 싶은 �
 작은 모델 하나를 끝까지 만들어보도록 안내해주는 강의가 있으면, 처음 접하는 개념도 코드와 함께 익히기가 수월할 것 같다.
 
 이런 경험을 해볼 수 있는 강의가 Hong 님의 '실리콘밸리 개발자가 알려주는 임베딩과 Mini GPT'이다.  
-(Hong 님이 이번에 LLM 평가 하네스 강의와 이 강의를 같은 시기에 출시하셨는데, 컨셉을 너무 잘 잡아주셔서 홍보를 안 할 수가 없다...)
+
+- [실리콘밸리 개발자가 알려주는 임베딩과 Mini GPT](https://inf.run/WKgwD)
+
+> Hong 님이 이번에 LLM 평가 하네스 강의와 이 강의를 같은 시기에 출시하셨는데, 컨셉을 너무 잘 잡아주셔서 홍보를 안 할 수가 없다...
 
 벡터와 임베딩의 기초부터 시작해 TypeScript로 Word2Vec과 자동 미분을 구현하고, Python과 PyTorch로 미니 GPT를 만든다.  
 텍스트를 토큰으로 바꾸고, 임베딩과 어텐션을 거쳐 다음 토큰을 예측하는 모델을 직접 작성한다.  
@@ -30,6 +33,3 @@ RDBMS나 Key Value 스토어, 메시지 큐 중 더 깊이 이해하고 싶은 �
 
 데이터베이스를 직접 만들어보듯이 LLM도 한 번 직접 만들어보며 이해하고 싶은 백엔드 개발자분들께 추천드린다.
 
-2026년 10월 11일 기준으로 얼리버드 70% 할인 중이라 이 기간에 구매해두시길 추천드린다.
-
-[실리콘밸리 개발자가 알려주는 임베딩과 Mini GPT](https://www.inflearn.com/course/building-embeddings?partners=a243e1d8d07e4ae2b358e11b88e261d9&utm_campaign=94661&utm_medium=referral&utm_source=partners&utm_user=94661&cid=342278)
